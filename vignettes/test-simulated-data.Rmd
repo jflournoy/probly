@@ -1,13 +1,75 @@
 ---
 title: "Test Simulated Data"
-author: "Vignette Author"
+author: "John Flournoy"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: ../extdata/dissertation.bib
+csl: ../extdata/apa-old-doi-prefix.csl
 ---
+
+# Introduction
+
+In this vignette, I simulate data as expected under the Rescorla-Wagner model implemented by @ahn2017 in their go-no-go model 2. 
+Their original model handles binary decisions (button-press or no button-press) in response to four different cues. 
+However, the form of the learning algorithm is generalizable to other binary choices in response to cues. 
+In the case of the Social Probabilistic Learning Task (SPLT), participants are presented with a face (the cue), and must decide to press the left key or the right key. 
+They are rewarded probabilistically such that for each cue, one or the other of the response options has an 80% chance of providing reinforcement. 
+The go-no-go models used by @ahn2017 were derived from work by @guitart-masip2012. 
+Their most flexible reinforcement learning model generates the probability of an action for each trial via N parameters: the learning rate, $\epsilon$, the effective size of reinforcement, $\rho$, a static bias parameter, $b$, an irriducible noise parameter, $\xi$, and a Pavlovian learning parameter, $\pi$.
+In the SPLT, trial feedback does not vary by valence (responses result in reward, or no reward, but never punishment), so I use the model that does not include this Pavlonian component. 
+
+# Reinforcement learning model for the SPLT
+
+The model for an individual $j$'s probability of pressing the right arrow key on trial $t$ given that stimulus $s_{t}$ is presentd, $P(a_{\rightarrow t} | s_{t})_{it}$, is determined by a logistic transformation of the action weight for pressing the right arrow key minus the action weight for pressing the left arrow key. 
+This probability is then adjusted by a noise parameter, $0 \leq\xi_{jk}\leq1$ for each participant $j$ in condition $k$.
+The noise parameter modulates the degree to which responses are non-systematic. 
+When $\xi$ is 1, $P_{it} = .5$, and because each individual has a unique noise parameter for each condition, I am able to account for participants who do not learn during the task, or in a particular condition.
+The full equation is:
+
+$$
+P(a_{\rightarrow t} | s_{t})_{t} = 
+\text{logit}^{-1}\big(W(a_{\rightarrow t}| s_{t}) - W(a_{\leftarrow t}| s_{t})\big)\cdot(1-\xi_{jk}) + \small\frac{\xi_{jk}}{2}.
+$$
+
+The action weight is determined by a Rescorla-Wagner (RW) updating equation and individual $j$'s bias parameter, $b_{jk}$, for that condition (which encodes a systematic preference for choosing the left or right response option).
+In each condition, the same two words are displayed in the same position, so $b$ encodes a learning-independent preference for one particular word or position.
+The equation for the action weight for each action on a particular trial is:
+
+$$
+W_{t}(a,s) = \left\{
+                \begin{array}{ll}
+                  Q_{t}(a, s) + b_{jk}, & \text{if } a=a_{\rightarrow} \\
+                  Q_{t}(a, s), & \text{otherwise}
+                \end{array}
+              \right.
+$$
+Finally, the RW updating equation that encodes instrumental learning is governed by the individual's learning rate for that condition, $\epsilon_{jk}$, and a scaling parameter $\rho_{jk}$ governing the effective size of the possible rewards $r_t \in \{0, 1, 5\}$:
+
+$$
+Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a_t, s_t)\big)
+$$
+
+## Hierarchical Parameters
+
+Each parameter ($\epsilon, \rho, b, \xi$) varries by condition $k \in 1:K$, and by participant $j \in 1:J$ nested in sample $m \in 1:M$. 
+The structure of the hierarchical part of the model is the same for each parameter, so the following description for $\epsilon$ will serve as a description for all of the parameters.
+For each individual $j$, $\beta_{\epsilon j}$ is a $K$-element row of coefficients for parameter $\epsilon$ for each condition:
+
+$$
+\beta_{\epsilon j} \sim \mathcal{N}(\delta_{\epsilon mm[j]}, \Sigma_{\epsilon})
+$$
+where $\delta_{\epsilon mm[j]}$ is a column of $K$ means for individual $j$'s sample $M$, as indexed in the vector $mm$, and $\Sigma_{\epsilon}$ is a $K\times K$ matrix of the covariance of individual coefficients between conditions.
+
+Finally, across all $M$ samples, the means for each condition k are distributed such that: 
+
+$$
+\delta_{\epsilon k} \sim \mathcal{N}(\mu_{\epsilon k}, \sigma_\epsilon)
+$$
+where $\mu_{\epsilon k}$ is the population mean for parameter $\epsilon$ in condition $k$, and $\sigma$ is a slightly regularizing scale parameter for these means across all conditions and samples.
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -16,4 +78,4 @@ knitr::opts_chunk$set(
 )
 ```
 
-
+# References

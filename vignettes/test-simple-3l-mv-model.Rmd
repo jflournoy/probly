@@ -9,6 +9,8 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+The goal of this vignette is to demonstrate that the multivariate normal model that I will use for each parameter in the learning model is able to be estimated accurately and without prohibitively excessive computer time. In these examples I show that accounting for the nested structure of data with observations nested in participants nested in sample may be important. I also show that the 3-level model using both centered and non-centered parameterization of the 3rd level group means gives similar results. Finally, it may be helpful to note that the centered (that is, standard) parameterization finishes sampling in much less time than the non-centered model.
+
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -19,6 +21,7 @@ knitr::opts_chunk$set(
 Generate data where there are 3 conditions, and individual variation in probability of choosing 'left' for each condition. Set the mean probability of left for each condition to values in `beta_mu` below.
 
 ```{r}
+library(probly)
 set.seed(150319/2018)
 j <- 300 #number of subjects
 t <- 100 #number of trials
@@ -160,7 +163,7 @@ if(resolved(lme4_fit_2L_2rx_future)){
 
 ```
 
-The stan model that is being estimated is:
+The Stan model that is being estimated is:
 
 $$
 \text{press_right}_{i} \sim \text{bernoulli_logit}(x_{i}\beta_{jj[i]}) \\
@@ -173,14 +176,15 @@ $$
 \sigma_{\delta} \sim \text{exponential} (1)
 $$
 
-Where 
-    - press_right is a binary indicator that the participant pressed the key on the right,
-    - $x_{i}$ is dummy coded for each trial's condition,
-    - $\beta_j$ is a vector of subject-level (for subject $jj[i]$) coefficients for all K conditions,
-    - $\delta_m$ is a vector of K means (again, per condition) for participant $j$'s group $mm[j]$,
-    - $\Sigma_{\beta}$ is the covariance matrix, optimized as recommended in the stan manual via $\tau$ and $\Omega$,
-    - $\mu_{\delta}$ is the population mean for each K condition,
-    - and $\sigma_{\delta}$ is the scale parameter for the population means. 
+Where
+
+- press_right is a binary indicator that the participant pressed the key on the right,
+- $x_{i}$ is dummy coded for each trial's condition,
+- $\beta_j$ is a vector of subject-level (for subject $jj[i]$) coefficients for all K conditions,
+- $\delta_m$ is a vector of K means (again, per condition) for participant $j$'s group $mm[j]$,
+- $\Sigma_{\beta}$ is the covariance matrix, optimized as recommended in the Stan manual via $\tau$ and $\Omega$,
+- $\mu_{\delta}$ is the population mean for each K condition,
+- and $\sigma_{\delta}$ is the scale parameter for the population means. 
 
 ```{r test-stan-mvnorm}
 # data {
