@@ -19,12 +19,11 @@ parameters {
   // matrix[L, K] gamma; //group coefficients. gamma[1, ] are intercepts for each condition
   vector[K] mu_delta;
   real<lower=0> sigma_delta;
-  matrix[M, K] delta_raw;
+  matrix[M, K] delta; //M-level intercepts for N-level (that is, sample-level for each subject)
 }
 
 transformed parameters {
   matrix[N, K] beta; //per-subject coefficients for each K
-  matrix[M, K] delta; //M-level intercepts for N-level (that is, sample-level for each subject)
   vector<lower=0>[K] tau; // prior scale
   for (k in 1:K) tau[k] = 2.5 * tan(tau_unif[k]);
   //{
@@ -34,7 +33,6 @@ transformed parameters {
   //  }
   // //Put calculations of delta and beta in here
   //}
-  for (k in 1:K) delta[,k] = mu_delta[k] + sigma_delta * delta_raw[,k];
   beta = delta[mm] + (diag_pre_multiply(tau,L_Omega) * z)';
 }
 
@@ -44,7 +42,7 @@ model {
   // to_vector(gamma) ~ normal(0, 5);
   mu_delta ~ normal(0, 5);
   sigma_delta ~ exponential(1);
-  to_vector(delta_raw) ~ normal(0, 1);
+  for (k in 1:K) delta[,k] ~ normal(mu_delta[k], sigma_delta);
 
   for (i in 1:N) {
     for (t in 1:Tsubj[i]) {

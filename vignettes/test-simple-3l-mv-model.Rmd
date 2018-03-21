@@ -1,0 +1,280 @@
+---
+title: "Test Simple 3-level Multivariate Normal Model"
+author: "John Flournoy"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Generate data where there are 3 conditions, and individual variation in probability of choosing 'left' for each condition. Set the mean probability of left for each condition to values in `beta_mu` below.
+
+```{r}
+set.seed(150319/2018)
+j <- 300 #number of subjects
+t <- 100 #number of trials
+g <- 4 #number of subsamples
+c <- 3 #number of conditions
+n <- t*c*j #number of observations
+gg <- sample(1:g, size = j, replace = T) #group IDs
+
+hyper_gamma_mu <- c(-1, 0, 1) #The mean population effect
+hyper_gamma_sigma <- 1
+gamma_mu <- matrix(rnorm(c*g, hyper_gamma_mu, hyper_gamma_sigma), nrow = g, byrow = T) #specific sample mean effects
+gamma_sigma <- matrix(
+    c(1, .2, .2,
+      .2, 1, .2,
+      .2, .2, 1),
+    nrow = 3, byrow = T
+) #correlation among random effects at between individuals in the same sample
+
+beta_j <- t(apply(gamma_mu[gg,], 1, function(mu) {MASS::mvrnorm(1, mu, gamma_sigma)}))
+
+beta_j_df <- as.data.frame(beta_j)
+beta_j_df$b0 <- beta_j_df[,1]
+beta_j_df$b1 <- beta_j_df[,2] - beta_j_df[,1]
+beta_j_df$b2 <- beta_j_df[,3] - beta_j_df[,1]
+
+summary(beta_j_df)
+cor(beta_j_df[,1:3])
+cor(beta_j_df[,4:6])
+
+lapply(1:g, function(grp) cor(beta_j_df[gg == grp,1:3]))
+
+dd <- data.frame(id = as.factor(1:j),
+                 grp = as.factor(gg),
+                 condition = as.factor(rep(rep(1:3, each = n/j/3), each = j)))
+
+design <- model.matrix(~ 0 + id:condition, dd)
+
+dd$theta <-  design %*% as.vector(beta_j)
+
+dd$p <- arm::invlogit(dd$theta)
+dd$y <- rbinom(dim(dd)[1], 1, dd$p)
+
+dplyr::summarize(
+    dplyr::group_by(dd, grp), 
+    N = length(unique(id)))
+```
+
+```{r}
+library(lme4)
+library(brms)
+library(rstan)
+library(future)
+plan('multiprocess')
+
+glm_fit <- glm(y ~ 1 + condition, data = dd, family = 'binomial')
+
+lme4_fit_fn <- '/data/jflournoy/split/probly/lme4_test_fit.RDS'
+lme4_fit_future <- future::future(
+    CachedFit(
+        {
+            lme4::glmer(y ~ 1 + condition + (1 + condition | grp/id), data = dd, family = 'binomial')
+        },
+        rds_filename = lme4_fit_fn))
+
+lme4_fit_2L_fn <- '/data/jflournoy/split/probly/lme4_test_fit_2L.RDS'
+lme4_fit_2L_future <- future::future(
+    CachedFit(
+        {
+            lme4::glmer(y ~ 1 + condition + (1 + condition | id), data = dd, family = 'binomial')
+        },
+        rds_filename = lme4_fit_2L_fn))
+
+lme4_fit_2L_2rx_fn <- '/data/jflournoy/split/probly/lme4_test_fit_2L_2rx.RDS'
+lme4_fit_2L_2rx_future <- future::future(
+    CachedFit(
+        {
+            lme4::glmer(y ~ 1 + condition + (1 + condition | id) + (1 + condition | grp), 
+                        data = dd, family = 'binomial')
+        },
+        rds_filename = lme4_fit_2L_2rx_fn))
+
+summary(glm_fit)
+
+rbind(
+    means = unlist(dplyr::summarize(dplyr::group_by(dd, condition), mean = mean(y))[,2]),
+    glm_coef = c(coef(glm_fit)[1], sum(coef(glm_fit)[1:2]), sum(coef(glm_fit)[c(1,3)])),
+    glm_p = arm::invlogit(c(coef(glm_fit)[1], sum(coef(glm_fit)[1:2]), sum(coef(glm_fit)[c(1,3)]))))
+
+if(resolved(lme4_fit_future)){
+    lme4_fit <- future::value(lme4_fit_future)
+    print(summary(lme4_fit))
+    rbind(
+        means = unlist(dplyr::summarize(dplyr::group_by(dd, condition), mean = mean(y))[,2]),
+        lme4_coef = c(fixef(lme4_fit)[1], sum(fixef(lme4_fit)[1:2]), sum(fixef(lme4_fit)[c(1,3)])),
+        lme4_p = arm::invlogit(c(fixef(lme4_fit)[1], sum(fixef(lme4_fit)[1:2]), sum(fixef(lme4_fit)[c(1,3)]))))
+    print(
+        ggplot2::qplot(as.vector(hyper_gamma_mu),
+                       fixef(lme4_fit) + c(0, fixef(lme4_fit)[c(1,1)])) +
+        geom_abline(intercept = 0, slope = 1))
+    print(
+        ggplot2::qplot(as.vector(gamma_mu), 
+                   unlist(coef(lme4_fit)$grp+
+                              cbind(rep(0, 4),coef(lme4_fit)$grp[,c(1,1)]))) +
+        geom_abline(intercept = 0, slope = 1))
+    print(
+        ggplot2::qplot(as.vector(beta_j), 
+                   unlist(coef(lme4_fit)$`id:grp`+
+                              cbind(rep(0, dim(beta_j)[1]),coef(lme4_fit)$`id:grp`[,c(1,1)]))) +
+        geom_abline(intercept = 0, slope = 1))
+}
+if(resolved(lme4_fit_2L_future)){
+    lme4_fit_2L <- future::value(lme4_fit_2L_future)
+    print(summary(lme4_fit_2L))
+    rbind(
+        means = unlist(dplyr::summarize(dplyr::group_by(dd, condition), mean = mean(y))[,2]),
+        lme4_coef = c(fixef(lme4_fit_2L)[1], sum(fixef(lme4_fit_2L)[1:2]), sum(fixef(lme4_fit_2L)[c(1,3)])),
+        lme4_p = arm::invlogit(c(fixef(lme4_fit_2L)[1], sum(fixef(lme4_fit_2L)[1:2]), sum(fixef(lme4_fit_2L)[c(1,3)]))))
+    print(
+        ggplot2::qplot(as.vector(beta_j), 
+                   unlist(coef(lme4_fit_2L)$`id`+
+                              cbind(rep(0, dim(beta_j)[1]),coef(lme4_fit_2L)$id[,c(1,1)]))) +
+        geom_abline(intercept = 0, slope = 1))
+}
+
+if(resolved(lme4_fit_2L_2rx_future)){
+    lme4_fit_2L_2rx <- future::value(lme4_fit_2L_2rx_future)
+    print(summary(lme4_fit_2L_2rx))
+    rbind(
+        means = unlist(dplyr::summarize(dplyr::group_by(dd, condition), mean = mean(y))[,2]),
+        lme4_coef = c(fixef(lme4_fit_2L_2rx)[1], sum(fixef(lme4_fit_2L_2rx)[1:2]), sum(fixef(lme4_fit_2L_2rx)[c(1,3)])),
+        lme4_p = arm::invlogit(c(fixef(lme4_fit_2L_2rx)[1], sum(fixef(lme4_fit_2L_2rx)[1:2]), sum(fixef(lme4_fit_2L_2rx)[c(1,3)]))))
+    print(
+        ggplot2::qplot(as.vector(beta_j), 
+                   unlist(coef(lme4_fit_2L_2rx)$`id`+
+                              cbind(rep(0, dim(beta_j)[1]),coef(lme4_fit_2L_2rx)$id[,c(1,1)]))) +
+        geom_abline(intercept = 0, slope = 1))
+}
+
+```
+
+The model for our simulated data is:
+
+$$
+\text{press_right}_{i} \sim \text{bernoulli_logit}(x_{i}\beta_{jj[i]}) \\
+\beta_{j} \sim \mathcal{N}_{\text{mv}}(\delta_{mm[j]}, \Sigma_{\beta})  \\
+\Sigma = \text{diag_matrix}(\tau) \Omega \text{diag_matrix}(\tau) \\
+\tau_{k} \sim \text{Cauchy}(0, 2.5) \\
+\Omega \sim \text{lkj_corr}(2)\\ 
+\delta_{mk} \sim \mathcal{N} (\mu_{\delta k}, \sigma_{\delta})  \\
+\mu_{\delta} \sim \mathcal{N} (0, 5) \\
+\sigma_{\delta} \sim \text{exponential} (1)
+$$
+
+Where 
+    - press_right is a binary indicator that the participant pressed the key on the right,
+    - $x_{i}$ is dummy coded for each trial's condition,
+    - $\beta_j$ is a vector of subject-level (for subject $jj[i]$) coefficients for all K conditions,
+    - $\delta_m$ is a vector of K means (again, per condition) for participant $j$'s group $mm[j]$,
+    - $\Sigma_{\beta}$ is the covariance matrix, optimized as recommended in the stan manual via $\tau$ and $\Omega$,
+    - $\mu_{\delta}$ is the population mean for each K condition,
+    - and $\sigma_{\delta}$ is the scale parameter for the population means. 
+
+```{r test-stan-mvnorm}
+# data {
+  # int<lower=1> N; //number of subjects
+  # int<lower=1> T; //max number of trials
+  # int<lower=2> K; //number of trial predictors (in this case, conditions)
+  # int<lower=1> L; //number of subject-level predictors. 1 = intercept only
+  # int<lower=1,upper=T> Tsubj[N]; //trials per subject
+  # int<lower=-1,upper=1> press_right[N,T]; //choices "0" = left, "1" = right
+  # int<lower=-1,upper=3> condition[N,T]; //1 = ctrl, 2 = mateseeking, 3 = status
+  # matrix[N, L] u; //group predictors. u[,1] = 1 for intercept
+# }
+press_right_mat <- matrix(dd$y, nrow = j)
+condition_mat <- matrix(as.numeric(dd$condition), nrow = j)
+data_for_stan <- list(
+    N = j,
+    T = t*c,
+    K = c,
+    M = g,
+    mm = gg,
+    Tsubj = rep(t*3, j),
+    press_right = press_right_mat,
+    condition = condition_mat
+)
+
+stan_fit_fn <- '/data/jflournoy/split/probly/stan_test_fit_c_l3.RDS'
+if(!file.exists()){
+    plan(multiprocess)
+    stan_m <- rstan::stan_model(file = '../exec/splt_rl_mvnorm_test_c_l3.stan')
+    stan_optim <- rstan::optimizing(stan_m,
+                                    data = data_for_stan)
+    round(stan_optim$par[grep('delta', names(stan_optim$par))],3)
+    stan_fit_test_f <- future({rstan::stan(file = '../exec/splt_rl_mvnorm_test_c_l3.stan',
+                                           data = data_for_stan, chains = 4, iter = 1500,
+                                           warmup = 1000, cores = 4, open_progress = T)})
+    saveRDS(stan_fit_test, stan_fit_fn)
+} else {
+    stan_fit_test <- readRDS(stan_fit_fn)
+}
+stan_fit_fn.orig <- '/data/jflournoy/split/probly/stan_test_fit.RDS'
+stan_fit_fn.repar <- '/data/jflournoy/split/probly/stan_test_fit2.RDS'
+stan_fit_test.orig <- readRDS(stan_fit_fn.orig)
+stan_fit_test.repar <- readRDS(stan_fit_fn.repar)
+
+par_names <- grep('(delta|beta)', names(stan_fit_test), value = T)
+stan_fit_extract <- rstan::extract(stan_fit_test, pars = par_names)
+bayesplot::mcmc_dens(as.array(stan_fit_test), regex_pars = 'mu_delta\\[\\d\\]')
+bayesplot::mcmc_trace(as.array(stan_fit_test), regex_pars = 'mu_delta\\[\\d\\]')
+stan_fit_means <- lapply(stan_fit_extract, mean)
+print(
+    ggplot2::qplot(as.vector(beta_j),
+                   as.numeric(
+                       stan_fit_means[grep('beta\\[', names(stan_fit_means))])) +
+        geom_abline(intercept = 0, slope = 1))
+print(
+    ggplot2::qplot(as.vector(gamma_mu),
+                   as.numeric(
+                       stan_fit_means[grep('delta\\[\\d,', names(stan_fit_means))])) +
+        geom_abline(intercept = 0, slope = 1))
+rbind(stan = stan_fit_means[grep('mu_delta', names(stan_fit_means))],
+      raw_p = arm::logit(unlist(dplyr::summarize(dplyr::group_by(dd, condition), mean = mean(y))[,2])),
+      group_p = apply(gamma_mu, 2, mean))
+stan_fit_means$sigma_delta
+
+posterior <- as.array(stan_fit_test)
+bayesplot::mcmc_trace(posterior, regex_pars = 'delta\\[\\d,\\d\\]')
+summary(stan_fit_test, pars = par_names, probs = c(.025, .5, .975))
+
+par_names.o <- grep('(delta|beta)', names(stan_fit_test.orig), value = T)
+par_names.r <- grep('(delta|beta)', names(stan_fit_test.repar), value = T)
+stan_fit_extract.o <- rstan::extract(stan_fit_test.orig, pars = par_names.o)
+stan_fit_extract.r <- rstan::extract(stan_fit_test.repar, pars = par_names.r)
+bayesplot::mcmc_dens(as.array(stan_fit_test.orig), regex_pars = 'mu_delta\\[\\d\\]')
+bayesplot::mcmc_dens(as.array(stan_fit_test.repar), regex_pars = 'mu_delta\\[\\d\\]')
+bayesplot::mcmc_trace(as.array(stan_fit_test.orig), regex_pars = 'mu_delta\\[\\d\\]')
+bayesplot::mcmc_trace(as.array(stan_fit_test.repar), regex_pars = 'mu_delta\\[\\d\\]')
+stan_fit_means <- lapply(stan_fit_extract, mean)
+print(
+    ggplot2::qplot(as.vector(beta_j),
+                   as.numeric(
+                       stan_fit_means[grep('beta\\[', names(stan_fit_means))])) +
+        geom_abline(intercept = 0, slope = 1))
+print(
+    ggplot2::qplot(as.vector(gamma_mu),
+                   as.numeric(
+                       stan_fit_means[grep('delta\\[\\d,', names(stan_fit_means))])) +
+        geom_abline(intercept = 0, slope = 1))
+rbind(stan = stan_fit_means[grep('mu_delta', names(stan_fit_means))],
+      raw_p = arm::logit(unlist(dplyr::summarize(dplyr::group_by(dd, condition), mean = mean(y))[,2])),
+      group_p = apply(gamma_mu, 2, mean))
+stan_fit_means$sigma_delta
+
+posterior <- as.array(stan_fit_test)
+bayesplot::mcmc_trace(posterior, regex_pars = 'delta\\[\\d,\\d\\]')
+summary(stan_fit_test, pars = par_names, probs = c(.025, .5, .975))
+
+```
+
