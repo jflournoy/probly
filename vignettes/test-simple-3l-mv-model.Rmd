@@ -107,6 +107,7 @@ rbind(
     glm_coef = c(coef(glm_fit)[1], sum(coef(glm_fit)[1:2]), sum(coef(glm_fit)[c(1,3)])),
     glm_p = arm::invlogit(c(coef(glm_fit)[1], sum(coef(glm_fit)[1:2]), sum(coef(glm_fit)[c(1,3)]))))
 
+Sys.sleep(3)
 if(resolved(lme4_fit_future)){
     lme4_fit <- future::value(lme4_fit_future)
     print(summary(lme4_fit))
@@ -159,7 +160,7 @@ if(resolved(lme4_fit_2L_2rx_future)){
 
 ```
 
-The model for our simulated data is:
+The stan model that is being estimated is:
 
 $$
 \text{press_right}_{i} \sim \text{bernoulli_logit}(x_{i}\beta_{jj[i]}) \\
@@ -205,76 +206,78 @@ data_for_stan <- list(
     condition = condition_mat
 )
 
-stan_fit_fn <- '/data/jflournoy/split/probly/stan_test_fit_c_l3.RDS'
-if(!file.exists()){
+stan_fit_fn.orig <- '/data/jflournoy/split/probly/stan_test_fit_c_l3.RDS'
+stan_fit_fn.repar <- '/data/jflournoy/split/probly/stan_test_fit_non_c_l3.RDS'
+if(!file.exists(stan_fit_fn.orig)){
     plan(multiprocess)
-    stan_m <- rstan::stan_model(file = '../exec/splt_rl_mvnorm_test_c_l3.stan')
-    stan_optim <- rstan::optimizing(stan_m,
+    stan_m_c <- rstan::stan_model(file = '../exec/splt_rl_mvnorm_test_c_l3.stan')
+    stan_optim_c <- rstan::optimizing(stan_m_c,
                                     data = data_for_stan)
-    round(stan_optim$par[grep('delta', names(stan_optim$par))],3)
-    stan_fit_test_f <- future({rstan::stan(file = '../exec/splt_rl_mvnorm_test_c_l3.stan',
-                                           data = data_for_stan, chains = 4, iter = 1500,
-                                           warmup = 1000, cores = 4, open_progress = T)})
-    saveRDS(stan_fit_test, stan_fit_fn)
+    round(stan_optim_c$par[grep('delta', names(stan_optim_c$par))],3)
+    stan_fit_test_c_f <- future({rstan::stan(file = '../exec/splt_rl_mvnorm_test_c_l3.stan',
+                                             data = data_for_stan, chains = 4, iter = 1500,
+                                             warmup = 1000, cores = 4, open_progress = T)})
+    stan_fit_test_c <- value(stan_fit_test_c_f)
+    saveRDS(stan_fit_test_c, stan_fit_fn.orig)
 } else {
-    stan_fit_test <- readRDS(stan_fit_fn)
+    stan_fit_test_c <- readRDS(stan_fit_fn.orig)
 }
-stan_fit_fn.orig <- '/data/jflournoy/split/probly/stan_test_fit.RDS'
-stan_fit_fn.repar <- '/data/jflournoy/split/probly/stan_test_fit2.RDS'
-stan_fit_test.orig <- readRDS(stan_fit_fn.orig)
-stan_fit_test.repar <- readRDS(stan_fit_fn.repar)
+if(!file.exists(stan_fit_fn.repar)){
+    plan(multiprocess)
+    stan_m_nc <- rstan::stan_model(file = '../exec/splt_rl_mvnorm_test_non_c_l3.stan')
+    stan_optim_nc <- rstan::optimizing(stan_m_nc,
+                                    data = data_for_stan)
+    round(stan_optim_nc$par[grep('delta', names(stan_optim_nc$par))],3)
+    stan_fit_test_nc_f <- future({rstan::stan(file = '../exec/splt_rl_mvnorm_test_non_c_l3.stan',
+                                              data = data_for_stan, chains = 4, iter = 1500,
+                                              warmup = 1000, cores = 4, open_progress = T)})
+    stan_fit_test_nc <- value(stan_fit_test_nc_f)
+    saveRDS(stan_fit_test_nc, stan_fit_fn.repar)
+} else {
+    stan_fit_test_nc <- readRDS(stan_fit_fn.repar)
+}
 
-par_names <- grep('(delta|beta)', names(stan_fit_test), value = T)
-stan_fit_extract <- rstan::extract(stan_fit_test, pars = par_names)
-bayesplot::mcmc_dens(as.array(stan_fit_test), regex_pars = 'mu_delta\\[\\d\\]')
-bayesplot::mcmc_trace(as.array(stan_fit_test), regex_pars = 'mu_delta\\[\\d\\]')
-stan_fit_means <- lapply(stan_fit_extract, mean)
+par_names.c <- grep('(delta|beta)', names(stan_fit_test_c), value = T)
+par_names.nc <- grep('(delta|beta)', names(stan_fit_test_nc), value = T)
+stan_fit_extract.c <- rstan::extract(stan_fit_test_c, pars = par_names.c)
+stan_fit_extract.nc <- rstan::extract(stan_fit_test_nc, pars = par_names.nc)
+bayesplot::mcmc_dens(as.array(stan_fit_test_c), regex_pars = 'mu_delta\\[\\d\\]')
+bayesplot::mcmc_dens(as.array(stan_fit_test_nc), regex_pars = 'mu_delta\\[\\d\\]')
+bayesplot::mcmc_trace(as.array(stan_fit_test_c), regex_pars = 'mu_delta\\[\\d\\]')
+bayesplot::mcmc_trace(as.array(stan_fit_test_nc), regex_pars = 'mu_delta\\[\\d\\]')
+stan_fit_c_means <- lapply(stan_fit_extract.c, mean)
+stan_fit_nc_means <- lapply(stan_fit_extract.nc, mean)
 print(
     ggplot2::qplot(as.vector(beta_j),
                    as.numeric(
-                       stan_fit_means[grep('beta\\[', names(stan_fit_means))])) +
+                       stan_fit_c_means[grep('beta\\[', names(stan_fit_c_means))])) +
+        geom_abline(intercept = 0, slope = 1))
+print(
+    ggplot2::qplot(as.vector(beta_j),
+                   as.numeric(
+                       stan_fit_nc_means[grep('beta\\[', names(stan_fit_nc_means))])) +
         geom_abline(intercept = 0, slope = 1))
 print(
     ggplot2::qplot(as.vector(gamma_mu),
                    as.numeric(
-                       stan_fit_means[grep('delta\\[\\d,', names(stan_fit_means))])) +
-        geom_abline(intercept = 0, slope = 1))
-rbind(stan = stan_fit_means[grep('mu_delta', names(stan_fit_means))],
-      raw_p = arm::logit(unlist(dplyr::summarize(dplyr::group_by(dd, condition), mean = mean(y))[,2])),
-      group_p = apply(gamma_mu, 2, mean))
-stan_fit_means$sigma_delta
-
-posterior <- as.array(stan_fit_test)
-bayesplot::mcmc_trace(posterior, regex_pars = 'delta\\[\\d,\\d\\]')
-summary(stan_fit_test, pars = par_names, probs = c(.025, .5, .975))
-
-par_names.o <- grep('(delta|beta)', names(stan_fit_test.orig), value = T)
-par_names.r <- grep('(delta|beta)', names(stan_fit_test.repar), value = T)
-stan_fit_extract.o <- rstan::extract(stan_fit_test.orig, pars = par_names.o)
-stan_fit_extract.r <- rstan::extract(stan_fit_test.repar, pars = par_names.r)
-bayesplot::mcmc_dens(as.array(stan_fit_test.orig), regex_pars = 'mu_delta\\[\\d\\]')
-bayesplot::mcmc_dens(as.array(stan_fit_test.repar), regex_pars = 'mu_delta\\[\\d\\]')
-bayesplot::mcmc_trace(as.array(stan_fit_test.orig), regex_pars = 'mu_delta\\[\\d\\]')
-bayesplot::mcmc_trace(as.array(stan_fit_test.repar), regex_pars = 'mu_delta\\[\\d\\]')
-stan_fit_means <- lapply(stan_fit_extract, mean)
-print(
-    ggplot2::qplot(as.vector(beta_j),
-                   as.numeric(
-                       stan_fit_means[grep('beta\\[', names(stan_fit_means))])) +
+                       stan_fit_c_means[grep('delta\\[\\d,', names(stan_fit_c_means))])) +
         geom_abline(intercept = 0, slope = 1))
 print(
     ggplot2::qplot(as.vector(gamma_mu),
                    as.numeric(
-                       stan_fit_means[grep('delta\\[\\d,', names(stan_fit_means))])) +
+                       stan_fit_nc_means[grep('delta\\[\\d,', names(stan_fit_nc_means))])) +
         geom_abline(intercept = 0, slope = 1))
-rbind(stan = stan_fit_means[grep('mu_delta', names(stan_fit_means))],
+rbind(stan = stan_fit_c_means[grep('mu_delta', names(stan_fit_c_means))],
       raw_p = arm::logit(unlist(dplyr::summarize(dplyr::group_by(dd, condition), mean = mean(y))[,2])),
       group_p = apply(gamma_mu, 2, mean))
-stan_fit_means$sigma_delta
+rbind(stan = stan_fit_nc_means[grep('mu_delta', names(stan_fit_nc_means))],
+      raw_p = arm::logit(unlist(dplyr::summarize(dplyr::group_by(dd, condition), mean = mean(y))[,2])),
+      group_p = apply(gamma_mu, 2, mean))
+stan_fit_c_means$sigma_delta
+stan_fit_nc_means$sigma_delta
 
-posterior <- as.array(stan_fit_test)
-bayesplot::mcmc_trace(posterior, regex_pars = 'delta\\[\\d,\\d\\]')
-summary(stan_fit_test, pars = par_names, probs = c(.025, .5, .975))
+summary(stan_fit_test_c, pars = grep('delta',par_names.c, value = T), probs = c(.025, .5, .975))$summary
+summary(stan_fit_test_nc, pars = grep('delta',par_names.nc, value = T), probs = c(.025, .5, .975))$summary
 
 ```
 
