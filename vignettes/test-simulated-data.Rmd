@@ -24,7 +24,7 @@ In the SPLT, trial feedback does not vary by valence (responses result in reward
 
 # Reinforcement learning model for the SPLT
 
-The model for an individual $j$'s probability of pressing the right arrow key on trial $t$ given that stimulus $s_{t}$ is presentd, $P(a_{\rightarrow t} | s_{t})_{it}$, is determined by a logistic transformation of the action weight for pressing the right arrow key minus the action weight for pressing the left arrow key. 
+The model for an individual $j$'s probability of pressing the right arrow key on trial $t$ given that stimulus $s_{t}$ is presentd, $P(a_{\rightarrow t} | s_{t})_{t}$, is determined by a logistic transformation of the action weight for pressing the right arrow key minus the action weight for pressing the left arrow key. 
 This probability is then adjusted by a noise parameter, $0 \leq\xi_{jk}\leq1$ for each participant $j$ in condition $k$.
 The noise parameter modulates the degree to which responses are non-systematic. 
 When $\xi$ is 1, $P_{it} = .5$, and because each individual has a unique noise parameter for each condition, I am able to account for participants who do not learn during the task, or in a particular condition.

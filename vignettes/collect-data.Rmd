@@ -1,0 +1,158 @@
+---
+title: "Collect and Clean SPLT Data"
+author: "John Flournoy"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+Data from the Social Probabilistic Learning Task was collected from 5 different samples: Community adolescents, foster-care involved adolescents, at-risk adolescents, University of Oregon human subject pool (UOHSP) particupants who visitied the lab, and UOHSP participants who completed the study online. Data is excluded for any participant who did failed showed a pattern of inattentive responding on the questionnaires and who generated response times that are inconsistent with attentive responding during the task.
+
+List of unexcused no-show IDs (these will be excluded):
+
+- 38547
+- 44123
+- 43237
+- 42283
+
+List of IDs with errors in output files (incomplete file save; will be included but sensitivity to inclusion will be assessed):
+
+- 43993
+- 43640
+- 43329
+- 43303
+- 40179
+
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+library(dplyr)
+library(tidyr)
+library(readr)
+library(stringr)
+
+root_dir <- '~/code_new/probly/extdata/' # This would be '/Volumes/' if you've mounted locally
+raw_data_dir <- file.path(root_dir, 'raw/')
+processed_data_dir <- file.path(root_dir, 'processed/')
+conditions <- c('HungryThirsty', 'DatingLooking', 'PopularUnpopular')
+metacog_condition <- 'Confidence'
+file_match_pattern <- 'split.*csv'
+
+col_spec <- readr::cols(
+    .default = readr::col_character(),
+    rt = readr::col_integer(),
+    key_press = readr::col_integer(),
+    trial_index = readr::col_integer(),
+    time_elapsed = readr::col_integer(),
+    block_duration = readr::col_integer(),
+    timing_post_trial = readr::col_integer(),
+    correct_response = readr::col_integer(),
+    possible_responses = readr::col_number(),
+    stim_duration = readr::col_integer(),
+    feedback_duration = readr::col_integer(),
+    optimal_response = readr::col_integer(),
+    stimindex = readr::col_integer(),
+    reward_possible = readr::col_integer(),
+    stim_chosen = readr::col_integer(),
+    qnum = readr::col_integer(),
+    page_num = readr::col_integer(),
+    trial_num = readr::col_integer(),
+    score_response = readr::col_integer(),
+    response_range = readr::col_number(),
+    times_viewed = readr::col_integer()
+)
+
+files <- dplyr::data_frame(file = dir(path = raw_data_dir, 
+                                      pattern = file_match_pattern,
+                                      recursive = T)) 
+
+message(paste0('Files: ', length(unique(files$file))))
+
+parsed_filenames <- tidyr::extract(
+    files, 
+    file, c('filename', 'dir', 'id', 'timestamp'), 
+    '(([\\w]+/)*split-([0-9]+|bad_pid)[-_]([0-9]+)\\.csv)')
+
+splt_data_and_problems <- do(
+    dplyr::group_by(
+        parsed_filenames,
+        filename, dir, id, timestamp),
+    {
+        adf = readr::read_csv(file.path(raw_data_dir, .$filename[[1]]), col_types = col_spec)
+        prob_adf <- dplyr::mutate_all(problems(adf), funs(as.character))
+        data_frame(data = list(adf), problems = list(prob_adf))
+    })
+
+splt_data_and_problems$.id <- as.character(1:dim(splt_data_and_problems)[1])
+names(splt_data_and_problems$data) <- splt_data_and_problems$.id
+names(splt_data_and_problems$problems) <- splt_data_and_problems$.id
+splt_data <- left_join(
+    bind_rows(splt_data_and_problems$data, .id = '.id'),
+    splt_data_and_problems[,c('.id', 'filename', 'dir', 'id', 'timestamp')])
+splt_problems <- left_join(
+    bind_rows(splt_data_and_problems$problems, .id = '.id'),
+    splt_data_and_problems[,c('.id', 'filename', 'dir', 'id', 'timestamp')])
+
+splt_crunched <- splt_data %>%
+    dplyr::filter((trial_id == 'stim' & (key_press>0 | key_press==-1)) | (trial_id == 'metacog')) %>%
+    tidyr::extract(image, 
+                   c('stim_image', 'sex'), 
+                   '.*/(([fma])_f42887_e_[0-9]{3}\\.png)') %>%
+    dplyr::mutate(correcttrue = ifelse(key_press == -1, NA, as.numeric(correct == 'true')),
+                  outcome = ifelse(feedback, reward_possible, 0),
+                  pressed_r = c(`37` = 0,`39` = 1)[as.character(key_press)]) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(proportion = condition, 
+                  condition = paste(sort(unlist(str_split(context, '_'))), collapse = ''), 
+                  condition = ifelse(trial_id == 'metacog', 'Confidence', condition),
+                  correcttrue = ifelse(trial_id == 'metacog', 
+                                     as.numeric(score_response), correcttrue)) %>%
+    dplyr::filter(condition %in% c(conditions, metacog_condition)) %>%
+    dplyr::group_by(filename, id, condition) %>%
+    dplyr::mutate(condition_trial_index = 1:n(),
+                  block = ((condition_trial_index-1) %/% 16) + 1,
+                  dir = ifelse(is.na(dir), '/', dir),
+                  sample = ifelse(dir %in% c('yads/', 'yads_online/'),
+                                  sub('/', '', dir),
+                                  c('TDS2', 'TDS2', 'TDS1', 'TDS3')[floor(as.numeric(id)/100)])) %>%
+    dplyr::ungroup() %>%
+    dplyr::select(id, dir, filename, sample,
+                  correcttrue, pressed_r, outcome, 
+                  condition, condition_trial_index, 
+                  sex, stim_image, 
+                  trial_index, block, proportion, 
+                  rt, time_elapsed)
+
+metacog_clean <- splt_crunched %>% 
+    dplyr::select(-sex, -stim_image) %>%
+    dplyr::filter(condition == metacog_condition,
+                  !is.na(correcttrue)) %>%
+    dplyr::mutate(block=(condition_trial_index+1)/2) %>% 
+    tidyr::spread(condition, correcttrue) %>%
+    dplyr::rename(confidence=Confidence) %>%
+    dplyr::select(sample, id, block, confidence)
+
+split_clean <- splt_crunched %>% 
+    dplyr::filter(condition != metacog_condition) %>%
+    dplyr::mutate(scaled_index = scale(condition_trial_index),
+                  condition = factor(condition, 
+                                     levels = conditions, 
+                                     labels = abbreviate(conditions))) %>%
+    dplyr::arrange(sample, id, trial_index)
+```
+
+
+```{r eval=F}
+#Write the data
+devtools::use_data(split_clean, metacog_clean)
+```

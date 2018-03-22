@@ -1,0 +1,96 @@
+---
+title: "Descriptive Statistics"
+author: "John Flournoy"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Some numbers: 
+
+```{r}
+knitr::kable(
+    dplyr::summarize(
+        dplyr::group_by(
+            dplyr::distinct(splt_clean, id, dir, filename, sample),
+            sample),
+        n = n()))
+```
+
+Averaging over trials
+
+```{r fig.width=6, fig.height=5}
+
+splt_averages <- split_clean %>%
+    dplyr::filter(!is.na(sample), sample != 'TDS3') %>%
+    dplyr::group_by(sample, condition, condition_trial_index) %>%
+    dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>%
+    dplyr::ungroup() %>% 
+    dplyr::mutate(
+        sample = factor(
+            sample,
+            levels = c('TDS1', 'TDS2', 'yads', 'yads_online'),
+            labels = c('Foster-Care Involved Adolescents', 'Community Adolescents', 'College', 'College, Online')))
+    
+splt_averages_over_samples <- split_clean %>%
+    dplyr::filter(!is.na(sample), sample != 'TDS3') %>%
+    dplyr::group_by(condition, condition_trial_index) %>%
+    dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>%
+    dplyr::ungroup()
+
+ggplot2::ggplot(
+    splt_averages,
+    ggplot2::aes(x = condition_trial_index,
+                 y = p_optimal,
+                 group = condition,
+                 linetype = condition,
+                 shape = condition)) + 
+    ggplot2::geom_point(alpha = .05) + 
+    ggplot2::geom_line(
+        stat = 'smooth',
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) + 
+    ggplot2::facet_wrap(~sample, nrow = 2) + 
+    ggplot2::labs(x = 'Within-condition trial number',
+                  y = 'Proportion of optimal responses') + 
+    ggplot2::theme_minimal()
+
+ggplot2::ggplot(
+    splt_averages_over_samples,
+    ggplot2::aes(x = condition_trial_index,
+                 y = p_optimal,
+                 group = condition,
+                 linetype = condition,
+                 shape = condition)) + 
+    ggplot2::geom_point(alpha = .05) + 
+    ggplot2::geom_line(
+        stat = 'smooth',
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) +
+    ggplot2::labs(x = 'Within-condition trial number',
+                  y = 'Proportion of optimal responses') + 
+    ggplot2::theme_minimal()
+
+
+```
+
+Self-reported confidence over blocks
+
+```{r fig.width=6, fig.height=4}
+ggplot2::ggplot(
+    dplyr::filter(metacog_clean, !is.na(sample), sample != 'TDS3'),
+    ggplot2::aes(x = block, y = confidence)) + 
+    ggplot2::geom_point(position = ggplot2::position_jitter(w = .3, h = .3), alpha = .1) +
+    ggplot2::geom_smooth(
+        ggplot2::aes(color = sample),
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) + 
+    ggplot2::theme_minimal()
+```
