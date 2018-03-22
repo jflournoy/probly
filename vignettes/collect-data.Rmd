@@ -142,7 +142,7 @@ metacog_clean <- splt_crunched %>%
     dplyr::rename(confidence=Confidence) %>%
     dplyr::select(sample, id, block, confidence)
 
-split_clean <- splt_crunched %>% 
+splt_clean <- splt_crunched %>% 
     dplyr::filter(condition != metacog_condition) %>%
     dplyr::mutate(scaled_index = scale(condition_trial_index),
                   condition = factor(condition, 
@@ -154,7 +154,7 @@ split_clean <- splt_crunched %>%
 
 ```{r eval=F}
 #Write the data
-splt <- splt_data
+splt <- splt_clean
 splt_confidence <- metacog_clean
 devtools::use_data(splt, splt_confidence)
 ```

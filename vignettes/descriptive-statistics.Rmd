@@ -20,12 +20,12 @@ Some numbers:
 
 ```{r}
 library(probly)
-data('splt_clean', 'metacog_clean')
+data('splt', 'splt_confidence')
 
 knitr::kable(
     dplyr::summarize(
         dplyr::group_by(
-            dplyr::distinct(splt_clean, id, dir, filename, sample),
+            dplyr::distinct(splt, id, dir, filename, sample),
             sample),
         n = n()))
 ```
@@ -34,7 +34,7 @@ Averaging over trials
 
 ```{r fig.width=6, fig.height=5}
 
-splt_averages <- split_clean %>%
+splt_averages <- splt %>%
     dplyr::filter(!is.na(sample), sample != 'TDS3') %>%
     dplyr::group_by(sample, condition, condition_trial_index) %>%
     dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>%
@@ -45,7 +45,7 @@ splt_averages <- split_clean %>%
             levels = c('TDS1', 'TDS2', 'yads', 'yads_online'),
             labels = c('Foster-Care Involved Adolescents', 'Community Adolescents', 'College', 'College, Online')))
     
-splt_averages_over_samples <- split_clean %>%
+splt_averages_over_samples <- splt %>%
     dplyr::filter(!is.na(sample), sample != 'TDS3') %>%
     dplyr::group_by(condition, condition_trial_index) %>%
     dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>%
@@ -89,7 +89,7 @@ Self-reported confidence over blocks
 
 ```{r fig.width=6, fig.height=4}
 ggplot2::ggplot(
-    dplyr::filter(metacog_clean, !is.na(sample), sample != 'TDS3'),
+    dplyr::filter(splt_confidence, !is.na(sample), sample != 'TDS3'),
     ggplot2::aes(x = block, y = confidence)) + 
     ggplot2::geom_point(position = ggplot2::position_jitter(w = .3, h = .3), alpha = .1) +
     ggplot2::geom_smooth(
