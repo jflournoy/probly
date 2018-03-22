@@ -20,6 +20,9 @@ Some numbers:
 
 ```{r}
 library(probly)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 data('splt', 'splt_confidence')
 
 knitr::kable(
