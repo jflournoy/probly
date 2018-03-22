@@ -1,5 +1,5 @@
 ---
-title: "Descriptive Statistics"
+title: "Descriptive Statistics for SPLT data"
 author: "John Flournoy"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
@@ -19,6 +19,9 @@ knitr::opts_chunk$set(
 Some numbers: 
 
 ```{r}
+library(probly)
+data('splt_clean', 'metacog_clean')
+
 knitr::kable(
     dplyr::summarize(
         dplyr::group_by(

@@ -154,5 +154,7 @@ split_clean <- splt_crunched %>%
 
 ```{r eval=F}
 #Write the data
-devtools::use_data(split_clean, metacog_clean)
+splt <- splt_data
+splt_confidence <- metacog_clean
+devtools::use_data(splt, splt_confidence)
 ```

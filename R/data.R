@@ -8,7 +8,7 @@
 #'   \item{carat}{weight of the diamond, in carats}
 #'   ...
 #' }
-"splt_clean"
+"splt"
 
 #' Social Probabilistic Learning Confidence Data
 #'
@@ -20,4 +20,4 @@
 #'   \item{carat}{weight of the diamond, in carats}
 #'   ...
 #' }
-"metacog_clean"
+"splt_confidence"
