@@ -109,13 +109,181 @@ For this aim, it is important to be able to recover all $\mu_{\theta k}$ for $\t
 The functions that sample parameters as described above are:
 
 ```{r}
-sample_deltas <- function(mu_vec, sigma){
-    deltas <- rnorm(n = length(mu_vec), 
-                    mean = mu_vec, sd = sigma)
+sample_deltas <- function(mu_vec, sigma, nsamples){
+    deltas_vec <- replicate(nsamples,
+                            rnorm(n = length(mu_vec), 
+                                  mean = mu_vec, sd = sigma))
+    deltas <- matrix(deltas_vec,
+                     nrow = nsamples,
+                     byrow = TRUE)
     return(deltas)
 }
+sample_betas <- function(deltas, group_index, Sigma){
+    require(MASS)
+    deltas_mm <- deltas[group_index, ]
+    betas_l <- lapply(1:length(group_index), function(j){
+        MASS::mvrnorm(1, mu = deltas[group_index[j], ], Sigma = Sigma)
+    })
+    betas <- do.call(rbind, betas_l)
+    return(betas)
+}
+generate_responses <- function(N, M, K, mm, Tsubj, cue, n_cues, condition, outcome, beta_xi, beta_b, beta_eps, beta_rho){
+    # - N number of individuals
+    # - M number of samples
+    # - K number of conditions
+    # - mm sample ID for all individuals
+    # - Tsubj number of trials for each individual
+    # - cue an N x max(Tsubj) matrix of cue IDs for 
+    #   each trial
+    # - n_cues total number of cues
+    # - condtion an N x max(Tsubj) matrix of condition 
+    #   IDs for each trial
+    # - outcome is an array with dimensions N x T x 2
+    #   (response options) with the feedback for each 
+    #   possible response. outcome[,,1] is for 
+    #   correct left-presses, and outcome[,,2] is for
+    #   correct right-presses.
+    # - beta_xi, beta_b, beta_eps, beta_rho are N x K 
+    #   matrices of the individually varying parameter 
+    #   coeffients
+    
+    press_right <- matrix(nrow = N, ncol = max(Tsubj)) #the matrix to return
+    
+    for(i in 1:N){
+        wv_r <- numeric(n_cues) #action weight for press-right
+        wv_l <- numeric(n_cues) #action weight for press-left
+        qv_r <- numeric(n_cues) #Q value for right
+        qv_l <- numeric(n_cues) #Q value for left
+        p_right <- numeric(n_cues) #probability of pressing right
+        
+        for(t in 1:Tsubj[i]){
+            wv_r[ cue[i, t] ]    <- qv_r[ cue[i, t] ] + beta_b[ i, condition[i, t] ] #add bias
+            wv_l[ cue[i, t] ]    <- qv_l[ cue[i, t] ]
+            
+            p_right[ cue[i, t] ] <- arm::invlogit( wv_r[ cue[i, t] ] - wv_l[ cue[i, t] ] )
+            p_right[ cue[i, t] ] <- 
+                p_right[ cue[i, t] ] * (1 - beta_xi[ i, condition[i, t] ]) + 
+                beta_xi[ i, condition[i, t] ] / 2 #incorporate noise
+            
+            press_right[i, t]    <- rbinom(n = 1, size = 1, prob = p_right[ cue[i, t] ])
+            
+            if(press_right[i, t]){ # press_right[i, t] == 1
+                qv_r[ cue[i, t] ] <- 
+                    qv_r[ cue[i, t] ] + beta_eps[ i, condition[i, t] ] *
+                    (beta_rho[ i, condition[i, t] ] * outcome[i, t, 2] - qv_r[ cue[i, t] ])
+            } else { # press_right[i, t] == 0
+                qv_l[ cue[i, t] ] <- 
+                    qv_l[ cue[i, t] ] + beta_eps[ i, condition[i, t] ] *
+                    (beta_rho[ i, condition[i, t] ] * outcome[i, t, 1] - qv_l[ cue[i, t] ])
+            }
+        } # t loop
+    }# i loop
+    return(press_right)
+}
 
-# deltas <- sample_deltas()
+get_sample_index <- function(splt_df, id_col = 'id', sample_col = 'sample', levels = sort(unique(splt_df[, sample_col]))) {
+    mm <- unique(splt[, c(id_col, sample_col)])
+    rownames(mm) <- 1:dim(mm)[1]
+    mm$m_fac <- factor(mm$sample,
+                       levels = levels)
+    mm$m <- as.numeric(mm$m_fac)
+    return(mm)
+}
+
+get_col_as_trial_matrix <- function(splt_df, col, id_col = 'id', sample_col = 'sample', trial_col = 'trial_index'){
+    #expects all rows with pressed_r == NA to have been removed
+    if(!(is.factor(splt_df[, col][[1]]) | is.numeric(splt_df[, col][[1]]))){
+        stop("col must be numeric or a factor that will be coerced to numeric.")
+    }
+    id_sample_index <- paste0(unlist(splt_df[,id_col]), unlist(splt_df[,sample_col]))
+    ids <- unique(id_sample_index)
+    max_trials <- max(unlist(lapply(split(splt_df, id_sample_index), 
+                                    function(x) dim(x)[1])))
+    col_mat <- matrix(nrow = length(ids), ncol = max_trials)
+    for(id in ids){
+        trials_index <- unlist(splt_df[id_sample_index == id, trial_col])
+        col_vec <- unlist(splt_df[id_sample_index == id, col])[order(trials_index)]
+        col_mat[which(ids == id), 1:length(col_vec)] <- col_vec
+    }# end id
+    rownames(col_mat) <- ids
+    return(col_mat)
+}
+```
+
+```{r}
+library(probly)
+data(splt)
+
+splt <- splt[!splt$id %in% c(43873, 'bad_pid', 43603, 43991, 43214), ]
+splt <- splt[!(splt$id == 386 & splt$sample == 'yads'), ]
+splt$sample <- ifelse(splt$sample == 'TDS3', 'TDS1', splt$sample)
+splt <- splt[!is.na(splt$pressed_r), ]
+splt$cue <- as.numeric(as.factor(paste0(splt$condition, '_', splt$sex)))
+splt$condition <- factor(splt$condition, levels = c('HngT', 'DtnL', 'PplU'))
+
+# - N number of individuals
+# - M number of samples
+# - K number of conditions
+# - mm sample ID for all individuals
+# - Tsubj number of trials for each individual
+# - cue an N x max(Tsubj) matrix of cue IDs for 
+#   each trial
+# - n_cues total number of cues
+# - condtion an N x max(Tsubj) matrix of condition 
+#   IDs for each trial
+# - outcome is an array with dimensions N x T x 2
+#   (response options) with the feedback for each 
+#   possible response. outcome[,,1] is for 
+#   correct left-presses, and outcome[,,2] is for
+#   correct right-presses.
+# - beta_xi, beta_b, beta_eps, beta_rho are N x K 
+#   matrices of the individually varying parameter 
+#   coeffients
+
+group_index_mm <- get_sample_index(splt, levels = c("TDS1", "TDS2", "yads", "yads_online"))
+N <- dim(group_index_mm)[1]
+M <-length(levels(group_index_mm$m_fac)) 
+K <- length(unique(splt$condition))
+cue_mat <- get_col_as_trial_matrix(splt, 'cue', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
+condition_mat <- get_col_as_trial_matrix(splt, 'condition', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
+correct_r_mat <- get_col_as_trial_matrix(splt, 'correct_r', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
+reward_possible_mat <- get_col_as_trial_matrix(splt, 'reward_possible', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
+outcome_arr <- array(reward_possible_mat, dim = c(dim(reward_possible_mat), 2))
+outcome_arr[,,1][correct_r_mat == 1] <- 0
+outcome_arr[,,2][correct_r_mat == 0] <- 0
+
+set.seed(99232486)
+
+mu_xi <- rnorm(3, rep(-2.5, 3), .25)
+mu_b <- rnorm(3, rep(0, 3), .25)
+mu_eps <- c(-1.65, -1.65 + .3, -1.65 + .2)
+mu_rho <- c(-.3, -.3 + .35, -.3 + .45)
+
+delta_xi <- sample_deltas(mu_xi, .1, 4)
+delta_b <- sample_deltas(mu_b, .1, 4)
+delta_eps <- sample_deltas(mu_eps, .1, 4)
+delta_rho <- sample_deltas(mu_rho, .1, 4)
+
+Sigma <- matrix(rep(.1, 3*3), nrow = 3)
+diag(Sigma) <- 1
+
+Sigma_eps <- Sigma_rho <- Sigma
+Sigma_b <- Sigma_xi <- diag(3)
+
+beta_xi <- sample_betas(deltas = delta_xi,
+                        group_index = group_index_mm$m,
+                        Sigma = Sigma_xi)
+beta_b <- sample_betas(deltas = delta_b,
+                        group_index = group_index_mm$m,
+                        Sigma = Sigma_b)
+beta_eps <- sample_betas(deltas = delta_eps,
+                        group_index = group_index_mm$m,
+                        Sigma = Sigma_eps)
+beta_rho <- sample_betas(deltas = delta_rho,
+                        group_index = group_index_mm$m,
+                        Sigma = Sigma_rho)
+
+
 ```
 
 

@@ -17,6 +17,7 @@ List of unexcused no-show IDs (these will be excluded):
 - 44123
 - 43237
 - 42283
+- 43873
 
 List of IDs with errors in output files (incomplete file save; will be included but sensitivity to inclusion will be assessed):
 
@@ -25,6 +26,13 @@ List of IDs with errors in output files (incomplete file save; will be included 
 - 43329
 - 43303
 - 40179
+
+Other issues to check:
+
+- YADS 386 has two output files.
+- YADS_online 43603 has two output files.
+- 43991
+- 43214
 
 
 
