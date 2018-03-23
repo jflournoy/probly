@@ -96,6 +96,7 @@ splt_data_and_problems <- do(
 splt_data_and_problems$.id <- as.character(1:dim(splt_data_and_problems)[1])
 names(splt_data_and_problems$data) <- splt_data_and_problems$.id
 names(splt_data_and_problems$problems) <- splt_data_and_problems$.id
+
 splt_data <- left_join(
     bind_rows(splt_data_and_problems$data, .id = '.id'),
     splt_data_and_problems[,c('.id', 'filename', 'dir', 'id', 'timestamp')])
@@ -110,7 +111,8 @@ splt_crunched <- splt_data %>%
                    '.*/(([fma])_f42887_e_[0-9]{3}\\.png)') %>%
     dplyr::mutate(correcttrue = ifelse(key_press == -1, NA, as.numeric(correct == 'true')),
                   outcome = ifelse(feedback, reward_possible, 0),
-                  pressed_r = c(`37` = 0,`39` = 1)[as.character(key_press)]) %>%
+                  pressed_r = c(`37` = 0,`39` = 1)[as.character(key_press)],
+                  correct_r = c(`37` = 0,`39` = 1)[as.character(correct_response)]) %>%
     dplyr::rowwise() %>%
     dplyr::mutate(proportion = condition, 
                   condition = paste(sort(unlist(str_split(context, '_'))), collapse = ''), 
@@ -128,6 +130,7 @@ splt_crunched <- splt_data %>%
     dplyr::ungroup() %>%
     dplyr::select(id, dir, filename, sample,
                   correcttrue, pressed_r, outcome, 
+                  correct_r, reward_possible,
                   condition, condition_trial_index, 
                   sex, stim_image, 
                   trial_index, block, proportion, 
@@ -144,8 +147,7 @@ metacog_clean <- splt_crunched %>%
 
 splt_clean <- splt_crunched %>% 
     dplyr::filter(condition != metacog_condition) %>%
-    dplyr::mutate(scaled_index = scale(condition_trial_index),
-                  condition = factor(condition, 
+    dplyr::mutate(condition = factor(condition, 
                                      levels = conditions, 
                                      labels = abbreviate(conditions))) %>%
     dplyr::arrange(sample, id, trial_index)
