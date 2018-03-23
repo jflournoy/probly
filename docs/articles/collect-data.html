@@ -74,7 +74,7 @@
       <h1>Collect and Clean SPLT Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-22</h4>
+            <h4 class="date">2018-03-23</h4>
           </div>
 
     
@@ -87,6 +87,7 @@
 <li>44123</li>
 <li>43237</li>
 <li>42283</li>
+<li>43873</li>
 </ul>
 <p>List of IDs with errors in output files (incomplete file save; will be included but sensitivity to inclusion will be assessed):</p>
 <ul>
@@ -95,6 +96,13 @@
 <li>43329</li>
 <li>43303</li>
 <li>40179</li>
+</ul>
+<p>Other issues to check:</p>
+<ul>
+<li>YADS 386 has two output files.</li>
+<li>YADS_online 43603 has two output files.</li>
+<li>43991</li>
+<li>43214</li>
 </ul>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="co">#&gt; </span>
@@ -181,6 +189,7 @@ splt_data_and_problems &lt;-<span class="st"> </span><span class="kw"><a href="h
 splt_data_and_problems$.id &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="dv">1</span>:<span class="kw">dim</span>(splt_data_and_problems)[<span class="dv">1</span>])
 <span class="kw">names</span>(splt_data_and_problems$data) &lt;-<span class="st"> </span>splt_data_and_problems$.id
 <span class="kw">names</span>(splt_data_and_problems$problems) &lt;-<span class="st"> </span>splt_data_and_problems$.id
+
 splt_data &lt;-<span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(
     <span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(splt_data_and_problems$data, <span class="dt">.id =</span> <span class="st">'.id'</span>),
     splt_data_and_problems[,<span class="kw">c</span>(<span class="st">'.id'</span>, <span class="st">'filename'</span>, <span class="st">'dir'</span>, <span class="st">'id'</span>, <span class="st">'timestamp'</span>)])
@@ -197,7 +206,8 @@ splt_crunched &lt;-<span class="st"> </span>splt_data %&gt;%
                    <span class="st">'.*/(([fma])_f42887_e_[0-9]{3}</span><span class="ch">\\</span><span class="st">.png)'</span>) %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">correcttrue =</span> <span class="kw">ifelse</span>(key_press ==<span class="st"> </span>-<span class="dv">1</span>, <span class="ot">NA</span>, <span class="kw">as.numeric</span>(correct ==<span class="st"> 'true'</span>)),
                   <span class="dt">outcome =</span> <span class="kw">ifelse</span>(feedback, reward_possible, <span class="dv">0</span>),
-                  <span class="dt">pressed_r =</span> <span class="kw">c</span>(<span class="st">`</span><span class="dt">37</span><span class="st">`</span> =<span class="st"> </span><span class="dv">0</span>,<span class="st">`</span><span class="dt">39</span><span class="st">`</span> =<span class="st"> </span><span class="dv">1</span>)[<span class="kw">as.character</span>(key_press)]) %&gt;%
+                  <span class="dt">pressed_r =</span> <span class="kw">c</span>(<span class="st">`</span><span class="dt">37</span><span class="st">`</span> =<span class="st"> </span><span class="dv">0</span>,<span class="st">`</span><span class="dt">39</span><span class="st">`</span> =<span class="st"> </span><span class="dv">1</span>)[<span class="kw">as.character</span>(key_press)],
+                  <span class="dt">correct_r =</span> <span class="kw">c</span>(<span class="st">`</span><span class="dt">37</span><span class="st">`</span> =<span class="st"> </span><span class="dv">0</span>,<span class="st">`</span><span class="dt">39</span><span class="st">`</span> =<span class="st"> </span><span class="dv">1</span>)[<span class="kw">as.character</span>(correct_response)]) %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span>() %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">proportion =</span> condition, 
                   <span class="dt">condition =</span> <span class="kw">paste</span>(<span class="kw">sort</span>(<span class="kw">unlist</span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/stringr/topics/str_split">str_split</a></span>(context, <span class="st">'_'</span>))), <span class="dt">collapse =</span> <span class="st">''</span>), 
@@ -215,6 +225,7 @@ splt_crunched &lt;-<span class="st"> </span>splt_data %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>() %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(id, dir, filename, sample,
                   correcttrue, pressed_r, outcome, 
+                  correct_r, reward_possible,
                   condition, condition_trial_index, 
                   sex, stim_image, 
                   trial_index, block, proportion, 
@@ -255,8 +266,7 @@ metacog_clean &lt;-<span class="st"> </span>splt_crunched %&gt;%<span class="st"
 
 splt_clean &lt;-<span class="st"> </span>splt_crunched %&gt;%<span class="st"> </span>
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(condition !=<span class="st"> </span>metacog_condition) %&gt;%
-<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">scaled_index =</span> <span class="kw">scale</span>(condition_trial_index),
-                  <span class="dt">condition =</span> <span class="kw">factor</span>(condition, 
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">condition =</span> <span class="kw">factor</span>(condition, 
                                      <span class="dt">levels =</span> conditions, 
                                      <span class="dt">labels =</span> <span class="kw">abbreviate</span>(conditions))) %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(sample, id, trial_index)</code></pre></div>

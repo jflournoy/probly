@@ -74,13 +74,16 @@
       <h1>Descriptive Statistics for SPLT data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-22</h4>
+            <h4 class="date">2018-03-23</h4>
           </div>
 
     
     
 <div class="contents">
-<p>Some numbers:</p>
+<div id="sample-information" class="section level1">
+<h1 class="hasAnchor">
+<a href="#sample-information" class="anchor"></a>Sample information</h1>
+<p>The table below shows the number of participants in each sample. TDS3 has very few participants, and as it was intended to bolster numbers for TDS1, will be collapsed.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(probly)
 <span class="kw">library</span>(dplyr)
 <span class="co">#&gt; </span>
@@ -133,6 +136,10 @@ knitr::<span class="kw">kable</span>(
 </tr>
 </tbody>
 </table>
+</div>
+<div id="raw-task-data" class="section level1">
+<h1 class="hasAnchor">
+<a href="#raw-task-data" class="anchor"></a>Raw task data</h1>
 <p>Averaging over trials</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
 splt_averages &lt;-<span class="st"> </span>splt %&gt;%
@@ -195,9 +202,18 @@ ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot
 <span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>()</code></pre></div>
 <p><img src="descriptive-statistics_files/figure-html/unnamed-chunk-3-1.png" width="576"></p>
 </div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+        <div id="tocnav">
+      <h2 class="hasAnchor">
+<a href="#tocnav" class="anchor"></a>Contents</h2>
+      <ul class="nav nav-pills nav-stacked">
+<li><a href="#sample-information">Sample information</a></li>
+      <li><a href="#raw-task-data">Raw task data</a></li>
+      </ul>
+</div>
       </div>
 
 </div>
