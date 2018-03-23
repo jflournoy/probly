@@ -16,7 +16,9 @@ knitr::opts_chunk$set(
 )
 ```
 
-Some numbers: 
+# Sample information
+
+The table below shows the number of participants in each sample. TDS3 has very few participants, and as it was intended to bolster numbers for TDS1, will be collapsed.
 
 ```{r}
 library(probly)
@@ -32,6 +34,8 @@ knitr::kable(
             sample),
         n = n()))
 ```
+
+# Raw task data
 
 Averaging over trials
 

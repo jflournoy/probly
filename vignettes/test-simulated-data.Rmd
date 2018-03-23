@@ -11,9 +11,33 @@ bibliography: "`r system.file('bib', 'dissertation.bib', package = 'probly')`"
 csl: "`r system.file('bib', 'apa-old-doi-prefix.csl', package = 'probly')`"
 ---
 
-# Introduction
 
-In this vignette, I simulate data as expected under the Rescorla-Wagner model implemented by @ahn2017 in their go-no-go model 2. 
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+# Aim 1a: Does framing reinforcement learning with (mate-seeking and status) motivational contexts sensitize the learner and potentiate learning?
+
+## Method
+
+**TASK DESCRIPTION HERE**
+
+## Modeling learning
+
+In the context of this task, where the relation between the optimal response and the stimulus is constant, a simple model of the degree of learning could rely on a simple proportion of optimal responses $P_{ok}$ for each condition $k$.
+The test of the hypothesis of the effect of framing would then be the difference between conditions in $P_o$. 
+This simple model sacrifice precision for simplicity, and so I will be modeling the data using a reinforcement learning model with several parameters that can account for deviations from a strict Rescorla-Wagner (RW) process.
+This increases the number of possible comaprisons I am able to make between conditions, which may generate useful information about how motive-domain framing affects the learning process (as modelled, of course), but which also increases the complexity of patterns between conditions and parameters that must be interpretted.
+It will be helpful to keep in mind that the framing can only be said to potentiate learning if, regardless of its affect on any model parameters, it does not result in higher proportions of optimal responding.
+
+### Ensuring the model can recover known parameters
+
+Before modeling the task data, I will confirm that this model can recover known parameters from simulated data.
+In this section, I simulate data as expected under the Rescorla-Wagner model implemented by @ahn2017 in their go-no-go model 2. 
 Their original model handles binary decisions (button-press or no button-press) in response to four different cues. 
 However, the form of the learning algorithm is generalizable to other binary choices in response to cues. 
 In the case of the Social Probabilistic Learning Task (SPLT), participants are presented with a face (the cue), and must decide to press the left key or the right key. 
@@ -22,7 +46,7 @@ The go-no-go models used by @ahn2017 were derived from work by @guitart-masip201
 Their most flexible reinforcement learning model generates the probability of an action for each trial via N parameters: the learning rate, $\epsilon$, the effective size of reinforcement, $\rho$, a static bias parameter, $b$, an irriducible noise parameter, $\xi$, and a Pavlovian learning parameter, $\pi$.
 In the SPLT, trial feedback does not vary by valence (responses result in reward, or no reward, but never punishment), so I use the model that does not include this Pavlonian component. 
 
-# Reinforcement learning model for the SPLT
+#### Reinforcement learning model for the SPLT
 
 The model for an individual $j$'s probability of pressing the right arrow key on trial $t$ given that stimulus $s_{t}$ is presentd, $P(a_{\rightarrow t} | s_{t})_{t}$, is determined by a logistic transformation of the action weight for pressing the right arrow key minus the action weight for pressing the left arrow key. 
 This probability is then adjusted by a noise parameter, $0 \leq\xi_{jk}\leq1$ for each participant $j$ in condition $k$.
@@ -53,7 +77,7 @@ $$
 Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a_t, s_t)\big)
 $$
 
-## Hierarchical Parameters
+#### Hierarchical Parameters
 
 Each parameter ($\epsilon, \rho, b, \xi$) varries by condition $k \in 1:K$, and by participant $j \in 1:J$ nested in sample $m \in 1:M$. 
 The structure of the hierarchical part of the model is the same for each parameter, so the following description for $\epsilon$ will serve as a description for all of the parameters.
@@ -69,13 +93,32 @@ Finally, across all $M$ samples, the means for each condition k are distributed 
 $$
 \delta_{\epsilon k} \sim \mathcal{N}(\mu_{\epsilon k}, \sigma_\epsilon)
 $$
-where $\mu_{\epsilon k}$ is the population mean for parameter $\epsilon$ in condition $k$, and $\sigma$ is a slightly regularizing scale parameter for these means across all conditions and samples.
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
+where $\mu_{\epsilon k}$ is the population mean for parameter $\epsilon$ in condition $k$, and $\sigma$ is a slightly regularizing scale parameter for these means across all conditions and samples. The priors for these final paramters are:
+
+$$
+\mu_\epsilon \sim \mathcal{N}(0, 5)\\
+\sigma_\epsilon \sim \text{exponential(1)}.
+$$
+
+#### Simulating data
+
+I simulate data based on the structure of the sample data, using the same number of participants per sample (see the section on [descriptive statistics](descriptive-statistics.html), as well as precisely the same task structure. 
+For this aim, it is important to be able to recover all $\mu_{\theta k}$ for $\theta \in \{\epsilon,\rho,b,\xi\}$ and $k \in \{1,2,3\}$, where 1 = Hungry/Thirsty, 2 = Popular/Unpopular, and 3 = Dating/Looking. Those parameters that account for idiosyncratic devation from RW-expected behavior ($b,\xi$) will not vary by condition. Based on interactive simulation ([here](https://jflournoy.shinyapps.io/rw_model/)), reasonable paramter values for the control condition might be $\mu_\epsilon = -1.65$ and $\mu_\rho = -0.3$ [^1].
+
+The functions that sample parameters as described above are:
+
+```{r}
+sample_deltas <- function(mu_vec, sigma){
+    deltas <- rnorm(n = length(mu_vec), 
+                    mean = mu_vec, sd = sigma)
+    return(deltas)
+}
+
+# deltas <- sample_deltas()
 ```
+
+
+[^1]: Note that these are the _raw_ parameter values which are transformed such that $\epsilon^\prime \in [0,1]$ and $\rho^\prime \in [0,\infty)$.
 
 # References
