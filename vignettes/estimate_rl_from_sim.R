@@ -27,18 +27,12 @@ stan_sim_data <- list(
     cue = cue_mat_stan
 )
 
-stan_fit_sim <- '/data/jflournoy/split/probly/splt_rl_fit_sim.RDS'
-if(!file.exists(stan_fit_sim)){
-    plan(multiprocess)
-    stan_sim_m <- rstan::stan_model(file = '../exec/splt_rl.stan')
-    stan_optim_sim <- rstan::optimizing(stan_sim_m,
-                                        data = stan_sim_data)
-    round(stan_optim_sim$par[grep('delta', names(stan_optim_sim$par))],3)
-    stan_sim_fit_f <- future({rstan::stan(file = '../exec/splt_rl.stan',
-                                          data = stan_sim_data, chains = 4, iter = 1500,
-                                          warmup = 1000, cores = 4, open_progress = T)})
-    stan_sim_fit <- value(stan_sim_fit_f)
-    saveRDS(stan_sim_fit, stan_fit_sim)
-} else {
-    stan_sim_fit <- readRDS(stan_fit_sim)
-}
+stan_sim_fit_fn <- file.path(data_dir, 'splt_rl_fit_sim.RDS')
+stan_sim_fit <- probly::CachedFit(
+    {
+        stanFit <- rstan::stan(file = '../exec/splt_rl.stan',
+                               data = stan_sim_data, chains = 4, iter = 1500,
+                               warmup = 1000, cores = 4, open_progress = T)
+        list(fit = stanFit, data = stan_sim_data)
+    },
+    rds_filename = stan_sim_fit_fn)

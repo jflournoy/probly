@@ -19,7 +19,8 @@ knitr::opts_chunk$set(
 )
 
 knitr::read_chunk('./simulate_data_from_splt.R')
-knitr::read_chunk('./estimate_rl_from_sim')
+knitr::read_chunk('./estimate_rl_from_sim.R')
+data_dir <- '/data/jflournoy/split/probly'
 ```
 
 
@@ -185,7 +186,7 @@ ggplot2::ggplot(
 
 #### Estimating posterior using simulated data
 
-```{r estimate_rl_from_sim}
+```{r estimate_rl_from_sim, eval=F}
 ```
 
 [^1]: Note that these are the _raw_ parameter values which are transformed such that $\epsilon^\prime \in [0,1]$ and $\rho^\prime \in [0,\infty)$.
