@@ -2,5 +2,8 @@
 
 export(CachedFit)
 export(generate_responses)
+export(get_col_as_trial_matrix)
+export(get_max_trials_per_individual)
+export(get_sample_index)
 export(sample_betas)
 export(sample_deltas)
