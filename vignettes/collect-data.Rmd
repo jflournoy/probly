@@ -41,6 +41,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+anon_id_filename <- '/data/jflournoy/split/splt_anon_id.csv'
 ```
 
 ```{r}
@@ -144,8 +146,10 @@ splt_crunched <- splt_data %>%
                   trial_index, block, proportion, 
                   rt, time_elapsed)
 
-unique_participants <- splt_crunched %>%
-    distinct(id, sample)
+participant_anon_id <- readr::read_csv(file = anon_id_filename)
+splt_crunched <- dplyr::left_join(splt_crunched, unique_participants, by = c('id', 'sample'))
+splt_crunched <- dplyr::mutate(splt_crunched, id = anon_id, sample = anon_sample)
+splt_crunched <- dplyr::select(splt_crunched, -anon_id, -anon_sample)
 
 metacog_clean <- splt_crunched %>% 
     dplyr::select(-sex, -stim_image) %>%
@@ -162,7 +166,6 @@ splt_clean <- splt_crunched %>%
                                      levels = conditions, 
                                      labels = abbreviate(conditions))) %>%
     dplyr::arrange(sample, id, trial_index)
-
 
 ```
 
