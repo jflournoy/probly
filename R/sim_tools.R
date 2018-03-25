@@ -33,10 +33,10 @@ sample_deltas <- function(mu_vec, sigma, nsamples){
 #'   individually varying coefficients
 #'
 #' @return an N by K matrix of coefficients
+#' @import MASS
 #' @export
 #'
 sample_betas <- function(deltas, group_index, Sigma){
-    require(MASS)
     deltas_mm <- deltas[group_index, ]
     betas_l <- lapply(1:length(group_index), function(j){
         MASS::mvrnorm(1, mu = deltas[group_index[j], ], Sigma = Sigma)
