@@ -147,8 +147,13 @@ generate_responses <- function(N, M, K, mm, Tsubj, cue, n_cues, condition, outco
     #   matrices of the individually varying parameter 
     #   coeffients
     
-    press_right <- matrix(nrow = N, ncol = max(Tsubj)) #the matrix to return
+    beta_xi_prime <- pnorm(beta_xi)
+    beta_eps_prime <- pnorm(beta_eps)
+    beta_rho_prime <- exp(beta_rho)
     
+    press_right <- matrix(nrow = N, ncol = max(Tsubj)) #the matrices to return
+    outcome_realized <- matrix(nrow = N, ncol = max(Tsubj))
+        
     for(i in 1:N){
         wv_r <- numeric(n_cues) #action weight for press-right
         wv_l <- numeric(n_cues) #action weight for press-left
@@ -162,23 +167,25 @@ generate_responses <- function(N, M, K, mm, Tsubj, cue, n_cues, condition, outco
             
             p_right[ cue[i, t] ] <- arm::invlogit( wv_r[ cue[i, t] ] - wv_l[ cue[i, t] ] )
             p_right[ cue[i, t] ] <- 
-                p_right[ cue[i, t] ] * (1 - beta_xi[ i, condition[i, t] ]) + 
-                beta_xi[ i, condition[i, t] ] / 2 #incorporate noise
+                p_right[ cue[i, t] ] * (1 - beta_xi_prime[ i, condition[i, t] ]) + 
+                beta_xi_prime[ i, condition[i, t] ] / 2 #incorporate noise
             
             press_right[i, t]    <- rbinom(n = 1, size = 1, prob = p_right[ cue[i, t] ])
-            
+            # message('i = ', i, ', t = ', t, ', press_right = ', press_right[i, t], '.')
             if(press_right[i, t]){ # press_right[i, t] == 1
+                outcome_realized[i, t] <- outcome[i, t, 2]
                 qv_r[ cue[i, t] ] <- 
-                    qv_r[ cue[i, t] ] + beta_eps[ i, condition[i, t] ] *
-                    (beta_rho[ i, condition[i, t] ] * outcome[i, t, 2] - qv_r[ cue[i, t] ])
+                    qv_r[ cue[i, t] ] + beta_eps_prime[ i, condition[i, t] ] *
+                    (beta_rho_prime[ i, condition[i, t] ] * outcome[i, t, 2] - qv_r[ cue[i, t] ])
             } else { # press_right[i, t] == 0
+                outcome_realized[i, t] <- outcome[i, t, 1]
                 qv_l[ cue[i, t] ] <- 
-                    qv_l[ cue[i, t] ] + beta_eps[ i, condition[i, t] ] *
-                    (beta_rho[ i, condition[i, t] ] * outcome[i, t, 1] - qv_l[ cue[i, t] ])
+                    qv_l[ cue[i, t] ] + beta_eps_prime[ i, condition[i, t] ] *
+                    (beta_rho_prime[ i, condition[i, t] ] * outcome[i, t, 1] - qv_l[ cue[i, t] ])
             }
         } # t loop
     }# i loop
-    return(press_right)
+    return(list(press_right = press_right, outcome_realized = outcome_realized))
 }
 
 get_sample_index <- function(splt_df, id_col = 'id', sample_col = 'sample', levels = sort(unique(splt_df[, sample_col]))) {
@@ -188,6 +195,10 @@ get_sample_index <- function(splt_df, id_col = 'id', sample_col = 'sample', leve
                        levels = levels)
     mm$m <- as.numeric(mm$m_fac)
     return(mm)
+}
+
+get_max_trials_per_individual <- function(i_by_t_mat){
+    apply(i_by_t_mat, 1, function(row) sum(!is.na(row)))
 }
 
 get_col_as_trial_matrix <- function(splt_df, col, id_col = 'id', sample_col = 'sample', trial_col = 'trial_index'){
@@ -245,6 +256,7 @@ N <- dim(group_index_mm)[1]
 M <-length(levels(group_index_mm$m_fac)) 
 K <- length(unique(splt$condition))
 cue_mat <- get_col_as_trial_matrix(splt, 'cue', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
+Tsubj <- get_max_trials_per_individual(cue_mat)
 condition_mat <- get_col_as_trial_matrix(splt, 'condition', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
 correct_r_mat <- get_col_as_trial_matrix(splt, 'correct_r', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
 reward_possible_mat <- get_col_as_trial_matrix(splt, 'reward_possible', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
@@ -283,9 +295,126 @@ beta_rho <- sample_betas(deltas = delta_rho,
                         group_index = group_index_mm$m,
                         Sigma = Sigma_rho)
 
-
+splt_sim_trials <- generate_responses(
+    N = N, M = M, K = K, mm = group_index_mm$m, Tsubj = Tsubj, 
+    cue = cue_mat, n_cues = max(cue_mat, na.rm = T), condition = condition_mat, outcome = outcome_arr,
+    beta_xi = beta_xi, beta_b = beta_b, beta_eps = beta_eps, beta_rho = beta_rho)
 ```
 
+Do the simulated values behave as we would expect given the descriptive plots?
+
+```{r fig.width=6, fig.height=5}
+
+p_r_df <- cbind(group_index_mm, splt_sim_trials$press_right)
+p_r_df <- tidyr::gather(p_r_df, trial, press_r, -id, -sample, -m_fac, -m)
+
+splt_sim <- dplyr::mutate(
+    dplyr::arrange(
+        dplyr::group_by(splt, id, sample),
+        trial_index),
+    trial = as.character(1:n()))
+splt_sim <- dplyr::mutate(
+    dplyr::arrange(
+        dplyr::group_by(splt_sim, id, sample, condition),
+        trial_index),
+    condition_trial = 1:n())
+splt_sim <- dplyr::left_join(
+    splt_sim,
+    p_r_df,
+    by = c('id', 'sample', 'trial'))
+splt_sim <- dplyr::mutate(
+    splt_sim,
+    press_r_opt = proportion == '20_80',
+    press_opt = press_r == press_r_opt)
+
+splt_sim_summary <- dplyr::summarise(
+    dplyr::group_by(splt_sim, condition, condition_trial),
+    trial_mean = mean(press_opt)
+)
+
+ggplot2::ggplot(
+    splt_sim_summary,
+    ggplot2::aes(x = condition_trial,
+                 y = trial_mean,
+                 group = condition,
+                 linetype = condition,
+                 shape = condition)) + 
+    ggplot2::geom_point(alpha = .1) + 
+    ggplot2::geom_smooth(
+        color = 'black', size = .5,
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) + 
+    ggplot2::labs(x = 'Within-condition trial number',
+                  y = 'Proportion of optimal responses') + 
+    ggplot2::theme_minimal()
+
+splt_sim_samp_summary <- dplyr::summarise(
+    dplyr::group_by(splt_sim, sample, condition, condition_trial),
+    trial_mean = mean(press_opt)
+)
+
+ggplot2::ggplot(
+    splt_sim_samp_summary,
+    ggplot2::aes(x = condition_trial,
+                 y = trial_mean,
+                 group = condition,
+                 linetype = condition,
+                 shape = condition)) + 
+    ggplot2::geom_point(alpha = .1) + 
+    ggplot2::geom_smooth(
+        color = 'black', size = .5,
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) + 
+    ggplot2::facet_wrap(~sample, nrow = 2) + 
+    ggplot2::labs(x = 'Within-condition trial number',
+                  y = 'Proportion of optimal responses') + 
+    ggplot2::theme_minimal()
+```
+
+#### Estimating posterior using simulated data
+
+```{r}
+library(future)
+library(rstan)
+
+condition_mat_stan <- condition_mat
+outcome_stan <- splt_sim_trials$outcome_realized
+press_right_stan <- splt_sim_trials$press_right
+cue_mat_stan <- cue_mat
+
+condition_mat_stan[is.na(condition_mat_stan)] <- -1
+outcome_stan[is.na(outcome_stan)] <- -1
+press_right_stan[is.na(press_right_stan)] <- -1
+cue_mat_stan[is.na(cue_mat_stan)] <- -1
+
+stan_sim_data <- list(
+    N = N,
+    `T` = max(Tsubj),
+    K = K,
+    M = M,
+    ncue = max(cue_mat, na.rm = T),
+    mm = group_index_mm$m,
+    Tsubj = Tsubj,
+    condition = condition_mat_stan,
+    outcome = outcome_stan,
+    press_right = press_right_stan,
+    cue = cue_mat_stan
+    )
+
+stan_fit_sim <- '/data/jflournoy/split/probly/splt_rl_fit_sim.RDS'
+if(!file.exists(stan_fit_sim)){
+    plan(multiprocess)
+    stan_sim_m <- rstan::stan_model(file = '../exec/splt_rl.stan')
+    stan_optim_sim <- rstan::optimizing(stan_sim_m,
+                                    data = stan_sim_data)
+    round(stan_optim_sim$par[grep('delta', names(stan_optim_sim$par))],3)
+    stan_sim_fit_f <- future({rstan::stan(file = '../exec/splt_rl.stan',
+                                             data = stan_sim_data, chains = 4, iter = 1500,
+                                             warmup = 1000, cores = 4, open_progress = T)})
+    stan_sim_fit <- value(stan_sim_fit_f)
+    saveRDS(stan_sim_fit, stan_fit_sim)
+} else {
+    stan_sim_fit <- readRDS(stan_fit_sim)
+}
+```
 
 [^1]: Note that these are the _raw_ parameter values which are transformed such that $\epsilon^\prime \in [0,1]$ and $\rho^\prime \in [0,\infty)$.
 

@@ -144,6 +144,9 @@ splt_crunched <- splt_data %>%
                   trial_index, block, proportion, 
                   rt, time_elapsed)
 
+unique_participants <- splt_crunched %>%
+    distinct(id, sample)
+
 metacog_clean <- splt_crunched %>% 
     dplyr::select(-sex, -stim_image) %>%
     dplyr::filter(condition == metacog_condition,
@@ -159,6 +162,8 @@ splt_clean <- splt_crunched %>%
                                      levels = conditions, 
                                      labels = abbreviate(conditions))) %>%
     dplyr::arrange(sample, id, trial_index)
+
+
 ```
 
 

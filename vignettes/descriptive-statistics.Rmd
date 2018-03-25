@@ -65,10 +65,10 @@ ggplot2::ggplot(
                  group = condition,
                  linetype = condition,
                  shape = condition)) + 
-    ggplot2::geom_point(alpha = .05) + 
-    ggplot2::geom_line(
-        stat = 'smooth',
-        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) + 
+    ggplot2::geom_point(alpha = .1) + 
+    ggplot2::geom_smooth(
+        color = 'black', size = .5,
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) + 
     ggplot2::facet_wrap(~sample, nrow = 2) + 
     ggplot2::labs(x = 'Within-condition trial number',
                   y = 'Proportion of optimal responses') + 
@@ -81,10 +81,10 @@ ggplot2::ggplot(
                  group = condition,
                  linetype = condition,
                  shape = condition)) + 
-    ggplot2::geom_point(alpha = .05) + 
-    ggplot2::geom_line(
-        stat = 'smooth',
-        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) +
+    ggplot2::geom_point(alpha = .1) + 
+    ggplot2::geom_smooth(
+        color = 'black', size = .5,
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +
     ggplot2::labs(x = 'Within-condition trial number',
                   y = 'Proportion of optimal responses') + 
     ggplot2::theme_minimal()
