@@ -28,11 +28,14 @@ stan_sim_data <- list(
 )
 
 stan_sim_fit_fn <- file.path(data_dir, 'splt_rl_fit_sim.RDS')
+stan_rl_fn <- system.file('stan', 'splt_rl.stan', package = 'probly')
 stan_sim_fit <- probly::CachedFit(
     {
-        stanFit <- rstan::stan(file = '../exec/splt_rl.stan',
+        stanFit <- rstan::stan(file = stan_rl_fn,
                                data = stan_sim_data, chains = 4, iter = 1500,
                                warmup = 1000, cores = 4, open_progress = T)
         list(fit = stanFit, data = stan_sim_data)
     },
     rds_filename = stan_sim_fit_fn)
+
+format(object.size(x = stan_sim_fit), units = 'MB')

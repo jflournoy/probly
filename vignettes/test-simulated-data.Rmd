@@ -18,8 +18,8 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-knitr::read_chunk('./simulate_data_from_splt.R')
-knitr::read_chunk('./estimate_rl_from_sim.R')
+knitr::read_chunk(system.file('r_aux', 'simulate_data_from_splt.R', package = 'probly'))
+knitr::read_chunk(system.file('r_aux', 'estimate_rl_from_sim.R', package = 'probly'))
 data_dir <- '/data/jflournoy/split/probly'
 ```
 
