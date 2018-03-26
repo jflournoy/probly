@@ -7,6 +7,9 @@ plan(batchtools_slurm,
 
 fit_size_f <- future({
     data_dir <- '/home/flournoy/otherhome/data/splt/probly/'
+    if(!file.exists(data_dir)){
+        stop('Data dir "', data_dir, '" does not exist')
+    }
     source(system.file('r_aux', 'simulate_data_from_splt.R', package = 'probly'))
     source(system.file('r_aux', 'estimate_rl_from_sim.R', package = 'probly'))
 })
