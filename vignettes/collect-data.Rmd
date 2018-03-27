@@ -9,32 +9,11 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-Data from the Social Probabilistic Learning Task was collected from 5 different samples: Community adolescents, foster-care involved adolescents, at-risk adolescents, University of Oregon human subject pool (UOHSP) particupants who visitied the lab, and UOHSP participants who completed the study online. Data is excluded for any participant who did failed showed a pattern of inattentive responding on the questionnaires and who generated response times that are inconsistent with attentive responding during the task.
+Data from the Social Probabilistic Learning Task was collected from 5 different samples: Community adolescents, foster-care involved adolescents, at-risk adolescents, University of Oregon human subject pool (UOHSP) participants who visited the lab, and UOHSP participants who completed the study online. Data is excluded for any participant who did failed showed a pattern of inattentive responding on the questionnaires and who generated response times that are inconsistent with attentive responding during the task.
 
-List of unexcused no-show IDs (these will be excluded):
+**Exclusions:** Participants were excluded if they failed three out of four attention checks[^1], completed the self-report questionnaires in less than 30 minutes, and received rewards totaling an amount small enough to be consistent with random responding on the task.
 
-- 38547
-- 44123
-- 43237
-- 42283
-- 43873
-
-List of IDs with errors in output files (incomplete file save; will be included but sensitivity to inclusion will be assessed):
-
-- 43993
-- 43640
-- 43329
-- 43303
-- 40179
-
-Other issues to check:
-
-- YADS 386 has two output files.
-- YADS_online 43603 has two output files.
-- 43991
-- 43214
-
-
+One included response was incompletely saved.
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -42,7 +21,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-anon_id_filename <- '/data/jflournoy/split/splt_anon_id.csv'
+anon_id_filename <- '/data/jflournoy/split/probly/splt_anon_id.csv'
 ```
 
 ```{r}
@@ -144,14 +123,23 @@ splt_crunched <- splt_data %>%
                   condition, condition_trial_index, 
                   sex, stim_image, 
                   trial_index, block, proportion, 
-                  rt, time_elapsed)
+                  rt, time_elapsed, timestamp)
+
+splt_crunched <- dplyr::mutate(
+    group_by(splt_crunched, filename),
+    date_time_completed = probly::get_date_from_epoch_ms(
+        as.numeric(timestamp) + runif(1, -10, 10)*24*60*60*1000)
+)
 
 participant_anon_id <- readr::read_csv(file = anon_id_filename)
-splt_crunched <- dplyr::left_join(splt_crunched, unique_participants, by = c('id', 'sample'))
+participant_anon_id <- dplyr::mutate(participant_anon_id, exclude = ifelse(is.na(exclude), 0, exclude))
+splt_crunched <- dplyr::left_join(splt_crunched, participant_anon_id, by = c('id', 'sample'))
+splt_crunched <- dplyr::filter(splt_crunched, !exclude)
 splt_crunched <- dplyr::mutate(splt_crunched, id = anon_id, sample = anon_sample)
 splt_crunched <- dplyr::select(splt_crunched, -anon_id, -anon_sample)
 
-metacog_clean <- splt_crunched %>% 
+metacog_clean <- splt_crunched %>%
+    dplyr::ungroup() %>%
     dplyr::select(-sex, -stim_image) %>%
     dplyr::filter(condition == metacog_condition,
                   !is.na(correcttrue)) %>%
@@ -161,12 +149,13 @@ metacog_clean <- splt_crunched %>%
     dplyr::select(sample, id, block, confidence)
 
 splt_clean <- splt_crunched %>% 
+    dplyr::ungroup() %>%
     dplyr::filter(condition != metacog_condition) %>%
     dplyr::mutate(condition = factor(condition, 
                                      levels = conditions, 
                                      labels = abbreviate(conditions))) %>%
+    dplyr::select(-exclude, -filename) %>%
     dplyr::arrange(sample, id, trial_index)
-
 ```
 
 

@@ -8,7 +8,6 @@
 \describe{
   \item{price}{price, in US dollars}
   \item{carat}{weight of the diamond, in carats}
-  ...
 }}
 \usage{
 splt

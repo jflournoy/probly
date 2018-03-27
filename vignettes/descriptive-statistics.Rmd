@@ -12,6 +12,7 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
+  message = F, error = F,warning = F,
   comment = "#>"
 )
 ```
@@ -20,19 +21,62 @@ knitr::opts_chunk$set(
 
 The table below shows the number of participants in each sample. TDS3 has very few participants, and as it was intended to bolster numbers for TDS1, will be collapsed.
 
-```{r}
+```{r load_packages_and_data}
 library(probly)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
 data('splt', 'splt_confidence')
 
+sample_labels <- c(
+    'TDS1' = 'Foster-care involved adolescents',
+    'TDS2' = 'Community adolescents',
+    'yads' = 'College students',
+    'yads_online' = 'College students - online'
+)
+
+condition_labels <- c(
+    'HngT' = 'Hungry/Thirsty',
+    'DtnL' = 'Dating/Looking', 
+    'PplU' = 'Popular/Unpopular'
+)
+
+splt$condition <- factor(splt$condition, levels = names(condition_labels), labels = condition_labels)
+splt$sample <- factor(splt$sample, levels = names(sample_labels), labels = sample_labels)
+```
+
+```{r sample_size}
 knitr::kable(
-    dplyr::summarize(
-        dplyr::group_by(
-            dplyr::distinct(splt, id, dir, filename, sample),
-            sample),
-        n = n()))
+    dplyr::select(
+        dplyr::mutate(
+            dplyr::summarize(
+                dplyr::group_by(
+                    dplyr::distinct(splt, id, dir, filename, sample),
+                    sample),
+                n = n())),
+        sample, n),
+    caption = 'Individuals in each sample',
+    col.names = c('Sample', 'N'))
+```
+
+```{r proportion_trials_per_condition}
+splt_by_cond_samp <- dplyr::group_by(splt, condition, sample)
+splt_summary_optimal_feedback <- dplyr::summarize(
+    splt_by_cond_samp,
+    p_optimal_correct = mean((proportion == '20_80') == (correct_r == 1))
+)
+
+knitr::kable(splt_summary_optimal_feedback,
+             col.names = c('Condition', 'Sample', 'P(Reward | Optimal)'),
+             caption = 'Probability that an optimal choice results in reward',
+             digits = 3)
+```
+
+```{r reaction_time}
+ggplot2::ggplot(
+    dplyr::filter(splt, rt > 0),
+    ggplot2::aes(x = rt)) + 
+    ggplot2::geom_histogram(binwidth = 100)
 ```
 
 # Raw task data

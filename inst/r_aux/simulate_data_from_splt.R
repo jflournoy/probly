@@ -3,8 +3,9 @@
 library(probly)
 data(splt)
 
-splt <- splt[!splt$id %in% c(174, 223, 145, 289, 242), ]
-splt <- splt[!(splt$id == 149 & splt$sample == 'yads'), ]
+splt <- splt[!splt$id %in% c(174,
+                             223, #BAD_PID, need to fix
+                             242), ]
 splt <- splt[!is.na(splt$pressed_r), ]
 splt$cue <- as.numeric(as.factor(paste0(splt$condition, '_', splt$sex)))
 splt$condition <- factor(splt$condition, levels = c('HngT', 'DtnL', 'PplU'))

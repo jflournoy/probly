@@ -6,7 +6,6 @@
 #' \describe{
 #'   \item{price}{price, in US dollars}
 #'   \item{carat}{weight of the diamond, in carats}
-#'   ...
 #' }
 "splt"
 
@@ -18,7 +17,6 @@
 #' \describe{
 #'   \item{price}{price, in US dollars}
 #'   \item{carat}{weight of the diamond, in carats}
-#'   ...
 #' }
 "splt_confidence"
 
@@ -37,9 +35,8 @@
 #' @return a data frame with columns id_col, sample_col, m_fac (with sample_col
 #'   coerced to a factor) and m (with m_fac coerced to a number)
 #' @export
-#'
 get_sample_index <- function(splt_df, id_col = 'id', sample_col = 'sample', levels = sort(unique(splt_df[, sample_col]))) {
-    mm <- unique(splt[, c(id_col, sample_col)])
+    mm <- unique(splt_df[, c(id_col, sample_col)])
     rownames(mm) <- 1:dim(mm)[1]
     mm$m_fac <- factor(mm$sample,
                        levels = levels)
@@ -56,7 +53,6 @@ get_sample_index <- function(splt_df, id_col = 'id', sample_col = 'sample', leve
 #'
 #' @return a vector of the number of trials for each individual
 #' @export
-#'
 get_max_trials_per_individual <- function(i_by_t_mat){
     apply(i_by_t_mat, 1, function(row) sum(!is.na(row)))
 }
@@ -74,7 +70,6 @@ get_max_trials_per_individual <- function(i_by_t_mat){
 #' @return an N-individual by T-trial matrix with values taken from the column
 #'   in \code{splt_df} named by \code{col}
 #' @export
-#'
 get_col_as_trial_matrix <- function(splt_df, col, id_col = 'id', sample_col = 'sample', trial_col = 'trial_index'){
     #expects all rows with pressed_r == NA to have been removed
     if(!(is.factor(splt_df[, col][[1]]) | is.numeric(splt_df[, col][[1]]))){
@@ -92,4 +87,15 @@ get_col_as_trial_matrix <- function(splt_df, col, id_col = 'id', sample_col = 's
     }# end id
     rownames(col_mat) <- ids
     return(col_mat)
+}
+
+#' Get date from ms since epoch
+#'
+#' @param miliseconds_since_epoch how many miliseconds have passed since 1970-01-01
+#'
+#' @return a date
+#' @export
+#'
+get_date_from_epoch_ms <- function(miliseconds_since_epoch){
+    as.POSIXct(miliseconds_since_epoch/1000, origin="1970-01-01")
 }
