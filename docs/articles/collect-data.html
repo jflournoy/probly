@@ -74,36 +74,15 @@
       <h1>Collect and Clean SPLT Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-23</h4>
+            <h4 class="date">2018-03-27</h4>
           </div>
 
     
     
 <div class="contents">
-<p>Data from the Social Probabilistic Learning Task was collected from 5 different samples: Community adolescents, foster-care involved adolescents, at-risk adolescents, University of Oregon human subject pool (UOHSP) particupants who visitied the lab, and UOHSP participants who completed the study online. Data is excluded for any participant who did failed showed a pattern of inattentive responding on the questionnaires and who generated response times that are inconsistent with attentive responding during the task.</p>
-<p>List of unexcused no-show IDs (these will be excluded):</p>
-<ul>
-<li>38547</li>
-<li>44123</li>
-<li>43237</li>
-<li>42283</li>
-<li>43873</li>
-</ul>
-<p>List of IDs with errors in output files (incomplete file save; will be included but sensitivity to inclusion will be assessed):</p>
-<ul>
-<li>43993</li>
-<li>43640</li>
-<li>43329</li>
-<li>43303</li>
-<li>40179</li>
-</ul>
-<p>Other issues to check:</p>
-<ul>
-<li>YADS 386 has two output files.</li>
-<li>YADS_online 43603 has two output files.</li>
-<li>43991</li>
-<li>43214</li>
-</ul>
+<p>Data from the Social Probabilistic Learning Task was collected from 5 different samples: Community adolescents, foster-care involved adolescents, at-risk adolescents, University of Oregon human subject pool (UOHSP) participants who visited the lab, and UOHSP participants who completed the study online. Data is excluded for any participant who did failed showed a pattern of inattentive responding on the questionnaires and who generated response times that are inconsistent with attentive responding during the task.</p>
+<p><strong>Exclusions:</strong> Participants were excluded if they failed three out of four attention checks[^1], completed the self-report questionnaires in less than 30 minutes, and received rewards totaling an amount small enough to be consistent with random responding on the task.</p>
+<p>One included response was incompletely saved. One participant completed a different version of the task with a different control condition and was not included.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Attaching package: 'dplyr'</span>
@@ -153,7 +132,7 @@ files &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dply
                                       <span class="dt">recursive =</span> T)) 
 
 <span class="kw">message</span>(<span class="kw">paste0</span>(<span class="st">'Files: '</span>, <span class="kw">length</span>(<span class="kw">unique</span>(files$file))))
-<span class="co">#&gt; Files: 318</span>
+<span class="co">#&gt; Files: 322</span>
 
 parsed_filenames &lt;-<span class="st"> </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/extract">extract</a></span>(
     files, 
@@ -169,22 +148,9 @@ splt_data_and_problems &lt;-<span class="st"> </span><span class="kw"><a href="h
         prob_adf &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise_all.html">mutate_all</a></span>(<span class="kw"><a href="http://www.rdocumentation.org/packages/readr/topics/problems">problems</a></span>(adf), <span class="kw"><a href="http://dplyr.tidyverse.org/reference/funs.html">funs</a></span>(as.character))
         <span class="kw"><a href="http://dplyr.tidyverse.org/reference/reexports.html">data_frame</a></span>(<span class="dt">data =</span> <span class="kw">list</span>(adf), <span class="dt">problems =</span> <span class="kw">list</span>(prob_adf))
     })
-<span class="co">#&gt; Warning in rbind(names(probs), probs_f): number of columns of result is not</span>
-<span class="co">#&gt; a multiple of vector length (arg 1)</span>
-<span class="co">#&gt; Warning: 3 parsing failures.</span>
-<span class="co">#&gt; row # A tibble: 3 x 5 col     row col   expected                     actual     file                 expected   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;                        &lt;chr&gt;      &lt;chr&gt;                actual 1   261 qnum  closing quote at end of file ""         '~/code_new/probly/… file 2   261 qnum  an integer                   %          '~/code_new/probly/… row 3   261 &lt;NA&gt;  41 columns                   31 columns '~/code_new/probly/…</span>
-<span class="co">#&gt; Warning in rbind(names(probs), probs_f): number of columns of result is not</span>
-<span class="co">#&gt; a multiple of vector length (arg 2)</span>
-<span class="co">#&gt; Warning: 1 parsing failure.</span>
-<span class="co">#&gt; row # A tibble: 1 x 5 col     row col   expected   actual    file                                    expected   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;                                   actual 1   201 &lt;NA&gt;  41 columns 8 columns '~/code_new/probly/extdata//raw//yads_… file # A tibble: 1 x 5</span>
-<span class="co">#&gt; Warning: 2 parsing failures.</span>
-<span class="co">#&gt; row # A tibble: 2 x 5 col     row col   expected                     actual     file                 expected   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;                        &lt;chr&gt;      &lt;chr&gt;                actual 1   160 image closing quote at end of file ""         '~/code_new/probly/… file 2   160 &lt;NA&gt;  41 columns                   21 columns '~/code_new/probly/…</span>
-<span class="co">#&gt; Warning in rbind(names(probs), probs_f): number of columns of result is not</span>
-<span class="co">#&gt; a multiple of vector length (arg 2)</span>
-<span class="co">#&gt; Warning: 1 parsing failure.</span>
-<span class="co">#&gt; row # A tibble: 1 x 5 col     row col   expected   actual     file                                   expected   &lt;int&gt; &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;                                  actual 1   160 &lt;NA&gt;  41 columns 38 columns '~/code_new/probly/extdata//raw//yads… file # A tibble: 1 x 5</span>
-<span class="co">#&gt; Warning: 2 parsing failures.</span>
-<span class="co">#&gt; row # A tibble: 2 x 5 col     row col          expected   actual     file                            expected   &lt;int&gt; &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;      &lt;chr&gt;                           actual 1   313 times_viewed an integer %          '~/code_new/probly/extdata//ra… file 2   313 &lt;NA&gt;         41 columns 38 columns '~/code_new/probly/extdata//ra…</span>
+<span class="co">#&gt; Warning: The following named parsers don't match the column names:</span>
+<span class="co">#&gt; stimindex, qnum, page_num, trial_num, score_response, response_range,</span>
+<span class="co">#&gt; times_viewed</span>
 
 splt_data_and_problems$.id &lt;-<span class="st"> </span><span class="kw">as.character</span>(<span class="dv">1</span>:<span class="kw">dim</span>(splt_data_and_problems)[<span class="dv">1</span>])
 <span class="kw">names</span>(splt_data_and_problems$data) &lt;-<span class="st"> </span>splt_data_and_problems$.id
@@ -229,33 +195,32 @@ splt_crunched &lt;-<span class="st"> </span>splt_data %&gt;%
                   condition, condition_trial_index, 
                   sex, stim_image, 
                   trial_index, block, proportion, 
-                  rt, time_elapsed)
+                  rt, time_elapsed, timestamp)
 <span class="co">#&gt; Warning: Grouping rowwise data frame strips rowwise nature</span>
-<span class="co">#&gt; Warning in ifelse(dir %in% c("yads/", "yads_online/"), sub("/", "", dir), :</span>
-<span class="co">#&gt; NAs introduced by coercion</span>
 
-<span class="co">#&gt; Warning in ifelse(dir %in% c("yads/", "yads_online/"), sub("/", "", dir), :</span>
-<span class="co">#&gt; NAs introduced by coercion</span>
+splt_crunched &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(
+    <span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(splt_crunched, filename),
+    <span class="dt">date_time_completed =</span> probly::<span class="kw"><a href="../reference/get_date_from_epoch_ms.html">get_date_from_epoch_ms</a></span>(
+        <span class="kw">as.numeric</span>(timestamp) +<span class="st"> </span><span class="kw">runif</span>(<span class="dv">1</span>, -<span class="dv">10</span>, <span class="dv">10</span>)*<span class="dv">24</span>*<span class="dv">60</span>*<span class="dv">60</span>*<span class="dv">1000</span>)
+)
 
-<span class="co">#&gt; Warning in ifelse(dir %in% c("yads/", "yads_online/"), sub("/", "", dir), :</span>
-<span class="co">#&gt; NAs introduced by coercion</span>
+participant_anon_id &lt;-<span class="st"> </span>readr::<span class="kw"><a href="http://www.rdocumentation.org/packages/readr/topics/read_delim">read_csv</a></span>(<span class="dt">file =</span> anon_id_filename)
+<span class="co">#&gt; Parsed with column specification:</span>
+<span class="co">#&gt; cols(</span>
+<span class="co">#&gt;   id = col_character(),</span>
+<span class="co">#&gt;   sample = col_character(),</span>
+<span class="co">#&gt;   anon_id = col_integer(),</span>
+<span class="co">#&gt;   anon_sample = col_character(),</span>
+<span class="co">#&gt;   exclude = col_integer()</span>
+<span class="co">#&gt; )</span>
+participant_anon_id &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(participant_anon_id, <span class="dt">exclude =</span> <span class="kw">ifelse</span>(<span class="kw">is.na</span>(exclude), <span class="dv">0</span>, exclude))
+splt_crunched &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(splt_crunched, participant_anon_id, <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'id'</span>, <span class="st">'sample'</span>))
+splt_crunched &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(splt_crunched, !exclude)
+splt_crunched &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(splt_crunched, <span class="dt">id =</span> anon_id, <span class="dt">sample =</span> anon_sample)
+splt_crunched &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(splt_crunched, -anon_id, -anon_sample)
 
-<span class="co">#&gt; Warning in ifelse(dir %in% c("yads/", "yads_online/"), sub("/", "", dir), :</span>
-<span class="co">#&gt; NAs introduced by coercion</span>
-
-<span class="co">#&gt; Warning in ifelse(dir %in% c("yads/", "yads_online/"), sub("/", "", dir), :</span>
-<span class="co">#&gt; NAs introduced by coercion</span>
-
-<span class="co">#&gt; Warning in ifelse(dir %in% c("yads/", "yads_online/"), sub("/", "", dir), :</span>
-<span class="co">#&gt; NAs introduced by coercion</span>
-
-<span class="co">#&gt; Warning in ifelse(dir %in% c("yads/", "yads_online/"), sub("/", "", dir), :</span>
-<span class="co">#&gt; NAs introduced by coercion</span>
-
-<span class="co">#&gt; Warning in ifelse(dir %in% c("yads/", "yads_online/"), sub("/", "", dir), :</span>
-<span class="co">#&gt; NAs introduced by coercion</span>
-
-metacog_clean &lt;-<span class="st"> </span>splt_crunched %&gt;%<span class="st"> </span>
+metacog_clean &lt;-<span class="st"> </span>splt_crunched %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>() %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-sex, -stim_image) %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(condition ==<span class="st"> </span>metacog_condition,
                   !<span class="kw">is.na</span>(correcttrue)) %&gt;%
@@ -265,10 +230,12 @@ metacog_clean &lt;-<span class="st"> </span>splt_crunched %&gt;%<span class="st"
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(sample, id, block, confidence)
 
 splt_clean &lt;-<span class="st"> </span>splt_crunched %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>() %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(condition !=<span class="st"> </span>metacog_condition) %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">condition =</span> <span class="kw">factor</span>(condition, 
                                      <span class="dt">levels =</span> conditions, 
                                      <span class="dt">labels =</span> <span class="kw">abbreviate</span>(conditions))) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-exclude, -filename, -timestamp) %&gt;%
 <span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/arrange.html">arrange</a></span>(sample, id, trial_index)</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Write the data</span>
 splt &lt;-<span class="st"> </span>splt_clean

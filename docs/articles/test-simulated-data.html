@@ -74,32 +74,29 @@
       <h1>Test Simulated Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-23</h4>
+            <h4 class="date">2018-03-27</h4>
           </div>
 
     
     
 <div class="contents">
-<div id="aim-1a-does-framing-reinforcement-learning-with-mate-seeking-and-status-motivational-contexts-sensitize-the-learner-and-potentiate-learning" class="section level1">
+<p><strong>Aim 1a:</strong> Does framing reinforcement learning with (mate-seeking and status) motivational contexts sensitize the learner and potentiate learning?</p>
+<p>My approach to answering this question is to model how learning occurs in each of the three motive contexts and examine differences in how learning occurs.</p>
+<div id="task-descriptions" class="section level1">
 <h1 class="hasAnchor">
-<a href="#aim-1a-does-framing-reinforcement-learning-with-mate-seeking-and-status-motivational-contexts-sensitize-the-learner-and-potentiate-learning" class="anchor"></a>Aim 1a: Does framing reinforcement learning with (mate-seeking and status) motivational contexts sensitize the learner and potentiate learning?</h1>
-<div id="method" class="section level2">
-<h2 class="hasAnchor">
-<a href="#method" class="anchor"></a>Method</h2>
+<a href="#task-descriptions" class="anchor"></a>Task Descriptions</h1>
 <p><strong>TASK DESCRIPTION HERE</strong></p>
 </div>
-<div id="modeling-learning" class="section level2">
-<h2 class="hasAnchor">
-<a href="#modeling-learning" class="anchor"></a>Modeling learning</h2>
-<p>In the context of this task, where the relation between the optimal response and the stimulus is constant, a simple model of the degree of learning could rely on a simple proportion of optimal responses <span class="math inline">\(P_{ok}\)</span> for each condition <span class="math inline">\(k\)</span>. The test of the hypothesis of the effect of framing would then be the difference between conditions in <span class="math inline">\(P_o\)</span>. This simple model sacrifice precision for simplicity, and so I will be modeling the data using a reinforcement learning model with several parameters that can account for deviations from a strict Rescorla-Wagner (RW) process. This increases the number of possible comaprisons I am able to make between conditions, which may generate useful information about how motive-domain framing affects the learning process (as modelled, of course), but which also increases the complexity of patterns between conditions and parameters that must be interpretted. It will be helpful to keep in mind that the framing can only be said to potentiate learning if, regardless of its affect on any model parameters, it does not result in higher proportions of optimal responding.</p>
-<div id="ensuring-the-model-can-recover-known-parameters" class="section level3">
-<h3 class="hasAnchor">
-<a href="#ensuring-the-model-can-recover-known-parameters" class="anchor"></a>Ensuring the model can recover known parameters</h3>
-<p>Before modeling the task data, I will confirm that this model can recover known parameters from simulated data. In this section, I simulate data as expected under the Rescorla-Wagner model implemented by <span class="citation">Ahn, Haines, &amp; Zhang (2017)</span> in their go-no-go model 2. Their original model handles binary decisions (button-press or no button-press) in response to four different cues. However, the form of the learning algorithm is generalizable to other binary choices in response to cues. In the case of the Social Probabilistic Learning Task (SPLT), participants are presented with a face (the cue), and must decide to press the left key or the right key. They are rewarded probabilistically such that for each cue, one or the other of the response options has an 80% chance of providing reinforcement. The go-no-go models used by <span class="citation">Ahn et al. (2017)</span> were derived from work by <span class="citation">Guitart-Masip et al. (2012)</span>. Their most flexible reinforcement learning model generates the probability of an action for each trial via N parameters: the learning rate, <span class="math inline">\(\epsilon\)</span>, the effective size of reinforcement, <span class="math inline">\(\rho\)</span>, a static bias parameter, <span class="math inline">\(b\)</span>, an irriducible noise parameter, <span class="math inline">\(\xi\)</span>, and a Pavlovian learning parameter, <span class="math inline">\(\pi\)</span>. In the SPLT, trial feedback does not vary by valence (responses result in reward, or no reward, but never punishment), so I use the model that does not include this Pavlonian component.</p>
-<div id="reinforcement-learning-model-for-the-splt" class="section level4">
-<h4 class="hasAnchor">
-<a href="#reinforcement-learning-model-for-the-splt" class="anchor"></a>Reinforcement learning model for the SPLT</h4>
-<p>The model for an individual <span class="math inline">\(j\)</span>’s probability of pressing the right arrow key on trial <span class="math inline">\(t\)</span> given that stimulus <span class="math inline">\(s_{t}\)</span> is presentd, <span class="math inline">\(P(a_{\rightarrow t} | s_{t})_{t}\)</span>, is determined by a logistic transformation of the action weight for pressing the right arrow key minus the action weight for pressing the left arrow key. This probability is then adjusted by a noise parameter, <span class="math inline">\(0 \leq\xi_{jk}\leq1\)</span> for each participant <span class="math inline">\(j\)</span> in condition <span class="math inline">\(k\)</span>. The noise parameter modulates the degree to which responses are non-systematic. When <span class="math inline">\(\xi\)</span> is 1, <span class="math inline">\(P_{it} = .5\)</span>, and because each individual has a unique noise parameter for each condition, I am able to account for participants who do not learn during the task, or in a particular condition. The full equation is:</p>
+<div id="a-model-for-reinforcement-learning" class="section level1">
+<h1 class="hasAnchor">
+<a href="#a-model-for-reinforcement-learning" class="anchor"></a>A model for reinforcement learning</h1>
+<p>In the context of this task, where the relation between the optimal response and the stimulus is constant, a simple model of the degree of learning could rely on a simple proportion of optimal responses <span class="math inline">\(P_{ok}\)</span> for each condition <span class="math inline">\(k\)</span>. The test of the hypothesis of the effect of framing would then be the difference between conditions in <span class="math inline">\(P_o\)</span>. This simple model sacrifice precision for simplicity, and so I will be modeling the data using a reinforcement learning model with several parameters that can account for deviations from a strict Rescorla-Wagner (RW) process. This increases the number of possible comparisons I am able to make between conditions, which may generate useful information about how motive-domain framing affects the learning process (as modeled, of course), but which also increases the complexity of patterns between conditions and parameters that must be interpreted. It will be helpful to keep in mind that the framing can only be said to potentiate learning if, regardless of its affect on any model parameters, it does not result in higher proportions of optimal responding.</p>
+<p>In this section, I simulate data as expected under the Rescorla-Wagner model implemented by <span class="citation">Ahn, Haines, &amp; Zhang (2017)</span> in their go-no-go model 2. Their original model handles binary decisions (button-press or no button-press) in response to four different cues. However, the form of the learning algorithm is generalizable to other binary choices in response to cues. In the case of the Social Probabilistic Learning Task (SPLT), participants are presented with a face (the cue), and must decide to press the left key or the right key. They are rewarded probabilistically such that for each cue, one or the other of the response options has an 80% chance of providing reinforcement. The go-no-go models used by <span class="citation">Ahn et al. (2017)</span> were derived from work by <span class="citation">Guitart-Masip et al. (2012)</span>. Their most flexible reinforcement learning model generates the probability of an action for each trial via N parameters: the learning rate, <span class="math inline">\(\epsilon\)</span>, the effective size of reinforcement, <span class="math inline">\(\rho\)</span>, a static bias parameter, <span class="math inline">\(b\)</span>, an irreducible noise parameter, <span class="math inline">\(\xi\)</span>, and a Pavlovian learning parameter, <span class="math inline">\(\pi\)</span>. In the SPLT, trial feedback does not vary by valence (responses result in reward, or no reward, but never punishment), so I use the model that does not include this Pavlovian component.</p>
+</div>
+<div id="reinforcement-learning-model-for-the-splt" class="section level1">
+<h1 class="hasAnchor">
+<a href="#reinforcement-learning-model-for-the-splt" class="anchor"></a>Reinforcement learning model for the SPLT</h1>
+<p>The model for an individual <span class="math inline">\(j\)</span>’s probability of pressing the right arrow key on trial <span class="math inline">\(t\)</span> given that stimulus <span class="math inline">\(s_{t}\)</span> is presented, <span class="math inline">\(P(a_{\rightarrow t} | s_{t})_{t}\)</span>, is determined by a logistic transformation of the action weight for pressing the right arrow key minus the action weight for pressing the left arrow key. This probability is then adjusted by a noise parameter, <span class="math inline">\(0 \leq\xi_{jk}\leq1\)</span> for each participant <span class="math inline">\(j\)</span> in condition <span class="math inline">\(k\)</span>. The noise parameter modulates the degree to which responses are non-systematic. When <span class="math inline">\(\xi\)</span> is 1, <span class="math inline">\(P_{it} = .5\)</span>, and because each individual has a unique noise parameter for each condition, I am able to account for participants who do not learn during the task, or in a particular condition. The full equation is:</p>
 <p><span class="math display">\[
 P(a_{\rightarrow t} | s_{t})_{t} = 
 \text{logit}^{-1}\big(W(a_{\rightarrow t}| s_{t}) - W(a_{\leftarrow t}| s_{t})\big)\cdot(1-\xi_{jk}) + \small\frac{\xi_{jk}}{2}.
@@ -116,11 +113,10 @@ W_{t}(a,s) = \left\{
 <p><span class="math display">\[
 Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a_t, s_t)\big)
 \]</span></p>
-</div>
-<div id="hierarchical-parameters" class="section level4">
-<h4 class="hasAnchor">
-<a href="#hierarchical-parameters" class="anchor"></a>Hierarchical Parameters</h4>
-<p>Each parameter (<span class="math inline">\(\epsilon, \rho, b, \xi\)</span>) varries by condition <span class="math inline">\(k \in 1:K\)</span>, and by participant <span class="math inline">\(j \in 1:J\)</span> nested in sample <span class="math inline">\(m \in 1:M\)</span>. The structure of the hierarchical part of the model is the same for each parameter, so the following description for <span class="math inline">\(\epsilon\)</span> will serve as a description for all of the parameters. For each individual <span class="math inline">\(j\)</span>, <span class="math inline">\(\beta_{\epsilon j}\)</span> is a <span class="math inline">\(K\)</span>-element row of coefficients for parameter <span class="math inline">\(\epsilon\)</span> for each condition:</p>
+<div id="hierarchical-parameters" class="section level2">
+<h2 class="hasAnchor">
+<a href="#hierarchical-parameters" class="anchor"></a>Hierarchical Parameters</h2>
+<p>Each parameter (<span class="math inline">\(\epsilon, \rho, b, \xi\)</span>) varies by condition <span class="math inline">\(k \in 1:K\)</span>, and by participant <span class="math inline">\(j \in 1:J\)</span> nested in sample <span class="math inline">\(m \in 1:M\)</span>. The structure of the hierarchical part of the model is the same for each parameter, so the following description for <span class="math inline">\(\epsilon\)</span> will serve as a description for all of the parameters. For each individual <span class="math inline">\(j\)</span>, <span class="math inline">\(\beta_{\epsilon j}\)</span> is a <span class="math inline">\(K\)</span>-element row of coefficients for parameter <span class="math inline">\(\epsilon\)</span> for each condition:</p>
 <p><span class="math display">\[
 \beta_{\epsilon j} \sim \mathcal{N}(\delta_{\epsilon mm[j]}, \Sigma_{\epsilon})
 \]</span> where <span class="math inline">\(\delta_{\epsilon mm[j]}\)</span> is a column of <span class="math inline">\(K\)</span> means for individual <span class="math inline">\(j\)</span>’s sample <span class="math inline">\(M\)</span>, as indexed in the vector <span class="math inline">\(mm\)</span>, and <span class="math inline">\(\Sigma_{\epsilon}\)</span> is a <span class="math inline">\(K\times K\)</span> matrix of the covariance of individual coefficients between conditions.</p>
@@ -128,190 +124,41 @@ Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a
 <p><span class="math display">\[
 \delta_{\epsilon k} \sim \mathcal{N}(\mu_{\epsilon k}, \sigma_\epsilon)
 \]</span></p>
-<p>where <span class="math inline">\(\mu_{\epsilon k}\)</span> is the population mean for parameter <span class="math inline">\(\epsilon\)</span> in condition <span class="math inline">\(k\)</span>, and <span class="math inline">\(\sigma\)</span> is a slightly regularizing scale parameter for these means across all conditions and samples. The priors for these final paramters are:</p>
+<p>where <span class="math inline">\(\mu_{\epsilon k}\)</span> is the population mean for parameter <span class="math inline">\(\epsilon\)</span> in condition <span class="math inline">\(k\)</span>, and <span class="math inline">\(\sigma\)</span> is a slightly regularizing scale parameter for these means across all conditions and samples. The priors for these final parameters are:</p>
 <p><span class="math display">\[
 \mu_\epsilon \sim \mathcal{N}(0, 5)\\
 \sigma_\epsilon \sim \text{exponential(1)}.
 \]</span></p>
 </div>
-<div id="simulating-data" class="section level4">
-<h4 class="hasAnchor">
-<a href="#simulating-data" class="anchor"></a>Simulating data</h4>
-<p>I simulate data based on the structure of the sample data, using the same number of participants per sample (see the section on <a href="descriptive-statistics.html">descriptive statistics</a>, as well as precisely the same task structure. For this aim, it is important to be able to recover all <span class="math inline">\(\mu_{\theta k}\)</span> for <span class="math inline">\(\theta \in \{\epsilon,\rho,b,\xi\}\)</span> and <span class="math inline">\(k \in \{1,2,3\}\)</span>, where 1 = Hungry/Thirsty, 2 = Popular/Unpopular, and 3 = Dating/Looking. Those parameters that account for idiosyncratic devation from RW-expected behavior (<span class="math inline">\(b,\xi\)</span>) will not vary by condition. Based on interactive simulation (<a href="https://jflournoy.shinyapps.io/rw_model/">here</a>), reasonable paramter values for the control condition might be <span class="math inline">\(\mu_\epsilon = -1.65\)</span> and <span class="math inline">\(\mu_\rho = -0.3\)</span>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
-<p>The functions that sample parameters as described above are:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sample_deltas &lt;-<span class="st"> </span>function(mu_vec, sigma, nsamples){
-    deltas_vec &lt;-<span class="st"> </span><span class="kw">replicate</span>(nsamples,
-                            <span class="kw">rnorm</span>(<span class="dt">n =</span> <span class="kw">length</span>(mu_vec), 
-                                  <span class="dt">mean =</span> mu_vec, <span class="dt">sd =</span> sigma))
-    deltas &lt;-<span class="st"> </span><span class="kw">matrix</span>(deltas_vec,
-                     <span class="dt">nrow =</span> nsamples,
-                     <span class="dt">byrow =</span> <span class="ot">TRUE</span>)
-    <span class="kw">return</span>(deltas)
-}
-sample_betas &lt;-<span class="st"> </span>function(deltas, group_index, Sigma){
-    <span class="kw">require</span>(MASS)
-    deltas_mm &lt;-<span class="st"> </span>deltas[group_index, ]
-    betas_l &lt;-<span class="st"> </span><span class="kw">lapply</span>(<span class="dv">1</span>:<span class="kw">length</span>(group_index), function(j){
-        MASS::<span class="kw"><a href="http://www.rdocumentation.org/packages/MASS/topics/mvrnorm">mvrnorm</a></span>(<span class="dv">1</span>, <span class="dt">mu =</span> deltas[group_index[j], ], <span class="dt">Sigma =</span> Sigma)
-    })
-    betas &lt;-<span class="st"> </span><span class="kw">do.call</span>(rbind, betas_l)
-    <span class="kw">return</span>(betas)
-}
-generate_responses &lt;-<span class="st"> </span>function(N, M, K, mm, Tsubj, cue, n_cues, condition, outcome, beta_xi, beta_b, beta_eps, beta_rho){
-    <span class="co"># - N number of individuals</span>
-    <span class="co"># - M number of samples</span>
-    <span class="co"># - K number of conditions</span>
-    <span class="co"># - mm sample ID for all individuals</span>
-    <span class="co"># - Tsubj number of trials for each individual</span>
-    <span class="co"># - cue an N x max(Tsubj) matrix of cue IDs for </span>
-    <span class="co">#   each trial</span>
-    <span class="co"># - n_cues total number of cues</span>
-    <span class="co"># - condtion an N x max(Tsubj) matrix of condition </span>
-    <span class="co">#   IDs for each trial</span>
-    <span class="co"># - outcome is an array with dimensions N x T x 2</span>
-    <span class="co">#   (response options) with the feedback for each </span>
-    <span class="co">#   possible response. outcome[,,1] is for </span>
-    <span class="co">#   correct left-presses, and outcome[,,2] is for</span>
-    <span class="co">#   correct right-presses.</span>
-    <span class="co"># - beta_xi, beta_b, beta_eps, beta_rho are N x K </span>
-    <span class="co">#   matrices of the individually varying parameter </span>
-    <span class="co">#   coeffients</span>
-    
-    press_right &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">nrow =</span> N, <span class="dt">ncol =</span> <span class="kw">max</span>(Tsubj)) <span class="co">#the matrix to return</span>
-    
-    for(i in <span class="dv">1</span>:N){
-        wv_r &lt;-<span class="st"> </span><span class="kw">numeric</span>(n_cues) <span class="co">#action weight for press-right</span>
-        wv_l &lt;-<span class="st"> </span><span class="kw">numeric</span>(n_cues) <span class="co">#action weight for press-left</span>
-        qv_r &lt;-<span class="st"> </span><span class="kw">numeric</span>(n_cues) <span class="co">#Q value for right</span>
-        qv_l &lt;-<span class="st"> </span><span class="kw">numeric</span>(n_cues) <span class="co">#Q value for left</span>
-        p_right &lt;-<span class="st"> </span><span class="kw">numeric</span>(n_cues) <span class="co">#probability of pressing right</span>
-        
-        for(t in <span class="dv">1</span>:Tsubj[i]){
-            wv_r[ cue[i, t] ]    &lt;-<span class="st"> </span>qv_r[ cue[i, t] ] +<span class="st"> </span>beta_b[ i, condition[i, t] ] <span class="co">#add bias</span>
-            wv_l[ cue[i, t] ]    &lt;-<span class="st"> </span>qv_l[ cue[i, t] ]
-            
-            p_right[ cue[i, t] ] &lt;-<span class="st"> </span>arm::<span class="kw">invlogit</span>( wv_r[ cue[i, t] ] -<span class="st"> </span>wv_l[ cue[i, t] ] )
-            p_right[ cue[i, t] ] &lt;-<span class="st"> </span>
-<span class="st">                </span>p_right[ cue[i, t] ] *<span class="st"> </span>(<span class="dv">1</span> -<span class="st"> </span>beta_xi[ i, condition[i, t] ]) +<span class="st"> </span>
-<span class="st">                </span>beta_xi[ i, condition[i, t] ] /<span class="st"> </span><span class="dv">2</span> <span class="co">#incorporate noise</span>
-            
-            press_right[i, t]    &lt;-<span class="st"> </span><span class="kw">rbinom</span>(<span class="dt">n =</span> <span class="dv">1</span>, <span class="dt">size =</span> <span class="dv">1</span>, <span class="dt">prob =</span> p_right[ cue[i, t] ])
-            
-            if(press_right[i, t]){ <span class="co"># press_right[i, t] == 1</span>
-                qv_r[ cue[i, t] ] &lt;-<span class="st"> </span>
-<span class="st">                    </span>qv_r[ cue[i, t] ] +<span class="st"> </span>beta_eps[ i, condition[i, t] ] *
-<span class="st">                    </span>(beta_rho[ i, condition[i, t] ] *<span class="st"> </span>outcome[i, t, <span class="dv">2</span>] -<span class="st"> </span>qv_r[ cue[i, t] ])
-            } else { <span class="co"># press_right[i, t] == 0</span>
-                qv_l[ cue[i, t] ] &lt;-<span class="st"> </span>
-<span class="st">                    </span>qv_l[ cue[i, t] ] +<span class="st"> </span>beta_eps[ i, condition[i, t] ] *
-<span class="st">                    </span>(beta_rho[ i, condition[i, t] ] *<span class="st"> </span>outcome[i, t, <span class="dv">1</span>] -<span class="st"> </span>qv_l[ cue[i, t] ])
-            }
-        } <span class="co"># t loop</span>
-    }<span class="co"># i loop</span>
-    <span class="kw">return</span>(press_right)
-}
-
-get_sample_index &lt;-<span class="st"> </span>function(splt_df, <span class="dt">id_col =</span> <span class="st">'id'</span>, <span class="dt">sample_col =</span> <span class="st">'sample'</span>, <span class="dt">levels =</span> <span class="kw">sort</span>(<span class="kw">unique</span>(splt_df[, sample_col]))) {
-    mm &lt;-<span class="st"> </span><span class="kw">unique</span>(splt[, <span class="kw">c</span>(id_col, sample_col)])
-    <span class="kw">rownames</span>(mm) &lt;-<span class="st"> </span><span class="dv">1</span>:<span class="kw">dim</span>(mm)[<span class="dv">1</span>]
-    mm$m_fac &lt;-<span class="st"> </span><span class="kw">factor</span>(mm$sample,
-                       <span class="dt">levels =</span> levels)
-    mm$m &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(mm$m_fac)
-    <span class="kw">return</span>(mm)
-}
-
-get_col_as_trial_matrix &lt;-<span class="st"> </span>function(splt_df, col, <span class="dt">id_col =</span> <span class="st">'id'</span>, <span class="dt">sample_col =</span> <span class="st">'sample'</span>, <span class="dt">trial_col =</span> <span class="st">'trial_index'</span>){
-    <span class="co">#expects all rows with pressed_r == NA to have been removed</span>
-    if(!(<span class="kw">is.factor</span>(splt_df[, col][[<span class="dv">1</span>]]) |<span class="st"> </span><span class="kw">is.numeric</span>(splt_df[, col][[<span class="dv">1</span>]]))){
-        <span class="kw">stop</span>(<span class="st">"col must be numeric or a factor that will be coerced to numeric."</span>)
-    }
-    id_sample_index &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="kw">unlist</span>(splt_df[,id_col]), <span class="kw">unlist</span>(splt_df[,sample_col]))
-    ids &lt;-<span class="st"> </span><span class="kw">unique</span>(id_sample_index)
-    max_trials &lt;-<span class="st"> </span><span class="kw">max</span>(<span class="kw">unlist</span>(<span class="kw">lapply</span>(<span class="kw">split</span>(splt_df, id_sample_index), 
-                                    function(x) <span class="kw">dim</span>(x)[<span class="dv">1</span>])))
-    col_mat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dt">nrow =</span> <span class="kw">length</span>(ids), <span class="dt">ncol =</span> max_trials)
-    for(id in ids){
-        trials_index &lt;-<span class="st"> </span><span class="kw">unlist</span>(splt_df[id_sample_index ==<span class="st"> </span>id, trial_col])
-        col_vec &lt;-<span class="st"> </span><span class="kw">unlist</span>(splt_df[id_sample_index ==<span class="st"> </span>id, col])[<span class="kw">order</span>(trials_index)]
-        col_mat[<span class="kw">which</span>(ids ==<span class="st"> </span>id), <span class="dv">1</span>:<span class="kw">length</span>(col_vec)] &lt;-<span class="st"> </span>col_vec
-    }<span class="co"># end id</span>
-    <span class="kw">rownames</span>(col_mat) &lt;-<span class="st"> </span>ids
-    <span class="kw">return</span>(col_mat)
-}</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(probly)
-<span class="kw">data</span>(splt)
-
-splt &lt;-<span class="st"> </span>splt[!splt$id %in%<span class="st"> </span><span class="kw">c</span>(<span class="dv">43873</span>, <span class="st">'bad_pid'</span>, <span class="dv">43603</span>, <span class="dv">43991</span>, <span class="dv">43214</span>), ]
-splt &lt;-<span class="st"> </span>splt[!(splt$id ==<span class="st"> </span><span class="dv">386</span> &amp;<span class="st"> </span>splt$sample ==<span class="st"> 'yads'</span>), ]
-splt$sample &lt;-<span class="st"> </span><span class="kw">ifelse</span>(splt$sample ==<span class="st"> 'TDS3'</span>, <span class="st">'TDS1'</span>, splt$sample)
-splt &lt;-<span class="st"> </span>splt[!<span class="kw">is.na</span>(splt$pressed_r), ]
-splt$cue &lt;-<span class="st"> </span><span class="kw">as.numeric</span>(<span class="kw">as.factor</span>(<span class="kw">paste0</span>(splt$condition, <span class="st">'_'</span>, splt$sex)))
-splt$condition &lt;-<span class="st"> </span><span class="kw">factor</span>(splt$condition, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">'HngT'</span>, <span class="st">'DtnL'</span>, <span class="st">'PplU'</span>))
-
-<span class="co"># - N number of individuals</span>
-<span class="co"># - M number of samples</span>
-<span class="co"># - K number of conditions</span>
-<span class="co"># - mm sample ID for all individuals</span>
-<span class="co"># - Tsubj number of trials for each individual</span>
-<span class="co"># - cue an N x max(Tsubj) matrix of cue IDs for </span>
-<span class="co">#   each trial</span>
-<span class="co"># - n_cues total number of cues</span>
-<span class="co"># - condtion an N x max(Tsubj) matrix of condition </span>
-<span class="co">#   IDs for each trial</span>
-<span class="co"># - outcome is an array with dimensions N x T x 2</span>
-<span class="co">#   (response options) with the feedback for each </span>
-<span class="co">#   possible response. outcome[,,1] is for </span>
-<span class="co">#   correct left-presses, and outcome[,,2] is for</span>
-<span class="co">#   correct right-presses.</span>
-<span class="co"># - beta_xi, beta_b, beta_eps, beta_rho are N x K </span>
-<span class="co">#   matrices of the individually varying parameter </span>
-<span class="co">#   coeffients</span>
-
-group_index_mm &lt;-<span class="st"> </span><span class="kw">get_sample_index</span>(splt, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">"TDS1"</span>, <span class="st">"TDS2"</span>, <span class="st">"yads"</span>, <span class="st">"yads_online"</span>))
-N &lt;-<span class="st"> </span><span class="kw">dim</span>(group_index_mm)[<span class="dv">1</span>]
-M &lt;-<span class="kw">length</span>(<span class="kw">levels</span>(group_index_mm$m_fac)) 
-K &lt;-<span class="st"> </span><span class="kw">length</span>(<span class="kw">unique</span>(splt$condition))
-cue_mat &lt;-<span class="st"> </span><span class="kw">get_col_as_trial_matrix</span>(splt, <span class="st">'cue'</span>, <span class="dt">id_col =</span> <span class="st">'id'</span>, <span class="dt">sample_col =</span> <span class="st">'sample'</span>, <span class="dt">trial_col =</span> <span class="st">'trial_index'</span>)
-condition_mat &lt;-<span class="st"> </span><span class="kw">get_col_as_trial_matrix</span>(splt, <span class="st">'condition'</span>, <span class="dt">id_col =</span> <span class="st">'id'</span>, <span class="dt">sample_col =</span> <span class="st">'sample'</span>, <span class="dt">trial_col =</span> <span class="st">'trial_index'</span>)
-correct_r_mat &lt;-<span class="st"> </span><span class="kw">get_col_as_trial_matrix</span>(splt, <span class="st">'correct_r'</span>, <span class="dt">id_col =</span> <span class="st">'id'</span>, <span class="dt">sample_col =</span> <span class="st">'sample'</span>, <span class="dt">trial_col =</span> <span class="st">'trial_index'</span>)
-reward_possible_mat &lt;-<span class="st"> </span><span class="kw">get_col_as_trial_matrix</span>(splt, <span class="st">'reward_possible'</span>, <span class="dt">id_col =</span> <span class="st">'id'</span>, <span class="dt">sample_col =</span> <span class="st">'sample'</span>, <span class="dt">trial_col =</span> <span class="st">'trial_index'</span>)
-outcome_arr &lt;-<span class="st"> </span><span class="kw">array</span>(reward_possible_mat, <span class="dt">dim =</span> <span class="kw">c</span>(<span class="kw">dim</span>(reward_possible_mat), <span class="dv">2</span>))
-outcome_arr[,,<span class="dv">1</span>][correct_r_mat ==<span class="st"> </span><span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">0</span>
-outcome_arr[,,<span class="dv">2</span>][correct_r_mat ==<span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> </span><span class="dv">0</span>
-
-<span class="kw">set.seed</span>(<span class="dv">99232486</span>)
-
-mu_xi &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">3</span>, <span class="kw">rep</span>(-<span class="fl">2.5</span>, <span class="dv">3</span>), .<span class="dv">25</span>)
-mu_b &lt;-<span class="st"> </span><span class="kw">rnorm</span>(<span class="dv">3</span>, <span class="kw">rep</span>(<span class="dv">0</span>, <span class="dv">3</span>), .<span class="dv">25</span>)
-mu_eps &lt;-<span class="st"> </span><span class="kw">c</span>(-<span class="fl">1.65</span>, -<span class="fl">1.65</span> +<span class="st"> </span>.<span class="dv">3</span>, -<span class="fl">1.65</span> +<span class="st"> </span>.<span class="dv">2</span>)
-mu_rho &lt;-<span class="st"> </span><span class="kw">c</span>(-.<span class="dv">3</span>, -.<span class="dv">3</span> +<span class="st"> </span>.<span class="dv">35</span>, -.<span class="dv">3</span> +<span class="st"> </span>.<span class="dv">45</span>)
-
-delta_xi &lt;-<span class="st"> </span><span class="kw">sample_deltas</span>(mu_xi, .<span class="dv">1</span>, <span class="dv">4</span>)
-delta_b &lt;-<span class="st"> </span><span class="kw">sample_deltas</span>(mu_b, .<span class="dv">1</span>, <span class="dv">4</span>)
-delta_eps &lt;-<span class="st"> </span><span class="kw">sample_deltas</span>(mu_eps, .<span class="dv">1</span>, <span class="dv">4</span>)
-delta_rho &lt;-<span class="st"> </span><span class="kw">sample_deltas</span>(mu_rho, .<span class="dv">1</span>, <span class="dv">4</span>)
-
-Sigma &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">rep</span>(.<span class="dv">1</span>, <span class="dv">3</span>*<span class="dv">3</span>), <span class="dt">nrow =</span> <span class="dv">3</span>)
-<span class="kw">diag</span>(Sigma) &lt;-<span class="st"> </span><span class="dv">1</span>
-
-Sigma_eps &lt;-<span class="st"> </span>Sigma_rho &lt;-<span class="st"> </span>Sigma
-Sigma_b &lt;-<span class="st"> </span>Sigma_xi &lt;-<span class="st"> </span><span class="kw">diag</span>(<span class="dv">3</span>)
-
-beta_xi &lt;-<span class="st"> </span><span class="kw">sample_betas</span>(<span class="dt">deltas =</span> delta_xi,
-                        <span class="dt">group_index =</span> group_index_mm$m,
-                        <span class="dt">Sigma =</span> Sigma_xi)
-<span class="co">#&gt; Loading required package: MASS</span>
-beta_b &lt;-<span class="st"> </span><span class="kw">sample_betas</span>(<span class="dt">deltas =</span> delta_b,
-                        <span class="dt">group_index =</span> group_index_mm$m,
-                        <span class="dt">Sigma =</span> Sigma_b)
-beta_eps &lt;-<span class="st"> </span><span class="kw">sample_betas</span>(<span class="dt">deltas =</span> delta_eps,
-                        <span class="dt">group_index =</span> group_index_mm$m,
-                        <span class="dt">Sigma =</span> Sigma_eps)
-beta_rho &lt;-<span class="st"> </span><span class="kw">sample_betas</span>(<span class="dt">deltas =</span> delta_rho,
-                        <span class="dt">group_index =</span> group_index_mm$m,
-                        <span class="dt">Sigma =</span> Sigma_rho)</code></pre></div>
+</div>
+<div id="simulating-data" class="section level1">
+<h1 class="hasAnchor">
+<a href="#simulating-data" class="anchor"></a>Simulating data</h1>
+<p>Before modeling the task data, I will confirm that this model can recover known parameters from simulated data. I simulate data based on the structure of the sample data, using the same number of participants per sample (see the section on <a href="descriptive-statistics.html">descriptive statistics</a>, as well as precisely the same task structure. For this aim, it is important to be able to recover all <span class="math inline">\(\mu_{\theta k}\)</span> for <span class="math inline">\(\theta \in \{\epsilon,\rho,b,\xi\}\)</span> and <span class="math inline">\(k \in \{1,2,3\}\)</span>, where 1 = Hungry/Thirsty, 2 = Popular/Unpopular, and 3 = Dating/Looking. Those parameters that account for idiosyncratic deviation from RW-expected behavior (<span class="math inline">\(b,\xi\)</span>) will not vary by condition. Based on interactive simulation (<a href="https://jflournoy.shinyapps.io/rw_model/">here</a>), reasonable parameter values for the control condition might be <span class="math inline">\(\mu_\epsilon = -1.65\)</span> and <span class="math inline">\(\mu_\rho = -0.3\)</span>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
+<p>The <a href="http://github.com/jflournoy/probly"><code>probly</code></a> package contains functions that help generate sample- and individually-varying coefficients for parameters, as well as simulated data from task structure.</p>
+<p>(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes.</p>
+<p>(ref:simdatsample) Simulated task data for each sample.</p>
+<p>One early indication that a model may not be well suited to a particular data set is that the model, given reasonable parameter values, is not able to produce simulated data that looks like the real data one is attempting to model. The simulated data do generally behave similarly to the actual data when we look just at the proportion of optimal presses over time (Figure @ref(fig:simdata) and Figure @ref(fig:simdatasample), below, and Figure X in the section on <a href="http://127.0.0.1:9740/rmd_output/4/descriptive-statistics.html">descriptive statistics</a>).</p>
+<div class="figure">
+<img src="test-simulated-data_files/figure-html/simdata-1.png" alt="(ref:simdat)" width="576"><p class="caption">
+(ref:simdat)
+</p>
+</div>
+<div class="figure">
+<img src="test-simulated-data_files/figure-html/simdatasample-1.png" alt="(ref:simdatsample)" width="576"><p class="caption">
+(ref:simdatsample)
+</p>
 </div>
 </div>
+<div id="recovery-of-population-parameters" class="section level1">
+<h1 class="hasAnchor">
+<a href="#recovery-of-population-parameters" class="anchor"></a>Recovery of population parameters</h1>
+<pre><code>#&gt; [1] "350.7 Mb"</code></pre>
+<p>The model as described above was estimated using RStan <span class="citation">(version 2.17.3; Stan Development Team, 2018)</span>, sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain.</p>
+<div class="figure">
+<img src="test-simulated-data_files/figure-html/checking_fit_mu-1.png" alt="Capturing data-generating population means" width="768"><p class="caption">
+Capturing data-generating population means
+</p>
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
@@ -323,6 +170,9 @@ beta_rho &lt;-<span class="st"> </span><span class="kw">sample_betas</span>(<spa
 </div>
 <div id="ref-guitart-masip2012">
 <p>Guitart-Masip, M., Huys, Q. J., Fuentemilla, L., Dayan, P., Duzel, E., &amp; Dolan, R. J. (2012). Go and no-go learning in reward and punishment: Interactions between affect and effect. <em>NeuroImage</em>, <em>62</em>(1), 154–166. doi:<a href="https://doi.org/10.1016/j.neuroimage.2012.04.024">10.1016/j.neuroimage.2012.04.024</a></p>
+</div>
+<div id="ref-standevelopmentteam2018">
+<p>Stan Development Team. (2018). RStan: The R interface to Stan. Retrieved from <a href="http://mc-stan.org/" class="uri">http://mc-stan.org/</a></p>
 </div>
 </div>
 </div>
@@ -340,12 +190,15 @@ beta_rho &lt;-<span class="st"> </span><span class="kw">sample_betas</span>(<spa
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li>
-<a href="#aim-1a-does-framing-reinforcement-learning-with-mate-seeking-and-status-motivational-contexts-sensitize-the-learner-and-potentiate-learning">Aim 1a: Does framing reinforcement learning with (mate-seeking and status) motivational contexts sensitize the learner and potentiate learning?</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#method">Method</a></li>
-      <li><a href="#modeling-learning">Modeling learning</a></li>
+<li><a href="#task-descriptions">Task Descriptions</a></li>
+      <li><a href="#a-model-for-reinforcement-learning">A model for reinforcement learning</a></li>
+      <li>
+<a href="#reinforcement-learning-model-for-the-splt">Reinforcement learning model for the SPLT</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#hierarchical-parameters">Hierarchical Parameters</a></li>
       </ul>
 </li>
+      <li><a href="#simulating-data">Simulating data</a></li>
+      <li><a href="#recovery-of-population-parameters">Recovery of population parameters</a></li>
       <li><a href="#references">References</a></li>
       </ul>
 </div>
