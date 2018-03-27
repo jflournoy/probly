@@ -201,6 +201,37 @@ get_par_summaries <- function(afit, par_regex){
     )
 }
 
+mu_param_ests <- get_par_summaries(stan_sim_fit_fit, par_regex = '^mu_')
+
+mu_param_ests_df <- as.data.frame(mu_param_ests)
+
+mu_param_ests_df$population_val <- c(mu_xi, mu_eps, mu_b, mu_rho)
+
+mu_param_ests_df$mean_prime[1:6] <- pnorm(mu_param_ests_df$mean[1:6])
+mu_param_ests_df$`97.5%_prime`[1:6] <- pnorm(mu_param_ests_df$`97.5%`[1:6])
+mu_param_ests_df$`2.5%_prime`[1:6] <- pnorm(mu_param_ests_df$`2.5%`[1:6])
+mu_param_ests_df$population_prime[1:6] <- pnorm(mu_param_ests_df$population_val[1:6])
+mu_param_ests_df$mean_prime[7:9] <- mu_param_ests_df$mean[7:9]
+mu_param_ests_df$`97.5%_prime`[7:9] <- mu_param_ests_df$`97.5%`[7:9]
+mu_param_ests_df$`2.5%_prime`[7:9] <- mu_param_ests_df$`2.5%`[7:9]
+mu_param_ests_df$population_prime[7:9] <- mu_param_ests_df$population_val[7:9]
+mu_param_ests_df$mean_prime[10:12] <- exp(mu_param_ests_df$mean[10:12])
+mu_param_ests_df$`97.5%_prime`[10:12] <- exp(mu_param_ests_df$`97.5%`[10:12])
+mu_param_ests_df$`2.5%_prime`[10:12] <- exp(mu_param_ests_df$`2.5%`[10:12])
+mu_param_ests_df$population_prime[10:12] <- exp(mu_param_ests_df$population_val[10:12])
+
+mu_param_ests_df$id <- unlist(lapply(rownames(mu_param_ests_df), function(x) gsub('mu_delta_(\\w+)\\[\\d\\]', '\\1', x)))
+
+ggplot2::ggplot(
+    mu_param_ests_df[4:12, ],
+    ggplot2::aes(y = mean, x = population_val, shape = id)) +
+    geom_abline(intercept = 0, slope = 1) + 
+    geom_errorbar(
+        ggplot2::aes(ymin = `2.5%`, ymax = `97.5%`, width = 0)
+    ) + 
+    geom_point(size = 2) + 
+    theme_minimal()
+
 ```
 
 [^1]: Note that these are the _raw_ parameter values which are transformed such that $\epsilon^\prime \in [0,1]$ and $\rho^\prime \in [0,\infty)$.

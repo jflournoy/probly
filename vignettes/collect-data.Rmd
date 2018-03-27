@@ -13,7 +13,7 @@ Data from the Social Probabilistic Learning Task was collected from 5 different 
 
 **Exclusions:** Participants were excluded if they failed three out of four attention checks[^1], completed the self-report questionnaires in less than 30 minutes, and received rewards totaling an amount small enough to be consistent with random responding on the task.
 
-One included response was incompletely saved.
+One included response was incompletely saved. One participant completed a different version of the task with a different control condition and was not included.
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(

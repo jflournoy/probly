@@ -85,7 +85,30 @@ ggplot2::ggplot(
     facet_wrap(~id, ncol = 20) + 
     coord_cartesian(x = c(0, 2)) +
     labs(x = 'Trial reaction-time (s)', 
-         y = 'Count')
+         y = 'Count',
+         title = 'Reaction time for all participants')
+
+max_number_of_trials <- max(
+    dplyr::summarise(
+        dplyr::group_by(
+            dplyr::filter(splt, !is.na(pressed_r)), 
+            id, condition),
+        n_trials = n())$n_trials
+    )
+
+ggplot2::ggplot(
+    dplyr::filter(splt, !is.na(pressed_r)),
+    ggplot2::aes(x = condition)) + 
+    ggplot2::geom_hline(yintercept = max_number_of_trials, color = '#666666') + 
+    ggplot2::geom_bar(fill = '#bbbbbb') +
+    ggplot2::theme_minimal() + 
+    ggplot2::theme(strip.background = element_blank(),
+                   strip.text = element_blank(),
+                   axis.text.x = element_text(angle = 360-45, hjust = 0)) +
+    facet_wrap(~id, ncol = 20) + 
+    labs(x = 'Condition', 
+         y = paste0('Number of trials (line at max = ', max_number_of_trials, ')'),
+         title = 'Trials per condition for all participants')
 ```
 
 # Raw task data
