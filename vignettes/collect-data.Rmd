@@ -154,7 +154,7 @@ splt_clean <- splt_crunched %>%
     dplyr::mutate(condition = factor(condition, 
                                      levels = conditions, 
                                      labels = abbreviate(conditions))) %>%
-    dplyr::select(-exclude, -filename) %>%
+    dplyr::select(-exclude, -filename, -timestamp) %>%
     dplyr::arrange(sample, id, trial_index)
 ```
 
