@@ -3,9 +3,6 @@
 library(probly)
 data(splt)
 
-splt <- splt[!splt$id %in% c(174,
-                             223, #BAD_PID, need to fix
-                             242), ]
 splt <- splt[!is.na(splt$pressed_r), ]
 splt$cue <- as.numeric(as.factor(paste0(splt$condition, '_', splt$sex)))
 splt$condition <- factor(splt$condition, levels = c('HngT', 'DtnL', 'PplU'))
@@ -31,7 +28,7 @@ splt$condition <- factor(splt$condition, levels = c('HngT', 'DtnL', 'PplU'))
 
 group_index_mm <- get_sample_index(splt, levels = c("TDS1", "TDS2", "yads", "yads_online"))
 N <- dim(group_index_mm)[1]
-M <-length(levels(group_index_mm$m_fac))
+M <- length(levels(group_index_mm$m_fac))
 K <- length(unique(splt$condition))
 cue_mat <- get_col_as_trial_matrix(splt, 'cue', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
 Tsubj <- get_max_trials_per_individual(cue_mat)

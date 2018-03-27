@@ -189,6 +189,20 @@ ggplot2::ggplot(
 ```{r estimate_rl_from_sim, eval=F}
 ```
 
+
+```{r checking_fit}
+stan_sim_fit_data <- stan_sim_fit$data
+stan_sim_fit_fit <- stan_sim_fit$fit
+
+get_par_summaries <- function(afit, par_regex){
+    par_names <- grep(par_regex, names(afit), value = T)
+    return(
+        rstan::summary(afit, pars = par_names, probs = c(.025, .5, .975))$summary
+    )
+}
+
+```
+
 [^1]: Note that these are the _raw_ parameter values which are transformed such that $\epsilon^\prime \in [0,1]$ and $\rho^\prime \in [0,\infty)$.
 
 # References
