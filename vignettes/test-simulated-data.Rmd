@@ -2,7 +2,9 @@
 title: "Test Simulated Data"
 author: "John Flournoy"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -15,7 +17,8 @@ csl: "`r system.file('bib', 'apa-old-doi-prefix.csl', package = 'probly')`"
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  echo=F,message=F,warning=F,error=F
 )
 
 knitr::read_chunk(system.file('r_aux', 'simulate_data_from_splt.R', package = 'probly'))
@@ -23,14 +26,15 @@ knitr::read_chunk(system.file('r_aux', 'estimate_rl_from_sim.R', package = 'prob
 data_dir <- '/data/jflournoy/split/probly'
 ```
 
+**Aim 1a:** Does framing reinforcement learning with (mate-seeking and status) motivational contexts sensitize the learner and potentiate learning?
 
-# Aim 1a: Does framing reinforcement learning with (mate-seeking and status) motivational contexts sensitize the learner and potentiate learning?
+My approach to answering this question is to model how learning occurs in each of the three motive contexts and examine differences in how learning occurs.
 
-## Method
+# Task Descriptions
 
 **TASK DESCRIPTION HERE**
 
-## Modeling learning
+# A model for reinforcement learning
 
 In the context of this task, where the relation between the optimal response and the stimulus is constant, a simple model of the degree of learning could rely on a simple proportion of optimal responses $P_{ok}$ for each condition $k$.
 The test of the hypothesis of the effect of framing would then be the difference between conditions in $P_o$. 
@@ -38,9 +42,6 @@ This simple model sacrifice precision for simplicity, and so I will be modeling 
 This increases the number of possible comparisons I am able to make between conditions, which may generate useful information about how motive-domain framing affects the learning process (as modeled, of course), but which also increases the complexity of patterns between conditions and parameters that must be interpreted.
 It will be helpful to keep in mind that the framing can only be said to potentiate learning if, regardless of its affect on any model parameters, it does not result in higher proportions of optimal responding.
 
-### Ensuring the model can recover known parameters
-
-Before modeling the task data, I will confirm that this model can recover known parameters from simulated data.
 In this section, I simulate data as expected under the Rescorla-Wagner model implemented by @ahn2017 in their go-no-go model 2. 
 Their original model handles binary decisions (button-press or no button-press) in response to four different cues. 
 However, the form of the learning algorithm is generalizable to other binary choices in response to cues. 
@@ -50,7 +51,7 @@ The go-no-go models used by @ahn2017 were derived from work by @guitart-masip201
 Their most flexible reinforcement learning model generates the probability of an action for each trial via N parameters: the learning rate, $\epsilon$, the effective size of reinforcement, $\rho$, a static bias parameter, $b$, an irreducible noise parameter, $\xi$, and a Pavlovian learning parameter, $\pi$.
 In the SPLT, trial feedback does not vary by valence (responses result in reward, or no reward, but never punishment), so I use the model that does not include this Pavlovian component. 
 
-#### Reinforcement learning model for the SPLT
+# Reinforcement learning model for the SPLT
 
 The model for an individual $j$'s probability of pressing the right arrow key on trial $t$ given that stimulus $s_{t}$ is presented, $P(a_{\rightarrow t} | s_{t})_{t}$, is determined by a logistic transformation of the action weight for pressing the right arrow key minus the action weight for pressing the left arrow key. 
 This probability is then adjusted by a noise parameter, $0 \leq\xi_{jk}\leq1$ for each participant $j$ in condition $k$.
@@ -81,7 +82,7 @@ $$
 Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a_t, s_t)\big)
 $$
 
-#### Hierarchical Parameters
+## Hierarchical Parameters
 
 Each parameter ($\epsilon, \rho, b, \xi$) varies by condition $k \in 1:K$, and by participant $j \in 1:J$ nested in sample $m \in 1:M$. 
 The structure of the hierarchical part of the model is the same for each parameter, so the following description for $\epsilon$ will serve as a description for all of the parameters.
@@ -105,8 +106,9 @@ $$
 \sigma_\epsilon \sim \text{exponential(1)}.
 $$
 
-#### Simulating data
+# Simulating data
 
+Before modeling the task data, I will confirm that this model can recover known parameters from simulated data.
 I simulate data based on the structure of the sample data, using the same number of participants per sample (see the section on [descriptive statistics](descriptive-statistics.html), as well as precisely the same task structure. 
 For this aim, it is important to be able to recover all $\mu_{\theta k}$ for $\theta \in \{\epsilon,\rho,b,\xi\}$ and $k \in \{1,2,3\}$, where 1 = Hungry/Thirsty, 2 = Popular/Unpopular, and 3 = Dating/Looking. Those parameters that account for idiosyncratic deviation from RW-expected behavior ($b,\xi$) will not vary by condition. Based on interactive simulation ([here](https://jflournoy.shinyapps.io/rw_model/)), reasonable parameter values for the control condition might be $\mu_\epsilon = -1.65$ and $\mu_\rho = -0.3$ [^1].
 
@@ -116,9 +118,13 @@ The [`probly`](http://github.com/jflournoy/probly) package contains functions th
 ```{r simulate_data_from_splt}
 ```
 
-Do the simulated values behave as we would expect given the descriptive plots?
+(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes.
 
-```{r fig.width=6, fig.height=5}
+(ref:simdatsample) Simulated task data for each sample.
+
+One early indication that a model may not be well suited to a particular data set is that the model, given reasonable parameter values, is not able to produce simulated data that looks like the real data one is attempting to model. The simulated data do generally behave similarly to the actual data when we look just at the proportion of optimal presses over time (Figure \@ref(fig:simdata) and Figure \@ref(fig:simdatasample), below, and Figure X in the section on [descriptive statistics](http://127.0.0.1:9740/rmd_output/4/descriptive-statistics.html)).
+
+```{r}
 
 p_r_df <- cbind(group_index_mm, splt_sim_trials$press_right)
 p_r_df <- tidyr::gather(p_r_df, trial, press_r, -id, -sample, -m_fac, -m)
@@ -146,6 +152,11 @@ splt_sim_summary <- dplyr::summarise(
     dplyr::group_by(splt_sim, condition, condition_trial),
     trial_mean = mean(press_opt)
 )
+```
+
+
+
+```{r simdata, fig.width=6, fig.height=5, fig.cap='(ref:simdat)'}
 
 ggplot2::ggplot(
     splt_sim_summary,
@@ -161,7 +172,9 @@ ggplot2::ggplot(
     ggplot2::labs(x = 'Within-condition trial number',
                   y = 'Proportion of optimal responses') + 
     ggplot2::theme_minimal()
+```
 
+```{r simdatasample, fig.width=6, fig.height=5, fig.cap='(ref:simdatsample)'}
 splt_sim_samp_summary <- dplyr::summarise(
     dplyr::group_by(splt_sim, sample, condition, condition_trial),
     trial_mean = mean(press_opt)
@@ -184,13 +197,15 @@ ggplot2::ggplot(
     ggplot2::theme_minimal()
 ```
 
-#### Estimating posterior using simulated data
+# Recovery of population parameters
 
-```{r estimate_rl_from_sim, eval=F}
+```{r estimate_rl_from_sim, eval=T, message=F}
 ```
 
+The model as described above was estimated using RStan [version `r packageVersion('rstan')`; @standevelopmentteam2018], sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain.   
 
-```{r checking_fit}
+
+```{r checking_fit_mu, fig.width=8, fig.height=5, fig.cap="Capturing data-generating population means"}
 stan_sim_fit_data <- stan_sim_fit$data
 stan_sim_fit_fit <- stan_sim_fit$fit
 
@@ -206,31 +221,47 @@ mu_param_ests <- get_par_summaries(stan_sim_fit_fit, par_regex = '^mu_')
 mu_param_ests_df <- as.data.frame(mu_param_ests)
 
 mu_param_ests_df$population_val <- c(mu_xi, mu_eps, mu_b, mu_rho)
-
-mu_param_ests_df$mean_prime[1:6] <- pnorm(mu_param_ests_df$mean[1:6])
-mu_param_ests_df$`97.5%_prime`[1:6] <- pnorm(mu_param_ests_df$`97.5%`[1:6])
-mu_param_ests_df$`2.5%_prime`[1:6] <- pnorm(mu_param_ests_df$`2.5%`[1:6])
-mu_param_ests_df$population_prime[1:6] <- pnorm(mu_param_ests_df$population_val[1:6])
-mu_param_ests_df$mean_prime[7:9] <- mu_param_ests_df$mean[7:9]
-mu_param_ests_df$`97.5%_prime`[7:9] <- mu_param_ests_df$`97.5%`[7:9]
-mu_param_ests_df$`2.5%_prime`[7:9] <- mu_param_ests_df$`2.5%`[7:9]
-mu_param_ests_df$population_prime[7:9] <- mu_param_ests_df$population_val[7:9]
-mu_param_ests_df$mean_prime[10:12] <- exp(mu_param_ests_df$mean[10:12])
-mu_param_ests_df$`97.5%_prime`[10:12] <- exp(mu_param_ests_df$`97.5%`[10:12])
-mu_param_ests_df$`2.5%_prime`[10:12] <- exp(mu_param_ests_df$`2.5%`[10:12])
-mu_param_ests_df$population_prime[10:12] <- exp(mu_param_ests_df$population_val[10:12])
+mu_param_ests_df$mean_of_deltas <- apply(cbind(delta_xi, delta_eps, delta_b, delta_rho), 2, mean)
+mu_param_ests_df$mean_of_betas <- apply(cbind(beta_xi, beta_eps, beta_b, beta_rho), 2, mean)
 
 mu_param_ests_df$id <- unlist(lapply(rownames(mu_param_ests_df), function(x) gsub('mu_delta_(\\w+)\\[\\d\\]', '\\1', x)))
 
+mu_param_ests_df_l <- tidyr::gather(
+    mu_param_ests_df,
+    'pop_parameter',
+    'value',
+    population_val,
+    mean_of_deltas,
+    mean_of_betas)
+
+mu_param_ests_df_l <- dplyr::mutate(
+    mu_param_ests_df_l,
+    pop_parameter = factor(
+        pop_parameter,
+        levels = c('population_val', 'mean_of_deltas', 'mean_of_betas'),
+        labels = c(expression('Generating '*mu[delta]), 
+                   expression("Mean of all "*delta),
+                   expression("Mean of all "*beta))),
+    id = factor(
+        id,
+        levels = c('ep', 'rho', 'b', 'xi'),
+        labels = c('epsilon', 'rho', 'b', 'xi')
+    )
+)
+
 ggplot2::ggplot(
-    mu_param_ests_df[4:12, ],
-    ggplot2::aes(y = mean, x = population_val, shape = id)) +
-    geom_abline(intercept = 0, slope = 1) + 
-    geom_errorbar(
-        ggplot2::aes(ymin = `2.5%`, ymax = `97.5%`, width = 0)
-    ) + 
-    geom_point(size = 2) + 
-    theme_minimal()
+   mu_param_ests_df_l,
+   ggplot2::aes(y = mean, x = value)) + 
+    ggplot2::geom_abline(intercept = 0, slope = 1) + 
+    ggplot2::geom_errorbar(
+        ggplot2::aes(ymin = `2.5%`, ymax = `97.5%`, width = 0), color = '#999999') + 
+    ggplot2::geom_point(size = 2) + 
+    ggplot2::theme_minimal() +
+    ggplot2::facet_grid(id ~ pop_parameter, scales = 'free', labeller = 'label_parsed') +
+    ggplot2::labs(x = 'Value of generating parameter',
+                  y = expression('Mean of posterior distribution for '*mu[theta]))
+    
+
 
 ```
 
