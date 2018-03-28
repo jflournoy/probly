@@ -74,7 +74,7 @@
       <h1>Test Simulated Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-27</h4>
+            <h4 class="date">2018-03-28</h4>
           </div>
 
     
@@ -136,30 +136,35 @@ Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a
 <a href="#simulating-data" class="anchor"></a>Simulating data</h1>
 <p>Before modeling the task data, I will confirm that this model can recover known parameters from simulated data. I simulate data based on the structure of the sample data, using the same number of participants per sample (see the section on <a href="descriptive-statistics.html">descriptive statistics</a>, as well as precisely the same task structure. For this aim, it is important to be able to recover all <span class="math inline">\(\mu_{\theta k}\)</span> for <span class="math inline">\(\theta \in \{\epsilon,\rho,b,\xi\}\)</span> and <span class="math inline">\(k \in \{1,2,3\}\)</span>, where 1 = Hungry/Thirsty, 2 = Popular/Unpopular, and 3 = Dating/Looking. Those parameters that account for idiosyncratic deviation from RW-expected behavior (<span class="math inline">\(b,\xi\)</span>) will not vary by condition. Based on interactive simulation (<a href="https://jflournoy.shinyapps.io/rw_model/">here</a>), reasonable parameter values for the control condition might be <span class="math inline">\(\mu_\epsilon = -1.65\)</span> and <span class="math inline">\(\mu_\rho = -0.3\)</span>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
 <p>The <a href="http://github.com/jflournoy/probly"><code>probly</code></a> package contains functions that help generate sample- and individually-varying coefficients for parameters, as well as simulated data from task structure.</p>
-<p>(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes.</p>
-<p>(ref:simdatsample) Simulated task data for each sample.</p>
 <p>One early indication that a model may not be well suited to a particular data set is that the model, given reasonable parameter values, is not able to produce simulated data that looks like the real data one is attempting to model. The simulated data do generally behave similarly to the actual data when we look just at the proportion of optimal presses over time (Figure @ref(fig:simdata) and Figure @ref(fig:simdatasample), below, and Figure X in the section on <a href="http://127.0.0.1:9740/rmd_output/4/descriptive-statistics.html">descriptive statistics</a>).</p>
 <div class="figure">
 <img src="test-simulated-data_files/figure-html/simdata-1.png" alt="(ref:simdat)" width="576"><p class="caption">
 (ref:simdat)
 </p>
 </div>
+<p>(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes.</p>
 <div class="figure">
 <img src="test-simulated-data_files/figure-html/simdatasample-1.png" alt="(ref:simdatsample)" width="576"><p class="caption">
 (ref:simdatsample)
 </p>
 </div>
+<p>(ref:simdatsample) Simulated task data for each sample.</p>
 </div>
 <div id="recovery-of-population-parameters" class="section level1">
 <h1 class="hasAnchor">
 <a href="#recovery-of-population-parameters" class="anchor"></a>Recovery of population parameters</h1>
-<pre><code>#&gt; [1] "350.7 Mb"</code></pre>
-<p>The model as described above was estimated using RStan <span class="citation">(version 2.17.3; Stan Development Team, 2018)</span>, sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain.</p>
+<p>The model as described above was fit to simulated data using RStan <span class="citation">(version 2.17.3; Stan Development Team, 2018)</span>, sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain. The posterior means for each parameter are compared to those that generated the simulated task behavior. The plots in Figure @ref(fig:musimfitplot) allow visual comparison of the fitted model posteriors for each parameter to the data-generating population means, as well as to the means of the data-generating parameters for each sample, and for each individual. It is clear from these plots that the parameter estimates from this particular run capture the generating parameters, with two exceptions. First, the estimate of the population mean of the irrudicble noise parameter, <span class="math inline">\(\xi\)</span>, for one condition did not capture the generating parameter. This may be because this parameter was intentionally set very low so that <span class="math inline">\(\xi^\prime \approx 0\)</span>. The second instance occurs with the bias parameter for one condition. This may be acceptable because the parameters of interest safely capture the generating values, and this single condition bias parameter is not very far from the identity line. Additionally, it should be noted that the fitted model does capture the mean of generating <span class="math inline">\(\delta_b\)</span> and <span class="math inline">\(\beta_b\)</span> parameters for all conditions.</p>
 <div class="figure">
-<img src="test-simulated-data_files/figure-html/checking_fit_mu-1.png" alt="Capturing data-generating population means" width="768"><p class="caption">
-Capturing data-generating population means
+<img src="test-simulated-data_files/figure-html/musimfitplot-1.png" alt="(ref:musimfitplot)" width="768"><p class="caption">
+(ref:musimfitplot)
 </p>
 </div>
+<p>(ref:musimfitplot) Comparison of model fit to generating parameters. Gray bars are 95% credible intervals. Black lines are identinty, where model fit and generating parameters are exactly equal.</p>
+</div>
+<div id="conclusion" class="section level1">
+<h1 class="hasAnchor">
+<a href="#conclusion" class="anchor"></a>Conclusion</h1>
+<p>The model is able to recover data generating parameters from simulated data and is safe to use in interpretting the data provided by the study participants.</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
@@ -199,6 +204,7 @@ Capturing data-generating population means
 </li>
       <li><a href="#simulating-data">Simulating data</a></li>
       <li><a href="#recovery-of-population-parameters">Recovery of population parameters</a></li>
+      <li><a href="#conclusion">Conclusion</a></li>
       <li><a href="#references">References</a></li>
       </ul>
 </div>

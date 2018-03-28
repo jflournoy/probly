@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Social Probabilistic Learning Confidence Data — splt_confidence • probly</title>
+<title>Get par summaries — get_par_summaries • probly</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -96,28 +96,40 @@
       <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Social Probabilistic Learning Confidence Data</h1>
+    <h1>Get par summaries</h1>
     </div>
 
     
-    <p>Description</p>
+    <p>Get par summaries</p>
     
 
-    <pre class="usage"><span class='no'>splt_confidence</span></pre>
-        
-    <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
+    <pre class="usage"><span class='fu'>get_par_summaries</span>(<span class='no'>afit</span>, <span class='no'>par_regex</span>, <span class='kw'>probs</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>0.025</span>, <span class='fl'>0.5</span>, <span class='fl'>0.975</span>))</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>afit</th>
+      <td><p>an rstan fit</p></td>
+    </tr>
+    <tr>
+      <th>par_regex</th>
+      <td><p>regular expression for <code>grep</code> to use to get paramater names</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>A data frame with M rows and N variables:</p><dl class='dl-horizontal'>
-  <dt>blah</dt><dd><p>blah</p></dd>
-</dl>
+    <p>a table of summary statistics from all chains in <code>afit</code></p>
     
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
       
-      <li><a href="#format">Format</a></li>
+      <li><a href="#value">Value</a></li>
           </ul>
 
   </div>
