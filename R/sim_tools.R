@@ -213,6 +213,10 @@ simulate_splt_data <- function(splt_structure, mu_xi, mu_b, mu_eps, mu_rho){
         beta_xi = beta_xi, beta_b = beta_b, beta_eps = beta_eps, beta_rho = beta_rho)
 
     return(list(task_behavior = splt_sim_trials,
+                mu_xi = mu_xi,
+                mu_b = mu_b,
+                mu_eps = mu_eps,
+                mu_rho = mu_rho,
                 delta_xi = delta_xi,
                 delta_b = delta_b,
                 delta_eps = delta_eps,

@@ -19,3 +19,21 @@ CachedFit <- function(expr, rds_filename){
   return(theFit)
 }
 
+#' Get par summaries
+#'
+#' @param afit an rstan fit
+#' @param par_regex regular expression for \code{grep} to use to get paramater names
+#'
+#' @return a table of summary statistics from all chains in \code{afit}
+#' @importMethodsFrom rstan summary
+#' @importClassesFrom rstan stanfit
+#' @export
+get_par_summaries <- function(afit, par_regex, probs = c(.025, .5, .975)){
+    if(!class(afit)=='stanfit'){
+        stop('afit must be of class "stanfit"')
+    }
+    par_names <- grep(par_regex, names(afit), value = T)
+    return(
+        rstan::summary(afit, pars = par_names, probs = probs)$summary
+    )
+}
