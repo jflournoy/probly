@@ -1,0 +1,9 @@
+articles:
+- title: All vignettes
+  desc: ~
+  contents:
+  - '`collect-data`'
+  - '`descriptive-statistics`'
+  - '`test-simple-3l-mv-model`'
+  - '`test-simulated-data`'
+  - '`fit-model-to-participant-data`'
