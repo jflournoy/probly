@@ -1,0 +1,29 @@
+---
+title: "Fit model to participant data"
+author: "John Flournoy"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+pkgdown:
+  as_is: true
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "`r system.file('bib', 'dissertation.bib', package = 'probly')`"
+csl: "`r system.file('bib', 'apa-old-doi-prefix.csl', package = 'probly')`"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  echo=F,message=F,warning=F,error=F
+)
+```
+
+# Method
+
+Using the model presented in the section on [testing simulated data](test-simulated-data.html), I estimate the posterior distribution of the model parameters given the data provided by four groups of participants.
+Quality of estimation can be supported by (A), (B), (C), (D).
