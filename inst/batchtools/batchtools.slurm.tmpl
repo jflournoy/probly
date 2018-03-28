@@ -37,6 +37,8 @@ log.file = fs::path_expand(log.file)
 ## source /etc/profile
 ## module add ...
 
+module load R
+
 ## Export value of DEBUGME environemnt var to slave
 export DEBUGME=<%= Sys.getenv("DEBUGME") %>
 
