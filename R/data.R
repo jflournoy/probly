@@ -4,8 +4,7 @@
 #'
 #' @format A data frame with M rows and N variables:
 #' \describe{
-#'   \item{price}{price, in US dollars}
-#'   \item{carat}{weight of the diamond, in carats}
+#'   \item{blah}{blah}
 #' }
 "splt"
 
@@ -15,8 +14,7 @@
 #'
 #' @format A data frame with M rows and N variables:
 #' \describe{
-#'   \item{price}{price, in US dollars}
-#'   \item{carat}{weight of the diamond, in carats}
+#'   \item{blah}{blah}
 #' }
 "splt_confidence"
 
@@ -35,7 +33,7 @@
 #' @return a data frame with columns id_col, sample_col, m_fac (with sample_col
 #'   coerced to a factor) and m (with m_fac coerced to a number)
 #' @export
-get_sample_index <- function(splt_df, id_col = 'id', sample_col = 'sample', levels = sort(unique(splt_df[, sample_col]))) {
+get_sample_index <- function(splt_df, id_col = 'id', sample_col = 'sample', levels = sort(unlist(unique(splt_df[, sample_col])))) {
     mm <- unique(splt_df[, c(id_col, sample_col)])
     rownames(mm) <- 1:dim(mm)[1]
     mm$m_fac <- factor(mm$sample,

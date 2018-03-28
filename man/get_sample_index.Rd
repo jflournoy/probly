@@ -5,7 +5,7 @@
 \title{Get sample index}
 \usage{
 get_sample_index(splt_df, id_col = "id", sample_col = "sample",
-  levels = sort(unique(splt_df[, sample_col])))
+  levels = sort(unlist(unique(splt_df[, sample_col]))))
 }
 \arguments{
 \item{splt_df}{a data frame containing data from the SPLT}
