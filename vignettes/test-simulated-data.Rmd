@@ -5,6 +5,8 @@ date: "`r Sys.Date()`"
 output: 
   bookdown::html_document2:
     base_format: rmarkdown::html_vignette
+pkgdown:
+  as_is: true
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -118,10 +120,6 @@ The [`probly`](http://github.com/jflournoy/probly) package contains functions th
 ```{r simulate_data_from_splt}
 ```
 
-(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes.
-
-(ref:simdatsample) Simulated task data for each sample.
-
 One early indication that a model may not be well suited to a particular data set is that the model, given reasonable parameter values, is not able to produce simulated data that looks like the real data one is attempting to model. The simulated data do generally behave similarly to the actual data when we look just at the proportion of optimal presses over time (Figure \@ref(fig:simdata) and Figure \@ref(fig:simdatasample), below, and Figure X in the section on [descriptive statistics](http://127.0.0.1:9740/rmd_output/4/descriptive-statistics.html)).
 
 ```{r}
@@ -174,6 +172,8 @@ ggplot2::ggplot(
     ggplot2::theme_minimal()
 ```
 
+(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes.
+
 ```{r simdatasample, fig.width=6, fig.height=5, fig.cap='(ref:simdatsample)'}
 splt_sim_samp_summary <- dplyr::summarise(
     dplyr::group_by(splt_sim, sample, condition, condition_trial),
@@ -197,26 +197,29 @@ ggplot2::ggplot(
     ggplot2::theme_minimal()
 ```
 
+(ref:simdatsample) Simulated task data for each sample.
+
 # Recovery of population parameters
 
-```{r estimate_rl_from_sim, eval=T, message=F}
+```{r estimate_rl_from_sim, eval=T, message=F, results='hide'}
 ```
 
-The model as described above was estimated using RStan [version `r packageVersion('rstan')`; @standevelopmentteam2018], sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain.   
+The model as described above was fit to simulated data using RStan [version `r packageVersion('rstan')`; @standevelopmentteam2018], sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain. 
+The posterior means for each parameter are compared to those that generated the simulated task behavior.
+The plots in Figure \@ref(fig:musimfitplot) allow visual comparison of the fitted model posteriors for each parameter to the data-generating population means, as well as to the means of the data-generating parameters for each sample, and for each individual.
+It is clear from these plots that the parameter estimates from this particular run capture the generating parameters, with two exceptions. 
+First, the estimate of the population mean of the irrudicble noise parameter, $\xi$, for one condition did not capture the generating parameter. 
+This may be because this parameter was intentionally set very low so that $\xi^\prime \approx 0$. 
+The second instance occurs with the bias parameter for one condition. 
+This may be acceptable because the parameters of interest safely capture the generating values, and this single condition bias parameter is not very far from the identity line. 
+Additionally, it should be noted that the fitted model does capture the mean of generating $\delta_b$ and $\beta_b$ parameters for all conditions.
 
 
-```{r checking_fit_mu, fig.width=8, fig.height=5, fig.cap="Capturing data-generating population means"}
+```{r checking_fit_mu}
 stan_sim_fit_data <- stan_sim_fit$data
 stan_sim_fit_fit <- stan_sim_fit$fit
 
-get_par_summaries <- function(afit, par_regex){
-    par_names <- grep(par_regex, names(afit), value = T)
-    return(
-        rstan::summary(afit, pars = par_names, probs = c(.025, .5, .975))$summary
-    )
-}
-
-mu_param_ests <- get_par_summaries(stan_sim_fit_fit, par_regex = '^mu_')
+mu_param_ests <- probly::get_par_summaries(stan_sim_fit_fit, par_regex = '^mu_')
 
 mu_param_ests_df <- as.data.frame(mu_param_ests)
 
@@ -249,6 +252,15 @@ mu_param_ests_df_l <- dplyr::mutate(
     )
 )
 
+mu_param_ests_df_l <- dplyr::mutate_at(
+    mu_param_ests_df_l,
+    dplyr::vars(value, mean, `2.5%`, `97.5%`),
+    dplyr::funs(ifelse(id %in% c('epsilon','xi'), 
+                pnorm(.),
+                ifelse(id == 'rho', exp(.), .))))
+```
+
+```{r musimfitplot, fig.width=8, fig.height=8, fig.cap='(ref:musimfitplot)'}
 ggplot2::ggplot(
    mu_param_ests_df_l,
    ggplot2::aes(y = mean, x = value)) + 
@@ -257,14 +269,19 @@ ggplot2::ggplot(
         ggplot2::aes(ymin = `2.5%`, ymax = `97.5%`, width = 0), color = '#999999') + 
     ggplot2::geom_point(size = 2) + 
     ggplot2::theme_minimal() +
-    ggplot2::facet_grid(id ~ pop_parameter, scales = 'free', labeller = 'label_parsed') +
+    ggplot2::facet_wrap(id ~ pop_parameter, ncol = 3, scales = 'free', labeller = 'label_parsed') +
     ggplot2::labs(x = 'Value of generating parameter',
-                  y = expression('Mean of posterior distribution for '*mu[theta]))
+                  y = expression('Mean of posterior distribution for '*mu[theta])) +
+    ggplot2::theme(strip.text = element_text(size=10))
     
-
-
 ```
 
+(ref:musimfitplot) Comparison of model fit to generating parameters. Gray bars are 95% credible intervals. Black lines are identinty, where model fit and generating parameters are exactly equal.
+
 [^1]: Note that these are the _raw_ parameter values which are transformed such that $\epsilon^\prime \in [0,1]$ and $\rho^\prime \in [0,\infty)$.
+
+# Conclusion
+
+The model is able to recover data generating parameters from simulated data and is safe to use in interpretting the data provided by the study participants.
 
 # References
