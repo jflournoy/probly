@@ -37,3 +37,38 @@ get_par_summaries <- function(afit, par_regex, probs = c(.025, .5, .975)){
         rstan::summary(afit, pars = par_names, probs = probs)$summary
     )
 }
+
+#' Extract correlation/covariance matrix samples
+#'
+#' Because of the decomposition of the beta covariance matrix into scale and
+#' correlation, it can be hard to interpret the posteriors. This function will
+#' return an array which is a T-by-T-by-Samples array (where T is the number of
+#' coefficients). It is then easy to use apply to get posterior means for each
+#' cell in the matrix (e.g., \code{apply(Sigma_Array, c(1, 2), mean)}).
+#'
+#' @param splt_fit a fit of class stanfit
+#' @param par_subscript the subscript for the L_Omega_subscript and tau_subscript parameters
+#'
+#' @return a list with both Omega (correlation matrix) and Sigma (covariance matrix) sample arrays.
+#' @export
+extract_cor_cov_samps <- function(splt_fit, par_subscript = 'ep'){
+    # splt_fit <- readRDS('/data/jflournoy/split/probly/splt_rl_fit_sim.RDS')$fit
+    L_Omega_regex <- paste0('L_Omega_', par_subscript)
+    tau_regex <- paste0('tau_', par_subscript)
+
+    L_Omega_samp <- as.matrix(splt_fit, pars = grep(L_Omega_regex, names(splt_fit), value = T))
+    tau_samp <- as.matrix(splt_fit, pars = grep(tau_regex, names(splt_fit), value = T))
+
+    Omega_samps <- sapply(1:dim(L_Omega_samp)[1], function(i){
+        l_om_mat <-  matrix(L_Omega_samp[i, ], nrow = length(L_Omega_samp[i, ])^.5)
+        omega_i <- l_om_mat %*% t(l_om_mat)
+        return(omega_i)
+    }, simplify = 'array')
+    Sigma_samps <- sapply(1:dim(L_Omega_samp)[1], function(i){
+        l_om_mat <-  matrix(L_Omega_samp[i, ], nrow = length(L_Omega_samp[i, ])^.5)
+        tau_i <- tau_samp[i, ]
+        Sigma_i <- (diag(tau_i) %*% l_om_mat) %*% t(diag(tau_i) %*% l_om_mat)
+        return(Sigma_i)
+    }, simplify = 'array')
+    return(list(Omega = Omega_samps, Sigma = Sigma_samps))
+}
