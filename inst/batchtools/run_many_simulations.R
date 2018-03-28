@@ -49,6 +49,7 @@ results_f <- listenv()
 
 for(i in 1:iter){
     results_f[[i]] %<-% {
+        library(rstan)
         stan_sim_length <- length(stan_sim_data)
         task_data <- probly::simulate_splt_data(task_structure,
                                                 mu_xi = mu_xi,
