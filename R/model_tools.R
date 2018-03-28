@@ -52,7 +52,6 @@ get_par_summaries <- function(afit, par_regex, probs = c(.025, .5, .975)){
 #' @return a list with both Omega (correlation matrix) and Sigma (covariance matrix) sample arrays.
 #' @export
 extract_cor_cov_samps <- function(splt_fit, par_subscript = 'ep'){
-    # splt_fit <- readRDS('/data/jflournoy/split/probly/splt_rl_fit_sim.RDS')$fit
     L_Omega_regex <- paste0('L_Omega_', par_subscript)
     tau_regex <- paste0('tau_', par_subscript)
 
