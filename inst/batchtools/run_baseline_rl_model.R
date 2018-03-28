@@ -17,76 +17,50 @@ if(!file.exists(data_dir)){
     message("Data goes here: ", data_dir)
 }
 
-data(splt)
-splt_no_na <- splt[!is.na(splt$pressed_r), ]
-splt_no_na$proportion_fac <- factor(splt_no_na$proportion, levels = c('80_20', '20_80'))
-optimal_side_mat <- get_col_as_trial_matrix(splt_no_na, col = 'proportion_fac')
+run_stan_f %<-% {
+    library(rstan)
+    data(splt)
+    splt_no_na <- splt[!is.na(splt$pressed_r), ]
 
-mu_xi <- c(-2.7, -2.6, -2.4)
-mu_b <- c(-.07, .28, .39)
-mu_eps <- c(-1.65, -1.65 + .3, -1.65 + .2)
-mu_rho <- c(-.3, -.3 + .35, -.3 + .45)
+    task_structure <- probly::make_task_structure_from_data(splt_no_na)
+    task_structure$condition[is.na(task_structure$condition)] <- -1
+    task_structure$cue[is.na(task_structure$cue)] <- -1
 
-task_structure <- probly::make_task_structure_from_data(splt_no_na)
-task_structure_stan <- task_structure #just to sub NA with -1
-task_structure_stan$condition[is.na(task_structure_stan$condition)] <- -1
-task_structure_stan$cue[is.na(task_structure_stan$cue)] <- -1
+    outcome <- probly::get_col_as_trial_matrix(
+        splt_no_na,
+        col = 'outcome', id_col = 'id',
+        sample_col = 'sample', trial_col = 'trial_index')
 
-stan_sim_data <- list(
-    N = task_structure_stan$N,
-    `T` = max(task_structure_stan$Tsubj),
-    K = task_structure_stan$K,
-    M = task_structure_stan$M,
-    ncue = task_structure_stan$n_cues,
-    mm = task_structure_stan$mm,
-    Tsubj = task_structure_stan$Tsubj,
-    condition = task_structure_stan$condition,
-    cue = task_structure_stan$cue
-)
+    press_right <- probly::get_col_as_trial_matrix(
+        splt_no_na,
+        col = 'pressed_r', id_col = 'id',
+        sample_col = 'sample', trial_col = 'trial_index')
 
-stan_rl_fn <- system.file('stan', 'splt_rl.stan', package = 'probly')
+    outcome[is.na(outcome)] <- -1
+    press_right[is.na(press_right)] <- -1
 
-iter <- 3
-results_f <- listenv()
+    stan_data <- list(
+        N = task_structure$N,
+        `T` = max(task_structure$Tsubj),
+        K = task_structure$K,
+        M = task_structure$M,
+        ncue = task_structure$n_cues,
+        mm = task_structure$mm,
+        Tsubj = task_structure$Tsubj,
+        condition = task_structure$condition,
+        cue = task_structure$cue,
+        press_right = press_right,
+        outcome = outcome
+    )
 
-for(i in 1:iter){
-    results_f[[i]] %<-% {
-        library(rstan)
-        stan_sim_length <- length(stan_sim_data)
-        task_data <- probly::simulate_splt_data(task_structure,
-                                                mu_xi = mu_xi,
-                                                mu_b = mu_b,
-                                                mu_eps = mu_eps,
-                                                mu_rho = mu_rho)
-        task_data_stan <- task_data$task_behavior
-        task_data_stan$outcome_realized[is.na(task_data_stan$outcome_realized)] <- -1
-        task_data_stan$press_right[is.na(task_data_stan$press_right)] <- -1
+    stan_rl_fn <- system.file('stan', 'splt_rl.stan', package = 'probly')
 
-        stan_sim_data$press_right = task_data_stan$press_right
-        stan_sim_data$outcome = task_data_stan$outcome
+    stanFit <- rstan::stan(file = stan_rl_fn,
+                           data = stan_sim_data,
+                           chains = 4, cores = 4,
+                           iter = 200, warmup = 100)
 
-        trial_num <- -(dim(optimal_side_mat)[2]-1):0
-        prop_optimal_resp <- 100*apply(
-            task_data$task_behavior$press_right == (optimal_side_mat - 1),
-            2, mean, na.rm = T)
-        learning_traj <- coef(summary(lm(prop_optimal_resp ~ trial_num)))[,'Estimate']
-
-        stanFit <- rstan::stan(file = stan_rl_fn,
-                               data = stan_sim_data,
-                               chains = 4, cores = 4,
-                               iter = 200, warmup = 100)
-
-        par_regex <- paste0('(',paste(
-            unlist(lapply(c('delta_', 'beta_'), paste0, c('xi', 'b', 'rho', 'ep'))),
-            collapse = '|'), ')')
-
-        model_summary <- probly::get_par_summaries(stanFit, par_regex = par_regex)
-
-        list(fit_summary = model_summary, coefs = learning_traj, data = task_data)
-    }
+    saveRDS(stanFit, file.path(data_dir, 'stan_fit_baseline_model.RDS'))
 }
 
-results <- as.list(results_f)
-
-saveRDS(results, file.path(data_dir, 'test_rez.RDS'))
 

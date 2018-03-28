@@ -8,7 +8,7 @@ library(listenv)
 plan(batchtools_slurm,
      template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
      resources = list(ncpus = 4, walltime = 60*24-1, memory = '1G',
-                      partitions = 'short,fat,long,longfat,preempt'))
+                      partitions = 'short,fat,long,longfat'))
 
 data_dir <- '/home/flournoy/otherhome/data/splt/probly/'
 if(!file.exists(data_dir)){
