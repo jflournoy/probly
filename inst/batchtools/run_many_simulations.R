@@ -1,6 +1,7 @@
 library(future)
 library(future.batchtools)
 library(probly)
+library(listenv)
 
 plan(batchtools_slurm,
      template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
@@ -17,11 +18,13 @@ data(splt)
 splt_no_na <- splt[!is.na(splt$pressed_r), ]
 
 iter <- 100
-results <- list()
+results <- listenv()
 
 for(i in 1:iter){
-    results[[i]] %<-% probly::make_task_structure_from_data(splt_no_na)
+    results_f[[i]] %<-% probly::make_task_structure_from_data(splt_no_na)
 }
+
+results <- as.list(results_f)
 
 saveRDS(results, file.path(data_dir, 'test_rez.RDS'))
 
