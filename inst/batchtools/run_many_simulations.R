@@ -76,11 +76,7 @@ for(i in 1:iter){
                                chains = 4, cores = 4,
                                iter = 1500, warmup = 1000)
 
-        par_regex <- paste0('(',paste(
-            unlist(lapply(c('delta_', 'beta_'), paste0, c('xi', 'b', 'rho', 'ep'))),
-            collapse = '|'), ')')
-
-        model_summary <- probly::get_par_summaries(stanFit, par_regex = par_regex)
+        model_summary <- rstan::summary(stanFit)
 
         list(fit_summary = model_summary, coefs = learning_traj, data = task_data)
     }
