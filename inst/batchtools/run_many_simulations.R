@@ -18,7 +18,7 @@ data(splt)
 splt_no_na <- splt[!is.na(splt$pressed_r), ]
 
 iter <- 100
-results <- listenv()
+results_f <- listenv()
 
 for(i in 1:iter){
     results_f[[i]] %<-% probly::make_task_structure_from_data(splt_no_na)
