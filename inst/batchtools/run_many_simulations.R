@@ -1,3 +1,5 @@
+## ---- run_many_simulations
+
 library(future)
 library(future.batchtools)
 library(probly)

@@ -25,6 +25,7 @@ knitr::opts_chunk$set(
 
 knitr::read_chunk(system.file('r_aux', 'simulate_data_from_splt.R', package = 'probly'))
 knitr::read_chunk(system.file('r_aux', 'estimate_rl_from_sim.R', package = 'probly'))
+knitr::read_chunk(system.file('batchtools', 'run_many_simulations.R', package = 'probly'))
 data_dir <- '/data/jflournoy/split/probly'
 ```
 
@@ -113,6 +114,8 @@ $$
 Before modeling the task data, I will confirm that this model can recover known parameters from simulated data.
 I simulate data based on the structure of the sample data, using the same number of participants per sample (see the section on [descriptive statistics](descriptive-statistics.html), as well as precisely the same task structure. 
 For this aim, it is important to be able to recover all $\mu_{\theta k}$ for $\theta \in \{\epsilon,\rho,b,\xi\}$ and $k \in \{1,2,3\}$, where 1 = Hungry/Thirsty, 2 = Popular/Unpopular, and 3 = Dating/Looking. Those parameters that account for idiosyncratic deviation from RW-expected behavior ($b,\xi$) will not vary by condition. Based on interactive simulation ([here](https://jflournoy.shinyapps.io/rw_model/)), reasonable parameter values for the control condition might be $\mu_\epsilon = -1.65$ and $\mu_\rho = -0.3$ [^1].
+
+[^1]: Note that these are the _raw_ parameter values which are transformed such that $\epsilon^\prime \in [0,1]$ and $\rho^\prime \in [0,\infty)$. Similar to logistic regression, estimating the parameters on a scale the is not resticted improves estimation.
 
 The [`probly`](http://github.com/jflournoy/probly) package contains functions that help generate sample- and individually-varying coefficients for parameters, as well as simulated data from task structure.
 
@@ -278,7 +281,12 @@ ggplot2::ggplot(
 
 (ref:musimfitplot) Comparison of model fit to generating parameters. Gray bars are 95% credible intervals. Black lines are identinty, where model fit and generating parameters are exactly equal.
 
-[^1]: Note that these are the _raw_ parameter values which are transformed such that $\epsilon^\prime \in [0,1]$ and $\rho^\prime \in [0,\infty)$.
+<!-- ## Simulating more iterations  -->
+
+```{r run_many_simulations, eval = F}
+```
+
+
 
 # Conclusion
 
