@@ -46,7 +46,7 @@ stan_sim_data <- list(
 
 stan_rl_fn <- system.file('stan', 'splt_rl.stan', package = 'probly')
 
-iter <- 3
+iter <- 100
 results_f <- listenv()
 
 for(i in 1:iter){
@@ -74,7 +74,7 @@ for(i in 1:iter){
         stanFit <- rstan::stan(file = stan_rl_fn,
                                data = stan_sim_data,
                                chains = 4, cores = 4,
-                               iter = 200, warmup = 100)
+                               iter = 1500, warmup = 1000)
 
         par_regex <- paste0('(',paste(
             unlist(lapply(c('delta_', 'beta_'), paste0, c('xi', 'b', 'rho', 'ep'))),
