@@ -4,15 +4,17 @@ author: "John Flournoy"
 date: "`r Sys.Date()`"
 output: 
   bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
+    toc: yes
+    toc_depth: 2
+    number_sections: FALSE
 pkgdown:
   as_is: true
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-bibliography: "`r system.file('bib', 'dissertation.bib', package = 'probly')`"
-csl: "`r system.file('bib', 'apa-old-doi-prefix.csl', package = 'probly')`"
+bibliography: "/home/jflournoy/Rlibs/probly/bib/dissertation.bib"
+csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
 ---
 
 
@@ -281,9 +283,11 @@ ggplot2::ggplot(
 
 (ref:musimfitplot) Comparison of model fit to generating parameters. Gray bars are 95% credible intervals. Black lines are identinty, where model fit and generating parameters are exactly equal.
 
-<!-- ## Simulating more iterations  -->
+## Simulating more iterations
 
-```{r run_many_simulations, eval = F}
+Although the above results are promising, it is important to ensure that this is not a fluke. Unfortunately, it is apparent from running more models on other simulated data that many converge very slowly and all show post-warm-up divergent iterations.
+
+```{r run_many_simulations, eval = F, echo = T}
 ```
 
 

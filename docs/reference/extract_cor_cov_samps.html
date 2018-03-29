@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Articles • probly</title>
+<title>Extract correlation/covariance matrix samples — extract_cor_cov_samps • probly</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -25,7 +25,14 @@
 <link href="../pkgdown.css" rel="stylesheet">
 <script src="../jquery.sticky-kit.min.js"></script>
 <script src="../pkgdown.js"></script>
-<meta property="og:title" content="Articles" />
+<meta property="og:title" content="Extract correlation/covariance matrix samples — extract_cor_cov_samps" />
+
+<meta property="og:description" content="Because of the decomposition of the beta covariance matrix into scale and
+correlation, it can be hard to interpret the posteriors. This function will
+return an array which is a T-by-T-by-Samples array (where T is the number of
+coefficients). It is then easy to use apply to get posterior means for each
+cell in the matrix (e.g., apply(Sigma_Array, c(1, 2), mean))." />
+<meta name="twitter:card" content="summary" />
 
 
 <!-- mathjax -->
@@ -42,7 +49,7 @@
   </head>
 
   <body>
-    <div class="container template-vignette-index">
+    <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -109,25 +116,50 @@
       
       </header>
 
-      <div class="page-header">
-  <h1>Articles <small>version&nbsp;0.1.0</small></h1>
-</div>
-
-<div class="row">
-  <div class="col-md-9">
-    <div class="section ">
-      <h3>All vignettes</h3>
-      <p class="section-desc"></p>
-
-      <ul>
-        <li><a href="collect-data.html">Collect and Clean SPLT Data</a></li>
-        <li><a href="descriptive-statistics.html">Descriptive Statistics for SPLT data</a></li>
-        <li><a href="test-simple-3l-mv-model.html">Test Simple 3-level Multivariate Normal Model</a></li>
-        <li><a href="test-simulated-data.html">Test Simulated Data</a></li>
-        <li><a href="fit-model-to-participant-data.html">Fit model to participant data</a></li>
-        <li><a href="age-and-puberty-data.html">Age and Puberty Data</a></li>
-      </ul>
+      <div class="row">
+  <div class="col-md-9 contents">
+    <div class="page-header">
+    <h1>Extract correlation/covariance matrix samples</h1>
+    
     </div>
+
+    
+    <p>Because of the decomposition of the beta covariance matrix into scale and
+correlation, it can be hard to interpret the posteriors. This function will
+return an array which is a T-by-T-by-Samples array (where T is the number of
+coefficients). It is then easy to use apply to get posterior means for each
+cell in the matrix (e.g., <code>apply(Sigma_Array, c(1, 2), mean)</code>).</p>
+    
+
+    <pre class="usage"><span class='fu'>extract_cor_cov_samps</span>(<span class='no'>splt_fit</span>, <span class='kw'>par_subscript</span> <span class='kw'>=</span> <span class='st'>"ep"</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>splt_fit</th>
+      <td><p>a fit of class stanfit</p></td>
+    </tr>
+    <tr>
+      <th>par_subscript</th>
+      <td><p>the subscript for the L_Omega_subscript and tau_subscript parameters</p></td>
+    </tr>
+    </table>
+    
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>a list with both Omega (correlation matrix) and Sigma (covariance matrix) sample arrays.</p>
+    
+
+  </div>
+  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+    <h2>Contents</h2>
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
+      
+      <li><a href="#value">Value</a></li>
+          </ul>
+
   </div>
 </div>
 

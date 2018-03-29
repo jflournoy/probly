@@ -8,8 +8,11 @@
 <title>Test Simulated Data • probly</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
-<!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Test Simulated Data">
+<meta property="og:description" content="">
+<meta name="twitter:card" content="summary">
+<!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
@@ -24,8 +27,12 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">probly</a>
+      <span class="navbar-brand">
+        <a class="navbar-link" href="../index.html">probly</a>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">0.1.0</span>
+      </span>
     </div>
+
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
@@ -45,10 +52,16 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/age-and-puberty-data.html">Age and Puberty Data</a>
+    </li>
+    <li>
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
     </li>
     <li>
       <a href="../articles/descriptive-statistics.html">Descriptive Statistics for SPLT data</a>
+    </li>
+    <li>
+      <a href="../articles/fit-model-to-participant-data.html">Fit model to participant data</a>
     </li>
     <li>
       <a href="../articles/test-simple-3l-mv-model.html">Test Simple 3-level Multivariate Normal Model</a>
@@ -74,8 +87,11 @@
       <h1>Test Simulated Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-28</h4>
-          </div>
+            <h4 class="date">2018-03-29</h4>
+      
+      
+
+    </div>
 
     
     
@@ -136,30 +152,123 @@ Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a
 <a href="#simulating-data" class="anchor"></a>Simulating data</h1>
 <p>Before modeling the task data, I will confirm that this model can recover known parameters from simulated data. I simulate data based on the structure of the sample data, using the same number of participants per sample (see the section on <a href="descriptive-statistics.html">descriptive statistics</a>, as well as precisely the same task structure. For this aim, it is important to be able to recover all <span class="math inline">\(\mu_{\theta k}\)</span> for <span class="math inline">\(\theta \in \{\epsilon,\rho,b,\xi\}\)</span> and <span class="math inline">\(k \in \{1,2,3\}\)</span>, where 1 = Hungry/Thirsty, 2 = Popular/Unpopular, and 3 = Dating/Looking. Those parameters that account for idiosyncratic deviation from RW-expected behavior (<span class="math inline">\(b,\xi\)</span>) will not vary by condition. Based on interactive simulation (<a href="https://jflournoy.shinyapps.io/rw_model/">here</a>), reasonable parameter values for the control condition might be <span class="math inline">\(\mu_\epsilon = -1.65\)</span> and <span class="math inline">\(\mu_\rho = -0.3\)</span>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
 <p>The <a href="http://github.com/jflournoy/probly"><code>probly</code></a> package contains functions that help generate sample- and individually-varying coefficients for parameters, as well as simulated data from task structure.</p>
-<p>One early indication that a model may not be well suited to a particular data set is that the model, given reasonable parameter values, is not able to produce simulated data that looks like the real data one is attempting to model. The simulated data do generally behave similarly to the actual data when we look just at the proportion of optimal presses over time (Figure @ref(fig:simdata) and Figure @ref(fig:simdatasample), below, and Figure X in the section on <a href="http://127.0.0.1:9740/rmd_output/4/descriptive-statistics.html">descriptive statistics</a>).</p>
+<p>One early indication that a model may not be well suited to a particular data set is that the model, given reasonable parameter values, is not able to produce simulated data that looks like the real data one is attempting to model. The simulated data do generally behave similarly to the actual data when we look just at the proportion of optimal presses over time (Figure <a href="#fig:simdata">1</a> and Figure <a href="#fig:simdatasample">2</a>, below, and Figure X in the section on <a href="http://127.0.0.1:9740/rmd_output/4/descriptive-statistics.html">descriptive statistics</a>).</p>
 <div class="figure">
-<img src="test-simulated-data_files/figure-html/simdata-1.png" alt="(ref:simdat)" width="576"><p class="caption">
-(ref:simdat)
+<span id="fig:simdata"></span>
+<img src="test-simulated-data_files/figure-html/simdata-1.png" alt="Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes." width="576"><p class="caption">
+Figure 1: Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes.
 </p>
 </div>
-<p>(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes.</p>
+
 <div class="figure">
-<img src="test-simulated-data_files/figure-html/simdatasample-1.png" alt="(ref:simdatsample)" width="576"><p class="caption">
-(ref:simdatsample)
+<span id="fig:simdatasample"></span>
+<img src="test-simulated-data_files/figure-html/simdatasample-1.png" alt="Simulated task data for each sample." width="576"><p class="caption">
+Figure 2: Simulated task data for each sample.
 </p>
 </div>
-<p>(ref:simdatsample) Simulated task data for each sample.</p>
+
 </div>
 <div id="recovery-of-population-parameters" class="section level1">
 <h1 class="hasAnchor">
 <a href="#recovery-of-population-parameters" class="anchor"></a>Recovery of population parameters</h1>
-<p>The model as described above was fit to simulated data using RStan <span class="citation">(version 2.17.3; Stan Development Team, 2018)</span>, sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain. The posterior means for each parameter are compared to those that generated the simulated task behavior. The plots in Figure @ref(fig:musimfitplot) allow visual comparison of the fitted model posteriors for each parameter to the data-generating population means, as well as to the means of the data-generating parameters for each sample, and for each individual. It is clear from these plots that the parameter estimates from this particular run capture the generating parameters, with two exceptions. First, the estimate of the population mean of the irrudicble noise parameter, <span class="math inline">\(\xi\)</span>, for one condition did not capture the generating parameter. This may be because this parameter was intentionally set very low so that <span class="math inline">\(\xi^\prime \approx 0\)</span>. The second instance occurs with the bias parameter for one condition. This may be acceptable because the parameters of interest safely capture the generating values, and this single condition bias parameter is not very far from the identity line. Additionally, it should be noted that the fitted model does capture the mean of generating <span class="math inline">\(\delta_b\)</span> and <span class="math inline">\(\beta_b\)</span> parameters for all conditions.</p>
+<p>The model as described above was fit to simulated data using RStan <span class="citation">(version 2.17.3; Stan Development Team, 2018)</span>, sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain. The posterior means for each parameter are compared to those that generated the simulated task behavior. The plots in Figure <a href="#fig:musimfitplot">3</a> allow visual comparison of the fitted model posteriors for each parameter to the data-generating population means, as well as to the means of the data-generating parameters for each sample, and for each individual. It is clear from these plots that the parameter estimates from this particular run capture the generating parameters, with two exceptions. First, the estimate of the population mean of the irrudicble noise parameter, <span class="math inline">\(\xi\)</span>, for one condition did not capture the generating parameter. This may be because this parameter was intentionally set very low so that <span class="math inline">\(\xi^\prime \approx 0\)</span>. The second instance occurs with the bias parameter for one condition. This may be acceptable because the parameters of interest safely capture the generating values, and this single condition bias parameter is not very far from the identity line. Additionally, it should be noted that the fitted model does capture the mean of generating <span class="math inline">\(\delta_b\)</span> and <span class="math inline">\(\beta_b\)</span> parameters for all conditions.</p>
 <div class="figure">
-<img src="test-simulated-data_files/figure-html/musimfitplot-1.png" alt="(ref:musimfitplot)" width="768"><p class="caption">
-(ref:musimfitplot)
+<span id="fig:musimfitplot"></span>
+<img src="test-simulated-data_files/figure-html/musimfitplot-1.png" alt="Comparison of model fit to generating parameters. Gray bars are 95% credible intervals. Black lines are identinty, where model fit and generating parameters are exactly equal." width="768"><p class="caption">
+Figure 3: Comparison of model fit to generating parameters. Gray bars are 95% credible intervals. Black lines are identinty, where model fit and generating parameters are exactly equal.
 </p>
 </div>
-<p>(ref:musimfitplot) Comparison of model fit to generating parameters. Gray bars are 95% credible intervals. Black lines are identinty, where model fit and generating parameters are exactly equal.</p>
+
+<div id="simulating-more-iterations" class="section level2">
+<h2 class="hasAnchor">
+<a href="#simulating-more-iterations" class="anchor"></a>Simulating more iterations</h2>
+<p>Although the above results are promising, it is important to ensure that this is not a fluke. Unfortunately, it is apparent from running more models on other simulated data that many converge very slowly and all show post-warm-up divergent iterations.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(future)
+<span class="kw">library</span>(future.batchtools)
+<span class="kw">library</span>(probly)
+<span class="kw">library</span>(listenv)
+
+<span class="kw"><a href="http://www.rdocumentation.org/packages/future/topics/plan">plan</a></span>(batchtools_slurm,
+     <span class="dt">template =</span> <span class="kw">system.file</span>(<span class="st">'batchtools'</span>, <span class="st">'batchtools.slurm.tmpl'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),
+     <span class="dt">resources =</span> <span class="kw">list</span>(<span class="dt">ncpus =</span> <span class="dv">4</span>, <span class="dt">walltime =</span> <span class="dv">60</span>*<span class="dv">24-1</span>, <span class="dt">memory =</span> <span class="st">'1G'</span>,
+                      <span class="dt">partitions =</span> <span class="st">'short,fat,long,longfat'</span>))
+
+data_dir &lt;-<span class="st"> '/home/flournoy/otherhome/data/splt/probly/'</span>
+if(!<span class="kw">file.exists</span>(data_dir)){
+    <span class="kw">stop</span>(<span class="st">'Data directory "'</span>, data_dir, <span class="st">'" does not exist'</span>)
+} else {
+    <span class="kw">message</span>(<span class="st">"Data goes here: "</span>, data_dir)
+}
+
+<span class="kw">data</span>(splt)
+splt_no_na &lt;-<span class="st"> </span>splt[!<span class="kw">is.na</span>(splt$pressed_r), ]
+splt_no_na$proportion_fac &lt;-<span class="st"> </span><span class="kw">factor</span>(splt_no_na$proportion, <span class="dt">levels =</span> <span class="kw">c</span>(<span class="st">'80_20'</span>, <span class="st">'20_80'</span>))
+optimal_side_mat &lt;-<span class="st"> </span><span class="kw"><a href="../reference/get_col_as_trial_matrix.html">get_col_as_trial_matrix</a></span>(splt_no_na, <span class="dt">col =</span> <span class="st">'proportion_fac'</span>)
+
+mu_xi &lt;-<span class="st"> </span><span class="kw">c</span>(-<span class="fl">2.7</span>, -<span class="fl">2.6</span>, -<span class="fl">2.4</span>)
+mu_b &lt;-<span class="st"> </span><span class="kw">c</span>(-.<span class="dv">07</span>, .<span class="dv">28</span>, .<span class="dv">39</span>)
+mu_eps &lt;-<span class="st"> </span><span class="kw">c</span>(-<span class="fl">1.65</span>, -<span class="fl">1.65</span> +<span class="st"> </span>.<span class="dv">3</span>, -<span class="fl">1.65</span> +<span class="st"> </span>.<span class="dv">2</span>)
+mu_rho &lt;-<span class="st"> </span><span class="kw">c</span>(-.<span class="dv">3</span>, -.<span class="dv">3</span> +<span class="st"> </span>.<span class="dv">35</span>, -.<span class="dv">3</span> +<span class="st"> </span>.<span class="dv">45</span>)
+
+task_structure &lt;-<span class="st"> </span>probly::<span class="kw"><a href="../reference/make_task_structure_from_data.html">make_task_structure_from_data</a></span>(splt_no_na)
+task_structure_stan &lt;-<span class="st"> </span>task_structure <span class="co">#just to sub NA with -1</span>
+task_structure_stan$condition[<span class="kw">is.na</span>(task_structure_stan$condition)] &lt;-<span class="st"> </span>-<span class="dv">1</span>
+task_structure_stan$cue[<span class="kw">is.na</span>(task_structure_stan$cue)] &lt;-<span class="st"> </span>-<span class="dv">1</span>
+
+stan_sim_data &lt;-<span class="st"> </span><span class="kw">list</span>(
+    <span class="dt">N =</span> task_structure_stan$N,
+    <span class="st">`</span><span class="dt">T</span><span class="st">`</span> =<span class="st"> </span><span class="kw">max</span>(task_structure_stan$Tsubj),
+    <span class="dt">K =</span> task_structure_stan$K,
+    <span class="dt">M =</span> task_structure_stan$M,
+    <span class="dt">ncue =</span> task_structure_stan$n_cues,
+    <span class="dt">mm =</span> task_structure_stan$mm,
+    <span class="dt">Tsubj =</span> task_structure_stan$Tsubj,
+    <span class="dt">condition =</span> task_structure_stan$condition,
+    <span class="dt">cue =</span> task_structure_stan$cue
+)
+
+stan_rl_fn &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>)
+
+iter &lt;-<span class="st"> </span><span class="dv">100</span>
+results_f &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/listenv/topics/listenv">listenv</a></span>()
+
+for(i in <span class="dv">1</span>:iter){
+    results_f[[i]] %&lt;-%<span class="st"> </span>{
+        <span class="kw">library</span>(rstan)
+        stan_sim_length &lt;-<span class="st"> </span><span class="kw">length</span>(stan_sim_data)
+        task_data &lt;-<span class="st"> </span>probly::<span class="kw"><a href="../reference/simulate_splt_data.html">simulate_splt_data</a></span>(task_structure,
+                                                <span class="dt">mu_xi =</span> mu_xi,
+                                                <span class="dt">mu_b =</span> mu_b,
+                                                <span class="dt">mu_eps =</span> mu_eps,
+                                                <span class="dt">mu_rho =</span> mu_rho)
+        task_data_stan &lt;-<span class="st"> </span>task_data$task_behavior
+        task_data_stan$outcome_realized[<span class="kw">is.na</span>(task_data_stan$outcome_realized)] &lt;-<span class="st"> </span>-<span class="dv">1</span>
+        task_data_stan$press_right[<span class="kw">is.na</span>(task_data_stan$press_right)] &lt;-<span class="st"> </span>-<span class="dv">1</span>
+
+        stan_sim_data$press_right =<span class="st"> </span>task_data_stan$press_right
+        stan_sim_data$outcome =<span class="st"> </span>task_data_stan$outcome
+
+        trial_num &lt;-<span class="st"> </span>-(<span class="kw">dim</span>(optimal_side_mat)[<span class="dv">2</span>]-<span class="dv">1</span>):<span class="dv">0</span>
+        prop_optimal_resp &lt;-<span class="st"> </span><span class="dv">100</span>*<span class="kw">apply</span>(
+            task_data$task_behavior$press_right ==<span class="st"> </span>(optimal_side_mat -<span class="st"> </span><span class="dv">1</span>),
+            <span class="dv">2</span>, mean, <span class="dt">na.rm =</span> T)
+        learning_traj &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(<span class="kw">lm</span>(prop_optimal_resp ~<span class="st"> </span>trial_num)))[,<span class="st">'Estimate'</span>]
+
+        stanFit &lt;-<span class="st"> </span>rstan::<span class="kw"><a href="http://www.rdocumentation.org/packages/rstan/topics/stan">stan</a></span>(<span class="dt">file =</span> stan_rl_fn,
+                               <span class="dt">data =</span> stan_sim_data,
+                               <span class="dt">chains =</span> <span class="dv">4</span>, <span class="dt">cores =</span> <span class="dv">4</span>,
+                               <span class="dt">iter =</span> <span class="dv">1500</span>, <span class="dt">warmup =</span> <span class="dv">1000</span>)
+
+        model_summary &lt;-<span class="st"> </span>rstan::<span class="kw">summary</span>(stanFit)
+
+        <span class="kw">list</span>(<span class="dt">fit_summary =</span> model_summary, <span class="dt">coefs =</span> learning_traj, <span class="dt">data =</span> task_data)
+    }
+}
+
+results &lt;-<span class="st"> </span><span class="kw">as.list</span>(results_f)
+
+<span class="kw">saveRDS</span>(results, <span class="kw">file.path</span>(data_dir, <span class="st">'test_rez.RDS'</span>))</code></pre></div>
+</div>
 </div>
 <div id="conclusion" class="section level1">
 <h1 class="hasAnchor">
@@ -184,7 +293,7 @@ Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>Note that these are the <em>raw</em> parameter values which are transformed such that <span class="math inline">\(\epsilon^\prime \in [0,1]\)</span> and <span class="math inline">\(\rho^\prime \in [0,\infty)\)</span>.<a href="#fnref1">↩</a></p></li>
+<li id="fn1"><p>Note that these are the <em>raw</em> parameter values which are transformed such that <span class="math inline">\(\epsilon^\prime \in [0,1]\)</span> and <span class="math inline">\(\rho^\prime \in [0,\infty)\)</span>. Similar to logistic regression, estimating the parameters on a scale the is not resticted improves estimation.<a href="#fnref1">↩</a></p></li>
 </ol>
 </div>
 </div>
@@ -203,7 +312,11 @@ Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a
       </ul>
 </li>
       <li><a href="#simulating-data">Simulating data</a></li>
-      <li><a href="#recovery-of-population-parameters">Recovery of population parameters</a></li>
+      <li>
+<a href="#recovery-of-population-parameters">Recovery of population parameters</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#simulating-more-iterations">Simulating more iterations</a></li>
+      </ul>
+</li>
       <li><a href="#conclusion">Conclusion</a></li>
       <li><a href="#references">References</a></li>
       </ul>
@@ -218,11 +331,13 @@ Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="http://hadley.github.io/pkgdown/">pkgdown</a>.</p>
+  <p>Site built with <a href="http://pkgdown.r-lib.org/">pkgdown</a>.</p>
 </div>
 
       </footer>
 </div>
+
+  
 
   </body>
 </html>
