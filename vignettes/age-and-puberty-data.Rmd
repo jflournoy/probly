@@ -47,15 +47,13 @@ credentials <- scorequaltrics::creds_from_file(qualtrics_api_token_file)
 
 survey_names_all <- scorequaltrics::get_surveys(credentials)
 survey_names_splt <- dplyr::filter(survey_names_all, grepl('.*(TDS1|TDS2|TDS3|YADS).*', SurveyName))
-
-knitr::kable(arrange(select(survey_names_splt, SurveyName), SurveyName))
 ```
 
 
 ```{r getsurveydata_tds2_wave2}
 # We only need PDS data
 tds2_wave2_surveys <- survey_names_splt %>%
-    filter(grepl('TDS2 Session 3 - (Child|Parent)$', SurveyName))
+    filter(grepl('TDS2 Session 3 - Child$', SurveyName))
 tds2_wave2_qid_sid <- scorequaltrics::get_survey_data(tds2_wave2_surveys, 
                                                    credentials, 
                                                    pid_col = 'SID') %>%
@@ -304,7 +302,6 @@ Q251 biological gender
 inf_rel
 
 ```{r getsurveydata_yadsv_v2}
-
 yadsv_v2_surveys <- survey_names_splt %>%
     filter(grepl('YADS-V v2.0$', SurveyName))
 yadsv_v2_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2_surveys, 
@@ -316,14 +313,14 @@ yadsv_v2_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2_surveys,
     dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
     tidyr::spread(item, value) %>%
     dplyr::select(-survey_name)
-yadsv_v2_long <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
+yadsv_v2_long <- scorequaltrics::get_survey_data(yadsv_v2_surveys, 
                                                    credentials, 
                                                    pid_col = 'qid') %>%
-    dplyr::filter(grepl('(PDS|PAL_2_Age|PAL_2_Race|Q176)', item)) %>% 
+    dplyr::filter(grepl('(PDS|Q327|Q329|inf_rel)', item)) %>% 
     dplyr::left_join(yadsv_v2_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
-
-yadsv_v1_pds_rubrics <- data.frame(file = dir(file.path(tds2_wave2_rubric_dir), 
+##--left off here--
+yadsv_v2_pds_rubrics <- data.frame(file = dir(file.path(tds2_wave2_rubric_dir), 
                                               pattern = 'PDS_scoring_rubric_TDS2_S3.csv',
                                               full.names = TRUE))
 yadsv_v1_scoring_data_long <- scorequaltrics::get_rubrics(yadsv_v1_pds_rubrics, 
