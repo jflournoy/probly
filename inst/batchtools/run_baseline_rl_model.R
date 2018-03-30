@@ -7,8 +7,8 @@ library(listenv)
 
 plan(batchtools_slurm,
      template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
-     resources = list(ncpus = 6, walltime = 60*24-1, memory = '1G',
-                      partitions = 'short,fat,long,longfat'))
+     resources = list(ncpus = 6, walltime = 60*24*4, memory = '1G',
+                      partitions = 'long,longfat'))
 
 data_dir <- '/home/flournoy/otherhome/data/splt/probly/'
 if(!file.exists(data_dir)){
@@ -53,12 +53,13 @@ run_stan_f %<-% {
         outcome = outcome
     )
 
-    stan_rl_fn <- system.file('stan', 'splt_rl.stan', package = 'probly')
+    stan_rl_fn <- system.file('stan', 'splt_rl_reparam.stan', package = 'probly')
 
     stanFit <- rstan::stan(file = stan_rl_fn,
                            data = stan_data,
                            chains = 6, cores = 6,
-                           iter = 1750, warmup = 1000)
+                           iter = 1750, warmup = 1000,
+                           control = list(max_treedepth = 15, adapt_delta = 0.99))
 
     saveRDS(stanFit, file.path(data_dir, 'stan_fit_baseline_model.RDS'))
 }
