@@ -67,11 +67,13 @@ transformed parameters {
   matrix<lower=0>[N, K] beta_rho_prm; //per-individual coefficients for rho, for each condition, transformed
 
   for(k in 1:K){
-    //implies delta_param[,k] ~ normal(mu_delta_param[k], sigma_delta_param);
-    delta_xi[,k] ~ mu_delta_xi[k] + sigma_delta_xi * delta_xi_raw
-    delta_ep[,k] ~ mu_delta_ep[k] + sigma_delta_ep * delta_ep_raw;
-    delta_b[,k] ~ mu_delta_b[k] + sigma_delta_b * delta_b_raw;
-    delta_rho[,k] ~ mu_delta_rho[k] + sigma_delta_rho * delta_rho_raw;
+    for(m in 1:M){
+      //implies delta_param[m,k] ~ normal(mu_delta_param[k], sigma_delta_param);
+      delta_xi[m,k] = mu_delta_xi[k] + sigma_delta_xi * delta_xi_raw[m,k];
+      delta_ep[m,k] = mu_delta_ep[k] + sigma_delta_ep * delta_ep_raw[m,k];
+      delta_b[m,k] = mu_delta_b[k] + sigma_delta_b * delta_b_raw[m,k];
+      delta_rho[m,k] = mu_delta_rho[k] + sigma_delta_rho * delta_rho_raw[m,k];
+    }
 
     tau_xi[k] = 2.5 * tan(tau_unif_xi[k]);
     tau_ep[k] = 2.5 * tan(tau_unif_ep[k]);
@@ -92,10 +94,10 @@ model {
   mu_delta_ep  ~ normal(0, 5.0);
   mu_delta_b  ~ normal(0, 10.0);
   mu_delta_rho  ~ normal(0, 5.0);
-  sigma_delta_xi ~ exponential(1);
-  sigma_delta_ep ~ exponential(1);
-  sigma_delta_b ~ exponential(1);
-  sigma_delta_rho ~ exponential(1);
+  sigma_delta_xi ~ cauchy(0, 1.0);
+  sigma_delta_ep ~ cauchy(0, 1.0);
+  sigma_delta_b ~ cauchy(0, 1.0);
+  sigma_delta_rho ~ cauchy(0, 1.0);
 
 //Sample-level parameters
   to_vector(delta_xi_raw) ~ normal(0, 1);
