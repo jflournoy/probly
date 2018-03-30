@@ -7,8 +7,8 @@ library(listenv)
 
 plan(batchtools_slurm,
      template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
-     resources = list(ncpus = 4, walltime = 60*24-1, memory = '1G',
-                      partitions = 'short,fat,long,longfat,preempt'))
+     resources = list(ncpus = 4, walltime = 60*24*4, memory = '1G',
+                      partitions = 'long,longfat'))
 
 data_dir <- '/home/flournoy/otherhome/data/splt/probly/'
 data_dir_indvsims <- file.path(data_dir, 'indiv_sim_saves')
@@ -91,7 +91,8 @@ for(i in 1:iter){
         stanFit <- rstan::stan(file = stan_rl_fn,
                                data = stan_sim_data,
                                chains = 4, cores = 4,
-                               iter = 100, warmup = 50)
+                               iter = 1500, warmup = 1000,
+                               control = list(max_treedepth = 15, adapt_delta = 0.99))
 
         model_summary <- rstan::summary(stanFit)
         sampler_params <- rstan::get_sampler_params(stanFit)
