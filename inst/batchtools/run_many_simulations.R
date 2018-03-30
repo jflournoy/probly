@@ -77,6 +77,17 @@ for(i in 1:iter){
             2, mean, na.rm = T)
         learning_traj <- coef(summary(lm(prop_optimal_resp ~ trial_num)))[,'Estimate']
 
+        # ##--TESTING
+        # devtools::install_local('~/code_new/probly')
+        # stan_rl_fn <- '~/code_new/probly/inst/stan/splt_rl_reparam.stan'
+        # stan_model_thing <- rstan::stan_model(file = stan_rl_fn)
+        # stan_optim <- rstan::optimizing(stan_model_thing, data = stan_sim_data)
+        # stan_optim_parnames <- grep('mu', names(stan_optim$par), value = T)
+        # stan_optim$par[stan_optim_parnames] - c(mu_xi, mu_eps, mu_b, mu_rho)
+        # stan_vb <- rstan::vb(stan_model_thing, data = stan_sim_data)
+        # summary(stan_vb, pars = stan_optim_parnames)
+        # ##--TESTING
+
         stanFit <- rstan::stan(file = stan_rl_fn,
                                data = stan_sim_data,
                                chains = 4, cores = 4,
