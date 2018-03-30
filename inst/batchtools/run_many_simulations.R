@@ -11,10 +11,16 @@ plan(batchtools_slurm,
                       partitions = 'short,fat,long,longfat'))
 
 data_dir <- '/home/flournoy/otherhome/data/splt/probly/'
+data_dir_indvsims <- file.path(data_dir, 'indiv_sim_saves')
 if(!file.exists(data_dir)){
     stop('Data directory "', data_dir, '" does not exist')
 } else {
     message("Data goes here: ", data_dir)
+}
+if(!file.exists(data_dir_indvsims)){
+    stop('Individual simulation directory "', data_dir_indvsims, '" does not exist')
+} else {
+    message("Individual simulation results go here: ", data_dir_indvsims)
 }
 
 data(splt)
@@ -44,7 +50,7 @@ stan_sim_data <- list(
     cue = task_structure_stan$cue
 )
 
-stan_rl_fn <- system.file('stan', 'splt_rl.stan', package = 'probly')
+stan_rl_fn <- system.file('stan', 'splt_rl_reparam.stan', package = 'probly')
 
 iter <- 100
 results_f <- listenv()
@@ -74,11 +80,18 @@ for(i in 1:iter){
         stanFit <- rstan::stan(file = stan_rl_fn,
                                data = stan_sim_data,
                                chains = 4, cores = 4,
-                               iter = 1500, warmup = 1000)
+                               iter = 100, warmup = 50)
 
         model_summary <- rstan::summary(stanFit)
+        sampler_params <- rstan::get_sampler_params(stanFit)
 
-        list(fit_summary = model_summary, coefs = learning_traj, data = task_data)
+        return_list <- list(fit_summary = model_summary,
+                            sampler_params = sampler_params,
+                            coefs = learning_traj,
+                            data = task_data)
+        saveRDS(return_list, file = file.path(data_dir_indvsims,
+                                              paste0('sim_', sprintf("%03d",i), '.RDS')))
+        return_list
     }
 }
 
