@@ -19,7 +19,9 @@ if(!file.exists(data_dir)){
 
 run_stan_f %<-% {
     library(rstan)
+    library(probly)
     data(splt)
+    print(dim(splt))
     splt_no_na <- splt[!is.na(splt$pressed_r), ]
 
     task_structure <- probly::make_task_structure_from_data(splt_no_na)
@@ -61,7 +63,8 @@ run_stan_f %<-% {
                            iter = 1750, warmup = 1000,
                            control = list(max_treedepth = 15, adapt_delta = 0.99))
 
-    saveRDS(stanFit, file.path(data_dir, 'stan_fit_baseline_model.RDS'))
+    saveRDS(stanFit, file.path(data_dir, paste0('stan_fit_baseline_model-',round(as.numeric(Sys.time()),0),'.RDS')))
+    stanFit
 }
 
 
