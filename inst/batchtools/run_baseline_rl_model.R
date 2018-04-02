@@ -24,7 +24,7 @@ model_filename_list <- list(
     rl_repar_exp_no_b = system.file('stan', 'splt_rl_reparam_exp_no_b.stan', package = 'probly')
 )
 
-optim_many_mods_f <- listenv()
+fit_many_mods_f <- listenv()
 
 for(mod in 1:length(model_filename_list)){
     print(paste0('Sampling from model: ', names(model_filename_list)[mod]))
