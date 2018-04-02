@@ -1,5 +1,4 @@
 ## ---- run_many_simulations
-
 library(future)
 library(future.batchtools)
 library(probly)
@@ -17,54 +16,81 @@ if(!file.exists(data_dir)){
     message("Data goes here: ", data_dir)
 }
 
-run_stan_f %<-% {
-    library(rstan)
-    library(probly)
-    data(splt)
-    print(dim(splt))
-    splt_no_na <- splt[!is.na(splt$pressed_r), ]
+model_filename_list <- list(
+    intercept_only = system.file('stan', 'splt_intercept_only.stan', package = 'probly'),
+    rl_2_level = system.file('stan', 'splt_rl_2_level.stan', package = 'probly'),
+    rl_2_level_no_b = system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly'),
+    rl_repar_exp = system.file('stan', 'splt_rl_reparam_exp.stan', package = 'probly'),
+    rl_repar_exp_no_b = system.file('stan', 'splt_rl_reparam_exp_no_b.stan', package = 'probly')
+)
 
-    task_structure <- probly::make_task_structure_from_data(splt_no_na)
-    task_structure$condition[is.na(task_structure$condition)] <- -1
-    task_structure$cue[is.na(task_structure$cue)] <- -1
+optim_many_mods_f <- listenv()
 
-    outcome <- probly::get_col_as_trial_matrix(
-        splt_no_na,
-        col = 'outcome', id_col = 'id',
-        sample_col = 'sample', trial_col = 'trial_index')
+for(mod in 1:5){
+    print(paste0('Optimizing model: ', names(model_filename_list)[mod]))
+    optim_many_mods_f[[mod]] %<-% {
+        library(rstan)
+        library(probly)
+        data(splt)
+        print(dim(splt))
+        splt_no_na <- splt[!is.na(splt$pressed_r), ]
 
-    press_right <- probly::get_col_as_trial_matrix(
-        splt_no_na,
-        col = 'pressed_r', id_col = 'id',
-        sample_col = 'sample', trial_col = 'trial_index')
+        splt_no_na$opt_is_right <- as.numeric(factor(splt_no_na$proportion,
+                                                     levels = c('80_20', '20_80'))) - 1
+        splt_no_na$press_opt <- as.numeric(splt_no_na$opt_is_right == splt_no_na$pressed_r)
 
-    outcome[is.na(outcome)] <- -1
-    press_right[is.na(press_right)] <- -1
+        task_structure <- probly::make_task_structure_from_data(splt_no_na)
+        task_structure$condition[is.na(task_structure$condition)] <- -1
+        task_structure$cue[is.na(task_structure$cue)] <- -1
 
-    stan_data <- list(
-        N = task_structure$N,
-        `T` = max(task_structure$Tsubj),
-        K = task_structure$K,
-        M = task_structure$M,
-        ncue = task_structure$n_cues,
-        mm = task_structure$mm,
-        Tsubj = task_structure$Tsubj,
-        condition = task_structure$condition,
-        cue = task_structure$cue,
-        press_right = press_right,
-        outcome = outcome
-    )
+        outcome <- probly::get_col_as_trial_matrix(
+            splt_no_na,
+            col = 'outcome', id_col = 'id',
+            sample_col = 'sample', trial_col = 'trial_index')
 
-    stan_rl_fn <- system.file('stan', 'splt_rl_reparam.stan', package = 'probly')
+        press_right <- probly::get_col_as_trial_matrix(
+            splt_no_na,
+            col = 'pressed_r', id_col = 'id',
+            sample_col = 'sample', trial_col = 'trial_index')
 
-    stanFit <- rstan::stan(file = stan_rl_fn,
-                           data = stan_data,
-                           chains = 6, cores = 6,
-                           iter = 1750, warmup = 1000,
-                           control = list(max_treedepth = 15, adapt_delta = 0.99))
+        press_opt <- probly::get_col_as_trial_matrix(
+            splt_no_na,
+            col = 'press_opt', id_col = 'id',
+            sample_col = 'sample', trial_col = 'trial_index')
 
-    saveRDS(stanFit, file.path(data_dir, paste0('stan_fit_baseline_model-',round(as.numeric(Sys.time()),0),'.RDS')))
-    stanFit
+        outcome[is.na(outcome)] <- -1
+        press_right[is.na(press_right)] <- -1
+        press_opt[is.na(press_opt)] <- -1
+
+        stan_data <- list(
+            N = task_structure$N,
+            `T` = max(task_structure$Tsubj),
+            K = task_structure$K,
+            M = task_structure$M,
+            ncue = task_structure$n_cues,
+            mm = task_structure$mm,
+            Tsubj = task_structure$Tsubj,
+            condition = task_structure$condition,
+            cue = task_structure$cue,
+            press_right = press_right,
+            outcome = outcome
+        )
+
+        if(names(model_filename_list)[mod] == 'intercept_only'){
+            stan_data$press_right <- NULL
+            stan_data$press_opt <- press_opt
+        }
+
+        stanFit <- rstan::stan(file = model_filename_list[[mod]],
+                               data = stan_data,
+                               chains = 6, cores = 6,
+                               iter = 1750, warmup = 1000,
+                               control = list(max_treedepth = 15, adapt_delta = 0.99))
+
+        saveRDS(stanFit,
+                file.path(data_dir,
+                          paste0('splt-', names(model_filename_list)[mod],
+                                 '-', round(as.numeric(Sys.time())/1000,0),'.RDS')))
+    }
 }
-
 
