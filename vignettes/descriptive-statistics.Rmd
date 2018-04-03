@@ -72,6 +72,9 @@ knitr::kable(splt_summary_optimal_feedback,
              digits = 3)
 ```
 
+
+
+
 ```{r reaction_time, fig.width=10.5, fig.height=8}
 ggplot2::ggplot(
     dplyr::filter(splt, rt > 0),
@@ -174,4 +177,75 @@ ggplot2::ggplot(
     ggplot2::theme_minimal() + 
     ggplot2::labs(x = 'Block number',
                   y = 'Self-report confidence about optimal label')
+```
+
+# Proportion optimal presses per ID & condition
+
+```{r}
+plot_opt_presses_per_id <- function(splt_df, 
+                                    ncol = 5, 
+                                    title = 'Proportion optimal presses per ID & condition',
+                                    se = F){
+    splt_opt_press <- dplyr::mutate(
+        ungroup(splt_df), 
+        press_opt = as.numeric(pressed_r == (proportion == '20_80')),
+        press_opt = (press_opt - .5) * (1 -.05 * (as.numeric(condition) - 1)) + .5)
+    
+    splt_opt_press_ranks <- dplyr::summarize(
+        dplyr::group_by(splt_opt_press, id),
+                        mean_press_opt = mean(press_opt, na.rm = T))
+    splt_opt_press_ranks$id_fac <- factor(
+        splt_opt_press_ranks$id,
+        levels = splt_opt_press_ranks$id[order(splt_opt_press_ranks$mean_press_opt)])
+    
+    splt_opt_press <- left_join(splt_opt_press, splt_opt_press_ranks)
+    
+    ggplot2::ggplot(
+        splt_opt_press, 
+        ggplot2::aes(
+            x = condition_trial_index, 
+            y = press_opt,
+            linetype = condition,
+            shape = condition)) +
+        ggplot2::geom_point(size = .75, alpha = .25) + 
+        ggplot2::geom_hline(yintercept = c(.8), alpha = 1, color = 'red', size = .5) + 
+        ggplot2::geom_hline(yintercept = c(.5), alpha = 1, color = 'gray', size = .5) + 
+        ggplot2::geom_smooth(se = se, method = 'gam', formula = y ~ s(x, bs = "tp", k = 4), 
+                             size = .5, color = 'black', alpha = .2) + 
+        ggplot2::facet_wrap(~ id_fac, ncol = ncol) +
+        ggplot2::coord_cartesian(ylim = c(0, 1)) + 
+        ggplot2::scale_y_continuous(breaks = c(0,.5,.8)) + 
+        ggplot2::scale_x_continuous(breaks = c(1,64,128)) +
+        ggplot2::theme_minimal() +
+        ggplot2::labs(x = 'Trial', y = 'Optimal press (probability)', title = title)
+}
+```
+
+```{r proportion_trials_per_conditionca, fig.width=10, fig.height=22}
+plot_opt_presses_per_id(
+    dplyr::filter(splt, sample == 'Community adolescents'),
+    ncol = 5, 
+    title = 'Community adolescents')
+```
+
+```{r proportion_trials_per_conditionfc, fig.width=10, fig.height=10}
+plot_opt_presses_per_id(
+    dplyr::filter(splt, sample == 'Foster-care involved adolescents'),
+    ncol = 5, 
+    title = 'Foster-care involved adolescents')
+```
+
+```{r proportion_trials_per_conditioncs, fig.width=10, fig.height=22}
+plot_opt_presses_per_id(
+    dplyr::filter(splt, sample == 'College students'),
+    ncol = 5, 
+    title = 'College students')
+```
+
+```{r proportion_trials_per_conditioncso, fig.width=10, fig.height=44}
+plot_opt_presses_per_id(
+    dplyr::filter(splt, sample == 'College students - online'),
+    ncol = 5, 
+    title = 'College students - online')
+
 ```
