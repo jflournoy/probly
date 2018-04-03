@@ -1,5 +1,5 @@
 ---
-title: "Age and Puberty Data"
+title: "Age, Puberty, and Informant Data"
 author: "John Flournoy"
 date: "`r Sys.Date()`"
 output: 
@@ -15,7 +15,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  echo=F,message=F,warning=F,error=F, eval = F
+  echo=F,message=F,warning=F,error=F, eval = T
 )
 
 data_dir <- '/data/jflournoy/split/probly'
@@ -157,65 +157,6 @@ tds1_wave2_scored_pdss <- scorequaltrics::score_pdss(tds1_wave2_long_nodupes,
 tds1_wave2_scored_puberty <- dplyr::bind_rows(tds1_wave2_scored_pds, tds1_wave2_scored_pdss)
 ```
 
-```{r combinetdsdata}
-demo_col_types <- readr::cols(
-    sid = readr::col_character(),
-    s2_date = readr::col_date(format = ""),
-    s2_age = readr::col_double(),
-    s3_date = readr::col_date(format = ""),
-    s3_age = readr::col_double(),
-    gender = readr::col_integer(),
-    ethnicity = readr::col_character(),
-    hispanic_yn = readr::col_integer(),
-    fsiq2 = readr::col_integer()
-)
-anon_id_cols <- readr::cols(
-  id = readr::col_character(),
-  sample = readr::col_character(),
-  anon_id = readr::col_integer(),
-  anon_sample = readr::col_character(),
-  exclude = readr::col_integer()
-)
-
-tds_wave2_scored_puberty <- dplyr::bind_rows(tds1_wave2_scored_puberty, tds2_wave2_scored_puberty) %>%
-    dplyr::select(-n_items, -n_missing, -method) %>%
-    tidyr::unite(scale, scale_name, scored_scale) %>%
-    tidyr::spread(scale, score) %>%
-    dplyr::rowwise() %>%
-    dplyr::mutate_all(funs(ifelse(. == "NaN", NA, .))) %>%
-    dplyr::mutate(
-        PDS_mean_score = ifelse(!is.na(PDS_female_mean_score) && is.na(PDS_male_mean_score),
-                                PDS_female_mean_score,
-                                ifelse(is.na(PDS_female_mean_score) && !is.na(PDS_male_mean_score),
-                                       PDS_male_mean_score,
-                                       NA))) %>%
-    dplyr::select(-PDS_female_mean_score, -PDS_male_mean_score)
-tds_wave2_dev_demo <- dplyr::full_join(tds_wave2_scored_puberty,
-                                       readr::read_csv(redcap_demographics_file,
-                                                       col_types = demo_col_types),
-                                       by = c('SID' = 'sid')) 
-# %>%
-#     dplyr::select(-s2_date, -s3_date)
-
-tds_wave2_dev_demo_deid <- dplyr::full_join(tds_wave2_dev_demo,
-                                            readr::read_csv(anon_id_filename, col_types = anon_id_cols),
-                                            by = c('SID' = 'id'))
-if(!all(
-    dim(filter(tds_wave2_dev_demo_deid, is.na(anon_id), !is.na(s3_date)))[1] == 0,
-    dim(filter(tds_wave2_dev_demo_deid, 
-               !is.na(anon_id), is.na(s3_date), anon_sample %in% c('TDS1', 'TDS2')))[1] == 0)) {
-    stop("Some participants not accounted for, or not anonymized")
-} else {
-    tds_wave2_dev_demo_deid <- dplyr::left_join(tds_wave2_dev_demo,
-                                                readr::read_csv(anon_id_filename, col_types = anon_id_cols),
-                                                by = c('SID' = 'id')) %>%
-        dplyr::filter(is.na(exclude)) %>%
-        dplyr::select(-SID, -exclude, -sample, -s2_date, -s3_date) %>%
-        dplyr::rename(SID = anon_id, sample = anon_sample)
-}
-```
-
-
 ## YADS-V
 
 ### Version 1:
@@ -262,7 +203,8 @@ yadsv_v1_long_nodupes <- yadsv_v1_long %>%
 yadsv_v1_pal_2_demo <- yadsv_v1_long %>%
     dplyr::filter(grepl('[1234]\\d\\d', SID),
            grepl('(PAL_2_Age|PAL_2_Race)', item)) %>%
-    tidyr::spread(item, value)
+    tidyr::spread(item, value) %>%
+    dplyr::rename(age = PAL_2_Age)
 
 #inf relations only
 yadsv_v1_inf_rel <- yadsv_v1_long %>%
@@ -319,34 +261,38 @@ yadsv_v2_long <- scorequaltrics::get_survey_data(yadsv_v2_surveys,
     dplyr::filter(grepl('(PDS|Q327|Q329|inf_rel)', item)) %>% 
     dplyr::left_join(yadsv_v2_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
-##--left off here--
+
 yadsv_v2_pds_rubrics <- data.frame(file = dir(file.path(tds2_wave2_rubric_dir), 
                                               pattern = 'PDS_scoring_rubric_TDS2_S3.csv',
                                               full.names = TRUE))
-yadsv_v1_scoring_data_long <- scorequaltrics::get_rubrics(yadsv_v1_pds_rubrics, 
+yadsv_v2_scoring_data_long <- scorequaltrics::get_rubrics(yadsv_v2_pds_rubrics, 
                                                           type = 'scoring')
+SID_filter <- '([1234]\\d\\d|99386)'
 
 #Clean and de-dupe parent and child data
-yadsv_v1_long_nodupes <- yadsv_v1_long %>%
-    filter(grepl('[1234]\\d\\d', SID)) %>%
-    scorequaltrics::get_items_in_rubric(yadsv_v1_scoring_data_long) %>%
+yadsv_v2_long_nodupes <- yadsv_v2_long %>%
+    filter(grepl(SID_filter, SID)) %>%
+    scorequaltrics::get_items_in_rubric(yadsv_v2_scoring_data_long) %>%
     scorequaltrics::clean_dupes(pid_col = 'SID')
 
 #demographics only
-yadsv_v1_pal_2_demo <- yadsv_v1_long %>%
-    dplyr::filter(grepl('[1234]\\d\\d', SID),
-           grepl('(PAL_2_Age|PAL_2_Race)', item)) %>%
-    tidyr::spread(item, value)
+yadsv_v2_pal_2_demo <- yadsv_v2_long %>%
+    dplyr::filter(grepl(SID_filter, SID),
+           grepl('(Q327|Q329)', item)) %>%
+    tidyr::spread(item, value) %>%
+    dplyr::rename('age' = Q327,
+                  'PAL_2_Race' = Q329,
+                  'PAL_2_Race_TEXT' = Q329_TEXT)
 
 #inf relations only
-yadsv_v1_inf_rel <- yadsv_v1_long %>%
-    dplyr::filter(grepl('[1234]\\d\\d', SID),
-           grepl('Q176', item))
+yadsv_v2_inf_rel <- yadsv_v2_long %>%
+    dplyr::filter(grepl(SID_filter, SID),
+           grepl('inf_rel', item))
 ```
 
 ```{r eval=F}
 #Check that dropped values weren't ambiguous
-yadsv_v1_long_nodupes %>% 
+yadsv_v2_long_nodupes %>% 
     filter(dropped) %>%
     group_by(SID, item) %>%
     filter(!all(length(unlist(old.value)) < 1)) %>%
@@ -354,15 +300,15 @@ yadsv_v1_long_nodupes %>%
     knitr::kable(caption = "Questionnaire dupes")
 ```
 
-```{r yadsvv1score}
-yadsv_v1_scored_pds <- scorequaltrics::score_questionnaire(yadsv_v1_long_nodupes,
-                                                           yadsv_v1_scoring_data_long) %>%
+```{r yadsvv2score}
+yadsv_v2_scored_pds <- scorequaltrics::score_questionnaire(yadsv_v2_long_nodupes,
+                                                           yadsv_v2_scoring_data_long) %>%
     dplyr::filter(scored_scale %in% pds_scales)
-yadsv_v1_scored_pdss <- scorequaltrics::score_pdss(yadsv_v1_long_nodupes, 
+yadsv_v2_scored_pdss <- scorequaltrics::score_pdss(yadsv_v2_long_nodupes, 
                           gender_mix = pdss_gender_mix, 
                           gendercode = pdss_gender_code)
 
-yadsv_v1_scored_puberty <- dplyr::bind_rows(yadsv_v1_scored_pds, yadsv_v1_scored_pdss)
+yadsv_v2_scored_puberty <- dplyr::bind_rows(yadsv_v2_scored_pds, yadsv_v2_scored_pdss)
 ```
 
 ### Version 2.0 online
@@ -373,3 +319,198 @@ Q327 how old are you
 Q329 race
 PDS_Gender
 inf_rel
+
+```{r getsurveydata_yadsv_v2o}
+yadsv_v2o_surveys <- survey_names_splt %>%
+    filter(grepl('YADS-V v2.0 - Online$', SurveyName))
+yadsv_v2o_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2o_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'participantid') %>%
+    dplyr::rename(SID = participantid) %>%
+    dplyr::filter(grepl('qid', item)) %>% 
+    dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
+    dplyr::filter(SID != 99999) %>%
+    dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
+    tidyr::spread(item, value) %>%
+    dplyr::select(-survey_name)
+yadsv_v2o_long <- scorequaltrics::get_survey_data(yadsv_v2o_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'qid') %>%
+    dplyr::filter(grepl('(PDS|Q327|Q329|inf_rel)', item)) %>% 
+    dplyr::left_join(yadsv_v2o_qid_sid, by = 'qid') %>%
+    dplyr::select(-qid, -id)
+
+yadsv_v2o_pds_rubrics <- data.frame(file = dir(file.path(tds2_wave2_rubric_dir), 
+                                              pattern = 'PDS_scoring_rubric_TDS2_S3.csv',
+                                              full.names = TRUE))
+yadsv_v2o_scoring_data_long <- scorequaltrics::get_rubrics(yadsv_v2o_pds_rubrics, 
+                                                          type = 'scoring')
+SID_filter <- '([34]\\d{4}$)'
+
+#Clean and de-dupe parent and child data
+yadsv_v2o_long_nodupes <- yadsv_v2o_long %>%
+    filter(grepl(SID_filter, SID)) %>%
+    scorequaltrics::get_items_in_rubric(yadsv_v2_scoring_data_long) %>%
+    scorequaltrics::clean_dupes(pid_col = 'SID')
+
+#demographics only
+yadsv_v2o_pal_2_demo <- yadsv_v2o_long %>%
+    dplyr::filter(grepl(SID_filter, SID),
+           grepl('(Q327|Q329)', item)) %>%
+    tidyr::spread(item, value) %>%
+    dplyr::rename('PAL_2_Age' = Q327,
+                  'PAL_2_Race' = Q329,
+                  'PAL_2_Race_TEXT' = Q329_TEXT)
+#we can fill in missing ages with ages given on the consent form
+yadsv_v2o_surveys_cons <- survey_names_splt %>%
+    filter(grepl('YADS-V Consent - Online', SurveyName))
+yadsv_v2o_long_cons_age <- scorequaltrics::get_survey_data(yadsv_v2o_surveys_cons, 
+                                                   credentials, 
+                                                   pid_col = 'participantid') %>%
+    dplyr::filter(grepl('check_age', item), !is.na(as.numeric(value))) %>%
+    dplyr::distinct(participantid, item, value) %>%
+    dplyr::group_by(participantid) %>%
+    dplyr::mutate(n = n()) %>%
+    dplyr::filter(n == 1) %>%
+    dplyr::select(-n) %>%
+    tidyr::spread(item, value)
+yadsv_v2o_pal_2_demo_cons_age <- dplyr::left_join(yadsv_v2o_pal_2_demo,
+                                         yadsv_v2o_long_cons_age, 
+                                         by = c('SID' = 'participantid')) %>%
+    dplyr::mutate(age = ifelse(!is.na(as.numeric(check_age)),
+                               check_age,
+                               PAL_2_Age))
+
+#inf relations only
+yadsv_v2o_inf_rel <- yadsv_v2o_long %>%
+    dplyr::filter(grepl(SID_filter, SID),
+           grepl('inf_rel', item))
+```
+
+
+
+```{r eval=F}
+#Check that dropped values weren't ambiguous
+yadsv_v2o_long_nodupes %>% 
+    filter(dropped) %>%
+    group_by(SID, item) %>%
+    filter(!all(length(unlist(old.value)) < 1)) %>%
+    mutate(old.value = paste(old.value, collaps = ' ')) %>%
+    knitr::kable(caption = "Questionnaire dupes")
+```
+
+```{r yadsvv1score}
+yadsv_v2o_scored_pds <- scorequaltrics::score_questionnaire(yadsv_v2o_long_nodupes,
+                                                           yadsv_v2o_scoring_data_long) %>%
+    dplyr::filter(scored_scale %in% pds_scales)
+yadsv_v2o_scored_pdss <- scorequaltrics::score_pdss(yadsv_v2o_long_nodupes, 
+                          gender_mix = pdss_gender_mix, 
+                          gendercode = pdss_gender_code)
+
+yadsv_v2o_scored_puberty <- dplyr::bind_rows(yadsv_v2o_scored_pds, yadsv_v2o_scored_pdss)
+```
+
+# Combine all data
+
+```{r combinetdsdata}
+demo_col_types <- readr::cols(
+    sid = readr::col_character(),
+    s2_date = readr::col_date(format = ""),
+    s2_age = readr::col_double(),
+    s3_date = readr::col_date(format = ""),
+    s3_age = readr::col_double(),
+    gender = readr::col_integer(),
+    ethnicity = readr::col_character(),
+    hispanic_yn = readr::col_integer(),
+    fsiq2 = readr::col_integer()
+)
+anon_id_cols <- readr::cols(
+  id = readr::col_character(),
+  sample = readr::col_character(),
+  anon_id = readr::col_integer(),
+  anon_sample = readr::col_character(),
+  exclude = readr::col_integer()
+)
+
+pal_2_race_eth_mapping <- c(
+    '1' = 'European American/White',
+    '2' = 'Native American/American Indian/Alaskan Native',
+    '3' = 'African American/Black',
+    '4' = 'Hispanic/Latino',
+    '5' = 'Asian American',
+    '6' = 'Pacific Islander/Hawaiian',
+    '7' = 'Other'
+)
+
+tds_wave2_scored_puberty <- dplyr::bind_rows(tds1_wave2_scored_puberty, tds2_wave2_scored_puberty) %>%
+    dplyr::select(-n_items, -n_missing, -method) %>%
+    tidyr::unite(scale, scale_name, scored_scale) %>%
+    tidyr::spread(scale, score) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate_all(funs(ifelse(. == "NaN", NA, .))) %>%
+    dplyr::mutate(
+        PDS_mean_score = ifelse(!is.na(PDS_female_mean_score) && is.na(PDS_male_mean_score),
+                                PDS_female_mean_score,
+                                ifelse(is.na(PDS_female_mean_score) && !is.na(PDS_male_mean_score),
+                                       PDS_male_mean_score,
+                                       NA))) %>%
+    dplyr::select(-PDS_female_mean_score, -PDS_male_mean_score)
+yads_scored_puberty <- dplyr::bind_rows(
+    yadsv_v1_scored_puberty, yadsv_v2_scored_puberty, yadsv_v2o_scored_puberty) %>%
+    dplyr::select(-n_items, -n_missing, -method) %>%
+    tidyr::unite(scale, scale_name, scored_scale) %>%
+    tidyr::spread(scale, score) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate_all(funs(ifelse(. == "NaN", NA, .))) %>%
+    dplyr::mutate(
+        PDS_mean_score = ifelse(!is.na(PDS_female_mean_score) && is.na(PDS_male_mean_score),
+                                PDS_female_mean_score,
+                                ifelse(is.na(PDS_female_mean_score) && !is.na(PDS_male_mean_score),
+                                       PDS_male_mean_score,
+                                       NA))) %>%
+    dplyr::select(-PDS_female_mean_score, -PDS_male_mean_score)
+
+yads_dev_demo <- dplyr::full_join(yads_scored_puberty,
+                                  dplyr::select(
+                                      dplyr::bind_rows(yadsv_v1_pal_2_demo,
+                                                       yadsv_v2_pal_2_demo,
+                                                       yadsv_v2o_pal_2_demo_cons_age),
+                                      -PAL_2_Age, - check_age, -survey_name),
+                                  by = 'SID')
+yads_dev_demo <- dplyr::mutate(
+    yads_dev_demo,
+    ethnicity = ifelse(PAL_2_Race == 7,
+                       PAL_2_Race_TEXT,
+                       pal_2_race_eth_mapping[PAL_2_Race]))
+
+yads_dev_demo_deid <- dplyr::full_join(
+    yads_dev_demo,
+    dplyr::filter(
+        readr::read_csv(anon_id_filename, col_types = anon_id_cols),
+        sample %in% c('yads', 'yads_online')),
+    by = c('SID' = 'id'))
+
+tds_wave2_dev_demo_deid <- dplyr::full_join(
+    tds_wave2_dev_demo,
+    dplyr::filter(
+            readr::read_csv(anon_id_filename, col_types = anon_id_cols),
+            !sample %in% c('yads', 'yads_online')),
+    by = c('SID' = 'id'))
+##---STOPED HERE TEST ABOVE AND BELOW
+if(!all(
+    dim(filter(tds_wave2_dev_demo_deid, is.na(anon_id), !is.na(s3_date)))[1] == 0,
+    dim(filter(tds_wave2_dev_demo_deid, 
+               !is.na(anon_id), is.na(s3_date), anon_sample %in% c('TDS1', 'TDS2')))[1] == 0)) {
+    stop("Some participants not accounted for, or not anonymized")
+} else {
+    tds_wave2_dev_demo_deid <- dplyr::left_join(
+        tds_wave2_dev_demo,
+        dplyr::filter(
+            readr::read_csv(anon_id_filename, col_types = anon_id_cols),
+            !sample %in% c('yads', 'yads_online')),
+        by = c('SID' = 'id')) %>%
+        dplyr::filter(is.na(exclude)) %>%
+        dplyr::select(-SID, -exclude, -sample, -s2_date, -s3_date) %>%
+        dplyr::rename(SID = anon_id, sample = anon_sample)
+}
+```
