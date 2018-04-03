@@ -89,7 +89,7 @@ for(mod in 1:length(model_filename_list)){
 
         saveRDS(stanFit,
                 file.path(data_dir,
-                          paste0('splt-', names(model_filename_list)[mod],
+                          paste0('splt-tght-', names(model_filename_list)[mod],
                                  '-', round(as.numeric(Sys.time())/1000,0),'.RDS')))
     }
 }
