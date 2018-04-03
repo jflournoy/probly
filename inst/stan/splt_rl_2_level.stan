@@ -52,10 +52,10 @@ transformed parameters {
   matrix<lower=0>[N, K] beta_rho_prm; //per-individual coefficients for rho, for each condition, transformed
 
   for(k in 1:K){
-    tau_xi[k] = 2.5 * tan(tau_unif_xi[k]);
-    tau_ep[k] = 2.5 * tan(tau_unif_ep[k]);
-    tau_b[k] = 2.5 * tan(tau_unif_b[k]);
-    tau_rho[k] = 2.5 * tan(tau_unif_rho[k]);
+    tau_xi[k] = .25 * tan(tau_unif_xi[k]);
+    tau_ep[k] = .25 * tan(tau_unif_ep[k]);
+    tau_b[k] = .25 * tan(tau_unif_b[k]);
+    tau_rho[k] = .25 * tan(tau_unif_rho[k]);
   }
 
   beta_xi_prm = Phi_approx(u * mu_delta_xi + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
@@ -67,10 +67,10 @@ transformed parameters {
 model {
   // gng_m2: RW + noise + bias model in Guitart-Masip et al 2012
   // hyper parameters
-  to_vector(mu_delta_xi)  ~ normal(0, 5.0);
-  to_vector(mu_delta_ep)  ~ normal(0, 5.0);
-  to_vector(mu_delta_b)  ~ normal(0, 10.0);
-  to_vector(mu_delta_rho)  ~ normal(0, 5.0);
+  to_vector(mu_delta_xi)  ~ normal(0, 1);
+  to_vector(mu_delta_ep)  ~ normal(0, 1);
+  to_vector(mu_delta_b)  ~ normal(0, 2);
+  to_vector(mu_delta_rho)  ~ normal(0, 1);
 
   //Sigma_param for individual level coefficients
   to_vector(z_xi) ~ normal(0, 1);
@@ -100,6 +100,7 @@ model {
       wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
       pR[cue[i, t]]   = inv_logit(wv_r[cue[i, t]] - wv_l[cue[i, t]]);
       pR[cue[i, t]]   = pR[cue[i, t]] * (1 - beta_xi_prm[i, condition[i, t]]) + beta_xi_prm[i, condition[i, t]]/2;  // noise
+
       press_right[i, t] ~ bernoulli(pR[cue[i, t]]);
 
       // update action values
@@ -109,5 +110,6 @@ model {
         qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_prm[i, condition[i, t]] * (beta_rho_prm[i, condition[i, t]] * outcome[i, t] - qv_l[cue[i, t]]);
       }
     } // end of t loop
+    // print("pR = ", pR, ", wv_r = ", wv_r, ", wv_l = ", wv_l);
   } // end of i loop
 }

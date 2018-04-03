@@ -75,10 +75,10 @@ transformed parameters {
       delta_rho[m,k] = mu_delta_rho[k] + sigma_delta_rho * delta_rho_raw[m,k];
     }
 
-    tau_xi[k] = 2.5 * tan(tau_unif_xi[k]);
-    tau_ep[k] = 2.5 * tan(tau_unif_ep[k]);
-    tau_b[k] = 2.5 * tan(tau_unif_b[k]);
-    tau_rho[k] = 2.5 * tan(tau_unif_rho[k]);
+    tau_xi[k] = .25 * tan(tau_unif_xi[k]);
+    tau_ep[k] = .25 * tan(tau_unif_ep[k]);
+    tau_b[k] = .25 * tan(tau_unif_b[k]);
+    tau_rho[k] = .25 * tan(tau_unif_rho[k]);
   }
 
   beta_xi_prm  = Phi_approx(delta_xi[mm] + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
@@ -90,14 +90,14 @@ transformed parameters {
 model {
 // gng_m2: RW + noise + bias model in Guitart-Masip et al 2012
   // hyper parameters
-  mu_delta_xi  ~ normal(0, 5.0);
-  mu_delta_ep  ~ normal(0, 5.0);
-  mu_delta_b  ~ normal(0, 10.0);
-  mu_delta_rho  ~ normal(0, 5.0);
-  sigma_delta_xi ~ exponential(1.0);
-  sigma_delta_ep ~ exponential(1.0);
-  sigma_delta_b ~ exponential(1.0);
-  sigma_delta_rho ~ exponential(1.0);
+  mu_delta_xi  ~ normal(0, 1);
+  mu_delta_ep  ~ normal(0, 1);
+  mu_delta_b  ~ normal(0, 2);
+  mu_delta_rho  ~ normal(0, 1);
+  sigma_delta_xi ~ exponential(2.0);
+  sigma_delta_ep ~ exponential(2.0);
+  sigma_delta_b ~ exponential(2.0);
+  sigma_delta_rho ~ exponential(2.0);
 
   // print("sigma_delta_xi = ", sigma_delta_xi);
   // print("sigma_delta_ep = ", sigma_delta_ep);
