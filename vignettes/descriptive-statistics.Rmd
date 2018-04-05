@@ -12,7 +12,7 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  message = F, error = F,warning = F,
+  message = F, error = F,warning = F, cache = T,
   comment = "#>"
 )
 ```
@@ -26,7 +26,7 @@ library(probly)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
-data('splt', 'splt_confidence')
+data('splt', 'splt_confidence', 'splt_dev_and_demog')
 
 sample_labels <- c(
     'TDS1' = 'Foster-care involved adolescents',
@@ -43,6 +43,7 @@ condition_labels <- c(
 
 splt$condition <- factor(splt$condition, levels = names(condition_labels), labels = condition_labels)
 splt$sample <- factor(splt$sample, levels = names(sample_labels), labels = sample_labels)
+splt_dev_and_demog$sample <- factor(splt_dev_and_demog$sample, levels = names(sample_labels), labels = sample_labels)
 ```
 
 ```{r sample_size}
@@ -57,6 +58,18 @@ knitr::kable(
         sample, n),
     caption = 'Individuals in each sample',
     col.names = c('Sample', 'N'))
+```
+
+```{r summary, results='asis'}
+library(tables)
+(tables::tabular(
+    (Sample=sample) + 1 ~ 
+        (N=1) +
+        ((Age=age) + (PDSS=PDSS_pdss))*
+        (Format(digits=2)*((Mean=(function(x){mean(as.numeric(x), na.rm=T)})) + 
+                               (SD=(function(x){sd(x, na.rm=T)}))) + 
+             (Missing=(function(x){m <- sum(is.na(x));ifelse(m==0,'.',m)}))), 
+    data = splt_dev_and_demog))
 ```
 
 ```{r proportion_trials_per_condition}

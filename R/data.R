@@ -18,6 +18,16 @@
 #' }
 "splt_confidence"
 
+#' Social Probabilistic Learning Development and Demographic Data
+#'
+#' Description
+#'
+#' @format A data frame with M rows and N variables:
+#' \describe{
+#'   \item{blah}{blah}
+#' }
+"splt_dev_and_demog"
+
 #' Get sample index
 #'
 #' Creates a data frame that links each individual to a particular sample. The
