@@ -2,7 +2,13 @@
 title: "Descriptive Statistics for SPLT data"
 author: "John Flournoy"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  bookdown::html_document2:
+    toc: yes
+    toc_depth: 2
+    number_sections: FALSE
+pkgdown:
+  as_is: true
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -12,14 +18,29 @@ vignette: >
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  message = F, error = F,warning = F, cache = T,
+  message = F, error = F,warning = F, echo = F,
   comment = "#>"
 )
 ```
 
-# Sample information
+# Participants
 
-The table below shows the number of participants in each sample. TDS3 has very few participants, and as it was intended to bolster numbers for TDS1, will be collapsed.
+Data from four samples are used in this analysis. 
+The first two samples comprise foster-care-involved and community adolescents who were recruited from the greater Eugene/Springfield area for an ongoing longitudinal study investigating decision-making related to health-risking behavior (NIH grant number:). 
+The third and forth samples consisted of college students who completed the study for course credit either in person, or online. 
+Some participants in each sample did not provide data on all focal measures (see Table \@ref:missingstats), and so sample sizes for each analysis will differe to some extent.
+Examining the table, it is clear that the proportion of missing data is small.
+
+in table \@ref(tab:samplestats)
+
+(ref:samplestats) (\#tab:samplestats) Descriptive statistics on age, and PDSS for each sample
+
+(ref:missingstats) (\#tab:missingstats) Missing data from each sample for age, PDSS, and gender
+
+(ref:optpressstats) (\#tab:optpressstats) Probability that an optimal choice results in reward
+
+(ref:ethnicitytable) (\#tab:ethnicitytable) Race/ethnicity information by sample
+
 
 ```{r load_packages_and_data}
 library(probly)
@@ -41,224 +62,290 @@ condition_labels <- c(
     'PplU' = 'Popular/Unpopular'
 )
 
+ethnicity_labels <- c(
+    'American Indian and Alaska Native' = 'AmIndn',
+    'Asian' = 'Asian',
+    'Black or African American' = 'Black/AA',
+    'Latinx/Hispanic' = 'Latinx/Hsp',
+    'Native Hawaiian and Other Pacific Islander' = 'Pcfc Islnd',
+    'Other' = 'Other',
+    'White' = 'White',
+    'White/Hispanic' = 'Wht/Hsp'
+)
+
 splt$condition <- factor(splt$condition, levels = names(condition_labels), labels = condition_labels)
 splt$sample <- factor(splt$sample, levels = names(sample_labels), labels = sample_labels)
 splt_dev_and_demog$sample <- factor(splt_dev_and_demog$sample, levels = names(sample_labels), labels = sample_labels)
-```
-
-```{r sample_size}
-knitr::kable(
-    dplyr::select(
-        dplyr::mutate(
-            dplyr::summarize(
-                dplyr::group_by(
-                    dplyr::distinct(splt, id, dir, filename, sample),
-                    sample),
-                n = n())),
-        sample, n),
-    caption = 'Individuals in each sample',
-    col.names = c('Sample', 'N'))
+splt_dev_and_demog$gender <- factor(splt_dev_and_demog$gender, levels = c(0, 1), labels = c('Male', 'Female'))
+splt_dev_and_demog$ethnicity <- factor(splt_dev_and_demog$ethnicity, levels = names(ethnicity_labels), labels = ethnicity_labels)
 ```
 
 ```{r summary, results='asis'}
 library(tables)
-(tables::tabular(
-    (Sample=sample) + 1 ~ 
-        (N=1) +
-        ((Age=age) + (PDSS=PDSS_pdss))*
-        (Format(digits=2)*((Mean=(function(x){mean(as.numeric(x), na.rm=T)})) + 
-                               (SD=(function(x){sd(x, na.rm=T)}))) + 
-             (Missing=(function(x){m <- sum(is.na(x));ifelse(m==0,'.',m)}))), 
-    data = splt_dev_and_demog))
-```
+writeCSS(CSS = htmloptions()$CSS)
+mean.na.rm <- function(x){mean(as.numeric(x), na.rm=T)}
+sd.na.rm <- function(x){sd(x, na.rm=T)}
+nmissing <- function(x){m <- sum(is.na(x));ifelse(m==0,'-',m)}
+prct_missing <- function(x,y){pct <- 100*sum(is.na(x))/length(y);ifelse(pct==0,'\\-',pct)}
 
-```{r proportion_trials_per_condition}
+splt_did_task <- dplyr::summarize(
+    dplyr::group_by(splt, id, sample),
+    ntrials = sum(!is.na(pressed_r))
+)
+
+splt_dev_and_demog_task_sum <- dplyr::full_join(
+    splt_dev_and_demog,
+    splt_did_task,
+    by = c('SID' = 'id', 'sample')
+)
+
+splt_dev_and_demog_task_sum$gender_num <- as.numeric(splt_dev_and_demog_task_sum$gender)
+
 splt_by_cond_samp <- dplyr::group_by(splt, condition, sample)
 splt_summary_optimal_feedback <- dplyr::summarize(
     splt_by_cond_samp,
     p_optimal_correct = mean((proportion == '20_80') == (correct_r == 1))
 )
 
-knitr::kable(splt_summary_optimal_feedback,
-             col.names = c('Condition', 'Sample', 'P(Reward | Optimal)'),
-             caption = 'Probability that an optimal choice results in reward',
-             digits = 3)
+
+sample_table <- tables::tabular(
+    (Sample=sample) ~ 
+        (N = 1)*Heading()*(gender) +
+             ((Format(digits=1)*(Age = age) + 
+                   Format(digits=1)*(PDSS = PDSS_pdss) + 
+                   Format(digits=0)*(`N~trials~` = ntrials))*Heading()*(gender)*
+                  ((M = mean.na.rm) + 
+                       (`SD` = sd.na.rm))), 
+    data = splt_dev_and_demog_task_sum)
+
+missing_table <- tables::tabular(
+    ((Sample=sample) + 1) ~ 
+        (N=1) +
+             (((Age=age) + (PDSS=PDSS_pdss) + (Gender = gender_num) + (Task = ntrials))*
+                  ((`N~miss~` = nmissing) + Format(digits=1)*(`%` = Percent(fn = prct_missing)))), 
+    data = splt_dev_and_demog_task_sum)
+
+optimal_press_prop_table <- tables::tabular((Condition = condition)*(Sample = sample) ~ 
+                    Heading('Probability of reward')*
+                    identity*Heading()*Format(digits=3)*p_optimal_correct, 
+                data = splt_summary_optimal_feedback)
+ethnicity_table <- tables::tabular(
+    Heading('Percent (%)')*ethnicity*Heading()*Format(digits=1)*Percent() ~
+        1 + Heading()*(Sample = sample),
+    data = splt_dev_and_demog_task_sum)
+```
+
+```{r missingstats}
+html(missing_table, 
+     options = list(
+         justification = c('l'), 
+         rowlabeljustification = c('l'), 
+         pad = TRUE,
+         HTMLcaption = '(ref:missingstats)'))
+```
+
+```{r samplestats}
+html(sample_table, 
+     options = list(
+         justification = c('l'), 
+         rowlabeljustification = c('l'), 
+         pad = TRUE,
+         HTMLcaption = '(ref:samplestats)'))
+```
+
+```{r ethnicitytable}
+html(ethnicity_table, 
+     options = list(
+         justification = c('r'), 
+         rowlabeljustification = c('l'), 
+         pad = TRUE,
+         HTMLcaption = '(ref:ethnicitytable)'))
+```
+
+```{r optpressstats}
+html(optimal_press_prop_table, 
+     options = list(
+         justification = c('l'), 
+         rowlabeljustification = c('l'), 
+         pad = TRUE,
+         HTMLcaption = '(ref:optpressstats)'))
 ```
 
 
 
 
-```{r reaction_time, fig.width=10.5, fig.height=8}
-ggplot2::ggplot(
-    dplyr::filter(splt, rt > 0),
-    ggplot2::aes(x = rt/1000)) + 
-    ggplot2::geom_vline(xintercept = 1, size = .5, color = '#666666') + 
-    ggplot2::geom_histogram(binwidth = .1, fill = 'black') +
-    ggplot2::theme_minimal() + 
-    ggplot2::theme(strip.background = element_blank(), 
-                   strip.text = element_blank()) + 
-    ggplot2::scale_x_continuous(breaks = c(0, 1, 2)) +
-    facet_wrap(~id, ncol = 20) + 
-    coord_cartesian(x = c(0, 2)) +
-    labs(x = 'Trial reaction-time (s)', 
-         y = 'Count',
-         title = 'Reaction time for all participants')
 
-max_number_of_trials <- max(
-    dplyr::summarise(
-        dplyr::group_by(
-            dplyr::filter(splt, !is.na(pressed_r)), 
-            id, condition),
-        n_trials = n())$n_trials
-    )
+<!-- ```{r reaction_time, fig.width=10.5, fig.height=8, cache=T} -->
+<!-- ggplot2::ggplot( -->
+<!--     dplyr::filter(splt, rt > 0), -->
+<!--     ggplot2::aes(x = rt/1000)) +  -->
+<!--     ggplot2::geom_vline(xintercept = 1, size = .5, color = '#666666') +  -->
+<!--     ggplot2::geom_histogram(binwidth = .1, fill = 'black') + -->
+<!--     ggplot2::theme_minimal() +  -->
+<!--     ggplot2::theme(strip.background = element_blank(),  -->
+<!--                    strip.text = element_blank()) +  -->
+<!--     ggplot2::scale_x_continuous(breaks = c(0, 1, 2)) + -->
+<!--     facet_wrap(~id, ncol = 20) +  -->
+<!--     coord_cartesian(x = c(0, 2)) + -->
+<!--     labs(x = 'Trial reaction-time (s)',  -->
+<!--          y = 'Count', -->
+<!--          title = 'Reaction time for all participants') -->
 
-ggplot2::ggplot(
-    dplyr::filter(splt, !is.na(pressed_r)),
-    ggplot2::aes(x = condition)) + 
-    ggplot2::geom_hline(yintercept = max_number_of_trials, color = '#666666') + 
-    ggplot2::geom_bar(fill = '#bbbbbb') +
-    ggplot2::theme_minimal() + 
-    ggplot2::theme(strip.background = element_blank(),
-                   strip.text = element_blank(),
-                   axis.text.x = element_text(angle = 360-45, hjust = 0)) +
-    facet_wrap(~id, ncol = 20) + 
-    labs(x = 'Condition', 
-         y = paste0('Number of trials (line at max = ', max_number_of_trials, ')'),
-         title = 'Trials per condition for all participants')
-```
+<!-- max_number_of_trials <- max( -->
+<!--     dplyr::summarise( -->
+<!--         dplyr::group_by( -->
+<!--             dplyr::filter(splt, !is.na(pressed_r)),  -->
+<!--             id, condition), -->
+<!--         n_trials = n())$n_trials -->
+<!--     ) -->
 
-# Raw task data
+<!-- ggplot2::ggplot( -->
+<!--     dplyr::filter(splt, !is.na(pressed_r)), -->
+<!--     ggplot2::aes(x = condition)) +  -->
+<!--     ggplot2::geom_hline(yintercept = max_number_of_trials, color = '#666666') +  -->
+<!--     ggplot2::geom_bar(fill = '#bbbbbb') + -->
+<!--     ggplot2::theme_minimal() +  -->
+<!--     ggplot2::theme(strip.background = element_blank(), -->
+<!--                    strip.text = element_blank(), -->
+<!--                    axis.text.x = element_text(angle = 360-45, hjust = 0)) + -->
+<!--     facet_wrap(~id, ncol = 20) +  -->
+<!--     labs(x = 'Condition',  -->
+<!--          y = paste0('Number of trials (line at max = ', max_number_of_trials, ')'), -->
+<!--          title = 'Trials per condition for all participants') -->
+<!-- ``` -->
 
-Averaging over trials
+<!-- # Raw task data -->
 
-```{r fig.width=7, fig.height=6}
+<!-- Averaging over trials -->
 
-splt_averages <- splt %>%
-    dplyr::group_by(sample, condition, condition_trial_index) %>%
-    dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>%
-    dplyr::ungroup()
-    
-splt_averages_over_samples <- splt %>%
-    dplyr::group_by(condition, condition_trial_index) %>%
-    dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>%
-    dplyr::ungroup()
+<!-- ```{r fig.width=7, fig.height=6, cache=T} -->
 
-ggplot2::ggplot(
-    splt_averages,
-    ggplot2::aes(x = condition_trial_index,
-                 y = p_optimal,
-                 group = condition,
-                 linetype = condition,
-                 shape = condition)) + 
-    ggplot2::geom_point(alpha = .1) + 
-    ggplot2::geom_smooth(
-        color = 'black', size = .5,
-        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) + 
-    ggplot2::facet_wrap(~sample, nrow = 2) + 
-    ggplot2::labs(x = 'Within-condition trial number',
-                  y = 'Proportion of optimal responses') + 
-    ggplot2::theme_minimal()
+<!-- splt_averages <- splt %>% -->
+<!--     dplyr::group_by(sample, condition, condition_trial_index) %>% -->
+<!--     dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>% -->
+<!--     dplyr::ungroup() -->
 
-ggplot2::ggplot(
-    splt_averages_over_samples,
-    ggplot2::aes(x = condition_trial_index,
-                 y = p_optimal,
-                 group = condition,
-                 linetype = condition,
-                 shape = condition)) + 
-    ggplot2::geom_point(alpha = .1) + 
-    ggplot2::geom_smooth(
-        color = 'black', size = .5,
-        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +
-    ggplot2::labs(x = 'Within-condition trial number',
-                  y = 'Proportion of optimal responses') + 
-    ggplot2::theme_minimal()
+<!-- splt_averages_over_samples <- splt %>% -->
+<!--     dplyr::group_by(condition, condition_trial_index) %>% -->
+<!--     dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>% -->
+<!--     dplyr::ungroup() -->
+
+<!-- ggplot2::ggplot( -->
+<!--     splt_averages, -->
+<!--     ggplot2::aes(x = condition_trial_index, -->
+<!--                  y = p_optimal, -->
+<!--                  group = condition, -->
+<!--                  linetype = condition, -->
+<!--                  shape = condition)) +  -->
+<!--     ggplot2::geom_point(alpha = .1) +  -->
+<!--     ggplot2::geom_smooth( -->
+<!--         color = 'black', size = .5, -->
+<!--         method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +  -->
+<!--     ggplot2::facet_wrap(~sample, nrow = 2) +  -->
+<!--     ggplot2::labs(x = 'Within-condition trial number', -->
+<!--                   y = 'Proportion of optimal responses') +  -->
+<!--     ggplot2::theme_minimal() -->
+
+<!-- ggplot2::ggplot( -->
+<!--     splt_averages_over_samples, -->
+<!--     ggplot2::aes(x = condition_trial_index, -->
+<!--                  y = p_optimal, -->
+<!--                  group = condition, -->
+<!--                  linetype = condition, -->
+<!--                  shape = condition)) +  -->
+<!--     ggplot2::geom_point(alpha = .1) +  -->
+<!--     ggplot2::geom_smooth( -->
+<!--         color = 'black', size = .5, -->
+<!--         method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) + -->
+<!--     ggplot2::labs(x = 'Within-condition trial number', -->
+<!--                   y = 'Proportion of optimal responses') +  -->
+<!--     ggplot2::theme_minimal() -->
 
 
-```
+<!-- ``` -->
 
-Self-reported confidence over blocks
+<!-- Self-reported confidence over blocks -->
 
-```{r fig.width=6, fig.height=4}
-ggplot2::ggplot(
-    dplyr::filter(splt_confidence, !is.na(sample), sample != 'TDS3'),
-    ggplot2::aes(x = block, y = confidence)) + 
-    ggplot2::geom_point(position = ggplot2::position_jitter(w = .3, h = .3), alpha = .1) +
-    ggplot2::geom_smooth(
-        ggplot2::aes(color = sample),
-        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) + 
-    ggplot2::theme_minimal() + 
-    ggplot2::labs(x = 'Block number',
-                  y = 'Self-report confidence about optimal label')
-```
+<!-- ```{r fig.width=6, fig.height=4, cache=T} -->
+<!-- ggplot2::ggplot( -->
+<!--     dplyr::filter(splt_confidence, !is.na(sample), sample != 'TDS3'), -->
+<!--     ggplot2::aes(x = block, y = confidence)) +  -->
+<!--     ggplot2::geom_point(position = ggplot2::position_jitter(w = .3, h = .3), alpha = .1) + -->
+<!--     ggplot2::geom_smooth( -->
+<!--         ggplot2::aes(color = sample), -->
+<!--         method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) +  -->
+<!--     ggplot2::theme_minimal() +  -->
+<!--     ggplot2::labs(x = 'Block number', -->
+<!--                   y = 'Self-report confidence about optimal label') -->
+<!-- ``` -->
 
-# Proportion optimal presses per ID & condition
+<!-- # Proportion optimal presses per ID & condition -->
 
-```{r}
-plot_opt_presses_per_id <- function(splt_df, 
-                                    ncol = 5, 
-                                    title = 'Proportion optimal presses per ID & condition',
-                                    se = F){
-    splt_opt_press <- dplyr::mutate(
-        ungroup(splt_df), 
-        press_opt = as.numeric(pressed_r == (proportion == '20_80')),
-        press_opt = (press_opt - .5) * (1 -.05 * (as.numeric(condition) - 1)) + .5)
-    
-    splt_opt_press_ranks <- dplyr::summarize(
-        dplyr::group_by(splt_opt_press, id),
-                        mean_press_opt = mean(press_opt, na.rm = T))
-    splt_opt_press_ranks$id_fac <- factor(
-        splt_opt_press_ranks$id,
-        levels = splt_opt_press_ranks$id[order(splt_opt_press_ranks$mean_press_opt)])
-    
-    splt_opt_press <- left_join(splt_opt_press, splt_opt_press_ranks)
-    
-    ggplot2::ggplot(
-        splt_opt_press, 
-        ggplot2::aes(
-            x = condition_trial_index, 
-            y = press_opt,
-            linetype = condition,
-            shape = condition)) +
-        ggplot2::geom_point(size = .75, alpha = .25) + 
-        ggplot2::geom_hline(yintercept = c(.8), alpha = 1, color = 'red', size = .5) + 
-        ggplot2::geom_hline(yintercept = c(.5), alpha = 1, color = 'gray', size = .5) + 
-        ggplot2::geom_smooth(se = se, method = 'gam', formula = y ~ s(x, bs = "tp", k = 4), 
-                             size = .5, color = 'black', alpha = .2) + 
-        ggplot2::facet_wrap(~ id_fac, ncol = ncol) +
-        ggplot2::coord_cartesian(ylim = c(0, 1)) + 
-        ggplot2::scale_y_continuous(breaks = c(0,.5,.8)) + 
-        ggplot2::scale_x_continuous(breaks = c(1,64,128)) +
-        ggplot2::theme_minimal() +
-        ggplot2::labs(x = 'Trial', y = 'Optimal press (probability)', title = title)
-}
-```
+<!-- ```{r cache=T} -->
+<!-- plot_opt_presses_per_id <- function(splt_df,  -->
+<!--                                     ncol = 5,  -->
+<!--                                     title = 'Proportion optimal presses per ID & condition', -->
+<!--                                     se = F){ -->
+<!--     splt_opt_press <- dplyr::mutate( -->
+<!--         ungroup(splt_df),  -->
+<!--         press_opt = as.numeric(pressed_r == (proportion == '20_80')), -->
+<!--         press_opt = (press_opt - .5) * (1 -.05 * (as.numeric(condition) - 1)) + .5) -->
 
-```{r proportion_trials_per_conditionca, fig.width=10, fig.height=22}
-plot_opt_presses_per_id(
-    dplyr::filter(splt, sample == 'Community adolescents'),
-    ncol = 5, 
-    title = 'Community adolescents')
-```
+<!--     splt_opt_press_ranks <- dplyr::summarize( -->
+<!--         dplyr::group_by(splt_opt_press, id), -->
+<!--                         mean_press_opt = mean(press_opt, na.rm = T)) -->
+<!--     splt_opt_press_ranks$id_fac <- factor( -->
+<!--         splt_opt_press_ranks$id, -->
+<!--         levels = splt_opt_press_ranks$id[order(splt_opt_press_ranks$mean_press_opt)]) -->
 
-```{r proportion_trials_per_conditionfc, fig.width=10, fig.height=10}
-plot_opt_presses_per_id(
-    dplyr::filter(splt, sample == 'Foster-care involved adolescents'),
-    ncol = 5, 
-    title = 'Foster-care involved adolescents')
-```
+<!--     splt_opt_press <- left_join(splt_opt_press, splt_opt_press_ranks) -->
 
-```{r proportion_trials_per_conditioncs, fig.width=10, fig.height=22}
-plot_opt_presses_per_id(
-    dplyr::filter(splt, sample == 'College students'),
-    ncol = 5, 
-    title = 'College students')
-```
+<!--     ggplot2::ggplot( -->
+<!--         splt_opt_press,  -->
+<!--         ggplot2::aes( -->
+<!--             x = condition_trial_index,  -->
+<!--             y = press_opt, -->
+<!--             linetype = condition, -->
+<!--             shape = condition)) + -->
+<!--         ggplot2::geom_point(size = .75, alpha = .25) +  -->
+<!--         ggplot2::geom_hline(yintercept = c(.8), alpha = 1, color = 'red', size = .5) +  -->
+<!--         ggplot2::geom_hline(yintercept = c(.5), alpha = 1, color = 'gray', size = .5) +  -->
+<!--         ggplot2::geom_smooth(se = se, method = 'gam', formula = y ~ s(x, bs = "tp", k = 4),  -->
+<!--                              size = .5, color = 'black', alpha = .2) +  -->
+<!--         ggplot2::facet_wrap(~ id_fac, ncol = ncol) + -->
+<!--         ggplot2::coord_cartesian(ylim = c(0, 1)) +  -->
+<!--         ggplot2::scale_y_continuous(breaks = c(0,.5,.8)) +  -->
+<!--         ggplot2::scale_x_continuous(breaks = c(1,64,128)) + -->
+<!--         ggplot2::theme_minimal() + -->
+<!--         ggplot2::labs(x = 'Trial', y = 'Optimal press (probability)', title = title) -->
+<!-- } -->
+<!-- ``` -->
 
-```{r proportion_trials_per_conditioncso, fig.width=10, fig.height=44}
-plot_opt_presses_per_id(
-    dplyr::filter(splt, sample == 'College students - online'),
-    ncol = 5, 
-    title = 'College students - online')
+<!-- ```{r proportion_trials_per_conditionca, fig.width=10, fig.height=22, cache=T} -->
+<!-- plot_opt_presses_per_id( -->
+<!--     dplyr::filter(splt, sample == 'Community adolescents'), -->
+<!--     ncol = 5,  -->
+<!--     title = 'Community adolescents') -->
+<!-- ``` -->
 
-```
+<!-- ```{r proportion_trials_per_conditionfc, fig.width=10, fig.height=10, cache=T} -->
+<!-- plot_opt_presses_per_id( -->
+<!--     dplyr::filter(splt, sample == 'Foster-care involved adolescents'), -->
+<!--     ncol = 5,  -->
+<!--     title = 'Foster-care involved adolescents') -->
+<!-- ``` -->
+
+<!-- ```{r proportion_trials_per_conditioncs, fig.width=10, fig.height=22, cache=T} -->
+<!-- plot_opt_presses_per_id( -->
+<!--     dplyr::filter(splt, sample == 'College students'), -->
+<!--     ncol = 5,  -->
+<!--     title = 'College students') -->
+<!-- ``` -->
+
+<!-- ```{r proportion_trials_per_conditioncso, fig.width=10, fig.height=44, cache=T} -->
+<!-- plot_opt_presses_per_id( -->
+<!--     dplyr::filter(splt, sample == 'College students - online'), -->
+<!--     ncol = 5,  -->
+<!--     title = 'College students - online') -->
+
+<!-- ``` -->
