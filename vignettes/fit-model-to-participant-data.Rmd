@@ -19,24 +19,244 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r}
+library(probly)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(rstan)
+library(bayesplot)
+data(splt, splt_confidence)
+sample_labels <- c(
+    'TDS1' = 'Foster-care involved adolescents',
+    'TDS2' = 'Community adolescents',
+    'yads' = 'College students',
+    'yads_online' = 'College students - online'
+)
+
+condition_labels <- c(
+    'HngT' = 'Hungry/Thirsty',
+    'DtnL' = 'Dating/Looking', 
+    'PplU' = 'Popular/Unpopular'
+)
+
+ethnicity_labels <- c(
+    'American Indian and Alaska Native' = 'AmIndn',
+    'Asian' = 'Asian',
+    'Black or African American' = 'Black/AA',
+    'Latinx/Hispanic' = 'Latinx/Hsp',
+    'Native Hawaiian and Other Pacific Islander' = 'Pcfc Islnd',
+    'Other' = 'Other',
+    'White' = 'White',
+    'White/Hispanic' = 'Wht/Hsp'
+)
+
+splt$condition <- factor(splt$condition, levels = names(condition_labels), labels = condition_labels)
+splt$sample <- factor(splt$sample, levels = names(sample_labels), labels = sample_labels)
+splt_confidence$sample <- factor(splt_confidence$sample, levels = names(sample_labels), labels = sample_labels)
+splt_dev_and_demog$sample <- factor(splt_dev_and_demog$sample, levels = names(sample_labels), labels = sample_labels)
+splt_dev_and_demog$gender <- factor(splt_dev_and_demog$gender, levels = c(0, 1), labels = c('Male', 'Female'))
+splt_dev_and_demog$ethnicity <- factor(splt_dev_and_demog$ethnicity, levels = names(ethnicity_labels), labels = ethnicity_labels)
+```
+
 # Method
 
 Using the model presented in the section on [testing simulated data](test-simulated-data.html), I estimate the posterior distribution of the model parameters given the data provided by four groups of participants.
 Quality of estimation can be supported by (A), (B), (C), (D).
 
+# Results
 
-```{r}
-library(rstan)
+## Descriptive plots
 
-stanfit <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level_no_b-1522879.RDS')
+Examination of the raw data using scatterplots and non-parametric best-fit lines can help insure that data conform to expectations, and that subsequent model estimates accurately reflect the data. On average participants in all samples and all conditions demonstrated learning (Figure \@ref(fig:trialaverages)A, although note that there given the small sample size, the foster-care involved sample shows more variability across trials). There is also some indication that learning occurs more quickly in the two social motive conditions (Figure \@ref(fig:trialaverages)B).
+
+(ref:trialaverages) Average number of optimal responses for each trial across all participants. Best fit lines are generalized additive models with 95% confidence intervals. 
+
+```{r trialaverages, fig.width=8, fig.height=5, cache=T, caption='(ref:trialaverages)'}
+splt_averages <- splt %>%
+    dplyr::group_by(sample, condition, condition_trial_index) %>%
+    dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>%
+    dplyr::ungroup()
+
+splt_averages_over_samples <- splt %>%
+    dplyr::group_by(condition, condition_trial_index) %>%
+    dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>%
+    dplyr::ungroup()
+
+avg_per_sample_plot <- ggplot2::ggplot(
+    splt_averages,
+    ggplot2::aes(x = condition_trial_index,
+                 y = p_optimal,
+                 group = condition,
+                 linetype = condition,
+                 shape = condition)) +
+    ggplot2::geom_point(alpha = .1) +
+    ggplot2::geom_smooth(
+        color = 'black', size = .5,
+        method = 'gam', formula = y ~ s(x, bs = "cr", k = 6), se = T) +
+    ggplot2::facet_wrap(~sample, nrow = 2) +
+    ggplot2::labs(x = 'Within-condition trial number',
+                  y = 'Proportion of optimal responses',
+                  title = 'A') +
+    ggplot2::theme_minimal() + 
+    ggplot2::theme(legend.position = 'none') + 
+    ggplot2::coord_cartesian(ylim = c(.5, .9))
+
+avg_across_samples <- ggplot2::ggplot(
+    splt_averages_over_samples,
+    ggplot2::aes(x = condition_trial_index,
+                 y = p_optimal,
+                 group = condition,
+                 linetype = condition,
+                 shape = condition)) +
+    ggplot2::geom_point(alpha = .1) +
+    ggplot2::geom_smooth(
+        color = 'black', size = .5,
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +
+    ggplot2::labs(x = 'Within-condition trial number',
+                  y = 'Proportion of optimal responses',
+                  title = 'B') +
+    ggplot2::guides(linetype = guide_legend(override.aes=list(fill=NA)),
+                    shape = guide_legend(override.aes=list(alpha=.5))) + 
+    ggplot2::theme_minimal() + 
+    ggplot2::theme(legend.key = element_rect(fill = 'white', color = 'white'),
+                   legend.background = element_rect(fill = 'white', color = 'white')) + 
+    ggplot2::coord_cartesian(ylim = c(.5, .8))
+
+gridExtra::grid.arrange(avg_per_sample_plot, avg_across_samples, nrow = 1)
 ```
 
-```{r diag, eval=F}
+Participants also reported their confidence in the which reponses would give them rewards most often (this single item measured confidence globally). Confidence generally increases aross trials for all samples (Figure \@ref(fig:confidenceplot)).
+
+(ref:confidenceplot) Self-reported confidence over blocks.
+
+```{r confidenceplot, fig.width=6, fig.height=4, cache=T, fig.cap='(ref:confidenceplot)'}
+ggplot2::ggplot(
+    dplyr::filter(splt_confidence, !is.na(sample), sample != 'TDS3'),
+    ggplot2::aes(x = block, y = confidence)) +
+    ggplot2::geom_point(position = ggplot2::position_jitter(w = .3, h = .3), alpha = .1) +
+    ggplot2::geom_smooth(
+        ggplot2::aes(color = sample),
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) +
+    ggplot2::theme_minimal() +
+    ggplot2::labs(x = 'Block number',
+                  y = 'Self-report confidence about optimal label',
+                  color = 'Sample')
+```
+
+### Proportion optimal presses per ID & condition
+
+Each of the plots below shows, for each individual, the trajectory of learning across trials. Individual plots are sorted by the overall proportion of optimal presses.
+
+```{r cache=T}
+plot_opt_presses_per_id <- function(splt_df,
+                                    ncol = 5,
+                                    title = 'Proportion optimal presses per ID & condition',
+                                    se = F){
+    splt_opt_press <- dplyr::mutate(
+        ungroup(splt_df),
+        press_opt = as.numeric(pressed_r == (proportion == '20_80')),
+        press_opt = (press_opt - .5) * (1 -.05 * (as.numeric(condition) - 1)) + .5)
+
+    splt_opt_press_ranks <- dplyr::summarize(
+        dplyr::group_by(splt_opt_press, id),
+                        mean_press_opt = mean(press_opt, na.rm = T))
+    splt_opt_press_ranks$id_fac <- factor(
+        splt_opt_press_ranks$id,
+        levels = splt_opt_press_ranks$id[order(splt_opt_press_ranks$mean_press_opt)])
+
+    splt_opt_press <- left_join(splt_opt_press, splt_opt_press_ranks)
+
+    ggplot2::ggplot(
+        splt_opt_press,
+        ggplot2::aes(
+            x = condition_trial_index,
+            y = press_opt,
+            linetype = condition,
+            shape = condition)) +
+        ggplot2::geom_point(size = .75, alpha = .25) +
+        ggplot2::geom_hline(yintercept = c(.8), alpha = 1, color = 'red', size = .5) +
+        ggplot2::geom_hline(yintercept = c(.5), alpha = 1, color = 'gray', size = .5) +
+        ggplot2::geom_smooth(se = se, method = 'gam', formula = y ~ s(x, bs = "tp", k = 4),
+                             size = .5, color = 'black', alpha = .2) +
+        ggplot2::facet_wrap(~ id_fac, ncol = ncol) +
+        ggplot2::coord_cartesian(ylim = c(0, 1)) +
+        ggplot2::scale_y_continuous(breaks = c(0,.5,.8)) +
+        ggplot2::scale_x_continuous(breaks = c(1,64,128)) +
+        ggplot2::theme_minimal() +
+        ggplot2::labs(x = 'Trial', y = 'Optimal press (probability)', title = title)
+}
+```
+
+```{r proportion_trials_per_conditionca, fig.width=10, fig.height=22, cache=T}
+plot_opt_presses_per_id(
+    dplyr::filter(splt, sample == 'Community adolescents'),
+    ncol = 5,
+    title = 'Community adolescents')
+```
+
+```{r proportion_trials_per_conditionfc, fig.width=10, fig.height=10, cache=T}
+plot_opt_presses_per_id(
+    dplyr::filter(splt, sample == 'Foster-care involved adolescents'),
+    ncol = 5,
+    title = 'Foster-care involved adolescents')
+```
+
+```{r proportion_trials_per_conditioncs, fig.width=10, fig.height=22, cache=T}
+plot_opt_presses_per_id(
+    dplyr::filter(splt, sample == 'College students'),
+    ncol = 5,
+    title = 'College students')
+```
+
+```{r proportion_trials_per_conditioncso, fig.width=10, fig.height=44, cache=T}
+plot_opt_presses_per_id(
+    dplyr::filter(splt, sample == 'College students - online'),
+    ncol = 5,
+    title = 'College students - online')
+
+```
+
+# Results from Bayesian learning models
+
+```{r}
+stanfit <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level_no_b-1522879.RDS')
+stanfitmat <- as.array(stanfit)
+```
+
+```{r diag}
 munames <- grep('mu', names(stanfit), value = T)
 betanames <- grep('beta', names(stanfit), value = T)
 taunames <- grep('tau_\\w{2,3}\\[', names(stanfit), value = T)
 lomeganames <- grep('L_Omega', names(stanfit), value = T)
+```
 
+Learning rate
+
+```{r}
+ggplot2::theme_set(ggplot2::theme_minimal())
+bayesplot::mcmc_combo(stanfitmat, pars = munames[4:6], facet_args = list(scales = 'fixed'),
+                      transformations = pnorm, combo = c('areas', 'trace'), prob_outer = .95)
+```
+
+Size of reward modifier
+
+```{r}
+bayesplot::mcmc_combo(stanfitmat, pars = munames[7:9], facet_args = list(scales = 'fixed'),
+                      transformations = exp, combo = c('areas', 'trace'), prob_outer = .95)
+```
+
+Irriducible noise (e.g., "what the whaaa?")
+
+```{r}
+bayesplot::mcmc_combo(stanfitmat, pars = munames[1:3], facet_args = list(scales = 'fixed'),
+                      transformations = pnorm, combo = c('areas', 'trace'), prob_outer = .95)
+```
+
+## Diagnostics
+
+
+```{r}
 rstan::stan_diag(stanfit, information = 'sample')
 rstan::stan_diag(stanfit, information = 'stepsize')
 rstan::stan_diag(stanfit, information = 'treedepth')
@@ -68,14 +288,12 @@ for(i in 1:(length(betanames)/313)){
 
 ```
 
-```{r pairs, fig.width=15, fig.height=15, eval=F}
+```{r pairs, fig.width=15, fig.height=15}
 pairs(stanfit, pars = munames)
 pairs(stanfit, pars = taunames)
 ```
 
 ```{r pairs2, fig.width=30, fig.height=30}
-library(probly)
-library(bayesplot)
 ep_cor_cov_samps <- probly::extract_cor_cov_samps(stanfit, par_subscript = 'ep')
 xi_cor_cov_samps <- probly::extract_cor_cov_samps(stanfit, par_subscript = 'xi')
 rho_cor_cov_samps <- probly::extract_cor_cov_samps(stanfit, par_subscript = 'rho')
