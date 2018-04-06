@@ -35,10 +35,6 @@ data_dir <- '/data/jflournoy/split/probly'
 
 My approach to answering this question is to model how learning occurs in each of the three motive contexts and examine differences in how learning occurs.
 
-# Task Descriptions
-
-**TASK DESCRIPTION HERE**
-
 # A model for reinforcement learning
 
 In the context of this task, where the relation between the optimal response and the stimulus is constant, a simple model of the degree of learning could rely on a simple proportion of optimal responses $P_{ok}$ for each condition $k$.
@@ -290,6 +286,19 @@ Although the above results are promising, it is important to ensure that this is
 ```{r run_many_simulations, eval = F, echo = T}
 ```
 
+
+```{r}
+
+stan_sim_lists <- readRDS('/data/jflournoy/split/probly/sim_test_100_iter.RDS')
+
+stem(unlist(lapply(stan_sim_lists, function(reslist){
+    sum(unlist(lapply(reslist$sampler_params, function(samplist){
+        sum(samplist[51:100, 'divergent__'])
+    })))
+})), scale = 50)
+
+stan_sim_lists[[1]]$fit_summary$summary['mu_delta_xi[1]', 'mean']
+```
 
 
 # Conclusion
