@@ -5,11 +5,11 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Age and Puberty Data • probly</title>
+<title>Age, Puberty, and Informant Data • probly</title>
 <!-- jquery --><script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script><!-- Font Awesome icons --><link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-T8Gy5hrqNKT+hzMclPo118YTQO6cYprQmhrYwIiQ/3axmI1hQomh7Ud2hPOy8SP1" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js" integrity="sha384-cV+rhyOuRHc9Ub/91rihWcGmMmCXDeksTtCihMupQHSsi8GIIRDG0ThDc3HGQFJ3" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Age and Puberty Data">
+<script src="../jquery.sticky-kit.min.js"></script><script src="../pkgdown.js"></script><meta property="og:title" content="Age, Puberty, and Informant Data">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
 <!-- mathjax --><script src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><!--[if lt IE 9]>
@@ -52,7 +52,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/age-and-puberty-data.html">Age and Puberty Data</a>
+      <a href="../articles/age-and-puberty-data.html">Age, Puberty, and Informant Data</a>
     </li>
     <li>
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
@@ -84,10 +84,10 @@
       </header><div class="row">
   <div class="col-md-9">
     <div class="page-header toc-ignore">
-      <h1>Age and Puberty Data</h1>
+      <h1>Age, Puberty, and Informant Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-29</h4>
+            <h4 class="date">2018-04-05</h4>
       
       
 
@@ -96,22 +96,493 @@
     
     
 <div class="contents">
-<p>After cleaning duplicates, it’s possible that there were some responses that have conflicting answers. We can look at those now.</p>
-<p>Now we can see which items had conflicting responses on duplicate questionnaires.</p>
-<div id="scoring" class="section level3">
-<h3 class="hasAnchor">
-<a href="#scoring" class="anchor"></a>Scoring</h3>
-</div>
-<div id="yads" class="section level2">
+<p>This vignette is here just to show you the code used to agglomerate and save the <code>splt_dev_and_demog.rda</code> file that comes with this package.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(dplyr)
+<span class="kw">library</span>(tidyr)
+
+credentials &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">creds_from_file</span>(qualtrics_api_token_file)
+
+survey_names_all &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_surveys</span>(credentials)
+survey_names_splt &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(survey_names_all, <span class="kw">grepl</span>(<span class="st">'.*(TDS1|TDS2|TDS3|YADS).*'</span>, SurveyName))</code></pre></div>
+<div id="tds" class="section level1">
+<h1 class="hasAnchor">
+<a href="#tds" class="anchor"></a>TDS</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># We only need PDS data</span>
+tds2_wave2_surveys &lt;-<span class="st"> </span>survey_names_splt %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'TDS2 Session 3 - Child$'</span>, SurveyName))
+tds2_wave2_qid_sid &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(tds2_wave2_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'SID'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'qid'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(item, value) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(readr::<span class="kw">read_csv</span>(id_recode_filename), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'qid'</span> =<span class="st"> 'response_id'</span>)) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">SID =</span> <span class="kw">ifelse</span>(!<span class="kw">is.na</span>(id), id, SID)) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-survey_name)
+tds2_wave2_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(tds2_wave2_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'PDS'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(tds2_wave2_qid_sid, <span class="dt">by =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-qid, -id)
+
+tds2_wave2_pds_rubrics &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">file =</span> <span class="kw">dir</span>(<span class="kw">file.path</span>(tds2_wave2_rubric_dir), 
+                                                    <span class="dt">pattern =</span> <span class="st">'PDS_scoring_rubric_TDS2_S3.csv'</span>,
+                                                    <span class="dt">full.names =</span> <span class="ot">TRUE</span>))
+tds2_wave2_scoring_data_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_rubrics</span>(tds2_wave2_pds_rubrics, 
+                                                            <span class="dt">type =</span> <span class="st">'scoring'</span>)
+
+<span class="co">#Clean and de-dupe parent and child data</span>
+tds2_wave2_long_nodupes &lt;-<span class="st"> </span>tds2_wave2_long %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">get_items_in_rubric</span>(tds2_wave2_scoring_data_long) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'[14]</span><span class="ch">\\</span><span class="st">d</span><span class="ch">\\</span><span class="st">d'</span>, SID)) %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">clean_dupes</span>(<span class="dt">pid_col =</span> <span class="st">'SID'</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Check that dropped values weren't ambiguous</span>
+tds2_wave2_long_nodupes %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(dropped) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(SID, item) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(!<span class="kw">all</span>(<span class="kw">length</span>(<span class="kw">unlist</span>(old.value)) &lt;<span class="st"> </span><span class="dv">1</span>)) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">old.value =</span> <span class="kw">paste</span>(old.value, <span class="dt">collaps =</span> <span class="st">' '</span>)) %&gt;%
+<span class="st">    </span>knitr::<span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">"Questionnaire dupes"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tds2_wave2_scored_pds &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_questionnaire</span>(tds2_wave2_long_nodupes,
+                                                             tds2_wave2_scoring_data_long) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(scored_scale %in%<span class="st"> </span>pds_scales)
+tds2_wave2_scored_pdss &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_pdss</span>(tds2_wave2_long_nodupes, 
+                          <span class="dt">gender_mix =</span> pdss_gender_mix, 
+                          <span class="dt">gendercode =</span> pdss_gender_code)
+
+tds2_wave2_scored_puberty &lt;-<span class="st"> </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(tds2_wave2_scored_pds, tds2_wave2_scored_pdss)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># We only need PDS data</span>
+tds1_wave2_surveys &lt;-<span class="st"> </span>survey_names_splt %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'TDS1, Session 3 - Child'</span>, SurveyName))
+tds1_wave2_qid_sid &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(tds1_wave2_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'SID'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'qid'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(readr::<span class="kw">read_csv</span>(id_recode_filename), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'value'</span> =<span class="st"> 'response_id'</span>)) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'3</span><span class="ch">\\</span><span class="st">d</span><span class="ch">\\</span><span class="st">d'</span>, SID)) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(item, value) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">SID =</span> <span class="kw">ifelse</span>(!<span class="kw">is.na</span>(id), id, SID)) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-survey_name)
+tds1_wave2_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(tds1_wave2_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'PDS'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(tds1_wave2_qid_sid, <span class="dt">by =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-qid, -id)
+
+tds1_wave2_pds_rubrics &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">file =</span> <span class="kw">dir</span>(<span class="kw">file.path</span>(tds1_wave2_rubric_dir), 
+                                                    <span class="dt">pattern =</span> <span class="st">'PDS_scoring_rubric_TDS1_S3_POST.csv'</span>,
+                                                    <span class="dt">full.names =</span> <span class="ot">TRUE</span>))
+tds1_wave2_scoring_data_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_rubrics</span>(tds1_wave2_pds_rubrics, 
+                                                            <span class="dt">type =</span> <span class="st">'scoring'</span>)
+
+<span class="co">#Clean and de-dupe parent and child data</span>
+tds1_wave2_long_nodupes &lt;-<span class="st"> </span>tds1_wave2_long %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">get_items_in_rubric</span>(tds1_wave2_scoring_data_long) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'3</span><span class="ch">\\</span><span class="st">d</span><span class="ch">\\</span><span class="st">d'</span>, SID)) %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">clean_dupes</span>(<span class="dt">pid_col =</span> <span class="st">'SID'</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Check that dropped values weren't ambiguous</span>
+tds1_wave2_long_nodupes %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(dropped) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(SID, item) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(!<span class="kw">all</span>(<span class="kw">length</span>(<span class="kw">unlist</span>(old.value)) &lt;<span class="st"> </span><span class="dv">1</span>)) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">old.value =</span> <span class="kw">paste</span>(old.value, <span class="dt">collaps =</span> <span class="st">' '</span>)) %&gt;%
+<span class="st">    </span>knitr::<span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">"Questionnaire dupes"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tds1_wave2_scored_pds &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_questionnaire</span>(tds1_wave2_long_nodupes,
+                                                             tds1_wave2_scoring_data_long) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(scored_scale %in%<span class="st"> </span>pds_scales)
+tds1_wave2_scored_pdss &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_pdss</span>(tds1_wave2_long_nodupes, 
+                          <span class="dt">gender_mix =</span> pdss_gender_mix, 
+                          <span class="dt">gendercode =</span> pdss_gender_code)
+
+tds1_wave2_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(tds1_wave2_scored_pds, tds1_wave2_scored_pdss)</code></pre></div>
+<div id="yads-v" class="section level2">
 <h2 class="hasAnchor">
-<a href="#yads" class="anchor"></a>YADS</h2>
-<div id="yads-v" class="section level3">
+<a href="#yads-v" class="anchor"></a>YADS-V</h2>
+<div id="version-1" class="section level3">
 <h3 class="hasAnchor">
-<a href="#yads-v" class="anchor"></a>YADS-V</h3>
-<p>Version 1:</p>
-<p>SID PAL-2_Age PAL-2_Race PDS_Gender</p>
-<p>Relationship Q176</p>
+<a href="#version-1" class="anchor"></a>Version 1:</h3>
+<ul>
+<li>SID</li>
+<li>PAL-2_Age</li>
+<li>PAL-2_Race</li>
+<li>PDS_Gender</li>
+<li>Relationship Q176</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
+yadsv_v1_surveys &lt;-<span class="st"> </span>survey_names_splt %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'YADS-V$'</span>, SurveyName))
+yadsv_v1_qid_sid &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(yadsv_v1_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'SID'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'qid'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(readr::<span class="kw">read_csv</span>(id_recode_filename), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'value'</span> =<span class="st"> 'response_id'</span>)) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(item, value) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">SID =</span> <span class="kw">ifelse</span>(!<span class="kw">is.na</span>(id), id, SID)) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-survey_name)
+yadsv_v1_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(yadsv_v1_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'(PDS|PAL_2_Age|PAL_2_Race|Q176)'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(yadsv_v1_qid_sid, <span class="dt">by =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-qid, -id)
+
+yadsv_v1_pds_rubrics &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">file =</span> <span class="kw">dir</span>(<span class="kw">file.path</span>(tds2_wave2_rubric_dir), 
+                                              <span class="dt">pattern =</span> <span class="st">'PDS_scoring_rubric_TDS2_S3.csv'</span>,
+                                              <span class="dt">full.names =</span> <span class="ot">TRUE</span>))
+yadsv_v1_scoring_data_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_rubrics</span>(yadsv_v1_pds_rubrics, 
+                                                          <span class="dt">type =</span> <span class="st">'scoring'</span>)
+
+<span class="co">#Clean and de-dupe parent and child data</span>
+yadsv_v1_long_nodupes &lt;-<span class="st"> </span>yadsv_v1_long %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'[1234]</span><span class="ch">\\</span><span class="st">d</span><span class="ch">\\</span><span class="st">d'</span>, SID)) %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">get_items_in_rubric</span>(yadsv_v1_scoring_data_long) %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">clean_dupes</span>(<span class="dt">pid_col =</span> <span class="st">'SID'</span>)
+
+<span class="co">#demographics only</span>
+yadsv_v1_pal_2_demo &lt;-<span class="st"> </span>yadsv_v1_long %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'[1234]</span><span class="ch">\\</span><span class="st">d</span><span class="ch">\\</span><span class="st">d'</span>, SID),
+           <span class="kw">grepl</span>(<span class="st">'(PAL_2_Age|PAL_2_Race)'</span>, item)) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(item, value) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="dt">age =</span> PAL_2_Age)
+
+<span class="co">#inf relations only</span>
+yadsv_v1_inf_rel &lt;-<span class="st"> </span>yadsv_v1_long %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'[1234]</span><span class="ch">\\</span><span class="st">d</span><span class="ch">\\</span><span class="st">d'</span>, SID),
+           <span class="kw">grepl</span>(<span class="st">'Q176'</span>, item))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Check that dropped values weren't ambiguous</span>
+yadsv_v1_long_nodupes %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(dropped) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(SID, item) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(!<span class="kw">all</span>(<span class="kw">length</span>(<span class="kw">unlist</span>(old.value)) &lt;<span class="st"> </span><span class="dv">1</span>)) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">old.value =</span> <span class="kw">paste</span>(old.value, <span class="dt">collaps =</span> <span class="st">' '</span>)) %&gt;%
+<span class="st">    </span>knitr::<span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">"Questionnaire dupes"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">yadsv_v1_scored_pds &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_questionnaire</span>(yadsv_v1_long_nodupes,
+                                                           yadsv_v1_scoring_data_long) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(scored_scale %in%<span class="st"> </span>pds_scales)
+yadsv_v1_scored_pdss &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_pdss</span>(yadsv_v1_long_nodupes, 
+                          <span class="dt">gender_mix =</span> pdss_gender_mix, 
+                          <span class="dt">gendercode =</span> pdss_gender_code)
+
+yadsv_v1_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(yadsv_v1_scored_pds, yadsv_v1_scored_pdss)</code></pre></div>
 </div>
+<div id="version-2-0" class="section level3">
+<h3 class="hasAnchor">
+<a href="#version-2-0" class="anchor"></a>Version 2.0</h3>
+<ul>
+<li>SID</li>
+<li>Q327 how old</li>
+<li>Q329 Which racial ethnic group is most like you</li>
+<li>PDS_Gender</li>
+<li>Q251 biological gender</li>
+<li>inf_rel</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">yadsv_v2_surveys &lt;-<span class="st"> </span>survey_names_splt %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'YADS-V v2.0$'</span>, SurveyName))
+yadsv_v2_qid_sid &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(yadsv_v2_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'SID'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'qid'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(readr::<span class="kw">read_csv</span>(id_recode_filename), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'value'</span> =<span class="st"> 'response_id'</span>)) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(SID !=<span class="st"> </span><span class="dv">999</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">SID =</span> <span class="kw">ifelse</span>(!<span class="kw">is.na</span>(id), id, SID)) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(item, value) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-survey_name)
+yadsv_v2_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(yadsv_v2_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'(PDS|Q327|Q329|inf_rel)'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(yadsv_v2_qid_sid, <span class="dt">by =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-qid, -id)
+
+yadsv_v2_pds_rubrics &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">file =</span> <span class="kw">dir</span>(<span class="kw">file.path</span>(tds2_wave2_rubric_dir), 
+                                              <span class="dt">pattern =</span> <span class="st">'PDS_scoring_rubric_TDS2_S3.csv'</span>,
+                                              <span class="dt">full.names =</span> <span class="ot">TRUE</span>))
+yadsv_v2_scoring_data_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_rubrics</span>(yadsv_v2_pds_rubrics, 
+                                                          <span class="dt">type =</span> <span class="st">'scoring'</span>)
+SID_filter &lt;-<span class="st"> '([1234]</span><span class="ch">\\</span><span class="st">d</span><span class="ch">\\</span><span class="st">d|99386)'</span>
+
+<span class="co">#Clean and de-dupe parent and child data</span>
+yadsv_v2_long_nodupes &lt;-<span class="st"> </span>yadsv_v2_long %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(SID_filter, SID)) %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">get_items_in_rubric</span>(yadsv_v2_scoring_data_long) %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">clean_dupes</span>(<span class="dt">pid_col =</span> <span class="st">'SID'</span>)
+
+<span class="co">#demographics only</span>
+yadsv_v2_pal_2_demo &lt;-<span class="st"> </span>yadsv_v2_long %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(SID_filter, SID),
+           <span class="kw">grepl</span>(<span class="st">'(Q327|Q329)'</span>, item)) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(item, value) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="st">'age'</span> =<span class="st"> </span>Q327,
+                  <span class="st">'PAL_2_Race'</span> =<span class="st"> </span>Q329,
+                  <span class="st">'PAL_2_Race_TEXT'</span> =<span class="st"> </span>Q329_TEXT)
+
+<span class="co">#inf relations only</span>
+yadsv_v2_inf_rel &lt;-<span class="st"> </span>yadsv_v2_long %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(SID_filter, SID),
+           <span class="kw">grepl</span>(<span class="st">'inf_rel'</span>, item))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Check that dropped values weren't ambiguous</span>
+yadsv_v2_long_nodupes %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(dropped) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(SID, item) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(!<span class="kw">all</span>(<span class="kw">length</span>(<span class="kw">unlist</span>(old.value)) &lt;<span class="st"> </span><span class="dv">1</span>)) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">old.value =</span> <span class="kw">paste</span>(old.value, <span class="dt">collaps =</span> <span class="st">' '</span>)) %&gt;%
+<span class="st">    </span>knitr::<span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">"Questionnaire dupes"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">yadsv_v2_scored_pds &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_questionnaire</span>(yadsv_v2_long_nodupes,
+                                                           yadsv_v2_scoring_data_long) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(scored_scale %in%<span class="st"> </span>pds_scales)
+yadsv_v2_scored_pdss &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_pdss</span>(yadsv_v2_long_nodupes, 
+                          <span class="dt">gender_mix =</span> pdss_gender_mix, 
+                          <span class="dt">gendercode =</span> pdss_gender_code)
+
+yadsv_v2_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(yadsv_v2_scored_pds, yadsv_v2_scored_pdss)</code></pre></div>
+</div>
+<div id="version-2-0-online" class="section level3">
+<h3 class="hasAnchor">
+<a href="#version-2-0-online" class="anchor"></a>Version 2.0 online</h3>
+<ul>
+<li>participantid</li>
+<li>Q327 how old are you</li>
+<li>Q329 race</li>
+<li>PDS_Gender</li>
+<li>inf_rel</li>
+</ul>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">yadsv_v2o_surveys &lt;-<span class="st"> </span>survey_names_splt %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'YADS-V v2.0 - Online$'</span>, SurveyName))
+yadsv_v2o_qid_sid &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(yadsv_v2o_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'participantid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="dt">SID =</span> participantid) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'qid'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(readr::<span class="kw">read_csv</span>(id_recode_filename), <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'value'</span> =<span class="st"> 'response_id'</span>)) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(SID !=<span class="st"> </span><span class="dv">99999</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">SID =</span> <span class="kw">ifelse</span>(!<span class="kw">is.na</span>(id), id, SID)) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(item, value) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-survey_name)
+yadsv_v2o_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(yadsv_v2o_surveys, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'(PDS|Q327|Q329|inf_rel)'</span>, item)) %&gt;%<span class="st"> </span>
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(yadsv_v2o_qid_sid, <span class="dt">by =</span> <span class="st">'qid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-qid, -id)
+
+yadsv_v2o_pds_rubrics &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="dt">file =</span> <span class="kw">dir</span>(<span class="kw">file.path</span>(tds2_wave2_rubric_dir), 
+                                              <span class="dt">pattern =</span> <span class="st">'PDS_scoring_rubric_TDS2_S3.csv'</span>,
+                                              <span class="dt">full.names =</span> <span class="ot">TRUE</span>))
+yadsv_v2o_scoring_data_long &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_rubrics</span>(yadsv_v2o_pds_rubrics, 
+                                                          <span class="dt">type =</span> <span class="st">'scoring'</span>)
+SID_filter &lt;-<span class="st"> '([34]</span><span class="ch">\\</span><span class="st">d{4}$)'</span>
+
+<span class="co">#Clean and de-dupe parent and child data</span>
+yadsv_v2o_long_nodupes &lt;-<span class="st"> </span>yadsv_v2o_long %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(SID_filter, SID)) %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">get_items_in_rubric</span>(yadsv_v2o_scoring_data_long) %&gt;%
+<span class="st">    </span>scorequaltrics::<span class="kw">clean_dupes</span>(<span class="dt">pid_col =</span> <span class="st">'SID'</span>)
+
+<span class="co">#demographics only</span>
+yadsv_v2o_pal_2_demo &lt;-<span class="st"> </span>yadsv_v2o_long %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(SID_filter, SID),
+           <span class="kw">grepl</span>(<span class="st">'(Q327|Q329)'</span>, item)) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(item, value) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="st">'PAL_2_Age'</span> =<span class="st"> </span>Q327,
+                  <span class="st">'PAL_2_Race'</span> =<span class="st"> </span>Q329,
+                  <span class="st">'PAL_2_Race_TEXT'</span> =<span class="st"> </span>Q329_TEXT)
+<span class="co">#we can fill in missing ages with ages given on the consent form</span>
+yadsv_v2o_surveys_cons &lt;-<span class="st"> </span>survey_names_splt %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'YADS-V Consent - Online'</span>, SurveyName))
+yadsv_v2o_long_cons_age &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">get_survey_data</span>(yadsv_v2o_surveys_cons, 
+                                                   credentials, 
+                                                   <span class="dt">pid_col =</span> <span class="st">'participantid'</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(<span class="st">'check_age'</span>, item), !<span class="kw">is.na</span>(<span class="kw">as.numeric</span>(value))) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span>(participantid, item, value) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(participantid) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">n =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/n.html">n</a></span>()) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(n ==<span class="st"> </span><span class="dv">1</span>) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-n) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(item, value)
+yadsv_v2o_pal_2_demo_cons_age &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(yadsv_v2o_pal_2_demo,
+                                         yadsv_v2o_long_cons_age, 
+                                         <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'SID'</span> =<span class="st"> 'participantid'</span>)) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">age =</span> <span class="kw">ifelse</span>(!<span class="kw">is.na</span>(<span class="kw">as.numeric</span>(check_age)),
+                               check_age,
+                               PAL_2_Age))
+
+<span class="co">#inf relations only</span>
+yadsv_v2o_inf_rel &lt;-<span class="st"> </span>yadsv_v2o_long %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">grepl</span>(SID_filter, SID),
+           <span class="kw">grepl</span>(<span class="st">'inf_rel'</span>, item))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#Check that dropped values weren't ambiguous</span>
+yadsv_v2o_long_nodupes %&gt;%<span class="st"> </span>
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(dropped) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(SID, item) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(!<span class="kw">all</span>(<span class="kw">length</span>(<span class="kw">unlist</span>(old.value)) &lt;<span class="st"> </span><span class="dv">1</span>)) %&gt;%
+<span class="st">    </span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">old.value =</span> <span class="kw">paste</span>(old.value, <span class="dt">collaps =</span> <span class="st">' '</span>)) %&gt;%
+<span class="st">    </span>knitr::<span class="kw">kable</span>(<span class="dt">caption =</span> <span class="st">"Questionnaire dupes"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">yadsv_v2o_scored_pds &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_questionnaire</span>(yadsv_v2o_long_nodupes,
+                                                           yadsv_v2o_scoring_data_long) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(scored_scale %in%<span class="st"> </span>pds_scales)
+yadsv_v2o_scored_pdss &lt;-<span class="st"> </span>scorequaltrics::<span class="kw">score_pdss</span>(yadsv_v2o_long_nodupes, 
+                          <span class="dt">gender_mix =</span> pdss_gender_mix, 
+                          <span class="dt">gendercode =</span> pdss_gender_code)
+
+yadsv_v2o_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(yadsv_v2o_scored_pds, yadsv_v2o_scored_pdss)</code></pre></div>
+</div>
+</div>
+</div>
+<div id="combine-all-data" class="section level1">
+<h1 class="hasAnchor">
+<a href="#combine-all-data" class="anchor"></a>Combine all data</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">demo_col_types &lt;-<span class="st"> </span>readr::<span class="kw">cols</span>(
+    <span class="dt">sid =</span> readr::<span class="kw">col_character</span>(),
+    <span class="dt">s2_date =</span> readr::<span class="kw">col_date</span>(<span class="dt">format =</span> <span class="st">""</span>),
+    <span class="dt">s2_age =</span> readr::<span class="kw">col_double</span>(),
+    <span class="dt">s3_date =</span> readr::<span class="kw">col_date</span>(<span class="dt">format =</span> <span class="st">""</span>),
+    <span class="dt">s3_age =</span> readr::<span class="kw">col_double</span>(),
+    <span class="dt">gender =</span> readr::<span class="kw">col_integer</span>(),
+    <span class="dt">ethnicity =</span> readr::<span class="kw">col_character</span>(),
+    <span class="dt">hispanic_yn =</span> readr::<span class="kw">col_integer</span>(),
+    <span class="dt">fsiq2 =</span> readr::<span class="kw">col_integer</span>()
+)
+anon_id_cols &lt;-<span class="st"> </span>readr::<span class="kw">cols</span>(
+  <span class="dt">id =</span> readr::<span class="kw">col_character</span>(),
+  <span class="dt">sample =</span> readr::<span class="kw">col_character</span>(),
+  <span class="dt">anon_id =</span> readr::<span class="kw">col_integer</span>(),
+  <span class="dt">anon_sample =</span> readr::<span class="kw">col_character</span>(),
+  <span class="dt">exclude =</span> readr::<span class="kw">col_integer</span>()
+)
+
+pal_2_race_eth_mapping &lt;-<span class="st"> </span><span class="kw">c</span>(
+    <span class="st">'1'</span> =<span class="st"> 'European American/White'</span>,
+    <span class="st">'2'</span> =<span class="st"> 'Native American/American Indian/Alaskan Native'</span>,
+    <span class="st">'3'</span> =<span class="st"> 'African American/Black'</span>,
+    <span class="st">'4'</span> =<span class="st"> 'Hispanic/Latino'</span>,
+    <span class="st">'5'</span> =<span class="st"> 'Asian American'</span>,
+    <span class="st">'6'</span> =<span class="st"> 'Pacific Islander/Hawaiian'</span>,
+    <span class="st">'7'</span> =<span class="st"> 'Other'</span>
+)
+
+tds_wave2_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(tds1_wave2_scored_puberty, tds2_wave2_scored_puberty) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-n_items, -n_missing, -method) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/unite">unite</a></span>(scale, scale_name, scored_scale) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(scale, score) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span>() %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise_all.html">mutate_all</a></span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/funs.html">funs</a></span>(<span class="kw">ifelse</span>(. ==<span class="st"> "NaN"</span>, <span class="ot">NA</span>, .))) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(
+        <span class="dt">PDS_mean_score =</span> <span class="kw">ifelse</span>(!<span class="kw">is.na</span>(PDS_female_mean_score) &amp;&amp;<span class="st"> </span><span class="kw">is.na</span>(PDS_male_mean_score),
+                                PDS_female_mean_score,
+                                <span class="kw">ifelse</span>(<span class="kw">is.na</span>(PDS_female_mean_score) &amp;&amp;<span class="st"> </span>!<span class="kw">is.na</span>(PDS_male_mean_score),
+                                       PDS_male_mean_score,
+                                       <span class="ot">NA</span>))) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-PDS_female_mean_score, -PDS_male_mean_score)
+tds_wave2_dev_demo &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">full_join</a></span>(tds_wave2_scored_puberty,
+                                       readr::<span class="kw">read_csv</span>(redcap_demographics_file,
+                                                       <span class="dt">col_types =</span> demo_col_types),
+                                       <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'SID'</span> =<span class="st"> 'sid'</span>)) 
+tds_wave2_dev_demo_deid &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">full_join</a></span>(
+    tds_wave2_dev_demo,
+    dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(
+            readr::<span class="kw">read_csv</span>(anon_id_filename, <span class="dt">col_types =</span> anon_id_cols),
+            !sample %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">'yads'</span>, <span class="st">'yads_online'</span>)),
+    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'SID'</span> =<span class="st"> 'id'</span>))
+<span class="co">#Check to make sure everyone has an anon_id, and if they do, fully anonymize the data</span>
+if(!<span class="kw">all</span>(
+    <span class="kw">dim</span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(tds_wave2_dev_demo_deid, <span class="kw">is.na</span>(anon_id), !<span class="kw">is.na</span>(s3_date)))[<span class="dv">1</span>] ==<span class="st"> </span><span class="dv">0</span>,
+    <span class="kw">dim</span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(tds_wave2_dev_demo_deid, 
+               !<span class="kw">is.na</span>(anon_id), <span class="kw">is.na</span>(s3_date), anon_sample %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">'TDS1'</span>, <span class="st">'TDS2'</span>)))[<span class="dv">1</span>] ==<span class="st"> </span><span class="dv">0</span>)) {
+    <span class="kw">stop</span>(<span class="st">"Some participants not accounted for, or not anonymized"</span>)
+} else {
+    tds_wave2_dev_demo_deid &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(
+        tds_wave2_dev_demo,
+        dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(
+            readr::<span class="kw">read_csv</span>(anon_id_filename, <span class="dt">col_types =</span> anon_id_cols),
+            !sample %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">'yads'</span>, <span class="st">'yads_online'</span>)),
+        <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'SID'</span> =<span class="st"> 'id'</span>)) %&gt;%
+<span class="st">        </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">is.na</span>(exclude), !<span class="kw">is.na</span>(s3_date)) %&gt;%
+<span class="st">        </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">age =</span> <span class="kw">round</span>(s3_age +<span class="st"> </span><span class="kw">runif</span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/n.html">n</a></span>(), -.<span class="dv">1</span>, .<span class="dv">1</span>), <span class="dv">2</span>)) %&gt;%
+<span class="st">        </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-SID, -exclude, -sample, -s2_date, -s3_date, -s2_age, -s3_age) %&gt;%
+<span class="st">        </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="dt">SID =</span> anon_id, <span class="dt">sample =</span> anon_sample)
+}</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">yads_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(
+    yadsv_v1_scored_puberty, yadsv_v2_scored_puberty, yadsv_v2o_scored_puberty) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-n_items, -n_missing, -method) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/unite">unite</a></span>(scale, scale_name, scored_scale) %&gt;%
+<span class="st">    </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/spread">spread</a></span>(scale, score) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span>() %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise_all.html">mutate_all</a></span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/funs.html">funs</a></span>(<span class="kw">ifelse</span>(. ==<span class="st"> "NaN"</span>, <span class="ot">NA</span>, .))) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(
+        <span class="dt">PDS_mean_score =</span> <span class="kw">ifelse</span>(!<span class="kw">is.na</span>(PDS_female_mean_score) &amp;&amp;<span class="st"> </span><span class="kw">is.na</span>(PDS_male_mean_score),
+                                PDS_female_mean_score,
+                                <span class="kw">ifelse</span>(<span class="kw">is.na</span>(PDS_female_mean_score) &amp;&amp;<span class="st"> </span>!<span class="kw">is.na</span>(PDS_male_mean_score),
+                                       PDS_male_mean_score,
+                                       <span class="ot">NA</span>))) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-PDS_female_mean_score, -PDS_male_mean_score)
+yads_dev_demo &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">full_join</a></span>(yads_scored_puberty,
+                                  dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(
+                                      dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(yadsv_v1_pal_2_demo,
+                                                       yadsv_v2_pal_2_demo,
+                                                       yadsv_v2o_pal_2_demo_cons_age),
+                                      -PAL_2_Age, -<span class="st"> </span>check_age, -survey_name),
+                                  <span class="dt">by =</span> <span class="st">'SID'</span>)
+yads_dev_demo &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(
+    yads_dev_demo,
+    <span class="dt">ethnicity =</span> <span class="kw">ifelse</span>(PAL_2_Race ==<span class="st"> </span><span class="dv">7</span>,
+                       PAL_2_Race_TEXT,
+                       pal_2_race_eth_mapping[PAL_2_Race]))
+yads_dev_demo_deid &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">full_join</a></span>(
+    yads_dev_demo,
+    dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(
+        readr::<span class="kw">read_csv</span>(anon_id_filename, <span class="dt">col_types =</span> anon_id_cols),
+        sample %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">'yads'</span>, <span class="st">'yads_online'</span>)),
+    <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'SID'</span> =<span class="st"> 'id'</span>))
+
+if(!<span class="kw">all</span>(
+    <span class="kw">dim</span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(yads_dev_demo_deid, <span class="kw">is.na</span>(anon_id), !<span class="kw">is.na</span>(SID), <span class="kw">is.na</span>(exclude)))[<span class="dv">1</span>] ==<span class="st"> </span><span class="dv">0</span>,
+    <span class="kw">dim</span>(<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(yads_dev_demo_deid, 
+               !<span class="kw">is.na</span>(anon_id), <span class="kw">is.na</span>(SID), anon_sample %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">'yads'</span>, <span class="st">'yads_online'</span>)))[<span class="dv">1</span>] ==<span class="st"> </span><span class="dv">0</span>)) {
+    <span class="kw">stop</span>(<span class="st">"Some participants not accounted for, or not anonymized"</span>)
+} else {
+    yads_dev_demo_deid &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(
+        yads_dev_demo,
+        dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(
+            readr::<span class="kw">read_csv</span>(anon_id_filename, <span class="dt">col_types =</span> anon_id_cols),
+            sample %in%<span class="st"> </span><span class="kw">c</span>(<span class="st">'yads'</span>, <span class="st">'yads_online'</span>)),
+        <span class="dt">by =</span> <span class="kw">c</span>(<span class="st">'SID'</span> =<span class="st"> 'id'</span>)) %&gt;%
+<span class="st">        </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(<span class="kw">is.na</span>(exclude)) %&gt;%
+<span class="st">        </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-SID, -exclude, -sample, -PAL_2_Race, -PAL_2_Race_TEXT) %&gt;%
+<span class="st">        </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="dt">SID =</span> anon_id, <span class="dt">sample =</span> anon_sample) %&gt;%
+<span class="st">        </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(<span class="dt">gender =</span> <span class="kw">as.numeric</span>(PDSS_gender), <span class="dt">age =</span> <span class="kw">as.numeric</span>(age))
+}
+
+splt_dev_and_demog &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(tds_wave2_dev_demo_deid, yads_dev_demo_deid) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/join.html">left_join</a></span>(readr::<span class="kw">read_csv</span>(ethnicity_recode)) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(-ethnicity) %&gt;%
+<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">rename</a></span>(<span class="dt">ethnicity =</span> ethnicity_recode)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">clean_infrel_types &lt;-<span class="st"> </span>function(inf_string){
+    temp &lt;-<span class="st"> </span><span class="kw">tolower</span>(inf_string)
+    <span class="co"># Remove everything that is not a number or letter (may want to keep more </span>
+    <span class="co"># stuff in your actual analyses). </span>
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"-"</span>, <span class="st">" "</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"[^a-zA-Z'/</span><span class="ch">\\</span><span class="st">s]"</span>, <span class="st">""</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"[</span><span class="ch">\\</span><span class="st">s]+"</span>, <span class="st">" "</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"(^ | $)"</span>, <span class="st">""</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"(co) "</span>, <span class="st">"</span><span class="ch">\\</span><span class="st">1"</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"(boy|girl|best)f"</span>, <span class="st">"</span><span class="ch">\\</span><span class="st">1 f"</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"(rommate|roomate)"</span>, <span class="st">"roommate"</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"(cousic)"</span>, <span class="st">"cousin"</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"grand(ma|pa|father|mother)"</span>, <span class="st">"grandparent"</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"step *(father|mother|dad|mom)"</span>, <span class="st">"step parent"</span>)
+    temp &lt;-<span class="st"> </span>stringr::<span class="kw">str_replace_all</span>(temp,<span class="st">"(partener)"</span>, <span class="st">"partner"</span>)
+    <span class="co"># Shrink down to just one white space</span>
+    <span class="kw">return</span>(temp)
+}
+
+all_relationships &lt;-<span class="st"> </span><span class="kw">sort</span>(<span class="kw">unique</span>(<span class="kw">clean_infrel_types</span>(
+    <span class="kw">c</span>(yadsv_v1_inf_rel$value,
+      yadsv_v2_inf_rel$value,
+      yadsv_v2o_inf_rel$value))))
+
+<span class="kw">cat</span>(<span class="kw">paste</span>(all_relationships, <span class="dt">collapse =</span> <span class="st">'</span><span class="ch">\n</span><span class="st">'</span>))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">devtools::<span class="kw">use_data</span>(splt_dev_and_demog)</code></pre></div>
 </div>
 </div>
   </div>
@@ -121,7 +592,12 @@
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#yads">YADS</a></li>
+<li>
+<a href="#tds">TDS</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#yads-v">YADS-V</a></li>
+      </ul>
+</li>
+      <li><a href="#combine-all-data">Combine all data</a></li>
       </ul>
 </div>
       </div>

@@ -52,7 +52,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/age-and-puberty-data.html">Age and Puberty Data</a>
+      <a href="../articles/age-and-puberty-data.html">Age, Puberty, and Informant Data</a>
     </li>
     <li>
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
@@ -87,7 +87,7 @@
       <h1>Collect and Clean SPLT Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-29</h4>
+            <h4 class="date">2018-04-05</h4>
       
       
 
@@ -148,7 +148,7 @@ files &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dply
                                       <span class="dt">recursive =</span> T)) 
 
 <span class="kw">message</span>(<span class="kw">paste0</span>(<span class="st">'Files: '</span>, <span class="kw">length</span>(<span class="kw">unique</span>(files$file))))
-<span class="co">#&gt; Files: 322</span>
+<span class="co">#&gt; Files: 328</span>
 
 parsed_filenames &lt;-<span class="st"> </span>tidyr::<span class="kw"><a href="http://www.rdocumentation.org/packages/tidyr/topics/extract">extract</a></span>(
     files, 

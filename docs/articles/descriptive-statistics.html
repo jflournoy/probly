@@ -52,7 +52,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/age-and-puberty-data.html">Age and Puberty Data</a>
+      <a href="../articles/age-and-puberty-data.html">Age, Puberty, and Informant Data</a>
     </li>
     <li>
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
@@ -87,7 +87,7 @@
       <h1>Descriptive Statistics for SPLT data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-29</h4>
+            <h4 class="date">2018-04-05</h4>
       
       
 
@@ -96,245 +96,533 @@
     
     
 <div class="contents">
-<div id="sample-information" class="section level1">
+<div id="participants" class="section level1">
 <h1 class="hasAnchor">
-<a href="#sample-information" class="anchor"></a>Sample information</h1>
-<p>The table below shows the number of participants in each sample. TDS3 has very few participants, and as it was intended to bolster numbers for TDS1, will be collapsed.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(probly)
-<span class="kw">library</span>(dplyr)
-<span class="kw">library</span>(tidyr)
-<span class="kw">library</span>(ggplot2)
-<span class="kw">data</span>(<span class="st">'splt'</span>, <span class="st">'splt_confidence'</span>)
+<a href="#participants" class="anchor"></a>Participants</h1>
+<p>Data from four samples are used in this analysis. The first two samples comprise foster-care-involved and community adolescents who were recruited from the greater Eugene/Springfield area for an ongoing longitudinal study investigating decision-making related to health-risking behavior (NIH grant number:). The third and forth samples consisted of college students who completed the study for course credit either in person, or online. Some participants in each sample did not provide data on all focal measures (see Table @ref:missingstats), and so sample sizes for each analysis will differe to some extent. Examining the table, it is clear that the proportion of missing data is small.</p>
+<p>in table <a href="#tab:samplestats">2</a></p>
 
-sample_labels &lt;-<span class="st"> </span><span class="kw">c</span>(
-    <span class="st">'TDS1'</span> =<span class="st"> 'Foster-care involved adolescents'</span>,
-    <span class="st">'TDS2'</span> =<span class="st"> 'Community adolescents'</span>,
-    <span class="st">'yads'</span> =<span class="st"> 'College students'</span>,
-    <span class="st">'yads_online'</span> =<span class="st"> 'College students - online'</span>
-)
 
-condition_labels &lt;-<span class="st"> </span><span class="kw">c</span>(
-    <span class="st">'HngT'</span> =<span class="st"> 'Hungry/Thirsty'</span>,
-    <span class="st">'DtnL'</span> =<span class="st"> 'Dating/Looking'</span>, 
-    <span class="st">'PplU'</span> =<span class="st"> 'Popular/Unpopular'</span>
-)
 
-splt$condition &lt;-<span class="st"> </span><span class="kw">factor</span>(splt$condition, <span class="dt">levels =</span> <span class="kw">names</span>(condition_labels), <span class="dt">labels =</span> condition_labels)
-splt$sample &lt;-<span class="st"> </span><span class="kw">factor</span>(splt$sample, <span class="dt">levels =</span> <span class="kw">names</span>(sample_labels), <span class="dt">labels =</span> sample_labels)</code></pre></div>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr::<span class="kw">kable</span>(
-    dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/select.html">select</a></span>(
-        dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span>(
-            dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(
-                dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(
-                    dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/distinct.html">distinct</a></span>(splt, id, dir, filename, sample),
-                    sample),
-                <span class="dt">n =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/n.html">n</a></span>())),
-        sample, n),
-    <span class="dt">caption =</span> <span class="st">'Individuals in each sample'</span>,
-    <span class="dt">col.names =</span> <span class="kw">c</span>(<span class="st">'Sample'</span>, <span class="st">'N'</span>))</code></pre></div>
-<table class="table">
-<caption>Individuals in each sample</caption>
-<thead><tr class="header">
-<th align="left">Sample</th>
-<th align="right">N</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Foster-care involved adolescents</td>
-<td align="right">26</td>
-</tr>
-<tr class="even">
-<td align="left">Community adolescents</td>
-<td align="right">61</td>
-</tr>
-<tr class="odd">
-<td align="left">College students</td>
-<td align="right">81</td>
-</tr>
-<tr class="even">
-<td align="left">College students - online</td>
-<td align="right">144</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">splt_by_cond_samp &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(splt, condition, sample)
-splt_summary_optimal_feedback &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(
-    splt_by_cond_samp,
-    <span class="dt">p_optimal_correct =</span> <span class="kw">mean</span>((proportion ==<span class="st"> '20_80'</span>) ==<span class="st"> </span>(correct_r ==<span class="st"> </span><span class="dv">1</span>))
-)
 
-knitr::<span class="kw">kable</span>(splt_summary_optimal_feedback,
-             <span class="dt">col.names =</span> <span class="kw">c</span>(<span class="st">'Condition'</span>, <span class="st">'Sample'</span>, <span class="st">'P(Reward | Optimal)'</span>),
-             <span class="dt">caption =</span> <span class="st">'Probability that an optimal choice results in reward'</span>,
-             <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
-<table class="table">
-<caption>Probability that an optimal choice results in reward</caption>
-<thead><tr class="header">
-<th align="left">Condition</th>
-<th align="left">Sample</th>
-<th align="right">P(Reward | Optimal)</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left">Hungry/Thirsty</td>
-<td align="left">Foster-care involved adolescents</td>
-<td align="right">0.791</td>
-</tr>
-<tr class="even">
-<td align="left">Hungry/Thirsty</td>
-<td align="left">Community adolescents</td>
-<td align="right">0.790</td>
-</tr>
-<tr class="odd">
-<td align="left">Hungry/Thirsty</td>
-<td align="left">College students</td>
-<td align="right">0.789</td>
-</tr>
-<tr class="even">
-<td align="left">Hungry/Thirsty</td>
-<td align="left">College students - online</td>
-<td align="right">0.794</td>
-</tr>
-<tr class="odd">
-<td align="left">Dating/Looking</td>
-<td align="left">Foster-care involved adolescents</td>
-<td align="right">0.792</td>
-</tr>
-<tr class="even">
-<td align="left">Dating/Looking</td>
-<td align="left">Community adolescents</td>
-<td align="right">0.797</td>
-</tr>
-<tr class="odd">
-<td align="left">Dating/Looking</td>
-<td align="left">College students</td>
-<td align="right">0.791</td>
-</tr>
-<tr class="even">
-<td align="left">Dating/Looking</td>
-<td align="left">College students - online</td>
-<td align="right">0.788</td>
-</tr>
-<tr class="odd">
-<td align="left">Popular/Unpopular</td>
-<td align="left">Foster-care involved adolescents</td>
-<td align="right">0.796</td>
-</tr>
-<tr class="even">
-<td align="left">Popular/Unpopular</td>
-<td align="left">Community adolescents</td>
-<td align="right">0.792</td>
-</tr>
-<tr class="odd">
-<td align="left">Popular/Unpopular</td>
-<td align="left">College students</td>
-<td align="right">0.798</td>
-</tr>
-<tr class="even">
-<td align="left">Popular/Unpopular</td>
-<td align="left">College students - online</td>
-<td align="right">0.800</td>
-</tr>
-</tbody>
-</table>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(
-    dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(splt, rt &gt;<span class="st"> </span><span class="dv">0</span>),
-    ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> rt/<span class="dv">1000</span>)) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_abline">geom_vline</a></span>(<span class="dt">xintercept =</span> <span class="dv">1</span>, <span class="dt">size =</span> .<span class="dv">5</span>, <span class="dt">color =</span> <span class="st">'#666666'</span>) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_histogram">geom_histogram</a></span>(<span class="dt">binwidth =</span> .<span class="dv">1</span>, <span class="dt">fill =</span> <span class="st">'black'</span>) +
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>() +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">strip.background =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/element">element_blank</a></span>(), 
-                   <span class="dt">strip.text =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/element">element_blank</a></span>()) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/scale_continuous">scale_x_continuous</a></span>(<span class="dt">breaks =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>)) +
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/facet_wrap">facet_wrap</a></span>(~id, <span class="dt">ncol =</span> <span class="dv">20</span>) +<span class="st"> </span>
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/coord_cartesian">coord_cartesian</a></span>(<span class="dt">x =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">2</span>)) +
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">labs</a></span>(<span class="dt">x =</span> <span class="st">'Trial reaction-time (s)'</span>, 
-         <span class="dt">y =</span> <span class="st">'Count'</span>,
-         <span class="dt">title =</span> <span class="st">'Reaction time for all participants'</span>)</code></pre></div>
-<p><img src="descriptive-statistics_files/figure-html/reaction_time-1.png" width="1008"></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
-max_number_of_trials &lt;-<span class="st"> </span><span class="kw">max</span>(
-    dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span>(
-        dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(
-            dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(splt, !<span class="kw">is.na</span>(pressed_r)), 
-            id, condition),
-        <span class="dt">n_trials =</span> <span class="kw"><a href="http://dplyr.tidyverse.org/reference/n.html">n</a></span>())$n_trials
-    )
-
-ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(
-    dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(splt, !<span class="kw">is.na</span>(pressed_r)),
-    ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> condition)) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_abline">geom_hline</a></span>(<span class="dt">yintercept =</span> max_number_of_trials, <span class="dt">color =</span> <span class="st">'#666666'</span>) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_bar">geom_bar</a></span>(<span class="dt">fill =</span> <span class="st">'#bbbbbb'</span>) +
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>() +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/theme">theme</a></span>(<span class="dt">strip.background =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/element">element_blank</a></span>(),
-                   <span class="dt">strip.text =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/element">element_blank</a></span>(),
-                   <span class="dt">axis.text.x =</span> <span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/element">element_text</a></span>(<span class="dt">angle =</span> <span class="dv">360-45</span>, <span class="dt">hjust =</span> <span class="dv">0</span>)) +
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/facet_wrap">facet_wrap</a></span>(~id, <span class="dt">ncol =</span> <span class="dv">20</span>) +<span class="st"> </span>
-<span class="st">    </span><span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">labs</a></span>(<span class="dt">x =</span> <span class="st">'Condition'</span>, 
-         <span class="dt">y =</span> <span class="kw">paste0</span>(<span class="st">'Number of trials (line at max = '</span>, max_number_of_trials, <span class="st">')'</span>),
-         <span class="dt">title =</span> <span class="st">'Trials per condition for all participants'</span>)</code></pre></div>
-<p><img src="descriptive-statistics_files/figure-html/reaction_time-2.png" width="1008"></p>
-</div>
-<div id="raw-task-data" class="section level1">
-<h1 class="hasAnchor">
-<a href="#raw-task-data" class="anchor"></a>Raw task data</h1>
-<p>Averaging over trials</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
-splt_averages &lt;-<span class="st"> </span>splt %&gt;%
-<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(sample, condition, condition_trial_index) %&gt;%
-<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(<span class="dt">p_optimal =</span> <span class="kw">mean</span>(correcttrue, <span class="dt">na.rm =</span> T)) %&gt;%
-<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>()
-    
-splt_averages_over_samples &lt;-<span class="st"> </span>splt %&gt;%
-<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span>(condition, condition_trial_index) %&gt;%
-<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/summarise.html">summarize</a></span>(<span class="dt">p_optimal =</span> <span class="kw">mean</span>(correcttrue, <span class="dt">na.rm =</span> T)) %&gt;%
-<span class="st">    </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span>()
-
-ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(
-    splt_averages,
-    ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> condition_trial_index,
-                 <span class="dt">y =</span> p_optimal,
-                 <span class="dt">group =</span> condition,
-                 <span class="dt">linetype =</span> condition,
-                 <span class="dt">shape =</span> condition)) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_point">geom_point</a></span>(<span class="dt">alpha =</span> .<span class="dv">1</span>) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_smooth">geom_smooth</a></span>(
-        <span class="dt">color =</span> <span class="st">'black'</span>, <span class="dt">size =</span> .<span class="dv">5</span>,
-        <span class="dt">method =</span> <span class="st">'gam'</span>, <span class="dt">formula =</span> y ~<span class="st"> </span><span class="kw">s</span>(x, <span class="dt">bs =</span> <span class="st">"cs"</span>, <span class="dt">k =</span> <span class="dv">8</span>), <span class="dt">se =</span> T) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/facet_wrap">facet_wrap</a></span>(~sample, <span class="dt">nrow =</span> <span class="dv">2</span>) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">labs</a></span>(<span class="dt">x =</span> <span class="st">'Within-condition trial number'</span>,
-                  <span class="dt">y =</span> <span class="st">'Proportion of optimal responses'</span>) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>()</code></pre></div>
-<p><img src="descriptive-statistics_files/figure-html/unnamed-chunk-1-1.png" width="672"></p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">
-ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(
-    splt_averages_over_samples,
-    ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> condition_trial_index,
-                 <span class="dt">y =</span> p_optimal,
-                 <span class="dt">group =</span> condition,
-                 <span class="dt">linetype =</span> condition,
-                 <span class="dt">shape =</span> condition)) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_point">geom_point</a></span>(<span class="dt">alpha =</span> .<span class="dv">1</span>) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_smooth">geom_smooth</a></span>(
-        <span class="dt">color =</span> <span class="st">'black'</span>, <span class="dt">size =</span> .<span class="dv">5</span>,
-        <span class="dt">method =</span> <span class="st">'gam'</span>, <span class="dt">formula =</span> y ~<span class="st"> </span><span class="kw">s</span>(x, <span class="dt">bs =</span> <span class="st">"cs"</span>, <span class="dt">k =</span> <span class="dv">8</span>), <span class="dt">se =</span> T) +
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">labs</a></span>(<span class="dt">x =</span> <span class="st">'Within-condition trial number'</span>,
-                  <span class="dt">y =</span> <span class="st">'Proportion of optimal responses'</span>) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>()</code></pre></div>
-<p><img src="descriptive-statistics_files/figure-html/unnamed-chunk-1-2.png" width="672"></p>
-<p>Self-reported confidence over blocks</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(
-    dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(splt_confidence, !<span class="kw">is.na</span>(sample), sample !=<span class="st"> 'TDS3'</span>),
-    ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> block, <span class="dt">y =</span> confidence)) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_point">geom_point</a></span>(<span class="dt">position =</span> ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/position_jitter">position_jitter</a></span>(<span class="dt">w =</span> .<span class="dv">3</span>, <span class="dt">h =</span> .<span class="dv">3</span>), <span class="dt">alpha =</span> .<span class="dv">1</span>) +
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/geom_smooth">geom_smooth</a></span>(
-        ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">color =</span> sample),
-        <span class="dt">method =</span> <span class="st">'gam'</span>, <span class="dt">formula =</span> y ~<span class="st"> </span><span class="kw">s</span>(x, <span class="dt">bs =</span> <span class="st">"cs"</span>, <span class="dt">k =</span> <span class="dv">8</span>), <span class="dt">se =</span> F) +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_minimal</a></span>() +<span class="st"> </span>
-<span class="st">    </span>ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot2/topics/labs">labs</a></span>(<span class="dt">x =</span> <span class="st">'Block number'</span>,
-                  <span class="dt">y =</span> <span class="st">'Self-report confidence about optimal label'</span>)</code></pre></div>
-<p><img src="descriptive-statistics_files/figure-html/unnamed-chunk-2-1.png" width="576"></p>
+<style>
+.Rtable thead, .Rtable .even {
+  background-color: inherit;
+}
+.left   { text-align:left; }
+.center { text-align:center; }
+.right  { text-align:right; }
+.Rtable, .Rtable thead { 
+  border-collapse: collapse;
+  border-style: solid;
+  border-width: medium 0;
+  border-color: inherit;
+}
+.Rtable th, .Rtable td {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  border-width: 0;
+}
+</style>
+<pre><code>#&gt; &lt;table class="Rtable"&gt;
+#&gt; &lt;caption&gt;(#tab:missingstats) Missing data from each sample for age, PDSS, and gender&lt;/caption&gt;
+#&gt; &lt;thead&gt;
+#&gt; &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;Age&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;PDSS&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;Gender&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;Task&lt;/th&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Sample&lt;/th&gt;
+#&gt;   &lt;th&gt;N&lt;/th&gt;
+#&gt;   &lt;th&gt;N~miss~&lt;/th&gt;
+#&gt;   &lt;th&gt;%&lt;/th&gt;
+#&gt;   &lt;th&gt;N~miss~&lt;/th&gt;
+#&gt;   &lt;th&gt;%&lt;/th&gt;
+#&gt;   &lt;th&gt;N~miss~&lt;/th&gt;
+#&gt;   &lt;th&gt;%&lt;/th&gt;
+#&gt;   &lt;th&gt;N~miss~&lt;/th&gt;
+#&gt;   &lt;th&gt;%&lt;/th&gt;
+#&gt; &lt;/tr&gt;
+#&gt; &lt;/thead&gt;
+#&gt; &lt;tbody&gt;
+#&gt; &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Foster-care involved adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt; 33&lt;/td&gt;
+#&gt;   &lt;td&gt;-&lt;/td&gt;
+#&gt;   &lt;td&gt;\-&lt;/td&gt;
+#&gt;   &lt;td&gt;-&lt;/td&gt;
+#&gt;   &lt;td&gt;\-&lt;/td&gt;
+#&gt;   &lt;td&gt;-&lt;/td&gt;
+#&gt;   &lt;td&gt;\-&lt;/td&gt;
+#&gt;   &lt;td&gt; 7&lt;/td&gt;
+#&gt;   &lt;td&gt;2.0&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Community adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt; 65&lt;/td&gt;
+#&gt;   &lt;td&gt;-&lt;/td&gt;
+#&gt;   &lt;td&gt;\-&lt;/td&gt;
+#&gt;   &lt;td&gt;-&lt;/td&gt;
+#&gt;   &lt;td&gt;\-&lt;/td&gt;
+#&gt;   &lt;td&gt;-&lt;/td&gt;
+#&gt;   &lt;td&gt;\-&lt;/td&gt;
+#&gt;   &lt;td&gt; 4&lt;/td&gt;
+#&gt;   &lt;td&gt;1.2&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;College students&lt;/th&gt;
+#&gt;   &lt;td&gt; 94&lt;/td&gt;
+#&gt;   &lt;td&gt;18&lt;/td&gt;
+#&gt;   &lt;td&gt;5.3&lt;/td&gt;
+#&gt;   &lt;td&gt;14&lt;/td&gt;
+#&gt;   &lt;td&gt;4.1&lt;/td&gt;
+#&gt;   &lt;td&gt;12&lt;/td&gt;
+#&gt;   &lt;td&gt;3.5&lt;/td&gt;
+#&gt;   &lt;td&gt; 3&lt;/td&gt;
+#&gt;   &lt;td&gt;0.9&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;College students - online&lt;/th&gt;
+#&gt;   &lt;td&gt;150&lt;/td&gt;
+#&gt;   &lt;td&gt;-&lt;/td&gt;
+#&gt;   &lt;td&gt;\-&lt;/td&gt;
+#&gt;   &lt;td&gt;10&lt;/td&gt;
+#&gt;   &lt;td&gt;2.9&lt;/td&gt;
+#&gt;   &lt;td&gt;10&lt;/td&gt;
+#&gt;   &lt;td&gt;2.9&lt;/td&gt;
+#&gt;   &lt;td&gt; 1&lt;/td&gt;
+#&gt;   &lt;td&gt;0.3&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;All&lt;/th&gt;
+#&gt;   &lt;td&gt;342&lt;/td&gt;
+#&gt;   &lt;td&gt;18&lt;/td&gt;
+#&gt;   &lt;td&gt;5.3&lt;/td&gt;
+#&gt;   &lt;td&gt;24&lt;/td&gt;
+#&gt;   &lt;td&gt;7.0&lt;/td&gt;
+#&gt;   &lt;td&gt;22&lt;/td&gt;
+#&gt;   &lt;td&gt;6.4&lt;/td&gt;
+#&gt;   &lt;td&gt;15&lt;/td&gt;
+#&gt;   &lt;td&gt;4.4&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt; &lt;/tbody&gt;
+#&gt; &lt;/table&gt;</code></pre>
+<pre><code>#&gt; &lt;table class="Rtable"&gt;
+#&gt; &lt;caption&gt;(#tab:samplestats) Descriptive statistics on age, and PDSS for each sample&lt;/caption&gt;
+#&gt; &lt;thead&gt;
+#&gt; &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th colspan="4"&gt;Age&lt;/th&gt;
+#&gt;   &lt;th colspan="4"&gt;PDSS&lt;/th&gt;
+#&gt;   &lt;th colspan="4"&gt;N~trials~&lt;/th&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;N&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;Male&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;Female&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;Male&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;Female&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;Male&lt;/th&gt;
+#&gt;   &lt;th colspan="2"&gt;Female&lt;/th&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Sample&lt;/th&gt;
+#&gt;   &lt;th&gt;Male&lt;/th&gt;
+#&gt;   &lt;th&gt;Female&lt;/th&gt;
+#&gt;   &lt;th&gt;M&lt;/th&gt;
+#&gt;   &lt;th&gt;SD&lt;/th&gt;
+#&gt;   &lt;th&gt;M&lt;/th&gt;
+#&gt;   &lt;th&gt;SD&lt;/th&gt;
+#&gt;   &lt;th&gt;M&lt;/th&gt;
+#&gt;   &lt;th&gt;SD&lt;/th&gt;
+#&gt;   &lt;th&gt;M&lt;/th&gt;
+#&gt;   &lt;th&gt;SD&lt;/th&gt;
+#&gt;   &lt;th&gt;M&lt;/th&gt;
+#&gt;   &lt;th&gt;SD&lt;/th&gt;
+#&gt;   &lt;th&gt;M&lt;/th&gt;
+#&gt;   &lt;th&gt;SD&lt;/th&gt;
+#&gt; &lt;/tr&gt;
+#&gt; &lt;/thead&gt;
+#&gt; &lt;tbody&gt;
+#&gt; &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Foster-care involved adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt;18&lt;/td&gt;
+#&gt;   &lt;td&gt; 15&lt;/td&gt;
+#&gt;   &lt;td&gt;16&lt;/td&gt;
+#&gt;   &lt;td&gt; 1&lt;/td&gt;
+#&gt;   &lt;td&gt;17&lt;/td&gt;
+#&gt;   &lt;td&gt; 2&lt;/td&gt;
+#&gt;   &lt;td&gt;3.9&lt;/td&gt;
+#&gt;   &lt;td&gt;1.0&lt;/td&gt;
+#&gt;   &lt;td&gt;4.9&lt;/td&gt;
+#&gt;   &lt;td&gt;0.3&lt;/td&gt;
+#&gt;   &lt;td&gt;378&lt;/td&gt;
+#&gt;   &lt;td&gt;  4&lt;/td&gt;
+#&gt;   &lt;td&gt;379&lt;/td&gt;
+#&gt;   &lt;td&gt;  4&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Community adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt;29&lt;/td&gt;
+#&gt;   &lt;td&gt; 36&lt;/td&gt;
+#&gt;   &lt;td&gt;15&lt;/td&gt;
+#&gt;   &lt;td&gt; 2&lt;/td&gt;
+#&gt;   &lt;td&gt;16&lt;/td&gt;
+#&gt;   &lt;td&gt; 2&lt;/td&gt;
+#&gt;   &lt;td&gt;3.8&lt;/td&gt;
+#&gt;   &lt;td&gt;0.8&lt;/td&gt;
+#&gt;   &lt;td&gt;4.7&lt;/td&gt;
+#&gt;   &lt;td&gt;0.5&lt;/td&gt;
+#&gt;   &lt;td&gt;379&lt;/td&gt;
+#&gt;   &lt;td&gt;  8&lt;/td&gt;
+#&gt;   &lt;td&gt;378&lt;/td&gt;
+#&gt;   &lt;td&gt; 15&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;College students&lt;/th&gt;
+#&gt;   &lt;td&gt;32&lt;/td&gt;
+#&gt;   &lt;td&gt; 50&lt;/td&gt;
+#&gt;   &lt;td&gt;20&lt;/td&gt;
+#&gt;   &lt;td&gt; 2&lt;/td&gt;
+#&gt;   &lt;td&gt;19&lt;/td&gt;
+#&gt;   &lt;td&gt; 1&lt;/td&gt;
+#&gt;   &lt;td&gt;4.7&lt;/td&gt;
+#&gt;   &lt;td&gt;0.4&lt;/td&gt;
+#&gt;   &lt;td&gt;4.8&lt;/td&gt;
+#&gt;   &lt;td&gt;0.5&lt;/td&gt;
+#&gt;   &lt;td&gt;380&lt;/td&gt;
+#&gt;   &lt;td&gt;  4&lt;/td&gt;
+#&gt;   &lt;td&gt;380&lt;/td&gt;
+#&gt;   &lt;td&gt;  8&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;College students - online&lt;/th&gt;
+#&gt;   &lt;td&gt;37&lt;/td&gt;
+#&gt;   &lt;td&gt;103&lt;/td&gt;
+#&gt;   &lt;td&gt;20&lt;/td&gt;
+#&gt;   &lt;td&gt; 1&lt;/td&gt;
+#&gt;   &lt;td&gt;19&lt;/td&gt;
+#&gt;   &lt;td&gt; 1&lt;/td&gt;
+#&gt;   &lt;td&gt;4.6&lt;/td&gt;
+#&gt;   &lt;td&gt;0.6&lt;/td&gt;
+#&gt;   &lt;td&gt;4.9&lt;/td&gt;
+#&gt;   &lt;td&gt;0.4&lt;/td&gt;
+#&gt;   &lt;td&gt;381&lt;/td&gt;
+#&gt;   &lt;td&gt;  2&lt;/td&gt;
+#&gt;   &lt;td&gt;378&lt;/td&gt;
+#&gt;   &lt;td&gt; 12&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt; &lt;/tbody&gt;
+#&gt; &lt;/table&gt;</code></pre>
+<pre><code>#&gt; &lt;table class="Rtable"&gt;
+#&gt; &lt;caption&gt;(#tab:ethnicitytable) Race/ethnicity information by sample&lt;/caption&gt;
+#&gt; &lt;thead&gt;
+#&gt; &lt;tr class="right"&gt;
+#&gt;   &lt;th&gt;Percent (%)&lt;/th&gt;
+#&gt;   &lt;th&gt;All&lt;/th&gt;
+#&gt;   &lt;th&gt;Foster-care involved adolescents&lt;/th&gt;
+#&gt;   &lt;th&gt;Community adolescents&lt;/th&gt;
+#&gt;   &lt;th&gt;College students&lt;/th&gt;
+#&gt;   &lt;th&gt;College students - online&lt;/th&gt;
+#&gt; &lt;/tr&gt;
+#&gt; &lt;/thead&gt;
+#&gt; &lt;tbody&gt;
+#&gt; &lt;tr class="right"&gt;
+#&gt;   &lt;th class="left"&gt;AmIndn&lt;/th&gt;
+#&gt;   &lt;td&gt; 0.3&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.3&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="right"&gt;
+#&gt;   &lt;th class="left"&gt;Asian&lt;/th&gt;
+#&gt;   &lt;td&gt; 9.4&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 2.3&lt;/td&gt;
+#&gt;   &lt;td&gt; 7.0&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="right"&gt;
+#&gt;   &lt;th class="left"&gt;Black/AA&lt;/th&gt;
+#&gt;   &lt;td&gt; 2.3&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.6&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.9&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.9&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="right"&gt;
+#&gt;   &lt;th class="left"&gt;Latinx/Hsp&lt;/th&gt;
+#&gt;   &lt;td&gt; 7.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 1.2&lt;/td&gt;
+#&gt;   &lt;td&gt; 2.9&lt;/td&gt;
+#&gt;   &lt;td&gt; 2.9&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="right"&gt;
+#&gt;   &lt;th class="left"&gt;Pcfc Islnd&lt;/th&gt;
+#&gt;   &lt;td&gt; 1.8&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.3&lt;/td&gt;
+#&gt;   &lt;td&gt; 1.5&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="right"&gt;
+#&gt;   &lt;th class="left"&gt;Other&lt;/th&gt;
+#&gt;   &lt;td&gt; 5.8&lt;/td&gt;
+#&gt;   &lt;td&gt; 1.8&lt;/td&gt;
+#&gt;   &lt;td&gt; 2.6&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 1.5&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="right"&gt;
+#&gt;   &lt;th class="left"&gt;White&lt;/th&gt;
+#&gt;   &lt;td&gt;64.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 7.3&lt;/td&gt;
+#&gt;   &lt;td&gt;14.6&lt;/td&gt;
+#&gt;   &lt;td&gt;15.8&lt;/td&gt;
+#&gt;   &lt;td&gt;26.3&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="right"&gt;
+#&gt;   &lt;th class="left"&gt;Wht/Hsp&lt;/th&gt;
+#&gt;   &lt;td&gt; 0.9&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.6&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.0&lt;/td&gt;
+#&gt;   &lt;td&gt; 0.3&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt; &lt;/tbody&gt;
+#&gt; &lt;/table&gt;</code></pre>
+<pre><code>#&gt; &lt;table class="Rtable"&gt;
+#&gt; &lt;caption&gt;(#tab:optpressstats) Probability that an optimal choice results in reward&lt;/caption&gt;
+#&gt; &lt;thead&gt;
+#&gt; &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Condition&lt;/th&gt;
+#&gt;   &lt;th&gt;Sample&lt;/th&gt;
+#&gt;   &lt;th&gt;Probability of reward&lt;/th&gt;
+#&gt; &lt;/tr&gt;
+#&gt; &lt;/thead&gt;
+#&gt; &lt;tbody&gt;
+#&gt; &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Hungry/Thirsty&lt;/th&gt;
+#&gt;   &lt;th&gt;Foster-care involved adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt;0.791&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;Community adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt;0.790&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;College students&lt;/th&gt;
+#&gt;   &lt;td&gt;0.789&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;College students - online&lt;/th&gt;
+#&gt;   &lt;td&gt;0.794&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Dating/Looking&lt;/th&gt;
+#&gt;   &lt;th&gt;Foster-care involved adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt;0.792&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;Community adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt;0.797&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;College students&lt;/th&gt;
+#&gt;   &lt;td&gt;0.791&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;College students - online&lt;/th&gt;
+#&gt;   &lt;td&gt;0.788&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;Popular/Unpopular&lt;/th&gt;
+#&gt;   &lt;th&gt;Foster-care involved adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt;0.796&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;Community adolescents&lt;/th&gt;
+#&gt;   &lt;td&gt;0.792&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;College students&lt;/th&gt;
+#&gt;   &lt;td&gt;0.798&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt;  &lt;tr class="left"&gt;
+#&gt;   &lt;th&gt;&amp;nbsp;&lt;/th&gt;
+#&gt;   &lt;th&gt;College students - online&lt;/th&gt;
+#&gt;   &lt;td&gt;0.800&lt;/td&gt;
+#&gt; &lt;/tr&gt;
+#&gt; &lt;/tbody&gt;
+#&gt; &lt;/table&gt;</code></pre>
+<!-- ```{r reaction_time, fig.width=10.5, fig.height=8, cache=T} -->
+<!-- ggplot2::ggplot( -->
+<!--     dplyr::filter(splt, rt > 0), -->
+<!--     ggplot2::aes(x = rt/1000)) +  -->
+<!--     ggplot2::geom_vline(xintercept = 1, size = .5, color = '#666666') +  -->
+<!--     ggplot2::geom_histogram(binwidth = .1, fill = 'black') + -->
+<!--     ggplot2::theme_minimal() +  -->
+<!--     ggplot2::theme(strip.background = element_blank(),  -->
+<!--                    strip.text = element_blank()) +  -->
+<!--     ggplot2::scale_x_continuous(breaks = c(0, 1, 2)) + -->
+<!--     facet_wrap(~id, ncol = 20) +  -->
+<!--     coord_cartesian(x = c(0, 2)) + -->
+<!--     labs(x = 'Trial reaction-time (s)',  -->
+<!--          y = 'Count', -->
+<!--          title = 'Reaction time for all participants') -->
+<!-- max_number_of_trials <- max( -->
+<!--     dplyr::summarise( -->
+<!--         dplyr::group_by( -->
+<!--             dplyr::filter(splt, !is.na(pressed_r)),  -->
+<!--             id, condition), -->
+<!--         n_trials = n())$n_trials -->
+<!--     ) -->
+<!-- ggplot2::ggplot( -->
+<!--     dplyr::filter(splt, !is.na(pressed_r)), -->
+<!--     ggplot2::aes(x = condition)) +  -->
+<!--     ggplot2::geom_hline(yintercept = max_number_of_trials, color = '#666666') +  -->
+<!--     ggplot2::geom_bar(fill = '#bbbbbb') + -->
+<!--     ggplot2::theme_minimal() +  -->
+<!--     ggplot2::theme(strip.background = element_blank(), -->
+<!--                    strip.text = element_blank(), -->
+<!--                    axis.text.x = element_text(angle = 360-45, hjust = 0)) + -->
+<!--     facet_wrap(~id, ncol = 20) +  -->
+<!--     labs(x = 'Condition',  -->
+<!--          y = paste0('Number of trials (line at max = ', max_number_of_trials, ')'), -->
+<!--          title = 'Trials per condition for all participants') -->
+<!-- ``` -->
+<!-- # Raw task data -->
+<!-- Averaging over trials -->
+<!-- ```{r fig.width=7, fig.height=6, cache=T} -->
+<!-- splt_averages <- splt %>% -->
+<!--     dplyr::group_by(sample, condition, condition_trial_index) %>% -->
+<!--     dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>% -->
+<!--     dplyr::ungroup() -->
+<!-- splt_averages_over_samples <- splt %>% -->
+<!--     dplyr::group_by(condition, condition_trial_index) %>% -->
+<!--     dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>% -->
+<!--     dplyr::ungroup() -->
+<!-- ggplot2::ggplot( -->
+<!--     splt_averages, -->
+<!--     ggplot2::aes(x = condition_trial_index, -->
+<!--                  y = p_optimal, -->
+<!--                  group = condition, -->
+<!--                  linetype = condition, -->
+<!--                  shape = condition)) +  -->
+<!--     ggplot2::geom_point(alpha = .1) +  -->
+<!--     ggplot2::geom_smooth( -->
+<!--         color = 'black', size = .5, -->
+<!--         method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +  -->
+<!--     ggplot2::facet_wrap(~sample, nrow = 2) +  -->
+<!--     ggplot2::labs(x = 'Within-condition trial number', -->
+<!--                   y = 'Proportion of optimal responses') +  -->
+<!--     ggplot2::theme_minimal() -->
+<!-- ggplot2::ggplot( -->
+<!--     splt_averages_over_samples, -->
+<!--     ggplot2::aes(x = condition_trial_index, -->
+<!--                  y = p_optimal, -->
+<!--                  group = condition, -->
+<!--                  linetype = condition, -->
+<!--                  shape = condition)) +  -->
+<!--     ggplot2::geom_point(alpha = .1) +  -->
+<!--     ggplot2::geom_smooth( -->
+<!--         color = 'black', size = .5, -->
+<!--         method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) + -->
+<!--     ggplot2::labs(x = 'Within-condition trial number', -->
+<!--                   y = 'Proportion of optimal responses') +  -->
+<!--     ggplot2::theme_minimal() -->
+<!-- ``` -->
+<!-- Self-reported confidence over blocks -->
+<!-- ```{r fig.width=6, fig.height=4, cache=T} -->
+<!-- ggplot2::ggplot( -->
+<!--     dplyr::filter(splt_confidence, !is.na(sample), sample != 'TDS3'), -->
+<!--     ggplot2::aes(x = block, y = confidence)) +  -->
+<!--     ggplot2::geom_point(position = ggplot2::position_jitter(w = .3, h = .3), alpha = .1) + -->
+<!--     ggplot2::geom_smooth( -->
+<!--         ggplot2::aes(color = sample), -->
+<!--         method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) +  -->
+<!--     ggplot2::theme_minimal() +  -->
+<!--     ggplot2::labs(x = 'Block number', -->
+<!--                   y = 'Self-report confidence about optimal label') -->
+<!-- ``` -->
+<!-- # Proportion optimal presses per ID & condition -->
+<!-- ```{r cache=T} -->
+<!-- plot_opt_presses_per_id <- function(splt_df,  -->
+<!--                                     ncol = 5,  -->
+<!--                                     title = 'Proportion optimal presses per ID & condition', -->
+<!--                                     se = F){ -->
+<!--     splt_opt_press <- dplyr::mutate( -->
+<!--         ungroup(splt_df),  -->
+<!--         press_opt = as.numeric(pressed_r == (proportion == '20_80')), -->
+<!--         press_opt = (press_opt - .5) * (1 -.05 * (as.numeric(condition) - 1)) + .5) -->
+<!--     splt_opt_press_ranks <- dplyr::summarize( -->
+<!--         dplyr::group_by(splt_opt_press, id), -->
+<!--                         mean_press_opt = mean(press_opt, na.rm = T)) -->
+<!--     splt_opt_press_ranks$id_fac <- factor( -->
+<!--         splt_opt_press_ranks$id, -->
+<!--         levels = splt_opt_press_ranks$id[order(splt_opt_press_ranks$mean_press_opt)]) -->
+<!--     splt_opt_press <- left_join(splt_opt_press, splt_opt_press_ranks) -->
+<!--     ggplot2::ggplot( -->
+<!--         splt_opt_press,  -->
+<!--         ggplot2::aes( -->
+<!--             x = condition_trial_index,  -->
+<!--             y = press_opt, -->
+<!--             linetype = condition, -->
+<!--             shape = condition)) + -->
+<!--         ggplot2::geom_point(size = .75, alpha = .25) +  -->
+<!--         ggplot2::geom_hline(yintercept = c(.8), alpha = 1, color = 'red', size = .5) +  -->
+<!--         ggplot2::geom_hline(yintercept = c(.5), alpha = 1, color = 'gray', size = .5) +  -->
+<!--         ggplot2::geom_smooth(se = se, method = 'gam', formula = y ~ s(x, bs = "tp", k = 4),  -->
+<!--                              size = .5, color = 'black', alpha = .2) +  -->
+<!--         ggplot2::facet_wrap(~ id_fac, ncol = ncol) + -->
+<!--         ggplot2::coord_cartesian(ylim = c(0, 1)) +  -->
+<!--         ggplot2::scale_y_continuous(breaks = c(0,.5,.8)) +  -->
+<!--         ggplot2::scale_x_continuous(breaks = c(1,64,128)) + -->
+<!--         ggplot2::theme_minimal() + -->
+<!--         ggplot2::labs(x = 'Trial', y = 'Optimal press (probability)', title = title) -->
+<!-- } -->
+<!-- ``` -->
+<!-- ```{r proportion_trials_per_conditionca, fig.width=10, fig.height=22, cache=T} -->
+<!-- plot_opt_presses_per_id( -->
+<!--     dplyr::filter(splt, sample == 'Community adolescents'), -->
+<!--     ncol = 5,  -->
+<!--     title = 'Community adolescents') -->
+<!-- ``` -->
+<!-- ```{r proportion_trials_per_conditionfc, fig.width=10, fig.height=10, cache=T} -->
+<!-- plot_opt_presses_per_id( -->
+<!--     dplyr::filter(splt, sample == 'Foster-care involved adolescents'), -->
+<!--     ncol = 5,  -->
+<!--     title = 'Foster-care involved adolescents') -->
+<!-- ``` -->
+<!-- ```{r proportion_trials_per_conditioncs, fig.width=10, fig.height=22, cache=T} -->
+<!-- plot_opt_presses_per_id( -->
+<!--     dplyr::filter(splt, sample == 'College students'), -->
+<!--     ncol = 5,  -->
+<!--     title = 'College students') -->
+<!-- ``` -->
+<!-- ```{r proportion_trials_per_conditioncso, fig.width=10, fig.height=44, cache=T} -->
+<!-- plot_opt_presses_per_id( -->
+<!--     dplyr::filter(splt, sample == 'College students - online'), -->
+<!--     ncol = 5,  -->
+<!--     title = 'College students - online') -->
+<!-- ``` -->
 </div>
 </div>
   </div>
@@ -344,8 +632,7 @@ ggplot2::<span class="kw"><a href="http://www.rdocumentation.org/packages/ggplot
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li><a href="#sample-information">Sample information</a></li>
-      <li><a href="#raw-task-data">Raw task data</a></li>
+<li><a href="#participants">Participants</a></li>
       </ul>
 </div>
       </div>

@@ -52,7 +52,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/age-and-puberty-data.html">Age and Puberty Data</a>
+      <a href="../articles/age-and-puberty-data.html">Age, Puberty, and Informant Data</a>
     </li>
     <li>
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
@@ -87,7 +87,7 @@
       <h1>Test Simulated Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-03-29</h4>
+            <h4 class="date">2018-04-05</h4>
       
       
 
@@ -190,14 +190,20 @@ Figure 3: Comparison of model fit to generating parameters. Gray bars are 95% cr
 
 <span class="kw"><a href="http://www.rdocumentation.org/packages/future/topics/plan">plan</a></span>(batchtools_slurm,
      <span class="dt">template =</span> <span class="kw">system.file</span>(<span class="st">'batchtools'</span>, <span class="st">'batchtools.slurm.tmpl'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),
-     <span class="dt">resources =</span> <span class="kw">list</span>(<span class="dt">ncpus =</span> <span class="dv">4</span>, <span class="dt">walltime =</span> <span class="dv">60</span>*<span class="dv">24-1</span>, <span class="dt">memory =</span> <span class="st">'1G'</span>,
-                      <span class="dt">partitions =</span> <span class="st">'short,fat,long,longfat'</span>))
+     <span class="dt">resources =</span> <span class="kw">list</span>(<span class="dt">ncpus =</span> <span class="dv">4</span>, <span class="dt">walltime =</span> <span class="dv">60</span>*<span class="dv">24</span>*<span class="dv">4</span>, <span class="dt">memory =</span> <span class="st">'1G'</span>,
+                      <span class="dt">partitions =</span> <span class="st">'long,longfat'</span>))
 
 data_dir &lt;-<span class="st"> '/home/flournoy/otherhome/data/splt/probly/'</span>
+data_dir_indvsims &lt;-<span class="st"> </span><span class="kw">file.path</span>(data_dir, <span class="st">'indiv_sim_saves'</span>)
 if(!<span class="kw">file.exists</span>(data_dir)){
     <span class="kw">stop</span>(<span class="st">'Data directory "'</span>, data_dir, <span class="st">'" does not exist'</span>)
 } else {
     <span class="kw">message</span>(<span class="st">"Data goes here: "</span>, data_dir)
+}
+if(!<span class="kw">file.exists</span>(data_dir_indvsims)){
+    <span class="kw">stop</span>(<span class="st">'Individual simulation directory "'</span>, data_dir_indvsims, <span class="st">'" does not exist'</span>)
+} else {
+    <span class="kw">message</span>(<span class="st">"Individual simulation results go here: "</span>, data_dir_indvsims)
 }
 
 <span class="kw">data</span>(splt)
@@ -227,7 +233,7 @@ stan_sim_data &lt;-<span class="st"> </span><span class="kw">list</span>(
     <span class="dt">cue =</span> task_structure_stan$cue
 )
 
-stan_rl_fn &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>)
+stan_rl_fn &lt;-<span class="st"> </span><span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl_reparam.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>)
 
 iter &lt;-<span class="st"> </span><span class="dv">100</span>
 results_f &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/listenv/topics/listenv">listenv</a></span>()
@@ -254,20 +260,294 @@ for(i in <span class="dv">1</span>:iter){
             <span class="dv">2</span>, mean, <span class="dt">na.rm =</span> T)
         learning_traj &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(<span class="kw">lm</span>(prop_optimal_resp ~<span class="st"> </span>trial_num)))[,<span class="st">'Estimate'</span>]
 
+        <span class="co"># ##--TESTING</span>
+        <span class="co"># devtools::install_local('~/code_new/probly')</span>
+        <span class="co"># stan_rl_fn &lt;- '~/code_new/probly/inst/stan/splt_rl_reparam.stan'</span>
+        <span class="co"># stan_model_thing &lt;- rstan::stan_model(file = stan_rl_fn)</span>
+        <span class="co"># stan_optim &lt;- rstan::optimizing(stan_model_thing, data = stan_sim_data)</span>
+        <span class="co"># stan_optim_parnames &lt;- grep('mu', names(stan_optim$par), value = T)</span>
+        <span class="co"># stan_optim$par[stan_optim_parnames] - c(mu_xi, mu_eps, mu_b, mu_rho)</span>
+        <span class="co"># stan_vb &lt;- rstan::vb(stan_model_thing, data = stan_sim_data)</span>
+        <span class="co"># summary(stan_vb, pars = stan_optim_parnames)</span>
+        <span class="co"># ##--TESTING</span>
+
         stanFit &lt;-<span class="st"> </span>rstan::<span class="kw"><a href="http://www.rdocumentation.org/packages/rstan/topics/stan">stan</a></span>(<span class="dt">file =</span> stan_rl_fn,
                                <span class="dt">data =</span> stan_sim_data,
                                <span class="dt">chains =</span> <span class="dv">4</span>, <span class="dt">cores =</span> <span class="dv">4</span>,
-                               <span class="dt">iter =</span> <span class="dv">1500</span>, <span class="dt">warmup =</span> <span class="dv">1000</span>)
+                               <span class="dt">iter =</span> <span class="dv">1500</span>, <span class="dt">warmup =</span> <span class="dv">1000</span>,
+                               <span class="dt">control =</span> <span class="kw">list</span>(<span class="dt">max_treedepth =</span> <span class="dv">15</span>, <span class="dt">adapt_delta =</span> <span class="fl">0.99</span>))
 
         model_summary &lt;-<span class="st"> </span>rstan::<span class="kw">summary</span>(stanFit)
+        sampler_params &lt;-<span class="st"> </span>rstan::<span class="kw"><a href="http://www.rdocumentation.org/packages/rstan/topics/stanfit-class">get_sampler_params</a></span>(stanFit)
 
-        <span class="kw">list</span>(<span class="dt">fit_summary =</span> model_summary, <span class="dt">coefs =</span> learning_traj, <span class="dt">data =</span> task_data)
+        return_list &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">fit_summary =</span> model_summary,
+                            <span class="dt">sampler_params =</span> sampler_params,
+                            <span class="dt">coefs =</span> learning_traj,
+                            <span class="dt">data =</span> task_data)
+        <span class="kw">saveRDS</span>(return_list, <span class="dt">file =</span> <span class="kw">file.path</span>(data_dir_indvsims,
+                                              <span class="kw">paste0</span>(<span class="st">'sim_'</span>, <span class="kw">sprintf</span>(<span class="st">"%03d"</span>,i), <span class="st">'.RDS'</span>)))
+        return_list
     }
 }
 
 results &lt;-<span class="st"> </span><span class="kw">as.list</span>(results_f)
 
 <span class="kw">saveRDS</span>(results, <span class="kw">file.path</span>(data_dir, <span class="st">'test_rez.RDS'</span>))</code></pre></div>
+<pre><code>#&gt; 
+#&gt;   The decimal point is 1 digit(s) to the left of the |
+#&gt; 
+#&gt;     0 | 0000000000000000000000000000000000000000000000000000000000000
+#&gt;     2 | 
+#&gt;     4 | 
+#&gt;     6 | 
+#&gt;     8 | 
+#&gt;    10 | 00000000000000000
+#&gt;    12 | 
+#&gt;    14 | 
+#&gt;    16 | 
+#&gt;    18 | 
+#&gt;    20 | 000000000
+#&gt;    22 | 
+#&gt;    24 | 
+#&gt;    26 | 
+#&gt;    28 | 
+#&gt;    30 | 0000000
+#&gt;    32 | 
+#&gt;    34 | 
+#&gt;    36 | 
+#&gt;    38 | 
+#&gt;    40 | 0
+#&gt;    42 | 
+#&gt;    44 | 
+#&gt;    46 | 
+#&gt;    48 | 
+#&gt;    50 | 
+#&gt;    52 | 
+#&gt;    54 | 
+#&gt;    56 | 
+#&gt;    58 | 
+#&gt;    60 | 
+#&gt;    62 | 
+#&gt;    64 | 
+#&gt;    66 | 
+#&gt;    68 | 
+#&gt;    70 | 
+#&gt;    72 | 
+#&gt;    74 | 
+#&gt;    76 | 
+#&gt;    78 | 
+#&gt;    80 | 
+#&gt;    82 | 
+#&gt;    84 | 
+#&gt;    86 | 
+#&gt;    88 | 
+#&gt;    90 | 0
+#&gt;    92 | 
+#&gt;    94 | 
+#&gt;    96 | 
+#&gt;    98 | 
+#&gt;   100 | 
+#&gt;   102 | 
+#&gt;   104 | 
+#&gt;   106 | 
+#&gt;   108 | 
+#&gt;   110 | 0
+#&gt;   112 | 
+#&gt;   114 | 
+#&gt;   116 | 
+#&gt;   118 | 
+#&gt;   120 | 
+#&gt;   122 | 
+#&gt;   124 | 
+#&gt;   126 | 
+#&gt;   128 | 
+#&gt;   130 | 
+#&gt;   132 | 
+#&gt;   134 | 
+#&gt;   136 | 
+#&gt;   138 | 
+#&gt;   140 | 
+#&gt;   142 | 
+#&gt;   144 | 
+#&gt;   146 | 
+#&gt;   148 | 
+#&gt;   150 | 
+#&gt;   152 | 
+#&gt;   154 | 
+#&gt;   156 | 
+#&gt;   158 | 
+#&gt;   160 | 
+#&gt;   162 | 
+#&gt;   164 | 
+#&gt;   166 | 
+#&gt;   168 | 
+#&gt;   170 | 
+#&gt;   172 | 
+#&gt;   174 | 
+#&gt;   176 | 
+#&gt;   178 | 
+#&gt;   180 | 
+#&gt;   182 | 
+#&gt;   184 | 
+#&gt;   186 | 
+#&gt;   188 | 
+#&gt;   190 | 
+#&gt;   192 | 
+#&gt;   194 | 
+#&gt;   196 | 
+#&gt;   198 | 
+#&gt;   200 | 
+#&gt;   202 | 
+#&gt;   204 | 
+#&gt;   206 | 
+#&gt;   208 | 
+#&gt;   210 | 
+#&gt;   212 | 
+#&gt;   214 | 
+#&gt;   216 | 
+#&gt;   218 | 
+#&gt;   220 | 
+#&gt;   222 | 
+#&gt;   224 | 
+#&gt;   226 | 
+#&gt;   228 | 
+#&gt;   230 | 
+#&gt;   232 | 
+#&gt;   234 | 
+#&gt;   236 | 
+#&gt;   238 | 
+#&gt;   240 | 
+#&gt;   242 | 
+#&gt;   244 | 
+#&gt;   246 | 
+#&gt;   248 | 
+#&gt;   250 | 
+#&gt;   252 | 
+#&gt;   254 | 
+#&gt;   256 | 
+#&gt;   258 | 
+#&gt;   260 | 
+#&gt;   262 | 
+#&gt;   264 | 
+#&gt;   266 | 
+#&gt;   268 | 
+#&gt;   270 | 
+#&gt;   272 | 
+#&gt;   274 | 
+#&gt;   276 | 
+#&gt;   278 | 
+#&gt;   280 | 
+#&gt;   282 | 
+#&gt;   284 | 
+#&gt;   286 | 
+#&gt;   288 | 
+#&gt;   290 | 
+#&gt;   292 | 
+#&gt;   294 | 
+#&gt;   296 | 
+#&gt;   298 | 
+#&gt;   300 | 
+#&gt;   302 | 
+#&gt;   304 | 
+#&gt;   306 | 
+#&gt;   308 | 
+#&gt;   310 | 
+#&gt;   312 | 
+#&gt;   314 | 
+#&gt;   316 | 
+#&gt;   318 | 
+#&gt;   320 | 
+#&gt;   322 | 
+#&gt;   324 | 
+#&gt;   326 | 
+#&gt;   328 | 
+#&gt;   330 | 
+#&gt;   332 | 
+#&gt;   334 | 
+#&gt;   336 | 
+#&gt;   338 | 
+#&gt;   340 | 
+#&gt;   342 | 
+#&gt;   344 | 
+#&gt;   346 | 
+#&gt;   348 | 
+#&gt;   350 | 0
+#&gt;   352 | 
+#&gt;   354 | 
+#&gt;   356 | 
+#&gt;   358 | 
+#&gt;   360 | 
+#&gt;   362 | 
+#&gt;   364 | 
+#&gt;   366 | 
+#&gt;   368 | 
+#&gt;   370 | 0
+#&gt;   372 | 
+#&gt;   374 | 
+#&gt;   376 | 
+#&gt;   378 | 
+#&gt;   380 | 
+#&gt;   382 | 
+#&gt;   384 | 
+#&gt;   386 | 
+#&gt;   388 | 
+#&gt;   390 | 
+#&gt;   392 | 
+#&gt;   394 | 
+#&gt;   396 | 
+#&gt;   398 | 
+#&gt;   400 | 
+#&gt;   402 | 
+#&gt;   404 | 
+#&gt;   406 | 
+#&gt;   408 | 
+#&gt;   410 | 
+#&gt;   412 | 
+#&gt;   414 | 
+#&gt;   416 | 
+#&gt;   418 | 
+#&gt;   420 | 
+#&gt;   422 | 
+#&gt;   424 | 
+#&gt;   426 | 
+#&gt;   428 | 
+#&gt;   430 | 
+#&gt;   432 | 
+#&gt;   434 | 
+#&gt;   436 | 
+#&gt;   438 | 
+#&gt;   440 | 
+#&gt;   442 | 
+#&gt;   444 | 
+#&gt;   446 | 
+#&gt;   448 | 
+#&gt;   450 | 
+#&gt;   452 | 
+#&gt;   454 | 
+#&gt;   456 | 
+#&gt;   458 | 
+#&gt;   460 | 
+#&gt;   462 | 
+#&gt;   464 | 
+#&gt;   466 | 
+#&gt;   468 | 
+#&gt;   470 | 
+#&gt;   472 | 
+#&gt;   474 | 
+#&gt;   476 | 
+#&gt;   478 | 
+#&gt;   480 | 
+#&gt;   482 | 
+#&gt;   484 | 
+#&gt;   486 | 
+#&gt;   488 | 
+#&gt;   490 | 
+#&gt;   492 | 
+#&gt;   494 | 
+#&gt;   496 | 
+#&gt;   498 | 
+#&gt;   500 | 0
+#&gt; [1] -0.5968958</code></pre>
 </div>
 </div>
 <div id="conclusion" class="section level1">
