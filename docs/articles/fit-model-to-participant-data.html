@@ -87,7 +87,7 @@
       <h1>Fit model to participant data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-04-05</h4>
+            <h4 class="date">2018-04-06</h4>
       
       
 
@@ -100,7 +100,50 @@
 <h1 class="hasAnchor">
 <a href="#method" class="anchor"></a>Method</h1>
 <p>Using the model presented in the section on <a href="test-simulated-data.html">testing simulated data</a>, I estimate the posterior distribution of the model parameters given the data provided by four groups of participants. Quality of estimation can be supported by (A), (B), (C), (D).</p>
+</div>
+<div id="results" class="section level1">
+<h1 class="hasAnchor">
+<a href="#results" class="anchor"></a>Results</h1>
+<div id="descriptive-plots" class="section level2">
+<h2 class="hasAnchor">
+<a href="#descriptive-plots" class="anchor"></a>Descriptive plots</h2>
+<p>Examination of the raw data using scatterplots and non-parametric best-fit lines can help insure that data conform to expectations, and that subsequent model estimates accurately reflect the data. On average participants in all samples and all conditions demonstrated learning (Figure @ref(fig:trialaverages)A, although note that there given the small sample size, the foster-care involved sample shows more variability across trials). There is also some indication that learning occurs more quickly in the two social motive conditions (Figure @ref(fig:trialaverages)B).</p>
+<p>(ref:trialaverages) Average number of optimal responses for each trial across all participants. Best fit lines are generalized additive models with 95% confidence intervals.</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/trialaverages-1.png" width="768"></p>
+<p>Participants also reported their confidence in the which reponses would give them rewards most often (this single item measured confidence globally). Confidence generally increases aross trials for all samples (Figure @ref(fig:confidenceplot)).</p>
+<p>(ref:confidenceplot) Self-reported confidence over blocks.</p>
+<div class="figure">
+<img src="fit-model-to-participant-data_files/figure-html/confidenceplot-1.png" alt="(ref:confidenceplot)" width="576"><p class="caption">
+(ref:confidenceplot)
+</p>
+</div>
+<div id="proportion-optimal-presses-per-id-condition" class="section level3">
+<h3 class="hasAnchor">
+<a href="#proportion-optimal-presses-per-id-condition" class="anchor"></a>Proportion optimal presses per ID &amp; condition</h3>
+<p>Each of the plots below shows, for each individual, the trajectory of learning across trials. Individual plots are sorted by the overall proportion of optimal presses.</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/proportion_trials_per_conditionca-1.png" width="960"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/proportion_trials_per_conditionfc-1.png" width="960"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/proportion_trials_per_conditioncs-1.png" width="960"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/proportion_trials_per_conditioncso-1.png" width="960"></p>
+</div>
+</div>
+</div>
+<div id="results-from-bayesian-learning-models" class="section level1">
+<h1 class="hasAnchor">
+<a href="#results-from-bayesian-learning-models" class="anchor"></a>Results from Bayesian learning models</h1>
+<p>Learning rate</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-4-1.png" width="672"></p>
+<p>Size of reward modifier</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-1.png" width="672"></p>
+<p>Irriducible noise (e.g., “what the whaaa?”)</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<div id="diagnostics" class="section level2">
+<h2 class="hasAnchor">
+<a href="#diagnostics" class="anchor"></a>Diagnostics</h2>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-4.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-5.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-6.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-7.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-8.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-9.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-10.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-11.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-12.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-13.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-14.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-15.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-16.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-17.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-18.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-19.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-20.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-21.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-22.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-23.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-24.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-25.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-26.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-27.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-28.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-29.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-30.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-31.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-32.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-33.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-34.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/pairs-1.png" width="1440"><img src="fit-model-to-participant-data_files/figure-html/pairs-2.png" width="1440"></p>
 <p><img src="fit-model-to-participant-data_files/figure-html/pairs2-1.png" width="2880"></p>
+</div>
 </div>
 </div>
   </div>
@@ -111,6 +154,16 @@
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
 <li><a href="#method">Method</a></li>
+      <li>
+<a href="#results">Results</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#descriptive-plots">Descriptive plots</a></li>
+      </ul>
+</li>
+      <li>
+<a href="#results-from-bayesian-learning-models">Results from Bayesian learning models</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#diagnostics">Diagnostics</a></li>
+      </ul>
+</li>
       </ul>
 </div>
       </div>
