@@ -15,7 +15,7 @@ This vignette is here just to show you the code used to agglomerate and save the
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  echo=T,message=F,warning=F,error=F, eval = T
+  echo=T,message=F,warning=F,error=F, eval = F
 )
 
 data_dir <- '/data/jflournoy/split/probly'

@@ -31,7 +31,7 @@ library(rstan)
 stanfit <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level_no_b-1522879.RDS')
 ```
 
-```{r diag}
+```{r diag, eval=F}
 munames <- grep('mu', names(stanfit), value = T)
 betanames <- grep('beta', names(stanfit), value = T)
 taunames <- grep('tau_\\w{2,3}\\[', names(stanfit), value = T)
@@ -68,18 +68,47 @@ for(i in 1:(length(betanames)/313)){
 
 ```
 
-```{r pairs, fig.width=15, fig.height=15}
+```{r pairs, fig.width=15, fig.height=15, eval=F}
 pairs(stanfit, pars = munames)
 pairs(stanfit, pars = taunames)
-pairs(stanfit, pars = lomeganames, log = T)
+```
 
+```{r pairs2, fig.width=30, fig.height=30}
+library(probly)
+library(bayesplot)
 ep_cor_cov_samps <- probly::extract_cor_cov_samps(stanfit, par_subscript = 'ep')
+xi_cor_cov_samps <- probly::extract_cor_cov_samps(stanfit, par_subscript = 'xi')
+rho_cor_cov_samps <- probly::extract_cor_cov_samps(stanfit, par_subscript = 'rho')
 
-thing <- as.data.frame(t(apply(ep_cor_cov_samps$Sigma, 3, function(x) {
+ep_cov_samps <- as.data.frame(t(apply(ep_cor_cov_samps$Sigma, 3, function(x) {
     d <- c(x[lower.tri(x)], diag(x))
     names(d) <- c('[2,1]', '[3,1]', '[3,2]', '[1,1]', '[2,2]', '[3,3]')
     d
 })))
+names(ep_cov_samps) <- paste0('ep_', names(ep_cov_samps))
+xi_cov_samps <- as.data.frame(t(apply(xi_cor_cov_samps$Sigma, 3, function(x) {
+    d <- c(x[lower.tri(x)], diag(x))
+    names(d) <- c('[2,1]', '[3,1]', '[3,2]', '[1,1]', '[2,2]', '[3,3]')
+    d
+})))
+names(xi_cov_samps) <- paste0('xi_', names(xi_cov_samps))
+rho_cov_samps <- as.data.frame(t(apply(rho_cor_cov_samps$Sigma, 3, function(x) {
+    d <- c(x[lower.tri(x)], diag(x))
+    names(d) <- c('[2,1]', '[3,1]', '[3,2]', '[1,1]', '[2,2]', '[3,3]')
+    d
+})))
+names(rho_cov_samps) <- paste0('rho_', names(rho_cov_samps))
 
-bayesplot::mcmc_pairs(thing)
+
+sumnuts <- bayesplot::nuts_params(stanfit)
+
+ggplot2::theme_set(theme_minimal())
+bayesplot::mcmc_pairs(
+    cbind(
+        ep_cov_samps, 
+        rho_cov_samps, 
+        xi_cov_samps, 
+        Chain = rep(1:6, each=750)), 
+    np = sumnuts,
+    off_diag_fun = 'hex')
 ```

@@ -50,6 +50,7 @@ get_par_summaries <- function(afit, par_regex, probs = c(.025, .5, .975)){
 #' @param par_subscript the subscript for the L_Omega_subscript and tau_subscript parameters
 #'
 #' @return a list with both Omega (correlation matrix) and Sigma (covariance matrix) sample arrays.
+#' @importClassesFrom rstan stanfit
 #' @export
 extract_cor_cov_samps <- function(splt_fit, par_subscript = 'ep'){
     L_Omega_regex <- paste0('L_Omega_', par_subscript)
