@@ -2,9 +2,15 @@ articles:
 - title: All vignettes
   desc: ~
   contents:
-  - '`collect-data`'
-  - '`descriptive-statistics`'
-  - '`test-simple-3l-mv-model`'
-  - '`test-simulated-data`'
-  - '`fit-model-to-participant-data`'
-  - '`age-and-puberty-data`'
+  - text: "Collect task data"
+    href: articles/collect-data.html
+  - text: "Collect age and puberty data"
+    href: articles/age-and-puberty-data
+  - text: "Descriptive statistics"
+    href: articles/descriptive-statistics.html
+  - text: "Test 3-level mv normal model"
+    href: articles/test-simple-3l-mv-model
+  - text: "Test simulated data (outdated)"
+    href: articles/test-simulated-data
+  - text: "Examine and model task data"
+    href: articles/fit-model-to-participant-data
