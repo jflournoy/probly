@@ -4,7 +4,11 @@ author: "John Flournoy"
 date: "`r Sys.Date()`"
 output: 
   bookdown::html_document2:
-    base_format: rmarkdown::html_vignette
+    toc: yes
+    toc_depth: 2
+    number_sections: FALSE
+pkgdown:
+  as_is: true
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -68,7 +72,7 @@ Quality of estimation can be supported by (A), (B), (C), (D).
 
 ## Descriptive plots
 
-Examination of the raw data using scatterplots and non-parametric best-fit lines can help insure that data conform to expectations, and that subsequent model estimates accurately reflect the data. On average participants in all samples and all conditions demonstrated learning (Figure \@ref(fig:trialaverages)A, although note that there given the small sample size, the foster-care involved sample shows more variability across trials). There is also some indication that learning occurs more quickly in the two social motive conditions (Figure \@ref(fig:trialaverages)B).
+Examination of the raw data using scatterplots and non-parametric best-fit lines can help insure that data conform to expectations, and that subsequent model estimates accurately reflect the data. On average, participants in all samples and all conditions demonstrated learning (Figure \@ref(fig:trialaverages)A, although note that given the small sample size, the foster-care involved sample shows more variability across trials). There is also some indication that learning occurs more quickly in the two social motive conditions (Figure \@ref(fig:trialaverages)B).
 
 (ref:trialaverages) Average number of optimal responses for each trial across all participants. Best fit lines are generalized additive models with 95% confidence intervals. 
 
@@ -126,7 +130,7 @@ avg_across_samples <- ggplot2::ggplot(
 gridExtra::grid.arrange(avg_per_sample_plot, avg_across_samples, nrow = 1)
 ```
 
-Participants also reported their confidence in the which reponses would give them rewards most often (this single item measured confidence globally). Confidence generally increases aross trials for all samples (Figure \@ref(fig:confidenceplot)).
+Participants also reported their confidence about which reponses would give them rewards most often (this single item measured confidence globally). Confidence generally increases aross trials for all samples (Figure \@ref(fig:confidenceplot)).
 
 (ref:confidenceplot) Self-reported confidence over blocks.
 
@@ -174,9 +178,9 @@ plot_opt_presses_per_id <- function(splt_df,
             y = press_opt,
             linetype = condition,
             shape = condition)) +
-        ggplot2::geom_point(size = .75, alpha = .25) +
-        ggplot2::geom_hline(yintercept = c(.8), alpha = 1, color = 'red', size = .5) +
-        ggplot2::geom_hline(yintercept = c(.5), alpha = 1, color = 'gray', size = .5) +
+        ggplot2::geom_point(size = .75, alpha = .125) +
+        ggplot2::geom_hline(yintercept = c(.8), alpha = 1, color = 'gray', size = .5) +
+        ggplot2::geom_hline(yintercept = c(.5), alpha = 1, color = 'red', size = .5) +
         ggplot2::geom_smooth(se = se, method = 'gam', formula = y ~ s(x, bs = "tp", k = 4),
                              size = .5, color = 'black', alpha = .2) +
         ggplot2::facet_wrap(~ id_fac, ncol = ncol) +
