@@ -23,6 +23,9 @@ knitr::opts_chunk$set(
   message = F, error = F,warning = F, echo = F,
   comment = "#>"
 )
+
+ptab <- Hmisc::html
+
 ```
 
 ```{r load_packages_and_data}
@@ -138,7 +141,7 @@ The full sample consists of `r sum(!is.na(splt_dev_and_demog_task_sum$SID))` par
 (ref:ethnicitytable) (\#tab:ethnicitytable) Race/ethnicity information by sample
 
 ```{r missingstats, results='asis'}
-html(missing_table, 
+ptab(missing_table, 
      options = list(
          justification = c('l'), 
          rowlabeljustification = c('l'), 
@@ -147,7 +150,7 @@ html(missing_table,
 ```
 
 ```{r samplestats, results='asis'}
-html(sample_table, 
+ptab(sample_table, 
      options = list(
          justification = c('l'), 
          rowlabeljustification = c('l'), 
@@ -156,7 +159,7 @@ html(sample_table,
 ```
 
 ```{r ethnicitytable, results='asis'}
-html(ethnicity_table, 
+ptab(ethnicity_table, 
      options = list(
          justification = c('r'), 
          rowlabeljustification = c('l'), 
@@ -167,7 +170,7 @@ html(ethnicity_table,
 
 ## Pubertal Development
 
-To assess pubertal development, all participants completed the Pubertal Development Scale [PDS; @petersen1988], with the mean of five items used to indicate progress through puberty (range [1,4]). While the full sample includes a wide range of pubertal development, there are notable heterogeneity. First, it is not surprising that almost all participants in the college samples report that puberty is complete. Notably (though also unsurprisingly), females in the the adolescent samples report being further through puberty than males (Figure \@ref(fig:pdsplot)A). Most participants over the age of 18 have PDS scores indicating puberty is completed, or nearly completed (Figure \@ref(fig:pdsplot)B).
+To assess pubertal development, all participants completed the Pubertal Development Scale [PDS; @petersen1988], with the mean of five items used to indicate progress through puberty (range [1,4]). While the full sample includes a wide range of pubertal development, there is notable heterogeneity. It is not surprising that almost all participants in the college samples report that puberty is complete. Notably (though also unsurprisingly), females in the the adolescent samples report being further through puberty than males (Figure \@ref(fig:pdsplot)A), even though the mean age of males and females in these samples is roughly equivalent (Table \@ref(tab:samplestats)). Most participants in the college smaples have PDS scores indicating puberty is completed, or nearly completed (Figure \@ref(fig:pdsplot)B).
 
 (ref:pdsplot) Pubertal development by sample and age
 
@@ -214,9 +217,9 @@ gridExtra::grid.arrange(pds_plot_1, pds_plot_2,nrow=1)
 
 ## Social Probabilistic Learning Task
 
-The Social Probabilistic Learning Task (SPLT) is a standard reinforcement learning paradigm using several stimulus-word pairings that are grouped by motive relevance. Common probabilistic reinforcement learning paradigms focus on estimating parameters that govern learning associations between stimuli using abstract images and nonsocial categories as the conditioned stimulus [e.g., a weather prediction of 'sunny' or 'rainy' @knowlton1996]. In the SPLT, motive context is manipulated by pairing human faces with state or trait words related to mate-seeking and status motives. The purpose of this manipulation is to examine how this motive framing alters learning, especially across adolescent development, as well as how individual differences in learning are related to the measures of attitudes and behavior outline below.
+The Social Probabilistic Learning Task (SPLT) is a standard reinforcement learning paradigm using several stimulus-word pairings that are grouped by motive relevance. Common probabilistic reinforcement learning paradigms focus on estimating parameters that govern learning associations between stimuli using abstract images and nonsocial categories as the conditioned stimulus [e.g., a weather prediction of 'sunny' or 'rainy'; @knowlton1996]. In the SPLT, motive context is manipulated by pairing human faces with state or trait words related to mate-seeking and status motives. The purpose of this manipulation is to examine how this motive framing alters learning, especially across adolescent development, as well as how individual differences in learning are related to the measures of attitudes and behavior outlined below.
 
-On each trial, the participant sees one of six faces, along with two labels, and is asked to classify the face using one of the two labels. The labels are: *Hungry* versus *Thirsty* (control condition that is nonsocial, or only minimally social), *Dating* versus *Looking* for someone to date (mate-seeking), and *Popular* versus *Unpopular* (status). After choosing the label, the participant is given feedback that they were correct and earned either 1/1 point or 5/5 points, or that they were incorrect and earned 0/1 point or 0/5 points (Figure \@ref(fig:trialexample)). Each face is probabilistically associated with one label with P(Correct | Choice = Label) = .80. That is, there is a probabilistically optimal choice response, which precludes a memorization strategy and results in more automatic reinforcement learning [@knowlton1996]. The participant is instructed that "the same word goes with the same picture most of the time, but not always" and to "try to guess correctly as often as you can to get the most points."
+On each trial, the participant sees one of six faces, along with two labels, and is asked to classify the face using one of the two labels. The labels are: *Hungry* versus *Thirsty* (control condition that is nonsocial, or only minimally social), *Dating* versus *Looking* for someone to date (mate-seeking), and *Popular* versus *Unpopular* (status). After choosing the label, the participant is given feedback that they were correct and earned either 1/1 point or 5/5 points, or that they were incorrect and earned 0/1 point or 0/5 points (Figure \@ref(fig:trialexample)). Each face is probabilistically associated with one label with P(Correct | Choice = Label) = .80. That is, there is a probabilistically optimal choice response, which precludes a memorization strategy and results in more automatic reinforcement learning [@knowlton1996]. The participant is instructed that "the same word goes with the same picture most of the time, but not always," and to "try to guess correctly as often as you can to get the most points."
 
 (ref:trialexample) Example of a trial on the SPLT
 
@@ -224,7 +227,7 @@ On each trial, the participant sees one of six faces, along with two labels, and
 knitr::include_graphics("images/trial_example.png")
 ```
 
-To ensure engagement with the stimulus faces, 3 unambiguously male and 3 unambiguously female faces drawn from a set of faces evaluated by @todorov2008. Target faces were drawn from a subset of those highest in likeability and attractiveness ratings, and were selected to have roughly equal euclidean distance from one another on the other dimensions on which they had been rated (e.g., trustworthiness). Essentially, the faces were selected to be similarly salient, as well as similarly distinct from one another such that one or two particularly unique face did not overwhelm the learning effect of the motives. On each run of the task (i.e., for each participant), one male and one female face was randomly assigned to each label within condition (control, mate-seeking, status). On each trial, the participant had 3.5 seconds to respond, and was shown response feedback for 1 second. The task comprises a total of 384 trials across 8 blocks.
+To ensure engagement with the stimulus faces, 3 unambiguously male and 3 unambiguously female faces were drawn from a set of faces evaluated by @todorov2008. Target faces were drawn from a subset of those highest in likeability and attractiveness ratings, and were selected to have roughly equal euclidean distance from one another on the other dimensions on which they had been rated (e.g., trustworthiness). Essentially, the faces were selected to be similarly salient, as well as similarly distinct from one another such that one or two particularly unique face did not overwhelm the learning effect of the motives. On each run of the task (i.e., for each participant), one male and one female face was randomly assigned to each label within condition (control, mate-seeking, status). On each trial, the participant had 3.5 seconds to respond, and was shown response feedback for 1 second. The task comprises a total of 384 trials across 8 blocks (see Table \@ref(tab:samplestats) for mean number of trials).
 
 The receipt of the reward for choosing the optimal response (that is, the response that most often generated a reward) was probabilistic. Across conditions and samples, the observed probability of reward receipt for an optimal choice was very close to the generative _p_ = .80 (Table \@ref(tab:optpressstats)). Reaction times for all participants can be seen in Figure \@ref(fig:reactiontime), with an overall mean of `r round(mean(dplyr::filter(splt, rt > 0, rt<3600)$rt)/1000, 2)`s (SD = `r round(sd(dplyr::filter(splt, rt > 0, rt<3600)$rt)/1000, 2)`s). Most participants completed all trials with only occasional missed responses (Figure \@ref(fig:totaltrials)). For a small number of participants, far fewer trials were obtained (min = `r min(dplyr::summarize(group_by(dplyr::filter(splt, !is.na(pressed_r)), id), n = n())$n)`, with n = `r sum(dplyr::summarize(group_by(dplyr::filter(splt, !is.na(pressed_r)), id), n = n())$n < 350)` having fewer than 350 trials) either as a result of early termination, or because of computer error during data file saving.
 
@@ -232,7 +235,7 @@ The receipt of the reward for choosing the optimal response (that is, the respon
 
 
 ```{r optpressstats, results='asis'}
-html(optimal_press_prop_table, 
+ptab(optimal_press_prop_table, 
      options = list(
          justification = c('l'), 
          rowlabeljustification = c('l'), 
