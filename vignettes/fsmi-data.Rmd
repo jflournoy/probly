@@ -1,0 +1,169 @@
+---
+title: "Retrieve Fundamental Social Motives Data"
+author: "John Flournoy"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2:
+    toc: yes
+    toc_depth: 2
+    number_sections: FALSE
+pkgdown:
+  as_is: true
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "/home/jflournoy/Rlibs/probly/bib/dissertation.bib"
+csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = F, error = F,warning = F, echo = F, eval = F,
+  comment = "#>"
+)
+```
+
+```{r setupoptions, echo=F}
+data_dir <- '/data/jflournoy/split/probly'
+anon_id_filename <- '/data/jflournoy/split/probly/splt_anon_id.csv'
+id_recode_filename <- '/data/jflournoy/split/probly/splt_qualtrics_id_changes.csv'
+qualtrics_api_token_file <- '/data/jflournoy/split/probly/.qualtrics_api_token.yml'
+pid_column_name <- 'SID'
+
+rubric_dir <- system.file('scoring_rubrics', package = 'probly')
+```
+
+```{r getdata}
+library(scorequaltrics)
+library(dplyr)
+library(tidyr)
+
+credentials <- scorequaltrics::creds_from_file(qualtrics_api_token_file)
+
+survey_names_all <- scorequaltrics::get_surveys(credentials)
+survey_names_splt <- dplyr::filter(survey_names_all, grepl('.*(TDS1|TDS2|TDS3|YADS).*', SurveyName))
+```
+
+
+# Retrieve FSMI Data
+
+Anonymize it, and make it part of the package while we'er at it.
+
+```{r fsmiyadsv1, eval=F}
+
+#version 1
+yadsv_v1_surveys <- survey_names_splt %>%
+    filter(grepl('YADS-V$', SurveyName))
+yads_v1_qid_sid <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'SID') %>%
+    dplyr::filter(grepl('qid', item)) %>% 
+    dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
+    tidyr::spread(item, value) %>%
+    dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
+    dplyr::select(-survey_name)
+yadsv_v1_fmsi_long <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'qid') %>%
+    dplyr::filter(grepl('(fsmi)', item)) %>% 
+    dplyr::left_join(yadsv_v1_qid_sid, by = 'qid') %>%
+    dplyr::select(-qid, -id)
+
+#version 2
+yadsv_v2_surveys <- survey_names_splt %>%
+    filter(grepl('YADS-V v2.0$', SurveyName))
+yads_v2_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'SID') %>%
+    dplyr::filter(grepl('qid', item), SID != 999) %>% 
+    dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
+    tidyr::spread(item, value) %>%
+    dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
+    dplyr::select(-survey_name)
+yadsv_v2_fmsi_long <- scorequaltrics::get_survey_data(yadsv_v2_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'qid') %>%
+    dplyr::filter(grepl('(fsmi)', item)) %>% 
+    dplyr::left_join(yads_v2_qid_sid, by = 'qid') %>%
+    dplyr::select(-qid, -id)
+
+#version 2, online
+yadsv_v2o_surveys <- survey_names_splt %>%
+    filter(grepl('YADS-V v2.0 - Online$', SurveyName))
+yadsv_v2o_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2o_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'participantid') %>%
+    dplyr::rename(SID = participantid) %>%
+    dplyr::filter(grepl('qid', item)) %>% 
+    dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
+    dplyr::filter(SID != 99999) %>%
+    dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
+    tidyr::spread(item, value) %>%
+    dplyr::select(-survey_name)
+yadsv_v2o_fsmi_long <- scorequaltrics::get_survey_data(yadsv_v2o_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'qid') %>%
+    dplyr::filter(grepl('fsmi', item)) %>% 
+    dplyr::left_join(yadsv_v2o_qid_sid, by = 'qid') %>%
+    dplyr::select(-qid, -id)
+
+yadsv_fsmi_long <- dplyr::bind_rows(yadsv_v1_fmsi_long, 
+                                    yadsv_v2_fmsi_long,
+                                    yadsv_v2o_fsmi_long)
+
+SID_filter <- '([1234]\\d\\d|[34]\\d{4}$|[1234]\\d\\d|99386)'
+
+yadsv_fsmi_long_nodupes <- yadsv_fsmi_long %>%
+    filter(grepl(SID_filter, SID)) %>%
+    scorequaltrics::clean_dupes(pid_col = 'SID')
+```
+
+```{r eval=F}
+#Check that dropped values weren't ambiguous
+yadsv_fsmi_long_nodupes %>% 
+    filter(dropped) %>%
+    group_by(SID, item) %>%
+    filter(!all(length(unlist(old.value)) < 1)) %>%
+    mutate(old.value = paste(old.value, collaps = ' ')) %>%
+    knitr::kable(caption = "Questionnaire dupes")
+```
+
+```{r eval=F}
+anon_id_cols <- readr::cols(
+  id = readr::col_character(),
+  sample = readr::col_character(),
+  anon_id = readr::col_integer(),
+  anon_sample = readr::col_character(),
+  exclude = readr::col_integer()
+)
+
+yadsv_fsmi_long_deid <- dplyr::full_join(
+    yadsv_fsmi_long_nodupes,
+    dplyr::filter(
+        readr::read_csv(anon_id_filename, col_types = anon_id_cols),
+        sample %in% c('yads', 'yads_online')),
+    by = c('SID' = 'id'))
+
+if(!all(
+    dim(filter(yadsv_fsmi_long_deid, is.na(anon_id), !is.na(SID), is.na(exclude)))[1] == 0,
+    dim(filter(yadsv_fsmi_long_deid, 
+               !is.na(anon_id), is.na(SID), anon_sample %in% c('yads', 'yads_online')))[1] == 0)) {
+    stop("Some participants not accounted for, or not anonymized")
+} else {
+    yadsv_fsmi_long_deid <- dplyr::left_join(
+        yadsv_fsmi_long_nodupes,
+        dplyr::filter(
+            readr::read_csv(anon_id_filename, col_types = anon_id_cols),
+            sample %in% c('yads', 'yads_online')),
+        by = c('SID' = 'id')) %>%
+        dplyr::ungroup() %>%
+        dplyr::filter(is.na(exclude)) %>%
+        dplyr::select(-SID, -exclude, -sample) %>%
+        dplyr::rename(SID = anon_id, sample = anon_sample)
+}
+
+splt_fsmi <- yadsv_fsmi_long_deid
+devtools::use_data(splt_fsmi)
+```

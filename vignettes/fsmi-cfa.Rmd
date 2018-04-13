@@ -26,45 +26,22 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setupoptions}
-data_dir <- '/data/jflournoy/split/probly'
-anon_id_filename <- '/data/jflournoy/split/probly/splt_anon_id.csv'
-id_recode_filename <- '/data/jflournoy/split/probly/splt_qualtrics_id_changes.csv'
-qualtrics_api_token_file <- '/data/jflournoy/split/probly/.qualtrics_api_token.yml'
-pid_column_name <- 'SID'
-
-yadsv_v2_rubric_dir <- '/home/jflournoy/code_new/TDS_scripts/behavioral/score_qualtrics_tds/rubrics/YADS-V/v2.0'
+rubric_dir <- system.file('scoring_rubrics', package = 'probly')
 ```
 
-```{r getdata}
+```{r packages}
 library(probly)
 library(scorequaltrics)
+library(milav)
 library(dplyr)
 library(tidyr)
-
-credentials <- scorequaltrics::creds_from_file(qualtrics_api_token_file)
-
-survey_names_all <- scorequaltrics::get_surveys(credentials)
-survey_names_splt <- dplyr::filter(survey_names_all, grepl('.*(TDS1|TDS2|TDS3|YADS).*', SurveyName))
 ```
 
+```{r}
+fsmi_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = data_frame(file = file.path(rubric_dir, 'fsmi_scoring_rubric.csv')),
+    type = 'scoring')
 
-# YASD v1.0
+fsmi_key <- scorequaltrics::create_key_from_rubric(fsmi_rubric)
 
-```{r fsmiyadsv1}
-yadsv_v1_surveys <- survey_names_splt %>%
-    filter(grepl('YADS-V$', SurveyName))
-yadsv_v1_qid_sid <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
-                                                   credentials, 
-                                                   pid_col = 'SID') %>%
-    dplyr::filter(grepl('qid', item)) %>% 
-    dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
-    tidyr::spread(item, value) %>%
-    dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
-    dplyr::select(-survey_name)
-yadsv_v1_long <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
-                                                   credentials, 
-                                                   pid_col = 'qid') %>%
-    dplyr::filter(grepl('(FSMI)', item)) %>% 
-    dplyr::left_join(yadsv_v1_qid_sid, by = 'qid') %>%
-    dplyr::select(-qid, -id)
 ```
