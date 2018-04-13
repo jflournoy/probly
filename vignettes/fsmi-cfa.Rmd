@@ -20,7 +20,7 @@ csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  message = F, error = F,warning = F, echo = F,
+  message = F, error = F,warning = F, echo = F, collapse = T,
   comment = "#>"
 )
 ```
@@ -35,13 +35,71 @@ library(scorequaltrics)
 library(milav)
 library(dplyr)
 library(tidyr)
+library(lavaan)
+library(semPlot)
 ```
 
-```{r}
+```{r getdata}
+data("splt_fsmi")
+data("splt_dev_and_demog")
+
 fsmi_rubric <- scorequaltrics::get_rubrics(
     rubric_filenames = data_frame(file = file.path(rubric_dir, 'fsmi_scoring_rubric.csv')),
     type = 'scoring')
+```
 
+
+```{r datacheck, fig.width=8, fig.height=10}
 fsmi_key <- scorequaltrics::create_key_from_rubric(fsmi_rubric)
+fsmi_key <- fsmi_key[names(fsmi_key) != 'fsmi_kin']
+fsmi_cfa_model <- milav::create_cfa_from_keylist(fsmi_key)
 
+itemnames <- gsub('^-', '', unlist(fsmi_key))
+itemlabels <- unlist(
+    lapply(seq_along(fsmi_key), 
+           function(i) {
+               paste0(
+                   gsub('fsmi_', '', names(fsmi_key)[i]), 
+                   '_',
+                   gsub('-*fsmi_qs_', '', fsmi_key[[i]]))
+               }))
+
+fsmi_items <- dplyr::select_at(splt_fsmi, vars(itemnames))
+
+ggplot2::ggplot(
+    dplyr::mutate(
+        tidyr::gather(fsmi_items, item, value),
+        item = factor(item, levels = itemnames, labels = itemlabels)),
+    ggplot2::aes(x = value)) + 
+    ggplot2::geom_histogram(ggplot2::aes(y=..density..), binwidth = 1, color = '#666666', fill = NA) + 
+    ggplot2::geom_density(ggplot2::aes(y=..density..), adjust = 2) + 
+    ggplot2::facet_wrap(~item) + 
+    ggplot2::theme_minimal()
+```
+
+The CFA will not include kin care (missing data), family care (highly skewed), and mate retention general (highly skewed).
+
+```{r cfa}
+fsmi_cfa_model <- milav::create_cfa_from_keylist(
+    fsmi_key[!names(fsmi_key) %in% c('fsmi_kin', 'fsmi_fam', 'fsmi_retgen')])
+
+fsmi_cfa_matestat_model <- milav::create_cfa_from_keylist(
+    fsmi_key[names(fsmi_key) %in% c('fsmi_mate', 'fsmi_stat')])
+
+fsmi_cfa <- cfa(model = fsmi_cfa_model, data = fsmi_items, 
+                std.lv = T, missing = 'fiml')
+
+
+fsmi_cfa_matestat <- cfa(model = fsmi_cfa_matestat_model, data = fsmi_items, 
+                std.lv = T, missing = 'fiml')
+
+```
+
+
+```{r cfaplot}
+semPlot::semPaths(fsmi_cfa_matestat, whatLabels = 'std')
+summary(fsmi_cfa_matestat, standardize = T)
+fitmeasures(fsmi_cfa_matestat, fit.measures = c('cfi', 'rmsea', 'mfi'))
+summary(fsmi_cfa, standardize = T)
+fitmeasures(fsmi_cfa, fit.measures = c('cfi', 'rmsea', 'mfi'))
 ```

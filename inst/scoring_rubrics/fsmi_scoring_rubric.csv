@@ -1,4 +1,4 @@
-Data File Name,Scale Name,Column Name,Transform,Reverse,Min,Max,fmsi_affgrp,fsmi_affexc,fmsi_affind,fsmi_dis,fsmi_fam,fsmi_kin,fsmi_retgen,fsmi_retbrk,fsmi_prot,fsmi_stat,fsmi_mate
+Data File Name,Scale Name,Column Name,Transform,Reverse,Min,Max,fsmi_affgrp,fsmi_affexc,fsmi_affind,fsmi_dis,fsmi_fam,fsmi_kin,fsmi_retgen,fsmi_retbrk,fsmi_prot,fsmi_stat,fsmi_mate
 YADS-V_V2.0,FSMI,fsmi_qs_1,0,0,,,0,0,0,0,0,0,1,0,0,0,0
 YADS-V_V2.0,FSMI,fsmi_qs_2,0,0,,,0,0,0,0,0,0,1,0,0,0,0
 YADS-V_V2.0,FSMI,fsmi_qs_3,0,1,1,7,0,0,0,0,0,0,1,0,0,0,0

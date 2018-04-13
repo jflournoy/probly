@@ -56,7 +56,7 @@ Anonymize it, and make it part of the package while we'er at it.
 #version 1
 yadsv_v1_surveys <- survey_names_splt %>%
     filter(grepl('YADS-V$', SurveyName))
-yads_v1_qid_sid <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
+yadsv_v1_qid_sid <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
                                                    credentials, 
                                                    pid_col = 'SID') %>%
     dplyr::filter(grepl('qid', item)) %>% 
@@ -164,6 +164,7 @@ if(!all(
         dplyr::rename(SID = anon_id, sample = anon_sample)
 }
 
-splt_fsmi <- yadsv_fsmi_long_deid
+splt_fsmi_l <- dplyr::select(yadsv_fsmi_long_deid, SID, item, value)
+splt_fsmi <- tidyr::spread(splt_fsmi_l, item, value)
 devtools::use_data(splt_fsmi)
 ```
