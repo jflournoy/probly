@@ -347,7 +347,6 @@ yadsv_v2o_scoring_data_long <- scorequaltrics::get_rubrics(yadsv_v2o_pds_rubrics
                                                           type = 'scoring')
 SID_filter <- '([34]\\d{4}$)'
 
-#Clean and de-dupe parent and child data
 yadsv_v2o_long_nodupes <- yadsv_v2o_long %>%
     filter(grepl(SID_filter, SID)) %>%
     scorequaltrics::get_items_in_rubric(yadsv_v2o_scoring_data_long) %>%
