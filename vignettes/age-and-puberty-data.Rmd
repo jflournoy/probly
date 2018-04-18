@@ -60,7 +60,7 @@ tds2_wave2_surveys <- survey_names_splt %>%
 tds2_wave2_qid_sid <- scorequaltrics::get_survey_data(tds2_wave2_surveys, 
                                                    credentials, 
                                                    pid_col = 'SID') %>%
-    dplyr::filter(grepl('qid', item)) %>% 
+    dplyr::filter(grepl('qid', item), SID != 406) %>% #temporarily remove 406
     tidyr::spread(item, value) %>%
     dplyr::left_join(readr::read_csv(id_recode_filename), by = c('qid' = 'response_id')) %>%
     dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
@@ -185,7 +185,9 @@ yadsv_v1_qid_sid <- scorequaltrics::get_survey_data(yadsv_v1_surveys,
 yadsv_v1_long <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
                                                    credentials, 
                                                    pid_col = 'qid') %>%
-    dplyr::filter(grepl('(PDS|PAL_2_Age|PAL_2_Race|Q176)', item)) %>% 
+    dplyr::filter(
+        grepl('(PDS|PAL_2_Age|PAL_2_Race|Q176|StartTime|Q173_1_TEXT|StartDate)', 
+              item)) %>% 
     dplyr::left_join(yadsv_v1_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
 
@@ -204,9 +206,30 @@ yadsv_v1_long_nodupes <- yadsv_v1_long %>%
 #demographics only
 yadsv_v1_pal_2_demo <- yadsv_v1_long %>%
     dplyr::filter(grepl('[1234]\\d\\d', SID),
-           grepl('(PAL_2_Age|PAL_2_Race)', item)) %>%
+           grepl('(PAL_2_Age|PAL_2_Race|Q173_1_TEXT|StartDate)', item)) %>%
     tidyr::spread(item, value) %>%
-    dplyr::rename(age = PAL_2_Age)
+    dplyr::rename(age = PAL_2_Age, first_name = Q173_1_TEXT, occur_date = StartDate) %>%
+    dplyr::mutate(occur_date = as.character(lubridate::date(occur_date)))
+
+sona_kapp_demo_cols <- readr::cols(
+  first_name = readr::col_character(),
+  occur_date = readr::col_character(),
+  study = readr::col_character(),
+  age = readr::col_integer(),
+  gender = readr::col_character(),
+  ethnicity = readr::col_character())
+
+sona_kapp_demo <- dplyr::filter(
+    readr::read_csv(file.path(data_dir, 'sona_data.csv'),
+                    col_types = sona_kapp_demo_cols),
+    study == 'kapp')
+
+yadsv_v1_pal_2_demo <- dplyr::select(
+    dplyr::left_join(
+        yadsv_v1_pal_2_demo,
+        sona_kapp_demo,
+        by = c('first_name', 'occur_date')),
+    -first_name, -occur_date, -study)
 
 #inf relations only
 yadsv_v1_inf_rel <- yadsv_v1_long %>%
@@ -259,7 +282,7 @@ yadsv_v2_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2_surveys,
 yadsv_v2_long <- scorequaltrics::get_survey_data(yadsv_v2_surveys, 
                                                    credentials, 
                                                    pid_col = 'qid') %>%
-    dplyr::filter(grepl('(PDS|Q327|Q329|inf_rel)', item)) %>% 
+    dplyr::filter(grepl('(PDS|Q327|Q329|inf_rel|px_info_1_TEXT|StartDate)', item)) %>% 
     dplyr::left_join(yadsv_v2_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
 
@@ -279,11 +302,20 @@ yadsv_v2_long_nodupes <- yadsv_v2_long %>%
 #demographics only
 yadsv_v2_pal_2_demo <- yadsv_v2_long %>%
     dplyr::filter(grepl(SID_filter, SID),
-           grepl('(Q327|Q329)', item)) %>%
+           grepl('(Q327|Q329|px_info_1_TEXT|StartDate)', item)) %>%
     tidyr::spread(item, value) %>%
     dplyr::rename('age' = Q327,
                   'PAL_2_Race' = Q329,
-                  'PAL_2_Race_TEXT' = Q329_TEXT)
+                  'PAL_2_Race_TEXT' = Q329_TEXT,
+                   first_name = px_info_1_TEXT, occur_date = StartDate) %>%
+    dplyr::mutate(occur_date = as.character(lubridate::date(occur_date)))
+
+yadsv_v2_pal_2_demo <- dplyr::select(
+    dplyr::left_join(
+        yadsv_v2_pal_2_demo,
+        sona_kapp_demo,
+        by = c('first_name', 'occur_date')),
+    -first_name, -occur_date, -study)
 
 #inf relations only
 yadsv_v2_inf_rel <- yadsv_v2_long %>%
@@ -379,6 +411,24 @@ yadsv_v2o_pal_2_demo_cons_age <- dplyr::left_join(yadsv_v2o_pal_2_demo,
     dplyr::mutate(age = ifelse(!is.na(as.numeric(check_age)),
                                check_age,
                                PAL_2_Age))
+#finally, we can use general survey data
+sona_bartok_demo <- dplyr::filter(
+    readr::read_csv(file.path(data_dir, 'sona_data.csv'),
+                    col_types = sona_kapp_demo_cols),
+    study == 'bartok')
+sona_bartok_roster <- readr::read_csv(
+    file.path(data_dir, 'bartok_fname_ids.csv'),
+    col_types = readr::cols(first_name = readr::col_character(),
+                            survey_id = readr::col_character(),
+                            occur_date = readr::col_character()))
+sona_bartok_demo <- left_join(sona_bartok_demo, sona_bartok_roster)
+
+yadsv_v2o_pal_2_demo_cons_age <- dplyr::select(
+    dplyr::left_join(
+        yadsv_v2o_pal_2_demo_cons_age,
+        sona_bartok_demo,
+        by = c('SID' = 'survey_id')),
+    -first_name, -occur_date, -study)
 
 #inf relations only
 yadsv_v2o_inf_rel <- yadsv_v2o_long %>%
@@ -505,13 +555,23 @@ yads_dev_demo <- dplyr::full_join(yads_scored_puberty,
                                       dplyr::bind_rows(yadsv_v1_pal_2_demo,
                                                        yadsv_v2_pal_2_demo,
                                                        yadsv_v2o_pal_2_demo_cons_age),
-                                      -PAL_2_Age, - check_age, -survey_name),
+                                      -PAL_2_Age, -check_age, -survey_name),
                                   by = 'SID')
 yads_dev_demo <- dplyr::mutate(
     yads_dev_demo,
+    age = ifelse(is.na(age) || age == '',
+                 as.character(sona_age),
+                 age),
+    PDSS_gender = ifelse(is.na(PDSS_gender) || PDSS_gender == '',
+                         c('Male' = '0', 'Female' = '1')[sona_gender],
+                         PDSS_gender),
     ethnicity = ifelse(PAL_2_Race == 7,
                        PAL_2_Race_TEXT,
-                       pal_2_race_eth_mapping[PAL_2_Race]))
+                       pal_2_race_eth_mapping[PAL_2_Race]),
+    ethnicity = ifelse(is.na(ethnicity) || ethnicity == '',
+                         sona_ethnicity,
+                         ethnicity)) %>%
+    dplyr::select(-sona_age, -sona_gender, -sona_ethnicity)
 yads_dev_demo_deid <- dplyr::full_join(
     yads_dev_demo,
     dplyr::filter(
