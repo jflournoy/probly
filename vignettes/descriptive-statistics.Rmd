@@ -229,7 +229,7 @@ knitr::include_graphics("images/trial_example.png")
 
 To ensure engagement with the stimulus faces, 3 unambiguously male and 3 unambiguously female faces were drawn from a set of faces evaluated by @todorov2008. Target faces were drawn from a subset of those highest in likeability and attractiveness ratings, and were selected to have roughly equal euclidean distance from one another on the other dimensions on which they had been rated (e.g., trustworthiness). Essentially, the faces were selected to be similarly salient, as well as similarly distinct from one another such that one or two particularly unique face did not overwhelm the learning effect of the motives. On each run of the task (i.e., for each participant), one male and one female face was randomly assigned to each label within condition (control, mate-seeking, status). On each trial, the participant had 3.5 seconds to respond, and was shown response feedback for 1 second. The task comprises a total of 384 trials across 8 blocks (see Table \@ref(tab:samplestats) for mean number of trials).
 
-The receipt of the reward for choosing the optimal response (that is, the response that most often generated a reward) was probabilistic. Across conditions and samples, the observed probability of reward receipt for an optimal choice was very close to the generative _p_ = .80 (Table \@ref(tab:optpressstats)). Reaction times for all participants can be seen in Figure \@ref(fig:reactiontime), with an overall mean of `r round(mean(dplyr::filter(splt, rt > 0, rt<3600)$rt)/1000, 2)`s (SD = `r round(sd(dplyr::filter(splt, rt > 0, rt<3600)$rt)/1000, 2)`s). Most participants completed all trials with only occasional missed responses (Figure \@ref(fig:totaltrials)). For a small number of participants, far fewer trials were obtained (min = `r min(dplyr::summarize(group_by(dplyr::filter(splt, !is.na(pressed_r)), id), n = n())$n)`, with n = `r sum(dplyr::summarize(group_by(dplyr::filter(splt, !is.na(pressed_r)), id), n = n())$n < 350)` having fewer than 350 trials) either as a result of early termination, or because of computer error during data file saving.
+The receipt of the reward for choosing the optimal response (that is, the response that most often generated a reward) was probabilistic. Across conditions and samples, the observed probability of reward receipt for an optimal choice was very close to the generative _p_ = .80 (Table \@ref(tab:optpressstats)). Reaction times for all participants can be seen in Figure \@ref(fig:reactiontime), with an overall mean of `r round(mean(dplyr::filter(splt, rt > 0, rt<3600)$rt)/1000, 2)`s (SD = `r round(sd(dplyr::filter(splt, rt > 0, rt<3600)$rt)/1000, 2)`s). Most participants completed all trials with only occasional missed responses (Table \@ref(tab:missingstats))). For a small number of participants, far fewer trials were obtained (min = `r min(dplyr::summarize(group_by(dplyr::filter(splt, !is.na(pressed_r)), id), n = n())$n)`, with n = `r sum(dplyr::summarize(group_by(dplyr::filter(splt, !is.na(pressed_r)), id), n = n())$n < 350)` having fewer than 350 trials) either as a result of early termination, or because of computer error during data file saving.
 
 (ref:optpressstats) (\#tab:optpressstats) Probability that an optimal choice results in reward
 
@@ -263,30 +263,5 @@ ggplot2::ggplot(
          y = 'Count')
 ```
 
-(ref:totaltrials) Number of trials for each participant in each condition. The horizontal Line indicates maximum number of trials possible.
-
-```{r totaltrials, fig.width=10.5, fig.height=8, cache=T, fig.cap='(ref:totaltrials)', cache=T}
-max_number_of_trials <- max(
-    dplyr::summarise(
-        dplyr::group_by(
-            dplyr::filter(splt, !is.na(pressed_r)),
-            id, condition),
-        n_trials = n())$n_trials
-    )
-
-
-ggplot2::ggplot(
-    dplyr::filter(splt, !is.na(pressed_r)),
-    ggplot2::aes(x = condition)) +
-    ggplot2::geom_hline(yintercept = max_number_of_trials, color = '#666666') +
-    ggplot2::geom_bar(fill = '#bbbbbb') +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(strip.background = element_blank(),
-                   strip.text = element_blank(),
-                   axis.text.x = element_text(angle = 360-45, hjust = 0)) +
-    facet_wrap(~id, ncol = 20) +
-    labs(x = 'Condition',
-         y = paste0('Number of trials (line at max = ', max_number_of_trials, ')'))
-```
 
 # References
