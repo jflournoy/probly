@@ -224,15 +224,64 @@ plot_opt_presses_per_id(
 # Results from Bayesian learning models
 
 ```{r}
-stanfit <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level_no_b-1522879.RDS')
-stanfitmat <- as.array(stanfit)
-```
+stanfit_2_level <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level-1522962.RDS')
+stanfit_2_level_no_b <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level_no_b-1522879.RDS')
+stanfit_3_level <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_repar_exp-1522998.RDS')
+stanfit_3_level_no_b <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_repar_exp_no_b-1522938.RDS')
+stanfit <- stanfit_2_level_no_b
 
-```{r diag}
 munames <- grep('mu', names(stanfit), value = T)
 betanames <- grep('beta', names(stanfit), value = T)
 taunames <- grep('tau_\\w{2,3}\\[', names(stanfit), value = T)
 lomeganames <- grep('L_Omega', names(stanfit), value = T)
+
+stanfit_2_level_betas <- as.matrix(stanfit_2_level, pars = betanames)
+stanfit_2_level_no_b_betas <- as.matrix(stanfit_2_level_no_b, pars = betanames)
+stanfit_3_level_betas <- as.matrix(stanfit_3_level, pars = betanames)
+stanfit_3_level_no_b_betas <- as.matrix(stanfit_3_level_no_b, pars = betanames)
+
+some_cors <- unlist(lapply(seq_len(dim(stanfit_2_level_no_b_betas)[1]),
+       function(i){
+           cor(arm::logit(stanfit_2_level_betas[i, betanames[(313*3+1):(2*3*313)]]),
+               arm::logit(stanfit_2_level_no_b_betas[i, betanames[(313*3+1):(2*3*313)]]))
+       }))
+mean(some_cors)
+quantile(some_cors, probs = c(.025, .5, .975))
+hist(some_cors)
+
+betas_xi_means <- lapply(list(
+    'L2' = stanfit_2_level_betas,
+    'L2_no_b' = stanfit_2_level_no_b_betas,
+    'L3' = stanfit_3_level_betas,
+    'L3_no_b' = stanfit_3_level_no_b_betas),
+    function(stanmat){
+        apply(stanmat[,betanames[1:(313*3)]], 
+              2, function(j) mean(j))
+    })
+
+betas_ep_means <- lapply(list(
+    'L2' = stanfit_2_level_betas,
+    'L2_no_b' = stanfit_2_level_no_b_betas,
+    'L3' = stanfit_3_level_betas,
+    'L3_no_b' = stanfit_3_level_no_b_betas),
+    function(stanmat){
+        apply(stanmat[,betanames[(313*3+1):(2*3*313)]], 
+              2, function(j) mean(arm::logit(j)))
+    })
+
+betas_rho_means <- lapply(list(
+    'L2' = stanfit_2_level_betas,
+    'L2_no_b' = stanfit_2_level_no_b_betas,
+    'L3' = stanfit_3_level_betas,
+    'L3_no_b' = stanfit_3_level_no_b_betas),
+    function(stanmat){
+        apply(stanmat[,betanames[(2*3*313+1):(3*3*313)]], 
+              2, function(j) mean(log(j)))
+    })
+
+GGally::ggpairs(as.data.frame(betas_xi_means))
+GGally::ggpairs(as.data.frame(betas_ep_means))
+GGally::ggpairs(as.data.frame(betas_rho_means))
 ```
 
 Learning rate
