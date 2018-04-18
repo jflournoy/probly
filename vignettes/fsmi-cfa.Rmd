@@ -37,6 +37,7 @@ library(dplyr)
 library(tidyr)
 library(lavaan)
 library(semPlot)
+library(psych)
 ```
 
 ```{r getdata}
@@ -80,26 +81,116 @@ ggplot2::ggplot(
 The CFA will not include kin care (missing data), family care (highly skewed), and mate retention general (highly skewed).
 
 ```{r cfa}
+scales_to_use <- names(fsmi_key)[!names(fsmi_key) %in% c('fsmi_kin', 'fsmi_fam', 'fsmi_retgen')]
 fsmi_cfa_model <- milav::create_cfa_from_keylist(
-    fsmi_key[!names(fsmi_key) %in% c('fsmi_kin', 'fsmi_fam', 'fsmi_retgen')])
+    fsmi_key[scales_to_use])
+
+fsmi_cfa_model_method <- paste0(
+    fsmi_cfa_model,
+    paste0('\n',
+           milav::make_factor_string(
+               milav::get_items_from_keys(
+                   fsmi_key[scales_to_use]),
+               factor_name = 'method'),
+           '\nmethod  ~~ ', 
+           paste(
+               paste0(
+                   '0*', 
+                   scales_to_use),
+               collapse = ' + ')))
+
+fsmi_cfa <- lavaan::lavaan(model = fsmi_cfa_model, data = fsmi_items,
+                                  missing = 'fiml',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = FALSE, std.lv = TRUE, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE)
+
+fsmi_cfa_method <- lavaan::lavaan(model = fsmi_cfa_model_method, data = fsmi_items,
+                                  missing = 'fiml',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = FALSE, std.lv = TRUE, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE)
 
 fsmi_cfa_matestat_model <- milav::create_cfa_from_keylist(
     fsmi_key[names(fsmi_key) %in% c('fsmi_mate', 'fsmi_stat')])
 
-fsmi_cfa <- cfa(model = fsmi_cfa_model, data = fsmi_items, 
-                std.lv = T, missing = 'fiml')
+fsmi_cfa_matestat_model_method <- paste0(
+    fsmi_cfa_matestat_model,
+    paste0('\n',
+           milav::make_factor_string(
+               milav::get_items_from_keys(
+                   fsmi_key[names(fsmi_key) %in% c('fsmi_mate', 'fsmi_stat')]),
+               factor_name = 'method')))
 
+fsmi_cfa_matestat <- lavaan::cfa(model = fsmi_cfa_matestat_model, data = fsmi_items, 
+                missing = 'fiml', std.lv = T, auto.cov.y = T)
 
-fsmi_cfa_matestat <- cfa(model = fsmi_cfa_matestat_model, data = fsmi_items, 
-                std.lv = T, missing = 'fiml')
+fsmi_cfa_matestat_method <- lavaan::cfa(model = fsmi_cfa_matestat_model_method, data = fsmi_items, 
+                missing = 'fiml', std.lv = T)
 
 ```
 
 
 ```{r cfaplot}
-semPlot::semPaths(fsmi_cfa_matestat, whatLabels = 'std')
-summary(fsmi_cfa_matestat, standardize = T)
-fitmeasures(fsmi_cfa_matestat, fit.measures = c('cfi', 'rmsea', 'mfi'))
-summary(fsmi_cfa, standardize = T)
-fitmeasures(fsmi_cfa, fit.measures = c('cfi', 'rmsea', 'mfi'))
+
+knitr::kable(
+    cbind(
+        lavaan::anova(fsmi_cfa_matestat, fsmi_cfa_matestat_method),
+        do.call(
+            rbind,
+            lapply(c(fsmi_cfa_matestat_method, fsmi_cfa_matestat), 
+                   lavaan::fitmeasures,
+                   fit.measures = c('cfi', 'rmsea', 'mfi', 'aic', 'bic')))),
+    digits = 2)
+
+psych::fa.parallel(fsmi_items)
+print(psych::fa(fsmi_items, nfactors = 11, n.iter = 1, rotate = 'bifactor',
+                scores = 'tenBerge', missing = F, fm = 'ml'), 
+      sort = F, cut = .25)
+
+knitr::kable(
+    cbind(
+        lavaan::anova(fsmi_cfa, fsmi_cfa_method),
+        do.call(
+            rbind,
+            lapply(c(fsmi_cfa_method, fsmi_cfa), 
+                   lavaan::fitmeasures,
+                   fit.measures = c('cfi', 'rmsea', 'mfi', 'aic', 'bic')))),
+    digits = 3)
+summary(fsmi_cfa_method, standardize = T)
 ```
+
+
+```{r agepub}
+
+splt_fsmi_dev <- dplyr::left_join(splt_fsmi, splt_dev_and_demog)
+fsmi_dev_items <- dplyr::select_at(splt_fsmi_dev, vars(itemnames, 'age', 'gender'))
+
+fsmi_cfa_model_method_dev <- paste(fsmi_cfa_model_method,
+                                     '\n', 
+                                     paste(scales_to_use, collapse = ' + '),
+                                     ' ~ gender')
+                                     
+
+fsmi_cfa_method_dev <- sem(fsmi_cfa_model_method_dev,
+                           data = splt_fsmi_dev,
+                           std.lv = T, 
+                           missing = 'fiml')
+
+knitr::kable(
+    cbind(
+        lavaan::anova(fsmi_cfa_method, fsmi_cfa_method_dev),
+        do.call(
+            rbind,
+            lapply(c(fsmi_cfa_method, fsmi_cfa_method_dev), 
+                   lavaan::fitmeasures,
+                   fit.measures = c('cfi', 'rmsea', 'mfi', 'aic', 'bic')))),
+    digits = 3)
+lavaan::summary(fsmi_cfa_method_dev, standardize = T)
+```
+
+
