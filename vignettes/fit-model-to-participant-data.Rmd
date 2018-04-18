@@ -72,7 +72,9 @@ Quality of estimation can be supported by (A), (B), (C), (D).
 
 ## Descriptive plots
 
-Examination of the raw data using scatterplots and non-parametric best-fit lines can help insure that data conform to expectations, and that subsequent model estimates accurately reflect the data. On average, participants in all samples and all conditions demonstrated learning (Figure \@ref(fig:trialaverages)A, although note that given the small sample size, the foster-care involved sample shows more variability across trials). There is also some indication that learning occurs more quickly in the two social motive conditions (Figure \@ref(fig:trialaverages)B).
+Examination of the raw data using scatterplots and non-parametric best-fit lines can help insure that data conform to expectations, and that subsequent model estimates accurately reflect the data.
+On average, participants in all samples and all conditions demonstrated learning (Figure \@ref(fig:trialaverages)A, although note that given the small sample size, the foster-care involved sample shows more variability across trials).
+There is also some indication that learning occurs more quickly in the two social motive conditions (Figure \@ref(fig:trialaverages)B).
 
 (ref:trialaverages) Average number of optimal responses for each trial across all participants. Best fit lines are generalized additive models with 95% confidence intervals. 
 
@@ -130,7 +132,8 @@ avg_across_samples <- ggplot2::ggplot(
 gridExtra::grid.arrange(avg_per_sample_plot, avg_across_samples, nrow = 1)
 ```
 
-Participants also reported their confidence about which reponses would give them rewards most often (this single item measured confidence globally). Confidence generally increases aross trials for all samples (Figure \@ref(fig:confidenceplot)).
+Participants also reported their confidence about which reponses would give them rewards most often (this single item measured confidence globally).
+Confidence generally increases aross trials for all samples (Figure \@ref(fig:confidenceplot)).
 
 (ref:confidenceplot) Self-reported confidence over blocks.
 
@@ -150,7 +153,8 @@ ggplot2::ggplot(
 
 ### Proportion optimal presses per ID & condition
 
-Each of the plots below shows, for each individual, the trajectory of learning across trials. Individual plots are sorted by the overall proportion of optimal presses.
+Each of the plots below shows, for each individual, the trajectory of learning across trials.
+Individual plots are sorted by the overall proportion of optimal presses.
 
 ```{r cache=T}
 plot_opt_presses_per_id <- function(splt_df,
