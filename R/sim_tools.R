@@ -298,7 +298,7 @@ plot_splt_sim_behavior <- function(splt_df, press_right, se = T){
                 color = 'black', size = .5, se = se,
                 method = 'gam', formula = y ~ s(x, k = 5, fx = T)) +
             ggplot2::geom_hline(yintercept = .5, color = 'red') +
-            ggplot2::coord_cartesian(ylim = c(.4, .75)) +
+            ggplot2::coord_cartesian(ylim = c(.4, 1)) +
             ggplot2::labs(x = 'Within-condition trial number',
                           y = 'Proportion of optimal responses') +
             ggplot2::theme_minimal()
