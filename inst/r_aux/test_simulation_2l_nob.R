@@ -35,6 +35,16 @@ stan_sim_data <- list(
     run_estimation = 0
 )
 
+dont_save_diff_pars_in_sim <- c('beta_xi_diffs',
+                                'beta_ep_diffs',
+                                'beta_rho_diffs',
+                                'mu_delta_xi_diff',
+                                'mu_delta_ep_diff',
+                                'mu_delta_rho_diff',
+                                'Sigma_xi',
+                                'Sigma_ep',
+                                'Sigma_rho')
+
 if(!file.exists(sim_test_fn)){
     message('Generating simulated data')
     rl_2l_nob_cpl <- rstan::stan_model(
@@ -45,6 +55,8 @@ if(!file.exists(sim_test_fn)){
         afit <- rstan::sampling(
             rl_2l_nob_cpl,
             data = stan_sim_data,
+            include = F,
+            pars = dont_save_diff_pars_in_sim,
             chains = nchains, cores = nchains,
             iter = 1000+nsims, warmup = 1000,
             control = list(max_treedepth = 15, adapt_delta = 0.99))
