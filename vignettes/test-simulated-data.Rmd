@@ -25,6 +25,7 @@ knitr::opts_chunk$set(
   echo=F,message=F,warning=F,error=F
 )
 
+knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
 knitr::read_chunk(system.file('r_aux', 'simulate_data_from_splt.R', package = 'probly'))
 knitr::read_chunk(system.file('r_aux', 'estimate_rl_from_sim.R', package = 'probly'))
 knitr::read_chunk(system.file('batchtools', 'run_many_simulations.R', package = 'probly'))
@@ -118,87 +119,38 @@ For this aim, it is important to be able to recover all $\mu_{\theta k}$ for $\t
 The [`probly`](http://github.com/jflournoy/probly) package contains functions that help generate sample- and individually-varying coefficients for parameters, as well as simulated data from task structure.
 
 
-```{r simulate_data_from_splt}
+```{ load_data_for_sim}
 ```
 
-One early indication that a model may not be well suited to a particular data set is that the model, given reasonable parameter values, is not able to produce simulated data that looks like the real data one is attempting to model. The simulated data do generally behave similarly to the actual data when we look just at the proportion of optimal presses over time (Figure \@ref(fig:simdata) and Figure \@ref(fig:simdatasample), below, and Figure X in the section on [descriptive statistics](http://127.0.0.1:9740/rmd_output/4/descriptive-statistics.html)).
+```{r test_simulation_2l_nob}
+```
+
+One early indication that a model may not be well suited to a problem is that when generating from the prior distribution, datasets are produced that either do not adequately cover the range of reasonable values, or that cover ranges that are implausible [@gabry2017]. 
+The simulated data do generally cover the range of the actual data when we look just at the proportion of optimal presses over time (Figure \@ref(fig:simdata), and importantly do not show implausible behavior (all mass around extreme values like 0, 1, or .5).
 
 ```{r}
+idxs <- sample(1:400, size = 100)
+list_of_pright_pred_mats <- lapply(idxs, function(i) matrix(pright_pred_samps[i,], nrow = N))
 
-p_r_df <- cbind(group_index_mm, splt_sim_trials$press_right)
-p_r_df <- tidyr::gather(p_r_df, trial, press_r, -id, -sample, -m_fac, -m)
+multi_plot <- probly::plot_splt_sim_behavior(
+    splt_df = splt,
+    press_right = list_of_pright_pred_mats)
 
-splt_sim <- dplyr::mutate(
-    dplyr::arrange(
-        dplyr::group_by(splt, id, sample),
-        trial_index),
-    trial = as.character(1:n()))
-splt_sim <- dplyr::mutate(
-    dplyr::arrange(
-        dplyr::group_by(splt_sim, id, sample, condition),
-        trial_index),
-    condition_trial = 1:n())
-splt_sim <- dplyr::left_join(
-    splt_sim,
-    p_r_df,
-    by = c('id', 'sample', 'trial'))
-splt_sim <- dplyr::mutate(
-    splt_sim,
-    press_r_opt = proportion == '20_80',
-    press_opt = press_r == press_r_opt)
 
-splt_sim_summary <- dplyr::summarise(
-    dplyr::group_by(splt_sim, condition, condition_trial),
-    trial_mean = mean(press_opt)
-)
+```
+
+(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model smooth and is only intended to give a rough sense of trends over trials. Each panel is one from 400 simulated data sets. The red line indicates random responding.
+
+```{r simdata, fig.width=15, fig.height=12, fig.cap='(ref:simdat)'}
+multi_plot + 
+    ggplot2::facet_wrap(~sim) + 
+    ggplot2::theme(strip.background = element_blank(),
+                   strip.text = element_blank())
 ```
 
 
 
-```{r simdata, fig.width=6, fig.height=5, fig.cap='(ref:simdat)'}
 
-ggplot2::ggplot(
-    splt_sim_summary,
-    ggplot2::aes(x = condition_trial,
-                 y = trial_mean,
-                 group = condition,
-                 linetype = condition,
-                 shape = condition)) + 
-    ggplot2::geom_point(alpha = .1) + 
-    ggplot2::geom_smooth(
-        color = 'black', size = .5,
-        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) + 
-    ggplot2::labs(x = 'Within-condition trial number',
-                  y = 'Proportion of optimal responses') + 
-    ggplot2::theme_minimal()
-```
-
-(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model and is only intended for illustrative purposes.
-
-```{r simdatasample, fig.width=6, fig.height=5, fig.cap='(ref:simdatsample)'}
-splt_sim_samp_summary <- dplyr::summarise(
-    dplyr::group_by(splt_sim, sample, condition, condition_trial),
-    trial_mean = mean(press_opt)
-)
-
-ggplot2::ggplot(
-    splt_sim_samp_summary,
-    ggplot2::aes(x = condition_trial,
-                 y = trial_mean,
-                 group = condition,
-                 linetype = condition,
-                 shape = condition)) + 
-    ggplot2::geom_point(alpha = .1) + 
-    ggplot2::geom_smooth(
-        color = 'black', size = .5,
-        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) + 
-    ggplot2::facet_wrap(~sample, nrow = 2) + 
-    ggplot2::labs(x = 'Within-condition trial number',
-                  y = 'Proportion of optimal responses') + 
-    ggplot2::theme_minimal()
-```
-
-(ref:simdatsample) Simulated task data for each sample.
 
 # Recovery of population parameters
 
@@ -281,7 +233,8 @@ ggplot2::ggplot(
 
 ## Simulating more iterations
 
-Although the above results are promising, it is important to ensure that this is not a fluke. Unfortunately, it is apparent from running more models on other simulated data that many converge very slowly and all show post-warm-up divergent iterations.
+Although the above results are promising, it is important to ensure that this is not a fluke.
+Unfortunately, it is apparent from running more models on other simulated data that many converge very slowly and all show post-warm-up divergent iterations.
 
 ```{r run_many_simulations, eval = F, echo = T}
 ```
