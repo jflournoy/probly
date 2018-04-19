@@ -26,8 +26,7 @@ knitr::opts_chunk$set(
 )
 
 knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
-knitr::read_chunk(system.file('r_aux', 'simulate_data_from_splt.R', package = 'probly'))
-knitr::read_chunk(system.file('r_aux', 'estimate_rl_from_sim.R', package = 'probly'))
+knitr::read_chunk(system.file('r_aux', 'test_simulation_2l_nob.R', package = 'probly'))
 knitr::read_chunk(system.file('batchtools', 'run_many_simulations.R', package = 'probly'))
 data_dir <- '/data/jflournoy/split/probly'
 ```
@@ -119,7 +118,7 @@ For this aim, it is important to be able to recover all $\mu_{\theta k}$ for $\t
 The [`probly`](http://github.com/jflournoy/probly) package contains functions that help generate sample- and individually-varying coefficients for parameters, as well as simulated data from task structure.
 
 
-```{ load_data_for_sim}
+```{r load_data_for_sim}
 ```
 
 ```{r test_simulation_2l_nob}
@@ -128,34 +127,54 @@ The [`probly`](http://github.com/jflournoy/probly) package contains functions th
 One early indication that a model may not be well suited to a problem is that when generating from the prior distribution, datasets are produced that either do not adequately cover the range of reasonable values, or that cover ranges that are implausible [@gabry2017]. 
 The simulated data do generally cover the range of the actual data when we look just at the proportion of optimal presses over time (Figure \@ref(fig:simdata), and importantly do not show implausible behavior (all mass around extreme values like 0, 1, or .5).
 
-```{r}
-idxs <- sample(1:400, size = 100)
-list_of_pright_pred_mats <- lapply(idxs, function(i) matrix(pright_pred_samps[i,], nrow = N))
-
-multi_plot <- probly::plot_splt_sim_behavior(
-    splt_df = splt,
-    press_right = list_of_pright_pred_mats)
-
-
-```
-
 (ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model smooth and is only intended to give a rough sense of trends over trials. Each panel is one from 400 simulated data sets. The red line indicates random responding.
 
 ```{r simdata, fig.width=15, fig.height=12, fig.cap='(ref:simdat)'}
+multi_plot <- probly::plot_splt_sim_behavior(
+    splt_df = splt,
+    press_right = list_of_pright_pred_mats[sample(1:400, size = 100)])
 multi_plot + 
     ggplot2::facet_wrap(~sim) + 
     ggplot2::theme(strip.background = element_blank(),
                    strip.text = element_blank())
 ```
 
+(ref:simdatcoverage) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial, collapsed over simulations. It's possible to see that trial-by-trial probability of choosing the optimal resonses, averaged across all participants, spans the full range of possible behavior (with the extreme exception that no simulation evinces all participants performing perfectly).
 
+```{r simdatcoverage, fig.width=8, fig.height=5, fig.cap='(ref:simdatcoverage)'}
+nosmooth_multi_plot <- multi_plot
+nosmooth_multi_plot$layers[[2]] <- NULL
+nosmooth_multi_plot
+```
 
+(ref:priorplots) Priors, with $epsilon$ and $\xi$ on their transformed scales. Notice the very long tails for the individually varying $rho$ parameters (beta_rho). 
+
+```{r priorplots, fig.width=3, fig.height=2, fig.cap='(ref:priorplots)'}
+ggplot2::theme_set(ggplot2::theme_minimal())
+true_mu_ep <- rstan::extract(rl_2l_nob_sim, pars = 'mu_delta_ep')[[1]]
+true_mu_rho <- rstan::extract(rl_2l_nob_sim, pars = 'mu_delta_rho')[[1]]
+true_mu_xi <- rstan::extract(rl_2l_nob_sim, pars = 'mu_delta_xi')[[1]]
+true_beta_ep <- rstan::extract(rl_2l_nob_sim, pars = 'beta_ep_prm')[[1]]
+true_beta_rho <- rstan::extract(rl_2l_nob_sim, pars = 'beta_rho_prm')[[1]]
+true_beta_xi <- rstan::extract(rl_2l_nob_sim, pars = 'beta_xi_prm')[[1]]
+
+dimnames(true_mu_ep)[[3]] <- c('mu_ep_1', 'mu_ep_2', 'mu_ep_3')
+dimnames(true_mu_rho)[[3]] <- c('mu_rho_1', 'mu_rho_2', 'mu_rho_3')
+dimnames(true_mu_xi)[[3]] <- c('mu_xi_1', 'mu_xi_2', 'mu_xi_3')
+dimnames(true_beta_ep)[[3]] <- c('beta_ep_1', 'beta_ep_2', 'beta_ep_3')
+dimnames(true_beta_rho)[[3]] <- c('beta_rho_1', 'beta_rho_2', 'beta_rho_3')
+dimnames(true_beta_xi)[[3]] <- c('beta_xi_1', 'beta_xi_2', 'beta_xi_3')
+
+bayesplot::mcmc_areas_ridges(pnorm(true_mu_ep))
+bayesplot::mcmc_areas_ridges(true_beta_ep, adjust = .5)
+bayesplot::mcmc_areas_ridges(true_mu_rho) + ggplot2::coord_cartesian(xlim = c(-10, 10))
+bayesplot::mcmc_areas_ridges(log(true_beta_rho), adjust = 2) + ggplot2::coord_cartesian(xlim = c(-10, 10))
+bayesplot::mcmc_areas_ridges(pnorm(true_mu_xi))
+bayesplot::mcmc_areas_ridges(true_beta_xi, adjust = .5)
+```
 
 
 # Recovery of population parameters
-
-```{r estimate_rl_from_sim, eval=T, message=F, results='hide'}
-```
 
 The model as described above was fit to simulated data using RStan [version `r packageVersion('rstan')`; @standevelopmentteam2018], sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain. 
 The posterior means for each parameter are compared to those that generated the simulated task behavior.
@@ -168,89 +187,8 @@ This may be acceptable because the parameters of interest safely capture the gen
 Additionally, it should be noted that the fitted model does capture the mean of generating $\delta_b$ and $\beta_b$ parameters for all conditions.
 
 
-```{r checking_fit_mu}
-stan_sim_fit_data <- stan_sim_fit$data
-stan_sim_fit_fit <- stan_sim_fit$fit
-
-mu_param_ests <- probly::get_par_summaries(stan_sim_fit_fit, par_regex = '^mu_')
-
-mu_param_ests_df <- as.data.frame(mu_param_ests)
-
-mu_param_ests_df$population_val <- c(mu_xi, mu_eps, mu_b, mu_rho)
-mu_param_ests_df$mean_of_deltas <- apply(cbind(delta_xi, delta_eps, delta_b, delta_rho), 2, mean)
-mu_param_ests_df$mean_of_betas <- apply(cbind(beta_xi, beta_eps, beta_b, beta_rho), 2, mean)
-
-mu_param_ests_df$id <- unlist(lapply(rownames(mu_param_ests_df), function(x) gsub('mu_delta_(\\w+)\\[\\d\\]', '\\1', x)))
-
-mu_param_ests_df_l <- tidyr::gather(
-    mu_param_ests_df,
-    'pop_parameter',
-    'value',
-    population_val,
-    mean_of_deltas,
-    mean_of_betas)
-
-mu_param_ests_df_l <- dplyr::mutate(
-    mu_param_ests_df_l,
-    pop_parameter = factor(
-        pop_parameter,
-        levels = c('population_val', 'mean_of_deltas', 'mean_of_betas'),
-        labels = c(expression('Generating '*mu[delta]), 
-                   expression("Mean of all "*delta),
-                   expression("Mean of all "*beta))),
-    id = factor(
-        id,
-        levels = c('ep', 'rho', 'b', 'xi'),
-        labels = c('epsilon', 'rho', 'b', 'xi')
-    )
-)
-
-mu_param_ests_df_l <- dplyr::mutate_at(
-    mu_param_ests_df_l,
-    dplyr::vars(value, mean, `2.5%`, `97.5%`),
-    dplyr::funs(ifelse(id %in% c('epsilon','xi'), 
-                pnorm(.),
-                ifelse(id == 'rho', exp(.), .))))
-```
-
-```{r musimfitplot, fig.width=8, fig.height=8, fig.cap='(ref:musimfitplot)'}
-ggplot2::ggplot(
-   mu_param_ests_df_l,
-   ggplot2::aes(y = mean, x = value)) + 
-    ggplot2::geom_abline(intercept = 0, slope = 1) + 
-    ggplot2::geom_errorbar(
-        ggplot2::aes(ymin = `2.5%`, ymax = `97.5%`, width = 0), color = '#999999') + 
-    ggplot2::geom_point(size = 2) + 
-    ggplot2::theme_minimal() +
-    ggplot2::facet_wrap(id ~ pop_parameter, ncol = 3, scales = 'free', labeller = 'label_parsed') +
-    ggplot2::labs(x = 'Value of generating parameter',
-                  y = expression('Mean of posterior distribution for '*mu[theta])) +
-    ggplot2::theme(strip.text = element_text(size=10))
-    
-```
-
-(ref:musimfitplot) Comparison of model fit to generating parameters. Gray bars are 95% credible intervals. Black lines are identinty, where model fit and generating parameters are exactly equal.
-
-## Simulating more iterations
-
-Although the above results are promising, it is important to ensure that this is not a fluke.
-Unfortunately, it is apparent from running more models on other simulated data that many converge very slowly and all show post-warm-up divergent iterations.
 
 ```{r run_many_simulations, eval = F, echo = T}
-```
-
-
-```{r}
-
-stan_sim_lists <- readRDS('/data/jflournoy/split/probly/sim_test_100_iter.RDS')
-
-stem(unlist(lapply(stan_sim_lists, function(reslist){
-    sum(unlist(lapply(reslist$sampler_params, function(samplist){
-        sum(samplist[51:100, 'divergent__'])
-    })))
-})), scale = 50)
-
-stan_sim_lists[[1]]$fit_summary$summary['mu_delta_xi[1]', 'mean']
 ```
 
 
