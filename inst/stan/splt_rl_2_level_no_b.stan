@@ -94,10 +94,10 @@ model {
 
 
             for (t in 1:Tsubj[i]) {
-                //reference to first condition
-                beta_xi_it = beta_xi_prm[i, 1] + beta_xi_prm[i, condition[i, t]] * (condition[i, t] != 1)
-                beta_ep_it = beta_ep_prm[i, 1] + beta_ep_prm[i, condition[i, t]] * (condition[i, t] != 1)
-                beta_rho_it = beta_rho_prm[i, 1] + beta_rho_prm[i, condition[i, t]] * (condition[i, t] != 1)
+                //neater code
+                beta_xi_it = beta_xi_prm[i, condition[i, t]];
+                beta_ep_it = beta_ep_prm[i, condition[i, t]];
+                beta_rho_it = beta_rho_prm[i, condition[i, t]];
 
                 wv_r[cue[i, t]] = qv_r[cue[i, t]];
                 wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
@@ -118,6 +118,35 @@ model {
 generated quantities {
     vector[N] log_lik;
     int<lower=-1, upper=1> pright_pred[N, T]; //choices "0" = left, "1" = right
+
+    //save mean differences with reference to first condition
+    matrix<lower=0, upper=1>[N, K-1] beta_xi_diffs;
+    matrix<lower=0, upper=1>[N, K-1] beta_ep_diffs;
+    matrix<lower=0>[N, K-1] beta_rho_diffs;
+    matrix[1,K-1] mu_delta_xi_diff;
+    matrix[1,K-1] mu_delta_ep_diff;
+    matrix[1,K-1] mu_delta_rho_diff;
+    matrix[K,K] Sigma_xi;
+    matrix[K,K] Sigma_ep;
+    matrix[K,K] Sigma_rho;
+
+    beta_xi_diffs[,1]  = beta_xi_prm[,2] - beta_xi_prm[,1];
+    beta_xi_diffs[,2]  = beta_xi_prm[,3] - beta_xi_prm[,1];
+    beta_ep_diffs[,1]  = beta_ep_prm[,2] - beta_ep_prm[,1];
+    beta_ep_diffs[,2]  = beta_ep_prm[,3] - beta_ep_prm[,1];
+    beta_rho_diffs[,1] = beta_rho_prm[,2] - beta_rho_prm[,1];
+    beta_rho_diffs[,2] = beta_rho_prm[,3] - beta_rho_prm[,1];
+
+    mu_delta_xi_diff[,1]  = Phi_approx(mu_delta_xi[,2]) - Phi_approx(mu_delta_xi[,1]);
+    mu_delta_xi_diff[,2]  = Phi_approx(mu_delta_xi[,3]) - Phi_approx(mu_delta_xi[,1]);
+    mu_delta_ep_diff[,1]  = Phi_approx(mu_delta_ep[,2]) - Phi_approx(mu_delta_ep[,1]);
+    mu_delta_ep_diff[,2]  = Phi_approx(mu_delta_ep[,3]) - Phi_approx(mu_delta_ep[,1]);
+    mu_delta_rho_diff[,1] = exp(mu_delta_rho[,2]) - exp(mu_delta_rho[,1]);
+    mu_delta_rho_diff[,2] = exp(mu_delta_rho[,3]) - exp(mu_delta_rho[,1]);
+
+    Sigma_xi = diag_pre_multiply(tau_xi, L_Omega_xi);
+    Sigma_ep = diag_pre_multiply(tau_ep, L_Omega_ep);
+    Sigma_rho = diag_pre_multiply(tau_rho, L_Omega_rho);
 
     for (i in 1:N) {
         for (t in 1:T) {
@@ -144,10 +173,10 @@ generated quantities {
         log_lik[i] = 0;
 
         for (t in 1:Tsubj[i]) {
-            //reference to first condition
-            beta_xi_it = beta_xi_prm[i, 1] + beta_xi_prm[i, condition[i, t]] * (condition[i, t] != 1)
-            beta_ep_it = beta_ep_prm[i, 1] + beta_ep_prm[i, condition[i, t]] * (condition[i, t] != 1)
-            beta_rho_it = beta_rho_prm[i, 1] + beta_rho_prm[i, condition[i, t]] * (condition[i, t] != 1)
+            //neater code
+            beta_xi_it = beta_xi_prm[i, condition[i, t]];
+            beta_ep_it = beta_ep_prm[i, condition[i, t]];
+            beta_rho_it = beta_rho_prm[i, condition[i, t]];
 
             wv_r[cue[i, t]]  = qv_r[cue[i, t]];
             wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
