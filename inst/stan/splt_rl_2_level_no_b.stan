@@ -109,13 +109,11 @@ model {
 }
 generated quantities {
     vector[N] log_lik;
+    int<lower=-1, upper=1> pright_pred[N, T]; //choices "0" = left, "1" = right
 
-    if(run_estimation == 0){ //running to simulate data
-      int<lower=-1, upper=1> pright_pred[N, T]; //choices "0" = left, "1" = right
-      for (i in 1:N) {
-            for (t in 1:T) {
-                pright_pred[i, t] = -1;
-            }
+    for (i in 1:N) {
+        for (t in 1:T) {
+            pright_pred[i, t] = -1;
         }
     }
 
@@ -140,21 +138,23 @@ generated quantities {
             pR[cue[i, t]]   = inv_logit(wv_r[cue[i, t]] - wv_l[cue[i, t]]);
             pR[cue[i, t]]   = pR[cue[i, t]] * (1 - beta_xi_prm[i, condition[i, t]]) + beta_xi_prm[i, condition[i, t]]/2;  // noise
 
-            if(run_estimation == 0){ //running to simulate data
-                pright_pred[i, t] = bernoulli_rng(pR[cue[i, t]]);
-            }
+            pright_pred[i, t] = bernoulli_rng(pR[cue[i, t]]);
 
             if(run_estimation == 1){
-                log_lik[i] = log_lik[i] + bernoulli_lpmf(press_right[i, t] | pR[cue[i, t]]);
+                log_lik[i] += bernoulli_lpmf(press_right[i, t] | pR[cue[i, t]]);
+                // update action values
+                if (press_right[i, t]) { // update go value
+                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_prm[i, condition[i, t]] * (beta_rho_prm[i, condition[i, t]] * outcome_r[i, t] - qv_r[cue[i, t]]);
+                } else { // update no-go value
+                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_prm[i, condition[i, t]] * (beta_rho_prm[i, condition[i, t]] * outcome_l[i, t] - qv_l[cue[i, t]]);
+                }
             } else {
-                log_lik[i] = log_lik[i] + bernoulli_lpmf(pright_pred[i, t] | pR[cue[i, t]]);
-            }
-
-            // update action values
-            if (press_right[i, t]) { // update go value
-                qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_prm[i, condition[i, t]] * (beta_rho_prm[i, condition[i, t]] * outcome_r[i, t] - qv_r[cue[i, t]]);
-            } else { // update no-go value
-                qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_prm[i, condition[i, t]] * (beta_rho_prm[i, condition[i, t]] * outcome_l[i, t] - qv_l[cue[i, t]]);
+                log_lik[i] += bernoulli_lpmf(pright_pred[i, t] | pR[cue[i, t]]);
+                if (pright_pred[i, t]) { // update go value
+                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_prm[i, condition[i, t]] * (beta_rho_prm[i, condition[i, t]] * outcome_r[i, t] - qv_r[cue[i, t]]);
+                } else { // update no-go value
+                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_prm[i, condition[i, t]] * (beta_rho_prm[i, condition[i, t]] * outcome_l[i, t] - qv_l[cue[i, t]]);
+                }
             }
         } // end of t loop
     } // end of i loop
