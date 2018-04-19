@@ -230,77 +230,140 @@ simulate_splt_data <- function(splt_structure, mu_xi, mu_b, mu_eps, mu_rho){
 
 #' Plot simulated SPLT behavior
 #'
-#' @param splt_df a data frame from the SPLT, with non-response (\code{is.na(pressed_r)}) rows removed
-#' @param press_right_mat an individual x trial matrix of trial responses
+#' @param splt_df a data frame from the SPLT, with non-response
+#'   (\code{is.na(pressed_r)}) rows removed
+#' @param press_right an individual x trial matrix of trial responses
+#' @param se plot the standard error around smooth lines
 #'
 #' @return a plot split by sample, and overall summary plot
 #' @import dplyr
 #' @import tidyr
 #' @import ggplot2
+#'
+#' @return If press_right is a single matrix, returns a list of plots: one
+#'   across all samples (\code{$sample}), and one overall (\code{$overall}). If
+#'   press_right is a list of matrices, the plot returned does not group by
+#'   sample, returning an overall plot that contains the additional variable
+#'   \code{sim} that can be used in a facet expression. For use with gganimate,
+#'   note that the frame aesthetic is set to \code{sim}.
+#'
 #' @export
-plot_splt_sim_behavior <- function(splt_df, press_right_mat){
+plot_splt_sim_behavior <- function(splt_df, press_right, se = T){
     if(any(is.na(splt_df$pressed_r))){
         stop('Please remove rows without left or right response before running this function.')
     }
-    sample_index <- probly::get_sample_index(splt_df)
-    p_r_df <- cbind(sample_index, press_right_mat)
-    p_r_df <- tidyr::gather(p_r_df, trial, press_r, -id, -sample, -m_fac, -m)
+    if('list' %in% class(press_right)) {
+        splt_df$right_opt <- as.numeric(splt_df$proportion == '20_80')
+        right_opt_mat <- probly::get_col_as_trial_matrix(
+            splt_df, 'right_opt',
+            id_col = 'id', sample_col = 'sample',
+            trial_col = 'trial_index')
+        sample_index <- probly::get_sample_index(splt_df)
+        condition_mat <- get_col_as_trial_matrix(
+            splt, 'condition',
+            id_col = 'id', sample_col = 'sample',
+            trial_col = 'trial_index')
+        conditions <- na.omit(unique(as.numeric(condition_mat)))
+        trial_means <- lapply(1:length(press_right), function(i){ #for every press right matrix in th elist
+            pr_mat <- press_right[[i]]
+            pr_mat[is.na(pr_mat)] <- NA #set -1 to be NA
+            sim_df <- data.frame(
+                press_opt = as.numeric(pr_mat==right_opt_mat),
+                condition = as.numeric(condition_mat),
+                id = rep(1:dim(pr_mat)[1], dim(pr_mat)[2]))
+            sim_df <- dplyr::mutate(
+                dplyr::group_by(
+                    dplyr::filter(sim_df, !is.na(condition)),
+                    id, condition),
+                trial = 1:n())
+            sim_df_sum <- dplyr::mutate(
+                dplyr::summarize(
+                    dplyr::group_by(sim_df, condition, trial),
+                    popt_mean = mean(press_opt, na.rm = T)),
+                sim = i)
+            return(sim_df_sum)
+        })
+        splt_sim <- dplyr::bind_rows(trial_means)
+        splt_sim$condition = factor(splt_sim$condition)
+        multi_plot <- ggplot2::ggplot(
+            splt_sim,
+            ggplot2::aes(x = trial,
+                         y = popt_mean,
+                         group = interaction(sim, condition),
+                         linetype = condition,
+                         shape = condition,
+                         frame = sim)) +
+            ggplot2::geom_point(alpha = .1) +
+            ggplot2::geom_smooth(
+                color = 'black', size = .5, se = se,
+                method = 'gam', formula = y ~ s(x, k = 5, fx = T)) +
+            ggplot2::geom_hline(yintercept = .5, color = 'red') +
+            ggplot2::coord_cartesian(ylim = c(.4, .75)) +
+            ggplot2::labs(x = 'Within-condition trial number',
+                          y = 'Proportion of optimal responses') +
+            ggplot2::theme_minimal()
+        return(multi_plot)
+    } else if(any(c('matrix', 'data.frame') %in% class(press_right))) {
+        press_right_mat <- press_right
+        sample_index <- probly::get_sample_index(splt_df)
+        p_r_df <- cbind(sample_index, press_right_mat)
+        p_r_df <- tidyr::gather(p_r_df, trial, press_r, -id, -sample, -m_fac, -m)
+        splt_sim <- dplyr::mutate(
+            dplyr::arrange(
+                dplyr::group_by(splt_df, id, sample),
+                trial_index),
+            trial = as.character(1:n()))
+        splt_sim <- dplyr::mutate(
+            dplyr::arrange(
+                dplyr::group_by(splt_sim, id, sample, condition),
+                trial_index),
+            condition_trial = 1:n())
+        splt_sim <- dplyr::left_join(
+            splt_sim,
+            p_r_df,
+            by = c('id', 'sample', 'trial'))
+        splt_sim <- dplyr::mutate(
+            splt_sim,
+            press_r_opt = proportion == '20_80',
+            press_opt = press_r == press_r_opt)
 
-    splt_sim <- dplyr::mutate(
-        dplyr::arrange(
-            dplyr::group_by(splt_df, id, sample),
-            trial_index),
-        trial = as.character(1:n()))
-    splt_sim <- dplyr::mutate(
-        dplyr::arrange(
-            dplyr::group_by(splt_sim, id, sample, condition),
-            trial_index),
-        condition_trial = 1:n())
-    splt_sim <- dplyr::left_join(
-        splt_sim,
-        p_r_df,
-        by = c('id', 'sample', 'trial'))
-    splt_sim <- dplyr::mutate(
-        splt_sim,
-        press_r_opt = proportion == '20_80',
-        press_opt = press_r == press_r_opt)
-
-    splt_sim_summary <- dplyr::summarise(
-        dplyr::group_by(splt_sim, condition, condition_trial),
-        trial_mean = mean(press_opt)
-    )
-    splt_sim_samp_summary <- dplyr::summarise(
-        dplyr::group_by(splt_sim, sample, condition, condition_trial),
-        trial_mean = mean(press_opt)
-    )
-    sample_plot <- ggplot2::ggplot(
-        splt_sim_samp_summary,
-        ggplot2::aes(x = condition_trial,
-                     y = trial_mean,
-                     group = condition,
-                     linetype = condition,
-                     shape = condition)) +
-        ggplot2::geom_point(alpha = .1) +
-        ggplot2::geom_smooth(
-            color = 'black', size = .5,
-            method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +
-        ggplot2::facet_wrap(~sample, nrow = 2) +
-        ggplot2::labs(x = 'Within-condition trial number',
-                      y = 'Proportion of optimal responses') +
-        ggplot2::theme_minimal()
-    overall_plot <- ggplot2::ggplot(
-        splt_sim_summary,
-        ggplot2::aes(x = condition_trial,
-                     y = trial_mean,
-                     group = condition,
-                     linetype = condition,
-                     shape = condition)) +
-        ggplot2::geom_point(alpha = .1) +
-        ggplot2::geom_smooth(
-            color = 'black', size = .5,
-            method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +
-        ggplot2::labs(x = 'Within-condition trial number',
-                      y = 'Proportion of optimal responses') +
-        ggplot2::theme_minimal()
-    return(list(sample = sample_plot, overall = overall_plot))
+        splt_sim_summary <- dplyr::summarise(
+            dplyr::group_by(splt_sim, condition, condition_trial),
+            trial_mean = mean(press_opt)
+        )
+        splt_sim_samp_summary <- dplyr::summarise(
+            dplyr::group_by(splt_sim, sample, condition, condition_trial),
+            trial_mean = mean(press_opt)
+        )
+        sample_plot <- ggplot2::ggplot(
+            splt_sim_samp_summary,
+            ggplot2::aes(x = condition_trial,
+                         y = trial_mean,
+                         group = condition,
+                         linetype = condition,
+                         shape = condition)) +
+            ggplot2::geom_point(alpha = .1) +
+            ggplot2::geom_smooth(
+                color = 'black', size = .5,
+                method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +
+            ggplot2::facet_wrap(~sample, nrow = 2) +
+            ggplot2::labs(x = 'Within-condition trial number',
+                          y = 'Proportion of optimal responses') +
+            ggplot2::theme_minimal()
+        overall_plot <- ggplot2::ggplot(
+            splt_sim_summary,
+            ggplot2::aes(x = condition_trial,
+                         y = trial_mean,
+                         group = condition,
+                         linetype = condition,
+                         shape = condition)) +
+            ggplot2::geom_point(alpha = .1) +
+            ggplot2::geom_smooth(
+                color = 'black', size = .5,
+                method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +
+            ggplot2::labs(x = 'Within-condition trial number',
+                          y = 'Proportion of optimal responses') +
+            ggplot2::theme_minimal()
+        return(list(sample = sample_plot, overall = overall_plot))
+    }
 }
