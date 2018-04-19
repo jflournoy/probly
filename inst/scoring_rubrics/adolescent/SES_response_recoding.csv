@@ -1,0 +1,30 @@
+Data File Name,Scale Name,Column Name,Answer,Response,Score
+TDS2_Session_1,SES,SES_8,Genital herpes,1,1
+TDS2_Session_1,SES,SES_8,Genital warts,2,1
+TDS2_Session_1,SES,SES_8,AIDS/HIV,3,1
+TDS2_Session_1,SES,SES_8,Hepatitis B,4,1
+TDS2_Session_1,SES,SES_8,Gonorrhea (clap),5,1
+TDS2_Session_1,SES,SES_8,Syphilis,6,1
+TDS2_Session_1,SES,SES_8,Chlamydia,7,1
+TDS2_Session_1,SES,SES_8,Other,8,1
+TDS2_Session_1,SES,SES_9,I became pregnant prior to this last 6 months and knew that I was pregnant prior to this 6 month period,6,5
+TDS2_Session_1,SES,SES_12,2,2,1
+TDS2_Session_1,SES,SES_12,3,3,2
+TDS2_Session_1,SES,SES_12,4,4,2
+TDS2_Session_1,SES,SES_12,5,5,3
+TDS2_Session_1,SES,SES_12,6,6,3
+TDS2_Session_1,SES,SES_12,7,7,4
+TDS2_Session_1,SES,SES_12,8,8,4
+TDS2_Session_1,SES,SES_12,9,9,5
+TDS2_Session_1,SES,SES_12,10 or more,10,5
+TDS2_Session_1,SES,SES_14,"Male, 1-2 years older",2,3
+TDS2_Session_1,SES,SES_14,"Male,more than2 years older",3,5
+TDS2_Session_1,SES,SES_14,"Female, same age or younger",4,5
+TDS2_Session_1,SES,SES_14,"Female, 1-2 years older",5,3
+TDS2_Session_1,SES,SES_14,"Female,more than2 years older",6,1
+TDS2_Session_1,SES,SES_15,Rarely 1 - 15%,2,1
+TDS2_Session_1,SES,SES_15,Occasionally 15 - 40%,3,2
+TDS2_Session_1,SES,SES_15,About half the time 40 - 60%,4,3
+TDS2_Session_1,SES,SES_15,Usually 60 - 85%,5,4
+TDS2_Session_1,SES,SES_15,Most of the time 85 - 99%,6,5
+TDS2_Session_1,SES,SES_15,Every single time 100%,7,5

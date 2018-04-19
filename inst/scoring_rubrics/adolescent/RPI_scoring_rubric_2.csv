@@ -1,0 +1,11 @@
+Data File Name,Scale Name,Column Name,transform,reverse,min,max,RPI_mean
+TDS2 Session 3 - Child,RPI_part2,RPI_1_Composite,rpi_flip(x),0,1,4,1
+TDS2 Session 3 - Child,RPI_part2,RPI_2_Composite,rpi_flip(x),1,1,4,1
+TDS2 Session 3 - Child,RPI_part2,RPI_3_Composite,rpi_flip(x),0,1,4,1
+TDS2 Session 3 - Child,RPI_part2,RPI_4_Composite,rpi_flip(x),0,1,4,1
+TDS2 Session 3 - Child,RPI_part2,RPI_5_Composite,rpi_flip(x),0,1,4,1
+TDS2 Session 3 - Child,RPI_part2,RPI_6_Composite,rpi_flip(x),1,1,4,1
+TDS2 Session 3 - Child,RPI_part2,RPI_7_Composite,rpi_flip(x),0,1,4,1
+TDS2 Session 3 - Child,RPI_part2,RPI_8_Composite,rpi_flip(x),0,1,4,1
+TDS2 Session 3 - Child,RPI_part2,RPI_9_Composite,rpi_flip(x),0,1,4,1
+TDS2 Session 3 - Child,RPI_part2,RPI_10_Composite,rpi_flip(x),1,1,4,1
