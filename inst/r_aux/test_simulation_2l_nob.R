@@ -75,14 +75,11 @@ if(!file.exists(sim_test_fn)){
         pright_pred_samps <- rstan::extract(afit, pars = 'pright_pred')[[1]]
         gc()
         message('Saving sim to: ', sim_test_fn)
-        print('(print) Saving sim to: ', sim_test_fn)
         saveRDS(afit, sim_test_fn)
         message('Saving prior predicted samples to: ', sim_test_pr_fn)
-        print('(print) Saving prior predicted samples to: ', sim_test_pr_fn)
         saveRDS(pright_pred_samps, sim_test_pr_fn)
         gc()
         message('Returning fit')
-        print('(print) Returning fit')
         afit
     })
     message('resolved(rl_2l_nob_sim_f): ', resolved(rl_2l_nob_sim_f))
