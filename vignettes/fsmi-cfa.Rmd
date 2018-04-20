@@ -17,6 +17,8 @@ bibliography: "/home/jflournoy/Rlibs/probly/bib/dissertation.bib"
 csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
 ---
 
+The below is a draft measurement model for the Fundamental Social Motives Inventory. 
+
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -26,7 +28,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setupoptions}
-rubric_dir <- system.file('scoring_rubrics', package = 'probly')
+rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
 ```
 
 ```{r packages}
