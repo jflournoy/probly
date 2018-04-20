@@ -90,66 +90,180 @@ transformed parameters {
     beta_b   = delta_b[mm] + (diag_pre_multiply(tau_b, L_Omega_b) * z_b)';
     beta_rho_prm = exp(delta_rho[mm] + (diag_pre_multiply(tau_rho, L_Omega_rho) * z_rho)');
 }
-////*****Come back here and make it generate sims!
+
 model {
-// gng_m2: RW + noise + bias model in Guitart-Masip et al 2012
-  // hyper parameters
-  mu_delta_xi  ~ normal(0, 1);
-  mu_delta_ep  ~ normal(0, 1);
-  mu_delta_b  ~ normal(0, 2);
-  mu_delta_rho  ~ normal(0, 1);
-  sigma_delta_xi ~ exponential(2.0);
-  sigma_delta_ep ~ exponential(2.0);
-  sigma_delta_b ~ exponential(2.0);
-  sigma_delta_rho ~ exponential(2.0);
+    // gng_m2: RW + noise + bias model in Guitart-Masip et al 2012
+    // hyper parameters
+    mu_delta_xi  ~ normal(0, 1);
+    mu_delta_ep  ~ normal(0, 1);
+    mu_delta_b  ~ normal(0, 2);
+    mu_delta_rho  ~ normal(0, 1);
+    sigma_delta_xi ~ exponential(2.0);
+    sigma_delta_ep ~ exponential(2.0);
+    sigma_delta_b ~ exponential(2.0);
+    sigma_delta_rho ~ exponential(2.0);
 
-  // print("sigma_delta_xi = ", sigma_delta_xi);
-  // print("sigma_delta_ep = ", sigma_delta_ep);
-  // print("sigma_delta_b = ", sigma_delta_b);
-  // print("sigma_delta_rho = ", sigma_delta_rho);
+    // print("sigma_delta_xi = ", sigma_delta_xi);
+    // print("sigma_delta_ep = ", sigma_delta_ep);
+    // print("sigma_delta_b = ", sigma_delta_b);
+    // print("sigma_delta_rho = ", sigma_delta_rho);
 
-//Sample-level parameters
-  to_vector(delta_xi_raw) ~ normal(0, 1);
-  to_vector(delta_ep_raw) ~ normal(0, 1);
-  to_vector(delta_b_raw) ~ normal(0, 1);
-  to_vector(delta_rho_raw) ~ normal(0, 1);
+    //Sample-level parameters
+    to_vector(delta_xi_raw) ~ normal(0, 1);
+    to_vector(delta_ep_raw) ~ normal(0, 1);
+    to_vector(delta_b_raw) ~ normal(0, 1);
+    to_vector(delta_rho_raw) ~ normal(0, 1);
 
-//Sigma_param for individual level coefficients
-  to_vector(z_xi) ~ normal(0, 1);
-  to_vector(z_ep) ~ normal(0, 1);
-  to_vector(z_b) ~ normal(0, 1);
-  to_vector(z_rho) ~ normal(0, 1);
-  L_Omega_xi ~ lkj_corr_cholesky(2);
-  L_Omega_ep ~ lkj_corr_cholesky(2);
-  L_Omega_b ~ lkj_corr_cholesky(2);
-  L_Omega_rho ~ lkj_corr_cholesky(2);
+    //Sigma_param for individual level coefficients
+    to_vector(z_xi) ~ normal(0, 1);
+    to_vector(z_ep) ~ normal(0, 1);
+    to_vector(z_b) ~ normal(0, 1);
+    to_vector(z_rho) ~ normal(0, 1);
+    L_Omega_xi ~ lkj_corr_cholesky(2);
+    L_Omega_ep ~ lkj_corr_cholesky(2);
+    L_Omega_b ~ lkj_corr_cholesky(2);
+    L_Omega_rho ~ lkj_corr_cholesky(2);
 
+    if(run_estimation == 1){
+        for (i in 1:N) {
+            vector[ncue] wv_r;  // action wegith for go
+            vector[ncue] wv_l; // action wegith for nogo
+            vector[ncue] qv_r;  // Q value for go
+            vector[ncue] qv_l; // Q value for nogo
+            vector[ncue] pR;   // prob of go (press)
+            real beta_xi_it;
+            real beta_ep_it;
+            real beta_rho_it;
+            real beta_b_it;
 
-  for (i in 1:N) {
-    vector[ncue] wv_r;  // action wegith for go
-    vector[ncue] wv_l; // action wegith for nogo
-    vector[ncue] qv_r;  // Q value for go
-    vector[ncue] qv_l; // Q value for nogo
-    vector[ncue] pR;   // prob of go (press)
+            wv_r  = initV;
+            wv_l = initV;
+            qv_r  = initV;
+            qv_l = initV;
 
-    wv_r  = initV;
-    wv_l = initV;
-    qv_r  = initV;
-    qv_l = initV;
+            for (t in 1:Tsubj[i]) {
+                beta_xi_it = beta_xi_prm[i, condition[i, t]];
+                beta_ep_it = beta_ep_prm[i, condition[i, t]];
+                beta_rho_it = beta_rho_prm[i, condition[i, t]];
+                beta_b_it = beta_b[i, condition[i, t]];
 
-    for (t in 1:Tsubj[i]) {
-      wv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_b[i, condition[i, t]];
-      wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
-      pR[cue[i, t]]   = inv_logit(wv_r[cue[i, t]] - wv_l[cue[i, t]]);
-      pR[cue[i, t]]   = pR[cue[i, t]] * (1 - beta_xi_prm[i, condition[i, t]]) + beta_xi_prm[i, condition[i, t]]/2;  // noise
-      press_right[i, t] ~ bernoulli(pR[cue[i, t]]);
+                wv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_b_it;
+                wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
+                pR[cue[i, t]]   = inv_logit(wv_r[cue[i, t]] - wv_l[cue[i, t]]);
+                pR[cue[i, t]]   = pR[cue[i, t]] * (1 - beta_xi_it) + beta_xi_it/2;  // noise
 
-      // update action values
-      if (press_right[i, t]) { // update go value
-        qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_prm[i, condition[i, t]] * (beta_rho_prm[i, condition[i, t]] * outcome[i, t] - qv_r[cue[i, t]]);
-      } else { // update no-go value
-        qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_prm[i, condition[i, t]] * (beta_rho_prm[i, condition[i, t]] * outcome[i, t] - qv_l[cue[i, t]]);
-      }
-    } // end of t loop
-  } // end of i loop
+                press_right[i, t] ~ bernoulli(pR[cue[i, t]]);
+
+                // update action values
+                if (press_right[i, t]) { // update go value
+                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_r[cue[i, t]]);
+                } else { // update no-go value
+                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_l[cue[i, t]]);
+                }
+            } // end of t loop
+        } // end of i loop
+    } // end estimate check
+}
+
+generated quantities {
+    vector[N] log_lik;
+    int<lower=-1, upper=1> pright_pred[N, T]; //choices "0" = left, "1" = right
+
+    //save mean differences with reference to first condition
+    matrix[N, K-1] beta_xi_diffs;
+    matrix[N, K-1] beta_ep_diffs;
+    matrix[N, K-1] beta_rho_diffs;
+    matrix[N, K-1] beta_b_diffs;
+    matrix[1, K-1] mu_delta_xi_diff;
+    matrix[1, K-1] mu_delta_ep_diff;
+    matrix[1, K-1] mu_delta_rho_diff;
+    matrix[1, K-1] mu_delta_b_diff;
+    matrix[K, K] Sigma_xi;
+    matrix[K, K] Sigma_ep;
+    matrix[K, K] Sigma_rho;
+    matrix[K, K] Sigma_b;
+
+    beta_xi_diffs[,1]  = beta_xi_prm[,2] - beta_xi_prm[,1];
+    beta_xi_diffs[,2]  = beta_xi_prm[,3] - beta_xi_prm[,1];
+    beta_ep_diffs[,1]  = beta_ep_prm[,2] - beta_ep_prm[,1];
+    beta_ep_diffs[,2]  = beta_ep_prm[,3] - beta_ep_prm[,1];
+    beta_rho_diffs[,1] = beta_rho_prm[,2] - beta_rho_prm[,1];
+    beta_rho_diffs[,2] = beta_rho_prm[,3] - beta_rho_prm[,1];
+    beta_b_diffs[,1] = beta_b[,2] - beta_b[,1];
+    beta_b_diffs[,2] = beta_b[,3] - beta_b[,1];
+
+    mu_delta_xi_diff[,1]  = Phi_approx(mu_delta_xi[,2]) - Phi_approx(mu_delta_xi[,1]);
+    mu_delta_xi_diff[,2]  = Phi_approx(mu_delta_xi[,3]) - Phi_approx(mu_delta_xi[,1]);
+    mu_delta_ep_diff[,1]  = Phi_approx(mu_delta_ep[,2]) - Phi_approx(mu_delta_ep[,1]);
+    mu_delta_ep_diff[,2]  = Phi_approx(mu_delta_ep[,3]) - Phi_approx(mu_delta_ep[,1]);
+    mu_delta_rho_diff[,1] = exp(mu_delta_rho[,2]) - exp(mu_delta_rho[,1]);
+    mu_delta_rho_diff[,2] = exp(mu_delta_rho[,3]) - exp(mu_delta_rho[,1]);
+    mu_delta_b_diff[,1] = mu_delta_b[,2] - mu_delta_b[,1];
+    mu_delta_b_diff[,2] = mu_delta_b[,3] - mu_delta_b[,1];
+
+    Sigma_xi = diag_pre_multiply(tau_xi, L_Omega_xi);
+    Sigma_ep = diag_pre_multiply(tau_ep, L_Omega_ep);
+    Sigma_rho = diag_pre_multiply(tau_rho, L_Omega_rho);
+    Sigma_b = diag_pre_multiply(tau_b, L_Omega_b);
+
+    for (i in 1:N) {
+        for (t in 1:T) {
+            pright_pred[i, t] = -1;
+        }
+    }
+
+    { //local to save space and time
+    for (i in 1:N) {
+        vector[ncue] wv_r;  // action wegith for go
+        vector[ncue] wv_l; // action wegith for nogo
+        vector[ncue] qv_r;  // Q value for go
+        vector[ncue] qv_l; // Q value for nogo
+        vector[ncue] pR;   // prob of go (press)
+        real beta_xi_it;
+        real beta_ep_it;
+        real beta_rho_it;
+        real beta_b_it;
+
+        wv_r  = initV;
+        wv_l = initV;
+        qv_r  = initV;
+        qv_l = initV;
+
+        log_lik[i] = 0;
+
+        for (t in 1:Tsubj[i]) {
+            //neater code
+            beta_xi_it = beta_xi_prm[i, condition[i, t]];
+            beta_ep_it = beta_ep_prm[i, condition[i, t]];
+            beta_rho_it = beta_rho_prm[i, condition[i, t]];
+            beta_b_it = beta_b[i, condition[i, t]];
+
+            wv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_b_it;
+            wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
+            pR[cue[i, t]]   = inv_logit(wv_r[cue[i, t]] - wv_l[cue[i, t]]);
+            pR[cue[i, t]]   = pR[cue[i, t]] * (1 - beta_xi_it) + beta_xi_it/2;  // noise
+
+            pright_pred[i, t] = bernoulli_rng(pR[cue[i, t]]);
+
+            if(run_estimation == 1){
+                log_lik[i] += bernoulli_lpmf(press_right[i, t] | pR[cue[i, t]]);
+
+                // update action values
+                if (press_right[i, t]) { // update go value
+                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_r[cue[i, t]]);
+                } else { // update no-go value
+                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_l[cue[i, t]]);
+                }
+            } else {
+                log_lik[i] += bernoulli_lpmf(pright_pred[i, t] | pR[cue[i, t]]);
+
+                if (pright_pred[i, t]) { // update go value
+                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_r[cue[i, t]]);
+                } else { // update no-go value
+                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_l[cue[i, t]]);
+                }
+            }
+        } // end of t loop
+    } // end of i loop
+    }
 }
