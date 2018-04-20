@@ -390,7 +390,7 @@ beta_rho_mat <- matrix(
     nrow = 313, 
     byrow = T)
 
-model_predicted_behavior <- generate_responses(N = N, M = M, K = K, mm = group_index_mm, 
+model_predicted_behavior <- probly::generate_responses(N = N, M = M, K = K, mm = group_index_mm, 
                                                Tsubj = Tsubj_unif, cue = cue_mat_unif, 
                                                n_cues = max(cue_mat_unif, na.rm = T), 
                                                condition = condition_mat_unif, 
@@ -429,7 +429,7 @@ ggplot2::ggplot(adf,
 ## Diagnostics
 
 
-```{r}
+```{r eval=F}
 rstan::stan_diag(stanfit, information = 'sample')
 rstan::stan_diag(stanfit, information = 'stepsize')
 rstan::stan_diag(stanfit, information = 'treedepth')
@@ -461,7 +461,7 @@ for(i in 1:(length(betanames)/313)){
 
 ```
 
-```{r pairs, fig.width=15, fig.height=15}
+```{r pairs, fig.width=15, fig.height=15, eval=F}
 pairs(stanfit, pars = munames)
 pairs(stanfit, pars = taunames)
 ```
