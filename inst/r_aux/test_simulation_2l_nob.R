@@ -8,13 +8,15 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     nsims <- 100
     nchains <- 4
     nsimsperchain <- ceiling(nsims/nchains)
-    data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
+    # data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
+    message('Data dir: ', data_dir)
     plan(tweak(multiprocess, gc = T, workers = nchains))
 } else {
     data_dir <- '/data/jflournoy/split/probly'
     nsims <- 100
     nchains <- 4
     nsimsperchain <- ceiling(nsims/nchains)
+    message('Data dir: ', data_dir)
     plan(tweak(multiprocess, gc = T, workers = nchains))
 }
 
@@ -73,11 +75,13 @@ if(!file.exists(sim_test_fn)){
         gc()
         pright_pred_samps <- rstan::extract(rl_2l_nob_sim, pars = 'pright_pred')[[1]]
         gc()
+        message('Saving sim to: ', sim_test_fn)
         saveRDS(afit, sim_test_fn)
+        message('Saving prior predicted samples to: ', sim_test_pr_fn)
         saveRDS(pright_pred_samps, sim_test_pr_fn)
         gc()
     })
-    resolved(rl_2l_nob_sim_f)
+    message('resolved(rl_2l_nob_sim_f): ', resolved(rl_2l_nob_sim_f))
     rl_2l_nob_sim <- future::value(rl_2l_nob_sim_f)
 } else {
     message('Loading simulated data')
