@@ -88,6 +88,7 @@ if(!file.exists(sim_test_fn)){
     })
     message('resolved(rl_2l_nob_sim_f): ', resolved(rl_2l_nob_sim_f))
     message('Getting value of future...')
+    future::resolve(rl_2l_nob_sim_f, sleep = 10)
     rl_2l_nob_sim <- future::value(rl_2l_nob_sim_f)
     message('resolved(rl_2l_nob_sim_f): ', resolved(rl_2l_nob_sim_f))
     message('Value of future, rl_2l_nob_sim_f, obtained? ', ifelse(any(grepl('rl_2l_nob_sim$', ls())), T, F))
