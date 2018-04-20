@@ -14,7 +14,7 @@ articles:
     href: articles/test-simulated-data
   - text: "Examine and model task data"
     href: articles/fit-model-to-participant-data
-  - text: "Developmental association with learning rate"
+  - text: "Association of age with learning parameters"
     href: articles/age-learning-association
   - text: "Get FSMI data"
     href: articles/fsmi-data
