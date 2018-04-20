@@ -120,9 +120,9 @@ generated quantities {
     int<lower=-1, upper=1> pright_pred[N, T]; //choices "0" = left, "1" = right
 
     //save mean differences with reference to first condition
-    matrix<lower=0, upper=1>[N, K-1] beta_xi_diffs;
-    matrix<lower=0, upper=1>[N, K-1] beta_ep_diffs;
-    matrix<lower=0>[N, K-1] beta_rho_diffs;
+    matrix[N, K-1] beta_xi_diffs;
+    matrix[N, K-1] beta_ep_diffs;
+    matrix[N, K-1] beta_rho_diffs;
     matrix[1,K-1] mu_delta_xi_diff;
     matrix[1,K-1] mu_delta_ep_diff;
     matrix[1,K-1] mu_delta_rho_diff;

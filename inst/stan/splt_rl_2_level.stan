@@ -109,7 +109,7 @@ model {
                 beta_rho_it = beta_rho_prm[i, condition[i, t]];
                 beta_b_it = beta_b[i, condition[i, t]];
 
-                wv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_b[i, condition[i, t]];
+                wv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_b_it;
                 wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
                 pR[cue[i, t]]   = inv_logit(wv_r[cue[i, t]] - wv_l[cue[i, t]]);
                 pR[cue[i, t]]   = pR[cue[i, t]] * (1 - beta_xi_it) + beta_xi_it/2;  // noise
@@ -132,9 +132,9 @@ generated quantities {
     int<lower=-1, upper=1> pright_pred[N, T]; //choices "0" = left, "1" = right
 
     //save mean differences with reference to first condition
-    matrix<lower=0, upper=1>[N, K-1] beta_xi_diffs;
-    matrix<lower=0, upper=1>[N, K-1] beta_ep_diffs;
-    matrix<lower=0>[N, K-1] beta_rho_diffs;
+    matrix[N, K-1] beta_xi_diffs;
+    matrix[N, K-1] beta_ep_diffs;
+    matrix[N, K-1] beta_rho_diffs;
     matrix[N, K-1] beta_b_diffs;
     matrix[1, K-1] mu_delta_xi_diff;
     matrix[1, K-1] mu_delta_ep_diff;
@@ -200,7 +200,7 @@ generated quantities {
             beta_rho_it = beta_rho_prm[i, condition[i, t]];
             beta_b_it = beta_b[i, condition[i, t]];
 
-            wv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_b[i, condition[i, t]];
+            wv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_b_it;
             wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
             pR[cue[i, t]]   = inv_logit(wv_r[cue[i, t]] - wv_l[cue[i, t]]);
             pR[cue[i, t]]   = pR[cue[i, t]] * (1 - beta_xi_it) + beta_xi_it/2;  // noise
