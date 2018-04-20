@@ -4,13 +4,23 @@
 
 library(future)
 library(rstan)
-data_dir <- '/data/jflournoy/split/probly'
+if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
+    nsims <- 100
+    nchains <- 4
+    nsimsperchain <- ceiling(nsims/nchains)
+    data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
+    plan(tweak(multiprocess, gc = T, workers = nchains))
+} else {
+    data_dir <- '/data/jflournoy/split/probly'
+    nsims <- 100
+    nchains <- 4
+    nsimsperchain <- ceiling(nsims/nchains)
+    plan(tweak(multiprocess, gc = T, workers = nchains))
+}
+
 sim_test_fn <- file.path(data_dir, 'splt_sim_test_sims.RDS')
 sim_test_pr_fn <- file.path(data_dir, 'splt_sim_test_sims_pr.RDS')
 sim_test_fit_fn <- file.path(data_dir, 'splt_sim_test_fit.RDS')
-
-nsims <- 100
-nchains <- 4
 
 condition_mat[is.na(condition_mat)] <- -1
 outcome_arr[is.na(outcome_arr)] <- -1
@@ -58,7 +68,7 @@ if(!file.exists(sim_test_fn)){
             include = F,
             pars = dont_save_diff_pars_in_sim,
             chains = nchains, cores = nchains,
-            iter = 1000+nsims, warmup = 1000,
+            iter = 1000+nsimsperchain, warmup = 1000,
             control = list(max_treedepth = 15, adapt_delta = 0.99))
         gc()
         pright_pred_samps <- rstan::extract(rl_2l_nob_sim, pars = 'pright_pred')[[1]]
@@ -113,12 +123,3 @@ if(!file.exists(sim_test_fit_fn)){
     message('Loading fit of simulated data')
     rl_2l_nob_simfit <- readRDS(sim_test_fit_fn)
 }
-
-rstan::summary(rl_2l_nob_simfit, pars = 'mu_delta_ep')$summary
-true_mu_ep <- rstan::extract(rl_2l_nob_sim, pars = 'mu_delta_ep')[[1]]
-behav_test <- rstan::extract(rl_2l_nob_sim, pars = 'pright_pred')[[1]]
-all(stan_sim_data_to_fit$press_right == behav_test[50,,])
-true_mu_ep[50,,]
-
-bayesplot::mcmc_areas(rl_2l_nob_simfit_mat, pars = paste0('mu_delta_ep[1,', 1:3, ']')) +
-    ggplot2::geom_vline(xintercept = true_ep[50,])
