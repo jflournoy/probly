@@ -82,12 +82,17 @@ if(!file.exists(sim_test_fn)){
         gc()
     })
     message('resolved(rl_2l_nob_sim_f): ', resolved(rl_2l_nob_sim_f))
+    message('Getting value of future...')
     rl_2l_nob_sim <- future::value(rl_2l_nob_sim_f)
+    message('resolved(rl_2l_nob_sim_f): ', resolved(rl_2l_nob_sim_f))
+    message('Value of future, rl_2l_nob_sim_f, obtained? ', ifelse(any(grepl('rl_2l_nob_sim$', ls())), T, F))
 } else {
     message('Loading simulated data')
     rl_2l_nob_sim <- readRDS(sim_test_fn)
     pright_pred_samps <- readRDS(sim_test_pr_fn)
 }
+
+message('Value of future, rl_2l_nob_sim_f, available? ', ifelse(any(grepl('rl_2l_nob_sim$', ls())), T, F))
 
 pright_pred_samps <- rstan::extract(rl_2l_nob_sim, pars = 'pright_pred')[[1]]
 list_of_pright_pred_mats <- lapply(1:dim(pright_pred_samps)[1], function(i) pright_pred_samps[i,,])
