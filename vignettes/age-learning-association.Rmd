@@ -1,0 +1,293 @@
+---
+title: "Association of age with learning parameters"
+author: "John Flournoy"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2:
+    toc: yes
+    toc_depth: 2
+    number_sections: FALSE
+pkgdown:
+  as_is: true
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "/home/jflournoy/Rlibs/probly/bib/dissertation.bib"
+csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = F, error = F,warning = F, echo = F,
+  comment = "#>"
+)
+```
+
+One participant, age 42 years, was excluded from the following analysis given the extreme difference in age.
+
+```{r load_learning_parameters}
+library(probly)
+library(future)
+library(listenv)
+data('splt_dev_and_demog', package = 'probly')
+data('splt', package = 'probly')
+splt <- splt[!is.na(splt$pressed_r),]
+
+task_with_age <- dplyr::mutate(
+    dplyr::left_join(
+        dplyr::distinct(splt, id ), 
+        dplyr::distinct(splt_dev_and_demog, 
+                        SID, PDS_mean_score, gender, age, sample), 
+        by = c('id' = 'SID')),
+    id_idx = as.character(1:n()),
+    age_c = age - mean(age, na.rm = T),
+    PDS_mean_score = as.numeric(PDS_mean_score),
+    PDS_mean_score_c = PDS_mean_score - 
+        mean(PDS_mean_score, na.rm = T),
+    gender_c = gender - .5)
+
+learning_model <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level-1522962.RDS')
+
+#num [1:4500, 1:313, 1:3]
+beta_ep_mat <- rstan::extract(learning_model, 'beta_ep_prm')[[1]]
+
+beta_ep_mat_df <- tidyr::spread(
+    tidyr::extract(
+        tidyr::gather(
+            dplyr::mutate(
+                as.data.frame(beta_ep_mat),
+                iter = 1:n()),
+            key, value, -iter),
+        key, c('id', 'condition'), '(\\d+)\\.(\\d)'),
+    condition, value)
+
+beta_ep_mat_df$diff_mate <- beta_ep_mat_df$`2` - beta_ep_mat_df$`1`
+beta_ep_mat_df$diff_status <- beta_ep_mat_df$`3` - beta_ep_mat_df$`1`
+
+beta_ep_mat_df_means <- dplyr::summarize_at(
+    dplyr::group_by(beta_ep_mat_df, id),
+    dplyr::vars(`1`,`2`,`3`, diff_mate, diff_status),
+    dplyr::funs(mean))
+
+
+beta_ep_mat_df_age <- dplyr::filter(
+    dplyr::left_join(beta_ep_mat_df,
+                     task_with_age,
+                     by = c('id' = 'id_idx')),
+    age < 30)
+
+beta_ep_mat_df_means_age <- dplyr::filter(
+    dplyr::left_join(beta_ep_mat_df_means,
+                     task_with_age,
+                     by = c('id' = 'id_idx')),
+    age < 30)
+```
+
+# Development as predictor
+
+To make a preliminary assessment of the relation of developmental variables to motivational framing's potentiation of learning, I examine covariation of the learning rate, $\epsilon$ (in each condition, as well as differences between the two motive-relevant conditions and the more neutral condition), with age and puberty as measured by the PDS [@petersen1988].
+First, I examine plots of the central tendency of these parameters against the two developmental variables (separated by gender for PDS).
+I use the transformed mean of the poster samples of each individual's parameter for each condition, _k_, $\text{pnorm}(\beta_{\epsilon k})$. The differences are calculated on the transformed scale.
+
+Second, for each draw from the posterior, I regress the vector of individually varying $\beta_{\epsilon k}$ on the development variable, controlling for gender. 
+Gender is centered, such that the value of the intercept is the average parameter across males and females (which are unbalanced in the sample).
+I examine the distribution of parameter estimates from these regressions to describe any systematic relations that are not large enough to be obvious in the scatterplots.
+(This method is an ad hoc approximation to incorporating these paramters into the full model, and is merely an interim analysis while I solve other modeling problems).
+
+## Visual inspection of developmental relations
+
+Descriptive plots suggestion little or not relation between development and model parameter posterior distributions of the $\beta_{\epsilon k}$ parameters, or their contrasts (Figure \@ref(fig:descriptiveplots)).
+
+(ref:descriptiveplots) Individual parameters versus development, with generalized additive model smooths.
+
+```{r descriptiveplots, fig.width=5, fig.height=4, fig.cap='(ref:descriptiveplots)'}
+ggplot2::theme_set(ggplot2::theme_minimal())
+
+plot_formula <- formula('y ~ s(x, k = 3, fx = T)')
+plot_method <- 'gam'
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = age, y = `1`)) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = age, y = `2`)) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = age, y = `3`)) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = age, y = diff_mate)) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = age, y = diff_status)) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = PDS_mean_score, y = `1`, color = factor(gender))) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = PDS_mean_score, y = `2`, color = factor(gender))) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = PDS_mean_score, y = `3`, color = factor(gender))) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = PDS_mean_score, y = diff_mate, color = factor(gender))) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+
+ggplot2::ggplot(beta_ep_mat_df_means_age,
+                ggplot2::aes(x = PDS_mean_score, y = diff_status, color = factor(gender))) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(method = plot_method, formula = plot_formula)
+```
+
+## Age linear models
+
+The results from the linear models confirm that the linear relation between age and all $\beta_{\epsilon k}$ parameters and their contrasts are centered around 0 (Figure \@ref(fig:agelinearplots)).
+
+(ref:agelinearplots) Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
+
+```{r agelinearplots, fig.width=5, fig.height=4, fig.cap='(ref:agelinearplots)'}
+age_model_data <- na.omit(
+    dplyr::select(beta_ep_mat_df_age, 
+                  diff_mate, diff_status, `1`, `2`, `3`,
+                  age_c, gender_c, id, iter)
+)
+
+future::plan(tweak(future::multiprocess, workers = 7))
+cheap_bayes_lenv <- listenv::listenv()
+dependent_params <- c('`1`', '`2`', '`3`', 'diff_mate', 'diff_status')
+for(i in seq_along(dependent_params)){
+    cheap_bayes_lenv[[i]] <- future({
+        aform <- formula(paste0(dependent_params[i], ' ~ 1 + age_c*gender_c'))
+        lm_rez <- lapply(unique(age_model_data$iter), 
+                   function(j) {
+                       coef_rez <- 
+                           t(coef(lm(aform, 
+                                     data = age_model_data[which(age_model_data$iter == j),])))
+                       return(coef_rez)
+                   })
+        do.call(rbind, lm_rez)
+    })
+}
+cheap_bayes_rez <- lapply(as.list(cheap_bayes_lenv), future::value)
+
+bayesplot::mcmc_areas_ridges(cheap_bayes_rez[[1]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: Hungry/Thirsty')
+bayesplot::mcmc_areas_ridges(cheap_bayes_rez[[2]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: Dating/Looking')
+bayesplot::mcmc_areas_ridges(cheap_bayes_rez[[3]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: Popular/Unpopular')
+bayesplot::mcmc_areas_ridges(cheap_bayes_rez[[4]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: DaLo - HuTh')
+bayesplot::mcmc_areas_ridges(cheap_bayes_rez[[5]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: PoUp - HuTh')
+
+```
+
+## Age linear models
+
+The results from the linear models confirm that the linear relation between pubert and all $\beta_{\epsilon k}$ parameters and their contrasts are centered around 0 (Figure \@ref(fig:publinearplots)). 
+However, there is some indication that the relation between the learning rate parameters and PDS differs by gender such that boys show more positive covariance between PDS and learning rate (Table \@ref(tab:interactiontable)).
+These results do seem to capture something about the smooth lines in Figure \@ref(fig:descriptiveplots), though if the interaction were to take on any of the values in a considerable portion of the posterior density, this result would be reversed.
+
+(ref:interactiontable) Mean of posterior densities for girls and boys relation between PDS and learning rate.
+
+```{r cheapbayespub}
+pub_model_data <- na.omit(
+    dplyr::select(beta_ep_mat_df_age, 
+                  diff_mate, diff_status, `1`, `2`, `3`,
+                  PDS_mean_score_c, gender_c, id, iter)
+)
+
+future::plan(tweak(future::multiprocess, workers = 7))
+cheap_bayes_pub_lenv <- listenv::listenv()
+dependent_params <- c('`1`', '`2`', '`3`', 'diff_mate', 'diff_status')
+for(i in seq_along(dependent_params)){
+    cheap_bayes_pub_lenv[[i]] <- future({
+        aform <- formula(paste0(dependent_params[i], ' ~ 1 + PDS_mean_score_c*gender_c'))
+        lm_rez <- lapply(unique(pub_model_data$iter), 
+                   function(j) {
+                       coef_rez <- 
+                           t(coef(lm(aform, 
+                                     data = pub_model_data[which(pub_model_data$iter == j),])))
+                       return(coef_rez)
+                   })
+        do.call(rbind, lm_rez)
+    })
+}
+cheap_bayes_pub_rez <- lapply(as.list(cheap_bayes_pub_lenv), future::value)
+```
+
+
+```{r interactiontable}
+knitr::kable(
+    dplyr::data_frame(Parameter = c('$\\beta_{\\epsilon, \\text{ht}}$',
+                             '$\\beta_{\\epsilon, \\text{dl}}$',
+                             '$\\beta_{\\epsilon, \\text{pu}}$',
+                             '$\\beta_{\\epsilon, \\text{dl - ht}}$',
+                             '$\\beta_{\\epsilon, \\text{pu - ht}}$'),
+              'Mean, girls' = unlist(lapply(cheap_bayes_pub_rez, function(x) mean(x[,'PDS_mean_score_c']))) + .5*unlist(lapply(cheap_bayes_pub_rez, function(x) mean(x[,'PDS_mean_score_c:gender_c']))),
+              'Mean, boys' = unlist(lapply(cheap_bayes_pub_rez, function(x) mean(x[,'PDS_mean_score_c']))) + -.5*unlist(lapply(cheap_bayes_pub_rez, function(x) mean(x[,'PDS_mean_score_c:gender_c'])))), 
+    digits = 3,
+    caption = '(ref:interactiontable)')
+```
+
+(ref:publinearplots) Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
+
+```{r publinearplots, fig.width=5, fig.height=4, fig.cap='(ref:publinearplots)'}
+bayesplot::mcmc_areas_ridges(cheap_bayes_pub_rez[[1]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: Hungry/Thirsty')
+bayesplot::mcmc_areas_ridges(cheap_bayes_pub_rez[[2]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: Dating/Looking')
+bayesplot::mcmc_areas_ridges(cheap_bayes_pub_rez[[3]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: Popular/Unpopular')
+bayesplot::mcmc_areas_ridges(cheap_bayes_pub_rez[[4]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: DaLo - HuTh')
+bayesplot::mcmc_areas_ridges(cheap_bayes_pub_rez[[5]], 
+                             prob = .95, 
+                             prob_outer = .99) + 
+    ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: PoUp - HuTh')
+```
+
+
+# References
