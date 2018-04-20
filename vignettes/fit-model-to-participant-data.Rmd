@@ -185,7 +185,7 @@ plot_opt_presses_per_id <- function(splt_df,
         ggplot2::geom_point(size = .75, alpha = .125) +
         ggplot2::geom_hline(yintercept = c(.8), alpha = 1, color = 'gray', size = .5) +
         ggplot2::geom_hline(yintercept = c(.5), alpha = 1, color = 'red', size = .5) +
-        ggplot2::geom_smooth(se = se, method = 'gam', formula = y ~ s(x, bs = "tp", k = 4),
+        ggplot2::geom_smooth(se = se, method = 'gam', formula = y ~ s(x, k = 3, fx = T),
                              size = .5, color = 'black', alpha = .2) +
         ggplot2::facet_wrap(~ id_fac, ncol = ncol) +
         ggplot2::coord_cartesian(ylim = c(0, 1)) +
@@ -244,15 +244,6 @@ stanfit_2_level_no_b_betas <- as.matrix(stanfit_2_level_no_b, pars = betanames)
 stanfit_3_level_betas <- as.matrix(stanfit_3_level, pars = betanames)
 stanfit_3_level_no_b_betas <- as.matrix(stanfit_3_level_no_b, pars = betanames)
 
-some_cors <- unlist(lapply(seq_len(dim(stanfit_2_level_no_b_betas)[1]),
-       function(i){
-           cor(arm::logit(stanfit_2_level_betas[i, betanames[(313*3+1):(2*3*313)]]),
-               arm::logit(stanfit_2_level_no_b_betas[i, betanames[(313*3+1):(2*3*313)]]))
-       }))
-mean(some_cors)
-quantile(some_cors, probs = c(.025, .5, .975))
-hist(some_cors)
-
 betas_xi_means <- lapply(list(
     'L2' = stanfit_2_level_betas,
     'L2_no_b' = stanfit_2_level_no_b_betas,
@@ -283,31 +274,156 @@ betas_rho_means <- lapply(list(
               2, function(j) mean(log(j)))
     })
 
-GGally::ggpairs(as.data.frame(betas_xi_means))
-GGally::ggpairs(as.data.frame(betas_ep_means))
-GGally::ggpairs(as.data.frame(betas_rho_means))
+GGally::ggpairs(as.data.frame(betas_xi_means), title = expression(xi))
+GGally::ggpairs(as.data.frame(betas_ep_means), title = expression(epsilon))
+GGally::ggpairs(as.data.frame(betas_rho_means), title = expression(rho))
 ```
 
-Learning rate
+## Mean parameter estimates
+
+### Learning rate
 
 ```{r}
+munames <- grep('mu', names(stanfit_2_level), value = T)
+stanfitmat <- as.array(stanfit_2_level)
 ggplot2::theme_set(ggplot2::theme_minimal())
 bayesplot::mcmc_combo(stanfitmat, pars = munames[4:6], facet_args = list(scales = 'fixed'),
-                      transformations = pnorm, combo = c('areas', 'trace'), prob_outer = .95)
+                      transformations = pnorm, 
+                      combo = c('areas_ridges', 'trace'), 
+                      prob_outer = 1-.005, prob = .95, widths = c(3,4))
+
+mu_ep_1 <- rstan::extract(stanfit_2_level, pars = munames[4])[[1]]
+mu_ep_2 <- rstan::extract(stanfit_2_level, pars = munames[5])[[1]]
+mu_ep_3 <- rstan::extract(stanfit_2_level, pars = munames[6])[[1]]
+
+bayesplot::mcmc_areas(data.frame(diff_ep2_ep1 = pnorm(mu_ep_2) - pnorm(mu_ep_1),
+                                 diff_ep3_ep1 = pnorm(mu_ep_3) - pnorm(mu_ep_1),
+                                 diff_ep3_ep2 = pnorm(mu_ep_3) - pnorm(mu_ep_2)), prob_outer = 1-.005, prob = .95)
 ```
 
-Size of reward modifier
+### Size of reward modifier
 
 ```{r}
-bayesplot::mcmc_combo(stanfitmat, pars = munames[7:9], facet_args = list(scales = 'fixed'),
-                      transformations = exp, combo = c('areas', 'trace'), prob_outer = .95)
+bayesplot::mcmc_combo(stanfitmat, pars = munames[10:12], facet_args = list(scales = 'fixed'),
+                      combo = c('areas_ridges', 'trace'), 
+                      prob_outer = 1-.005, prob = .95, widths = c(3,4))
 ```
 
-Irriducible noise (e.g., "what the whaaa?")
+### Irriducible noise (e.g., "what the whaaa?")
 
 ```{r}
 bayesplot::mcmc_combo(stanfitmat, pars = munames[1:3], facet_args = list(scales = 'fixed'),
-                      transformations = pnorm, combo = c('areas', 'trace'), prob_outer = .95)
+                      transformations = pnorm, combo = c('areas', 'trace'), prob_outer = 1-.005, prob = .95, widths = c(3,4))
+```
+
+
+## Model predicted behavior
+
+Below is a plot of 313 model predicted runs, all using the exact same task structure (arbitrarily, the first run of the task). Behavior is guided by the mean parameter estimates, so any variabilility in behavior is due to the probabilistic nature of selecting either the right or left option based on the model's current knowledge at some point during the task. Another way of framing this is that it is the behavior of the averge actor, in 313 identical, hypothetical runs.
+
+```{r getspltdata}
+
+data(splt)
+splt <- splt[!is.na(splt$pressed_r), ]
+splt$cue <- as.numeric(as.factor(paste0(splt$condition, '_', splt$sex)))
+splt$condition <- factor(splt$condition, levels = c('HngT', 'DtnL', 'PplU'))
+
+# - N number of individuals
+# - M number of samples
+# - K number of conditions
+# - mm sample ID for all individuals
+# - Tsubj number of trials for each individual
+# - cue an N x max(Tsubj) matrix of cue IDs for
+#   each trial
+# - n_cues total number of cues
+# - condtion an N x max(Tsubj) matrix of condition
+#   IDs for each trial
+# - outcome is an array with dimensions N x T x 2
+#   (response options) with the feedback for each
+#   possible response. outcome[,,1] is for
+#   correct left-presses, and outcome[,,2] is for
+#   correct right-presses.
+# - beta_xi, beta_b, beta_eps, beta_rho are N x K
+#   matrices of the individually varying parameter
+#   coefficients
+
+group_index_mm <- get_sample_index(splt, levels = c("TDS1", "TDS2", "yads", "yads_online"))
+N <- dim(group_index_mm)[1]
+M <- length(levels(group_index_mm$m_fac))
+K <- length(unique(splt$condition))
+cue_mat <- get_col_as_trial_matrix(splt, 'cue', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
+Tsubj <- get_max_trials_per_individual(cue_mat)
+condition_mat <- get_col_as_trial_matrix(splt, 'condition', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
+correct_r_mat <- get_col_as_trial_matrix(splt, 'correct_r', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
+reward_possible_mat <- get_col_as_trial_matrix(splt, 'reward_possible', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
+outcome_arr <- array(reward_possible_mat, dim = c(dim(reward_possible_mat), 2))
+outcome_arr[,,1][correct_r_mat == 1] <- 0 #reward if left press, but right is correct = 0
+outcome_arr[,,2][correct_r_mat == 0] <- 0 #reward if right press, but correct is not right = 0
+
+Tsubj_unif <- Tsubj
+Tsubj_unif[] <- Tsubj[1]
+condition_mat_unif <- matrix(rep(condition_mat[1,], dim(condition_mat)[1]), byrow = T, nrow = dim(condition_mat)[1])
+cue_mat_unif <- matrix(rep(cue_mat[1,], dim(cue_mat)[1]), byrow = T, nrow = dim(cue_mat)[1])
+outcome_arr_unif <- outcome_arr
+for(i in 1:dim(outcome_arr_unif)[1]){
+    outcome_arr_unif[i,,] <- outcome_arr[1,,]
+}
+
+beta_xi_mat <- matrix(
+    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_xi')[[1]], c(2,3), mean), 
+        313), 
+    nrow = 313, 
+    byrow = T)
+beta_b_mat <- matrix(
+    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_b')[[1]], c(2,3), mean), 
+        313), 
+    nrow = 313, 
+    byrow = T)
+beta_ep_mat <- matrix(
+    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_ep')[[1]], c(2,3), mean), 
+        313), 
+    nrow = 313, 
+    byrow = T)
+beta_rho_mat <- matrix(
+    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_rho')[[1]], c(2,3), mean), 
+        313), 
+    nrow = 313, 
+    byrow = T)
+
+model_predicted_behavior <- generate_responses(N = N, M = M, K = K, mm = group_index_mm, 
+                                               Tsubj = Tsubj_unif, cue = cue_mat_unif, 
+                                               n_cues = max(cue_mat_unif, na.rm = T), 
+                                               condition = condition_mat_unif, 
+                                               outcome = outcome_arr_unif, 
+                                               beta_xi = beta_xi_mat, beta_b = beta_b_mat, 
+                                               beta_eps = beta_ep_mat, beta_rho = beta_rho_mat)
+
+adf <- dplyr::mutate(
+    dplyr::group_by(
+        data.frame(id = rep(1:313, 381),
+                   condition = factor(as.numeric(condition_mat_unif[,1:381]), 
+                                      levels = 1:3,
+                                      labels = c('Hungry/Thirsty', 'Dating/Looking', 'Popular/Unpopular')),
+                   p_press_right = abs(as.numeric(model_predicted_behavior$p_press_right) - .5)),
+        condition, id),
+    trial = 1:n())
+
+ggplot2::ggplot(adf,
+                ggplot2::aes(x = trial, 
+                             y = p_press_right, 
+                             group = interaction(condition, id))) + 
+    ggplot2::geom_hex(ggplot2::aes(group = NULL, alpha = log(..count..)), fill = '#666666') + 
+    ggplot2::geom_line(stat = 'smooth', method = 'gam', formula = y ~ s(x, k = 6, fx = T),
+                       alpha = .05) + 
+    ggplot2::facet_grid(~condition) + 
+    ggplot2::theme_minimal() +
+    ggplot2::coord_cartesian(ylim = c(0, .5)) + 
+    ggplot2::scale_y_continuous(breaks = c(0, .3, .5), labels = c(.5, .8, 1)) +
+    ggplot2::scale_alpha_continuous(breaks = log(c(10, 100, 500, 1000)),
+                                    labels = c(10, 100, 500, 1000),
+                                    range = c(0, 1),
+                                    name = 'log(Num Obs)') +
+    ggplot2::labs(x = 'Trial number', y = 'Probability of optimal choice')
 ```
 
 ## Diagnostics
