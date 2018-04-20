@@ -72,8 +72,7 @@ if(!file.exists(sim_test_fn)){
             chains = nchains, cores = nchains,
             iter = 1000+nsimsperchain, warmup = 1000,
             control = list(max_treedepth = 15, adapt_delta = 0.99))
-        gc()
-        pright_pred_samps <- rstan::extract(rl_2l_nob_sim, pars = 'pright_pred')[[1]]
+        pright_pred_samps <- rstan::extract(afit, pars = 'pright_pred')[[1]]
         gc()
         message('Saving sim to: ', sim_test_fn)
         print('(print) Saving sim to: ', sim_test_fn)
