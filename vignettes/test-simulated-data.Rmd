@@ -1,5 +1,5 @@
 ---
-title: "Association of Age and Puberty with Learning Parameters"
+title: "Test Simulated Data"
 author: "John Flournoy"
 date: "`r Sys.Date()`"
 output: 
