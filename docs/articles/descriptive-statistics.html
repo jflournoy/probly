@@ -55,6 +55,9 @@
       <a href="../articles/age-and-puberty-data.html">Age, Puberty, and Informant Data</a>
     </li>
     <li>
+      <a href="../articles/age-learning-association.html">Association of age with learning parameters</a>
+    </li>
+    <li>
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
     </li>
     <li>
@@ -64,10 +67,16 @@
       <a href="../articles/fit-model-to-participant-data.html">Fit model to participant data</a>
     </li>
     <li>
+      <a href="../articles/fsmi-cfa.html">Fundamental Social Motives Confirmatory Factor Analysis</a>
+    </li>
+    <li>
+      <a href="../articles/fsmi-data.html">Retrieve Fundamental Social Motives Data</a>
+    </li>
+    <li>
       <a href="../articles/test-simple-3l-mv-model.html">Test Simple 3-level Multivariate Normal Model</a>
     </li>
     <li>
-      <a href="../articles/test-simulated-data.html">Test Simulated Data</a>
+      <a href="../articles/test-simulated-data.html">Association of Age and Puberty with Learning Parameters</a>
     </li>
   </ul>
 </li>
@@ -87,7 +96,7 @@
       <h1>Descriptive Statistics for SPLT data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-04-06</h4>
+            <h4 class="date">2018-04-20</h4>
       
       
 
@@ -119,7 +128,7 @@
 <h1 class="hasAnchor">
 <a href="#participants" class="anchor"></a>Participants</h1>
 <p>Data from four samples are used in this analysis. The first two samples comprise foster-care-involved and community adolescents who were recruited from the greater Eugene/Springfield area for an ongoing longitudinal study investigating decision-making related to health-risking behavior (NIH grant number:). The third and forth samples consisted of college students who completed the study for course credit either in person, or online. Some participants in each sample did not provide data on all focal measures (see Table <a href="#tab:missingstats">1</a>), and so sample sizes for each analysis will differ to some extent. Examining the table, it is clear that the proportion of missing data is small.</p>
-<p>The full sample consists of 342 participants (116 male) with ages between 12.6 and 25 years (see Table <a href="#tab:samplestats">2</a> for full details). The majority of participants in all samples identified as white, though in the both college samples this majority did not exceed 60% (Table <a href="#tab:ethnicitytable">3</a>).</p>
+<p>The full sample consists of 341 participants (117 male) with ages between 12.5 and 42 years (see Table <a href="#tab:samplestats">2</a> for full details). The majority of participants in all samples identified as white, though in the both college samples this majority did not exceed 60% (Table <a href="#tab:ethnicitytable">3</a>).</p>
 
 
 
@@ -211,7 +220,7 @@ Foster-care involved adolescents
 7
 </td>
 <td>
-2.0
+2.1
 </td>
 </tr>
 <tr class="left">
@@ -251,25 +260,25 @@ Community adolescents
 College students
 </th>
 <td>
-94
+85
 </td>
 <td>
-18
+-
 </td>
 <td>
-5.3
+-
 </td>
 <td>
-14
+7
 </td>
 <td>
-4.1
+2.1
 </td>
 <td>
-12
+-
 </td>
 <td>
-3.5
+-
 </td>
 <td>
 3
@@ -283,7 +292,7 @@ College students
 College students - online
 </th>
 <td>
-150
+158
 </td>
 <td>
 -
@@ -298,10 +307,10 @@ College students - online
 2.9
 </td>
 <td>
-10
+8
 </td>
 <td>
-2.9
+2.3
 </td>
 <td>
 1
@@ -315,25 +324,25 @@ College students - online
 All
 </th>
 <td>
-342
+341
 </td>
 <td>
-18
+-
 </td>
 <td>
-5.3
+-
 </td>
 <td>
-24
+17
 </td>
 <td>
-7.0
+5.0
 </td>
 <td>
-22
+8
 </td>
 <td>
-6.4
+2.3
 </td>
 <td>
 15
@@ -511,7 +520,7 @@ Community adolescents
 15.6
 </td>
 <td>
-1.7
+1.6
 </td>
 <td>
 3.8
@@ -543,22 +552,22 @@ Community adolescents
 College students
 </th>
 <td>
-32
+33
 </td>
 <td>
-50
+52
 </td>
 <td>
-20.2
+20.9
 </td>
 <td>
-1.7
+4.2
 </td>
 <td>
-19.2
+19.3
 </td>
 <td>
-1.1
+1.3
 </td>
 <td>
 4.6
@@ -573,13 +582,13 @@ College students
 0.3
 </td>
 <td>
-380
+379
 </td>
 <td>
-4
+8
 </td>
 <td>
-380
+379
 </td>
 <td>
 8
@@ -593,7 +602,7 @@ College students - online
 37
 </td>
 <td>
-103
+113
 </td>
 <td>
 19.8
@@ -602,7 +611,7 @@ College students - online
 1.4
 </td>
 <td>
-19.3
+19.4
 </td>
 <td>
 1.2
@@ -676,7 +685,7 @@ AmIndn
 0.0
 </td>
 <td>
-0.7
+0.6
 </td>
 </tr>
 <tr class="right">
@@ -684,7 +693,7 @@ AmIndn
 Asian
 </th>
 <td>
-9.4
+10.9
 </td>
 <td>
 0.0
@@ -693,10 +702,10 @@ Asian
 0.0
 </td>
 <td>
-8.5
+12.9
 </td>
 <td>
-16.0
+16.5
 </td>
 </tr>
 <tr class="right">
@@ -713,10 +722,10 @@ Black/AA
 0.0
 </td>
 <td>
-3.2
+3.5
 </td>
 <td>
-2.0
+1.9
 </td>
 </tr>
 <tr class="right">
@@ -733,10 +742,10 @@ Latinx/Hsp
 6.2
 </td>
 <td>
-10.6
+11.8
 </td>
 <td>
-6.7
+6.3
 </td>
 </tr>
 <tr class="right">
@@ -753,10 +762,10 @@ Pcfc Islnd
 0.0
 </td>
 <td>
-1.1
+1.2
 </td>
 <td>
-3.3
+3.2
 </td>
 </tr>
 <tr class="right">
@@ -764,7 +773,7 @@ Pcfc Islnd
 Other
 </th>
 <td>
-5.8
+6.7
 </td>
 <td>
 18.2
@@ -773,10 +782,10 @@ Other
 13.8
 </td>
 <td>
-0.0
+2.4
 </td>
 <td>
-3.3
+3.8
 </td>
 </tr>
 <tr class="right">
@@ -784,7 +793,7 @@ Other
 White
 </th>
 <td>
-64.0
+67.2
 </td>
 <td>
 75.8
@@ -793,10 +802,10 @@ White
 76.9
 </td>
 <td>
-57.4
+68.2
 </td>
 <td>
-60.0
+60.8
 </td>
 </tr>
 <tr class="right">
@@ -816,7 +825,7 @@ Wht/Hsp
 0.0
 </td>
 <td>
-0.7
+0.6
 </td>
 </tr>
 </tbody>
@@ -824,7 +833,7 @@ Wht/Hsp
 <div id="pubertal-development" class="section level2">
 <h2 class="hasAnchor">
 <a href="#pubertal-development" class="anchor"></a>Pubertal Development</h2>
-<p>To assess pubertal development, all participants completed the Pubertal Development Scale <span class="citation">(PDS; Petersen, Crockett, Richards, &amp; Boxer, 1988)</span>, with the mean of five items used to indicate progress through puberty (range [1,4]). While the full sample includes a wide range of pubertal development, there are notable heterogeneity. First, it is not surprising that almost all participants in the college samples report that puberty is complete. Notably (though also unsurprisingly), females in the the adolescent samples report being further through puberty than males (Figure <a href="#fig:pdsplot">1</a>A). Most participants over the age of 18 have PDS scores indicating puberty is completed, or nearly completed (Figure <a href="#fig:pdsplot">1</a>B).</p>
+<p>To assess pubertal development, all participants completed the Pubertal Development Scale <span class="citation">(PDS; Petersen, Crockett, Richards, &amp; Boxer, 1988)</span>, with the mean of five items used to indicate progress through puberty (range [1,4]). While the full sample includes a wide range of pubertal development, there is notable heterogeneity. It is not surprising that almost all participants in the college samples report that puberty is complete. Notably (though also unsurprisingly), females in the the adolescent samples report being further through puberty than males (Figure <a href="#fig:pdsplot">1</a>A), even though the mean age of males and females in these samples is roughly equivalent (Table <a href="#tab:samplestats">2</a>). Most participants in the college smaples have PDS scores indicating puberty is completed, or nearly completed (Figure <a href="#fig:pdsplot">1</a>B).</p>
 
 <div class="figure">
 <span id="fig:pdsplot"></span>
@@ -840,8 +849,8 @@ Figure 1: Pubertal development by sample and age
 <div id="social-probabilistic-learning-task" class="section level2">
 <h2 class="hasAnchor">
 <a href="#social-probabilistic-learning-task" class="anchor"></a>Social Probabilistic Learning Task</h2>
-<p>The Social Probabilistic Learning Task (SPLT) is a standard reinforcement learning paradigm using several stimulus-word pairings that are grouped by motive relevance. Common probabilistic reinforcement learning paradigms focus on estimating parameters that govern learning associations between stimuli using abstract images and nonsocial categories as the conditioned stimulus <span class="citation">(e.g., a weather prediction of “sunny” or “rainy” Knowlton, Mangels, &amp; Squire, 1996)</span>. In the SPLT, motive context is manipulated by pairing human faces with state or trait words related to mate-seeking and status motives. The purpose of this manipulation is to examine how this motive framing alters learning, especially across adolescent development, as well as how individual differences in learning are related to the measures of attitudes and behavior outline below.</p>
-<p>On each trial, the participant sees one of six faces, along with two labels, and is asked to classify the face using one of the two labels. The labels are: <em>Hungry</em> versus <em>Thirsty</em> (control condition that is nonsocial, or only minimally social), <em>Dating</em> versus <em>Looking</em> for someone to date (mate-seeking), and <em>Popular</em> versus <em>Unpopular</em> (status). After choosing the label, the participant is given feedback that they were correct and earned either 1/1 point or 5/5 points, or that they were incorrect and earned 0/1 point or 0/5 points (Figure <a href="#fig:trialexample">2</a>). Each face is probabilistically associated with one label with P(Correct | Choice = Label) = .80. That is, there is a probabilistically optimal choice response, which precludes a memorization strategy and results in more automatic reinforcement learning <span class="citation">(Knowlton et al., 1996)</span>. The participant is instructed that “the same word goes with the same picture most of the time, but not always” and to “try to guess correctly as often as you can to get the most points.”</p>
+<p>The Social Probabilistic Learning Task (SPLT) is a standard reinforcement learning paradigm using several stimulus-word pairings that are grouped by motive relevance. Common probabilistic reinforcement learning paradigms focus on estimating parameters that govern learning associations between stimuli using abstract images and nonsocial categories as the conditioned stimulus <span class="citation">(e.g., a weather prediction of “sunny” or “rainy”; Knowlton, Mangels, &amp; Squire, 1996)</span>. In the SPLT, motive context is manipulated by pairing human faces with state or trait words related to mate-seeking and status motives. The purpose of this manipulation is to examine how this motive framing alters learning, especially across adolescent development, as well as how individual differences in learning are related to the measures of attitudes and behavior outlined below.</p>
+<p>On each trial, the participant sees one of six faces, along with two labels, and is asked to classify the face using one of the two labels. The labels are: <em>Hungry</em> versus <em>Thirsty</em> (control condition that is nonsocial, or only minimally social), <em>Dating</em> versus <em>Looking</em> for someone to date (mate-seeking), and <em>Popular</em> versus <em>Unpopular</em> (status). After choosing the label, the participant is given feedback that they were correct and earned either 1/1 point or 5/5 points, or that they were incorrect and earned 0/1 point or 0/5 points (Figure <a href="#fig:trialexample">2</a>). Each face is probabilistically associated with one label with P(Correct | Choice = Label) = .80. That is, there is a probabilistically optimal choice response, which precludes a memorization strategy and results in more automatic reinforcement learning <span class="citation">(Knowlton et al., 1996)</span>. The participant is instructed that “the same word goes with the same picture most of the time, but not always,” and to “try to guess correctly as often as you can to get the most points.”</p>
 
 <div class="figure">
 <span id="fig:trialexample"></span>
@@ -849,8 +858,8 @@ Figure 1: Pubertal development by sample and age
 Figure 2: Example of a trial on the SPLT
 </p>
 </div>
-<p>To ensure engagement with the stimulus faces, 3 unambiguously male and 3 unambiguously female faces drawn from a set of faces evaluated by <span class="citation">Todorov (2008)</span>. Target faces were drawn from a subset of those highest in likeability and attractiveness ratings, and were selected to have roughly equal euclidean distance from one another on the other dimensions on which they had been rated (e.g., trustworthiness). Essentially, the faces were selected to be similarly salient, as well as similarly distinct from one another such that one or two particularly unique face did not overwhelm the learning effect of the motives. On each run of the task (i.e., for each participant), one male and one female face was randomly assigned to each label within condition (control, mate-seeking, status). On each trial, the participant had 3.5 seconds to respond, and was shown response feedback for 1 second. The task comprises a total of 384 trials across 8 blocks.</p>
-<p>The receipt of the reward for choosing the optimal response (that is, the response that most often generated a reward) was probabilistic. Across conditions and samples, the observed probability of reward receipt for an optimal choice was very close to the generative <em>p</em> = .80 (Table <a href="#tab:optpressstats">4</a>). Reaction times for all participants can be seen in Figure <a href="#fig:reactiontime">3</a>, with an overall mean of 1.07s (SD = 0.61s). Most participants completed all trials with only occasional missed responses (Figure <a href="#fig:totaltrials">4</a>). For a small number of participants, far fewer trials were obtained (min = 294, with n = 8 having fewer than 350 trials) either as a result of early termination, or because of computer error during data file saving.</p>
+<p>To ensure engagement with the stimulus faces, 3 unambiguously male and 3 unambiguously female faces were drawn from a set of faces evaluated by <span class="citation">Todorov (2008)</span>. Target faces were drawn from a subset of those highest in likeability and attractiveness ratings, and were selected to have roughly equal euclidean distance from one another on the other dimensions on which they had been rated (e.g., trustworthiness). Essentially, the faces were selected to be similarly salient, as well as similarly distinct from one another such that one or two particularly unique face did not overwhelm the learning effect of the motives. On each run of the task (i.e., for each participant), one male and one female face was randomly assigned to each label within condition (control, mate-seeking, status). On each trial, the participant had 3.5 seconds to respond, and was shown response feedback for 1 second. The task comprises a total of 384 trials across 8 blocks (see Table <a href="#tab:samplestats">2</a> for mean number of trials).</p>
+<p>The receipt of the reward for choosing the optimal response (that is, the response that most often generated a reward) was probabilistic. Across conditions and samples, the observed probability of reward receipt for an optimal choice was very close to the generative <em>p</em> = .80 (Table <a href="#tab:optpressstats">4</a>). Reaction times for all participants can be seen in Figure <a href="#fig:reactiontime">3</a>, with an overall mean of 1.07s (SD = 0.61s). Most participants completed all trials with only occasional missed responses (Table <a href="#tab:missingstats">1</a>)). For a small number of participants, far fewer trials were obtained (min = 294, with n = 8 having fewer than 350 trials) either as a result of early termination, or because of computer error during data file saving.</p>
 
 <table class="table">
 <caption>
@@ -1006,13 +1015,6 @@ College students - online
 <span id="fig:reactiontime"></span>
 <img src="descriptive-statistics_files/figure-html/reactiontime-1.png" alt="Distribution of reaction times for all participants. The vertical line set a 1s, which is close to the mean reaction time across all samples." width="1008"><p class="caption">
 Figure 3: Distribution of reaction times for all participants. The vertical line set a 1s, which is close to the mean reaction time across all samples.
-</p>
-</div>
-
-<div class="figure">
-<span id="fig:totaltrials"></span>
-<img src="descriptive-statistics_files/figure-html/totaltrials-1.png" alt="Number of trials for each participant in each condition. The horizontal Line indicates maximum number of trials possible." width="1008"><p class="caption">
-Figure 4: Number of trials for each participant in each condition. The horizontal Line indicates maximum number of trials possible.
 </p>
 </div>
 </div>

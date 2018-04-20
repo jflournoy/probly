@@ -83,6 +83,9 @@
       <a href="../articles/age-and-puberty-data.html">Age, Puberty, and Informant Data</a>
     </li>
     <li>
+      <a href="../articles/age-learning-association.html">Association of age with learning parameters</a>
+    </li>
+    <li>
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
     </li>
     <li>
@@ -92,10 +95,16 @@
       <a href="../articles/fit-model-to-participant-data.html">Fit model to participant data</a>
     </li>
     <li>
+      <a href="../articles/fsmi-cfa.html">Fundamental Social Motives Confirmatory Factor Analysis</a>
+    </li>
+    <li>
+      <a href="../articles/fsmi-data.html">Retrieve Fundamental Social Motives Data</a>
+    </li>
+    <li>
       <a href="../articles/test-simple-3l-mv-model.html">Test Simple 3-level Multivariate Normal Model</a>
     </li>
     <li>
-      <a href="../articles/test-simulated-data.html">Test Simulated Data</a>
+      <a href="../articles/test-simulated-data.html">Association of Age and Puberty with Learning Parameters</a>
     </li>
   </ul>
 </li>
@@ -123,24 +132,35 @@
     <p>Plot simulated SPLT behavior</p>
     
 
-    <pre class="usage"><span class='fu'>plot_splt_sim_behavior</span>(<span class='no'>splt_df</span>, <span class='no'>press_right_mat</span>)</pre>
+    <pre class="usage"><span class='fu'>plot_splt_sim_behavior</span>(<span class='no'>splt_df</span>, <span class='no'>press_right</span>, <span class='kw'>se</span> <span class='kw'>=</span> <span class='no'>T</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>splt_df</th>
-      <td><p>a data frame from the SPLT, with non-response (<code>is.na(pressed_r)</code>) rows removed</p></td>
+      <td><p>a data frame from the SPLT, with non-response
+(<code>is.na(pressed_r)</code>) rows removed</p></td>
     </tr>
     <tr>
-      <th>press_right_mat</th>
+      <th>press_right</th>
       <td><p>an individual x trial matrix of trial responses</p></td>
+    </tr>
+    <tr>
+      <th>se</th>
+      <td><p>plot the standard error around smooth lines</p></td>
     </tr>
     </table>
     
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a plot split by sample, and overall summary plot</p>
+<p>If press_right is a single matrix, returns a list of plots: one
+  across all samples (<code>$sample</code>), and one overall (<code>$overall</code>). If
+  press_right is a list of matrices, the plot returned does not group by
+  sample, returning an overall plot that contains the additional variable
+  <code>sim</code> that can be used in a facet expression. For use with gganimate,
+  note that the frame aesthetic is set to <code>sim</code>.</p>
     
 
   </div>
