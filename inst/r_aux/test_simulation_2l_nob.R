@@ -8,7 +8,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     nsims <- 100
     nchains <- 4
     nsimsperchain <- ceiling(nsims/nchains)
-    # data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
+    data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
     message('Data dir: ', data_dir)
     plan(tweak(multiprocess, gc = T, workers = nchains))
 } else {
