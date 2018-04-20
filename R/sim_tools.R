@@ -87,6 +87,7 @@ generate_responses <- function(N, M, K, mm, Tsubj, cue, n_cues, condition, outco
 
     press_right <- matrix(nrow = N, ncol = max(Tsubj)) #the matrices to return
     outcome_realized <- matrix(nrow = N, ncol = max(Tsubj))
+    pR <- matrix(nrow = N, ncol = max(Tsubj))
 
     for(i in 1:N){
         wv_r <- numeric(n_cues) #action weight for press-right
@@ -104,7 +105,10 @@ generate_responses <- function(N, M, K, mm, Tsubj, cue, n_cues, condition, outco
                 p_right[ cue[i, t] ] * (1 - beta_xi_prime[ i, condition[i, t] ]) +
                 beta_xi_prime[ i, condition[i, t] ] / 2 #incorporate noise
 
+            pR[i, t] <- p_right[ cue[i, t] ]
+
             press_right[i, t]    <- rbinom(n = 1, size = 1, prob = p_right[ cue[i, t] ])
+
             # message('i = ', i, ', t = ', t, ', press_right = ', press_right[i, t], '.')
             if(press_right[i, t]){ # press_right[i, t] == 1
                 outcome_realized[i, t] <- outcome[i, t, 2]
@@ -119,7 +123,7 @@ generate_responses <- function(N, M, K, mm, Tsubj, cue, n_cues, condition, outco
             }
         } # t loop
     }# i loop
-    return(list(press_right = press_right, outcome_realized = outcome_realized))
+    return(list(press_right = press_right, outcome_realized = outcome_realized, p_press_right = pR))
 }
 
 #' Make task structure from data
