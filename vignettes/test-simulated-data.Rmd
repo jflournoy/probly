@@ -1,5 +1,5 @@
 ---
-title: "Test Simulated Data"
+title: "Association of Age and Puberty with Learning Parameters"
 author: "John Flournoy"
 date: "`r Sys.Date()`"
 output: 
@@ -22,7 +22,7 @@ csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  echo=F,message=F,warning=F,error=F
+  echo=F,message=F,warning=F,error=F, eval = F
 )
 
 knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
