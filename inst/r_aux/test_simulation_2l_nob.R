@@ -20,9 +20,10 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     plan(tweak(multiprocess, gc = T, workers = nchains))
 }
 
-sim_test_fn <- file.path(data_dir, 'splt_sim_test_sims.RDS')
-sim_test_pr_fn <- file.path(data_dir, 'splt_sim_test_sims_pr.RDS')
-sim_test_fit_fn <- file.path(data_dir, 'splt_sim_test_fit.RDS')
+sim_test_fn <- file.path(data_dir, 'splt_sim2_test_sims.RDS')
+sim_test_pr_fn <- file.path(data_dir, 'splt_sim2_test_sims_pr.RDS')
+sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit.RDS')
+stan_model_fn <- system.file('stan', 'splt_rl_2_level_no_b_2.stan', package = 'probly')
 
 condition_mat[is.na(condition_mat)] <- -1
 outcome_arr[is.na(outcome_arr)] <- -1
@@ -59,8 +60,7 @@ dont_save_diff_pars_in_sim <- c('beta_xi_diffs',
 
 if(!file.exists(sim_test_fn)){
     message('Generating simulated data')
-    rl_2l_nob_cpl <- rstan::stan_model(
-        system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly'))
+    rl_2l_nob_cpl <- rstan::stan_model(stan_model_fn)
 
     future::plan(future::multiprocess)
     rl_2l_nob_sim_f <- future::future({
@@ -111,8 +111,7 @@ if(!file.exists(sim_test_fit_fn)){
     stan_sim_data_to_fit$press_right <- press_right_sim_mat
     stan_sim_data_to_fit$run_estimation <- 1
 
-    rl_2l_nob_cpl <- rstan::stan_model(
-        system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly'))
+    rl_2l_nob_cpl <- rstan::stan_model(stan_model_fn)
 
     future::plan(future::multiprocess)
     rl_2l_nob_simfit_f <- future::future(
