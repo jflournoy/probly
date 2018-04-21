@@ -119,10 +119,6 @@ generated quantities {
     vector[N] log_lik;
     int<lower=-1, upper=1> pright_pred[N, T]; //choices "0" = left, "1" = right
 
-    Sigma_xi = diag_pre_multiply(tau_xi, L_Omega_xi);
-    Sigma_ep = diag_pre_multiply(tau_ep, L_Omega_ep);
-    Sigma_rho = diag_pre_multiply(tau_rho, L_Omega_rho);
-
     for (i in 1:N) {
         for (t in 1:T) {
             pright_pred[i, t] = -1;
