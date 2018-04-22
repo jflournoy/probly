@@ -123,6 +123,8 @@ model {
 generated quantities {
     vector[N] log_lik;
     int<lower=-1, upper=1> pright_pred[N, T]; //choices "0" = left, "1" = right
+    //save final pR
+    vector[ncue] pR_final[N];
 
     for (i in 1:N) {
         for (t in 1:T) {
@@ -183,6 +185,7 @@ generated quantities {
             }
         } // end of t loop
         log_lik[i] = sum(log_lik_iters);
+        pR_final[i] = pR;
     } // end of i loop
     } //end local
 }
