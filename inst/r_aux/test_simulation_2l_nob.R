@@ -24,6 +24,7 @@ sim_test_fn <- file.path(data_dir, 'splt_sim2_test_sims.RDS')
 sim_test_pr_fn <- file.path(data_dir, 'splt_sim2_test_sims_pr.RDS')
 sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit.RDS')
 stan_model_fn <- system.file('stan', 'splt_rl_2_level_no_b_2.stan', package = 'probly')
+####TEST stan_model_fn <- './inst/stan/splt_rl_2_level_no_b_2.stan'
 
 condition_mat[is.na(condition_mat)] <- -1
 outcome_arr[is.na(outcome_arr)] <- -1
@@ -32,6 +33,9 @@ outcome_l <- outcome_arr[,,1]
 outcome_r <- outcome_arr[,,2]
 press_right_dummy <- matrix(rep(-1, N*max(Tsubj)), nrow = N)
 cue_mat[is.na(cue_mat)] <- -1
+
+J_pred <- 0
+Xj <- matrix(0,nrow=N,ncol=0)
 
 stan_sim_data <- list(
     N = N,
@@ -45,6 +49,8 @@ stan_sim_data <- list(
     outcome_l = outcome_l,
     press_right = press_right_dummy,
     cue = cue_mat,
+    # J_pred = J_pred,
+    # Xj = Xj,
     run_estimation = 0
 )
 

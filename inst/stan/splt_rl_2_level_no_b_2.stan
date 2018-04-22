@@ -12,6 +12,9 @@ data {
     int<lower=-1, upper=1> press_right[N, T]; //choices "0" = left, "1" = right
     int<lower=-1, upper=ncue> cue[N, T]; //which cue appeared
 
+    // int<lower=1> J_pred; //number of participant-level predictors
+    // matrix[N,J_pred] Xj; //participant predictors
+
     int<lower=0, upper=1> run_estimation; // a switch to evaluate the likelihood
 }
 
@@ -41,6 +44,10 @@ parameters {
     matrix[1,K] mu_delta_xi; //overall mean for each condition
     matrix[1,K] mu_delta_ep;
     matrix[1,K] mu_delta_rho;
+
+    // matrix[J_pred, K] mu_gamma_xi;
+    // matrix[J_pred, K] mu_gamma_ep;
+    // matrix[J_pred, K] mu_gamma_rho;
 }
 
 transformed parameters {
@@ -53,15 +60,19 @@ transformed parameters {
     matrix<lower=0>[N, K] beta_rho_prm; //per-individual coefficients for rho, for each condition, transformed
 
     for(k in 1:K){
-        tau_xi[k]  = .25 * tan(tau_unif_xi[k]);
-        tau_ep[k]  = .25 * tan(tau_unif_ep[k]);
-        tau_rho[k] = .25 * tan(tau_unif_rho[k]);
+        tau_xi[k]  = .15 * tan(tau_unif_xi[k]);
+        tau_ep[k]  = .15 * tan(tau_unif_ep[k]);
+        tau_rho[k] = .15 * tan(tau_unif_rho[k]);
     }
 
-    //---testing---
     beta_xi_prm  = Phi_approx(u * mu_delta_xi * Con + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
     beta_ep_prm  = Phi_approx(u * mu_delta_ep * Con + (diag_pre_multiply(tau_ep, L_Omega_ep) * z_ep)');
     beta_rho_prm = exp(u * mu_delta_rho * Con + (diag_pre_multiply(tau_rho, L_Omega_rho) * z_rho)');
+
+    //---testing---
+    // beta_xi_prm  = Phi_approx(u * mu_delta_xi * Con + Xj * mu_gamma_xi * Con + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
+    // beta_ep_prm  = Phi_approx(u * mu_delta_ep * Con + Xj * mu_gamma_ep * Con + (diag_pre_multiply(tau_ep, L_Omega_ep) * z_ep)');
+    // beta_rho_prm = exp(u * mu_delta_rho * Con + Xj * mu_gamma_rho * Con + (diag_pre_multiply(tau_rho, L_Omega_rho) * z_rho)');
     //---testing---
 }
 
@@ -71,6 +82,11 @@ model {
     to_vector(mu_delta_xi)  ~ normal(0, 1);
     to_vector(mu_delta_ep)  ~ normal(0, 1);
     to_vector(mu_delta_rho) ~ normal(0, 1);
+
+    //individual level predictors
+    // to_vector(mu_gamma_xi)  ~ normal(0, .25);
+    // to_vector(mu_gamma_ep)  ~ normal(0, .25);
+    // to_vector(mu_gamma_rho) ~ normal(0, .25);
 
     //Sigma_param for individual level coefficients
     to_vector(z_xi)  ~ normal(0, 1);
