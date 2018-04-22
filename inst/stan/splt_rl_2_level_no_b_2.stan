@@ -140,6 +140,7 @@ generated quantities {
         real beta_xi_it;
         real beta_ep_it;
         real beta_rho_it;
+        vector[T] log_lik_iters;
 
         wv_r  = initV;
         wv_l = initV;
@@ -147,6 +148,7 @@ generated quantities {
         qv_l = initV;
 
         log_lik[i] = 0;
+        log_lik_iters = rep_vector(0, T);
 
         for (t in 1:Tsubj[i]) {
             //neater code
@@ -162,7 +164,7 @@ generated quantities {
             pright_pred[i, t] = bernoulli_rng(pR[cue[i, t]]);
 
             if(run_estimation == 1){
-                log_lik[i] += bernoulli_lpmf(press_right[i, t] | pR[cue[i, t]]);
+                log_lik_iters[t] = bernoulli_lpmf(press_right[i, t] | pR[cue[i, t]]);
 
                 // update action values
                 if (press_right[i, t]) { // update go value
@@ -171,7 +173,7 @@ generated quantities {
                     qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_l[cue[i, t]]);
                 }
             } else {
-                log_lik[i] += bernoulli_lpmf(pright_pred[i, t] | pR[cue[i, t]]);
+                log_lik_iters[t] = bernoulli_lpmf(pright_pred[i, t] | pR[cue[i, t]]);
 
                 if (pright_pred[i, t]) { // update go value
                     qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_r[cue[i, t]]);
@@ -180,6 +182,7 @@ generated quantities {
                 }
             }
         } // end of t loop
+        log_lik[i] = sum(log_lik_iters);
     } // end of i loop
-    }
+    } //end local
 }
