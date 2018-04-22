@@ -60,9 +60,9 @@ transformed parameters {
     matrix<lower=0>[N, K] beta_rho_prm; //per-individual coefficients for rho, for each condition, transformed
 
     for(k in 1:K){
-        tau_xi[k]  = .15 * tan(tau_unif_xi[k]);
-        tau_ep[k]  = .15 * tan(tau_unif_ep[k]);
-        tau_rho[k] = .15 * tan(tau_unif_rho[k]);
+        tau_xi[k]  = .025 * tan(tau_unif_xi[k]);
+        tau_ep[k]  = .025 * tan(tau_unif_ep[k]);
+        tau_rho[k] = .025 * tan(tau_unif_rho[k]);
     }
 
     beta_xi_prm  = Phi_approx(u * mu_delta_xi * Con + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
@@ -79,9 +79,9 @@ transformed parameters {
 model {
     // gng_m2: RW + noise + bias model in Guitart-Masip et al 2012
     // hyper parameters
-    to_vector(mu_delta_xi)  ~ normal(0, 1);
-    to_vector(mu_delta_ep)  ~ normal(0, 1);
-    to_vector(mu_delta_rho) ~ normal(0, 1);
+    to_vector(mu_delta_xi)  ~ normal(0, .75);
+    to_vector(mu_delta_ep)  ~ normal(0, .75);
+    to_vector(mu_delta_rho) ~ normal(0, .75);
 
     //individual level predictors
     // to_vector(mu_gamma_xi)  ~ normal(0, .25);
