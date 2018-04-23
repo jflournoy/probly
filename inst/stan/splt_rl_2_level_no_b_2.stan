@@ -65,9 +65,9 @@ transformed parameters {
         tau_rho[k] = .05 * tan(tau_unif_rho[k]);
     }
 
-    beta_xi_prm  = Phi_approx(u * mu_delta_xi + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
-    beta_ep_prm  = Phi_approx(u * mu_delta_ep + (diag_pre_multiply(tau_ep, L_Omega_ep) * z_ep)');
-    beta_rho_prm = exp(u * mu_delta_rho + (diag_pre_multiply(tau_rho, L_Omega_rho) * z_rho)');
+    beta_xi_prm  = Phi_approx(u * mu_delta_xi * Con + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
+    beta_ep_prm  = Phi_approx(u * mu_delta_ep * Con + (diag_pre_multiply(tau_ep, L_Omega_ep) * z_ep)');
+    beta_rho_prm = exp(u * mu_delta_rho * Con + (diag_pre_multiply(tau_rho, L_Omega_rho) * z_rho)');
 
     //---testing---
     // beta_xi_prm  = Phi_approx(u * mu_delta_xi * Con + Xj * mu_gamma_xi * Con + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
