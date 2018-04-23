@@ -79,9 +79,9 @@ transformed parameters {
 model {
     // gng_m2: RW + noise + bias model in Guitart-Masip et al 2012
     // hyper parameters
-    to_vector(mu_delta_xi)  ~ normal(0, .5);
-    to_vector(mu_delta_ep)  ~ normal(0, .5);
-    to_vector(mu_delta_rho) ~ normal(0, .5);
+    to_vector(mu_delta_xi)  ~ normal(0, 1);
+    to_vector(mu_delta_ep)  ~ normal(0, 1);
+    to_vector(mu_delta_rho) ~ normal(0, 1);
 
     //individual level predictors
     // to_vector(mu_gamma_xi)  ~ normal(0, .25);
