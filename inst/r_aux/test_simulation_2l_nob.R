@@ -130,12 +130,14 @@ if(!file.exists(sim_test_fit_fn)){
                 iter = 1500, warmup = 1000,
                 include = FALSE, pars = 'pright_pred', #no need to save predicted task behavior
                 control = list(max_treedepth = 15, adapt_delta = 0.99))
+            message('Saving sim fit to: ', sim_test_fit_fn)
             saveRDS(afit, sim_test_fit_fn)
             gc()
             afit
         })
     future::resolved(rl_2l_nob_simfit_f)
     rl_2l_nob_simfit <- future::value(rl_2l_nob_simfit_f)
+    gc()
 } else {
     message('Loading fit of simulated data')
     rl_2l_nob_simfit <- readRDS(sim_test_fit_fn)
