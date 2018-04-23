@@ -129,27 +129,28 @@ The simulated data do generally cover the range of the actual data when we look 
 
 (ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model smooth and is only intended to give a rough sense of trends over trials. Each panel is one from 400 simulated data sets. The red line indicates random responding.
 
-```{r simdata, fig.width=15, fig.height=12, fig.cap='(ref:simdat)'}
+```{r simdata, fig.width=8, fig.height=5, fig.cap='(ref:simdatcoverage)'}
 multi_plot <- probly::plot_splt_sim_behavior(
     splt_df = splt,
-    press_right = list_of_pright_pred_mats[sample(1:400, size = 100)])
+    press_right = list_of_pright_pred_mats)
+nosmooth_multi_plot <- multi_plot
+nosmooth_multi_plot$layers[[2]] <- NULL
+nosmooth_multi_plot
+```
+
+(ref:simdatcoverage) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial, collapsed over simulations. It's possible to see that trial-by-trial probability of choosing the optimal resonses, averaged across all participants, spans the full range of possible behavior (with the extreme exception that no simulation evinces all participants performing perfectly).
+
+```{r simdatcoverage, fig.width=15, fig.height=12, fig.cap='(ref:simdat)'}
 multi_plot + 
     ggplot2::facet_wrap(~sim) + 
     ggplot2::theme(strip.background = element_blank(),
                    strip.text = element_blank())
 ```
 
-(ref:simdatcoverage) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial, collapsed over simulations. It's possible to see that trial-by-trial probability of choosing the optimal resonses, averaged across all participants, spans the full range of possible behavior (with the extreme exception that no simulation evinces all participants performing perfectly).
-
-```{r simdatcoverage, fig.width=8, fig.height=5, fig.cap='(ref:simdatcoverage)'}
-nosmooth_multi_plot <- multi_plot
-nosmooth_multi_plot$layers[[2]] <- NULL
-nosmooth_multi_plot
-```
-
 (ref:priorplots) Priors, with $epsilon$ and $\xi$ on their transformed scales. Notice the very long tails for the individually varying $rho$ parameters (beta_rho). 
 
 ```{r priorplots, fig.width=3, fig.height=2, fig.cap='(ref:priorplots)'}
+# rl_2l_nob_sim <- readRDS('/data/jflournoy/split/probly/splt_sim2_test_sims.RDS')
 ggplot2::theme_set(ggplot2::theme_minimal())
 true_mu_ep <- rstan::extract(rl_2l_nob_sim, pars = 'mu_delta_ep')[[1]]
 true_mu_rho <- rstan::extract(rl_2l_nob_sim, pars = 'mu_delta_rho')[[1]]
@@ -157,6 +158,10 @@ true_mu_xi <- rstan::extract(rl_2l_nob_sim, pars = 'mu_delta_xi')[[1]]
 true_beta_ep <- rstan::extract(rl_2l_nob_sim, pars = 'beta_ep_prm')[[1]]
 true_beta_rho <- rstan::extract(rl_2l_nob_sim, pars = 'beta_rho_prm')[[1]]
 true_beta_xi <- rstan::extract(rl_2l_nob_sim, pars = 'beta_xi_prm')[[1]]
+true_tau_ep <- rstan::extract(rl_2l_nob_sim, pars = 'tau_ep')[[1]]
+true_tau_xi <- rstan::extract(rl_2l_nob_sim, pars = 'tau_xi')[[1]]
+true_tau_rho <- rstan::extract(rl_2l_nob_sim, pars = 'tau_rho')[[1]]
+sample_pR_final <- rstan::extract(rl_2l_nob_sim, pars = 'pR_final')[[1]]
 
 dimnames(true_mu_ep)[[3]] <- c('mu_ep_1', 'mu_ep_2', 'mu_ep_3')
 dimnames(true_mu_rho)[[3]] <- c('mu_rho_1', 'mu_rho_2', 'mu_rho_3')
@@ -164,15 +169,35 @@ dimnames(true_mu_xi)[[3]] <- c('mu_xi_1', 'mu_xi_2', 'mu_xi_3')
 dimnames(true_beta_ep)[[3]] <- c('beta_ep_1', 'beta_ep_2', 'beta_ep_3')
 dimnames(true_beta_rho)[[3]] <- c('beta_rho_1', 'beta_rho_2', 'beta_rho_3')
 dimnames(true_beta_xi)[[3]] <- c('beta_xi_1', 'beta_xi_2', 'beta_xi_3')
+dimnames(true_tau_ep)[[2]] <- c('tau_ep_1', 'tau_ep_2', 'tau_ep_3')
+dimnames(true_tau_xi)[[2]] <- c('tau_xi_1', 'tau_xi_2', 'tau_xi_3')
+dimnames(true_tau_rho)[[2]] <- c('tau_rho_1', 'tau_rho_2', 'tau_rho_3')
+dimnames(sample_pR_final)[[3]] <- paste0('cue_',1:6)
 
-bayesplot::mcmc_areas_ridges(pnorm(true_mu_ep))
-bayesplot::mcmc_areas_ridges(true_beta_ep, adjust = .5)
-bayesplot::mcmc_areas_ridges(true_mu_rho) + ggplot2::coord_cartesian(xlim = c(-10, 10))
-bayesplot::mcmc_areas_ridges(log(true_beta_rho), adjust = 2) + ggplot2::coord_cartesian(xlim = c(-10, 10))
-bayesplot::mcmc_areas_ridges(pnorm(true_mu_xi))
-bayesplot::mcmc_areas_ridges(true_beta_xi, adjust = .5)
+bayesplot::mcmc_hist(pnorm(true_mu_ep))
+bayesplot::mcmc_hist(true_beta_ep, adjust = .5) + ggplot2::coord_cartesian(xlim = c(0,1))
+bayesplot::mcmc_hist(true_mu_rho) + ggplot2::coord_cartesian(xlim = c(-5, 5))
+bayesplot::mcmc_hist(log(true_beta_rho), adjust = 2) + ggplot2::coord_cartesian(xlim = c(-15, 15))
+bayesplot::mcmc_hist(pnorm(true_mu_xi))
+bayesplot::mcmc_hist(true_beta_xi, adjust = .05)
+bayesplot::mcmc_hist((true_tau_ep), adjust = .05)
+bayesplot::mcmc_hist((true_tau_xi), adjust = .05)
+bayesplot::mcmc_hist((true_tau_rho), adjust = .05)
+bayesplot::mcmc_hist((sample_pR_final), adjust = .05)
 ```
 
+```{r fig.width=12,fig.height=12}
+bayesplot::mcmc_pairs(data.frame(true_beta_rho_1 = as.numeric(log(true_beta_rho[,,1])), 
+                                 true_beta_rho_2 = as.numeric(log(true_beta_rho[,,2])), 
+                                 true_beta_rho_3 = as.numeric(log(true_beta_rho[,,3])), 
+                                 true_beta_ep_1 = as.numeric(qnorm(true_beta_ep[,,1])),
+                                 true_beta_ep_2 = as.numeric(qnorm(true_beta_ep[,,2])),
+                                 true_beta_ep_3 = as.numeric(qnorm(true_beta_ep[,,3])),
+                                 true_beta_xi_1 = as.numeric(qnorm(true_beta_xi[,,1])),
+                                 true_beta_xi_2 = as.numeric(qnorm(true_beta_xi[,,2])),
+                                 true_beta_xi_3 = as.numeric(qnorm(true_beta_xi[,,3])),
+                                 pr_final_1 = as.numeric((sample_pR_final[,,1]))))
+```
 
 # Recovery of population parameters
 
