@@ -160,9 +160,9 @@ tds1_wave2_scored_pdss <- scorequaltrics::score_pdss(tds1_wave2_long_nodupes,
 tds1_wave2_scored_puberty <- dplyr::bind_rows(tds1_wave2_scored_pds, tds1_wave2_scored_pdss)
 ```
 
-## YADS-V
+# YADS-V
 
-### Version 1:
+## Version 1:
 
 - SID
 - PAL-2_Age
@@ -258,7 +258,7 @@ yadsv_v1_scored_pdss <- scorequaltrics::score_pdss(yadsv_v1_long_nodupes,
 yadsv_v1_scored_puberty <- dplyr::bind_rows(yadsv_v1_scored_pds, yadsv_v1_scored_pdss)
 ```
 
-### Version 2.0
+## Version 2.0
 
 - SID
 - Q327 how old
@@ -344,7 +344,7 @@ yadsv_v2_scored_pdss <- scorequaltrics::score_pdss(yadsv_v2_long_nodupes,
 yadsv_v2_scored_puberty <- dplyr::bind_rows(yadsv_v2_scored_pds, yadsv_v2_scored_pdss)
 ```
 
-### Version 2.0 online
+## Version 2.0 online
 
 - participantid
 - Q327 how old are you
