@@ -51,8 +51,8 @@ survey_names_splt <- dplyr::filter(survey_names_all, grepl('.*(TDS1|TDS2|TDS3|YA
 
 Anonymize it, and make it part of the package while we'er at it.
 
-```{r fsmiyadsv1, eval=F}
-
+```{r fsmiyadsv1}
+item_name_regex <- '(fsmi|K_SRQ_|SAQ_|dominance_prestige|UPPSP_)'
 #version 1
 yadsv_v1_surveys <- survey_names_splt %>%
     filter(grepl('YADS-V$', SurveyName))
@@ -67,7 +67,7 @@ yadsv_v1_qid_sid <- scorequaltrics::get_survey_data(yadsv_v1_surveys,
 yadsv_v1_fmsi_long <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
                                                    credentials, 
                                                    pid_col = 'qid') %>%
-    dplyr::filter(grepl('(fsmi)', item)) %>% 
+    dplyr::filter(grepl(item_name_regex, item)) %>% 
     dplyr::left_join(yadsv_v1_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
 
@@ -85,7 +85,7 @@ yads_v2_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2_surveys,
 yadsv_v2_fmsi_long <- scorequaltrics::get_survey_data(yadsv_v2_surveys, 
                                                    credentials, 
                                                    pid_col = 'qid') %>%
-    dplyr::filter(grepl('(fsmi)', item)) %>% 
+    dplyr::filter(grepl(item_name_regex, item)) %>% 
     dplyr::left_join(yads_v2_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
 
@@ -105,22 +105,74 @@ yadsv_v2o_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2o_surveys,
 yadsv_v2o_fsmi_long <- scorequaltrics::get_survey_data(yadsv_v2o_surveys, 
                                                    credentials, 
                                                    pid_col = 'qid') %>%
-    dplyr::filter(grepl('fsmi', item)) %>% 
+    dplyr::filter(grepl(item_name_regex, item)) %>% 
     dplyr::left_join(yadsv_v2o_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
 
-yadsv_fsmi_long <- dplyr::bind_rows(yadsv_v1_fmsi_long, 
-                                    yadsv_v2_fmsi_long,
-                                    yadsv_v2o_fsmi_long)
+#TDS2
+tds2_surveys <- survey_names_splt %>%
+    filter(grepl('(TDS2 Session 3 - Child$|TDS2 Session 1)', SurveyName))
+tds2_qid_sid <- scorequaltrics::get_survey_data(tds2_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'SID') %>%
+    dplyr::filter(grepl('qid', item), SID != 999,
+                  !value %in% c('R_eb4zIauAyliE9mZ',
+                                'R_bBeojkejt41450N',
+                                'R_2rkmtZI2W9Khoto',
+                                'R_b1xlYl5pNEoie1H'), #participant has odd pattern of responses for session 1
+                  value != 'R_vSIlF9BkXhrLxZv', #participant restarted questionnaire
+                  value != 'R_1QbE1GP5I0CGwSa', #participant restarted questionnaire
+                  ) %>% 
+    dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
+    tidyr::spread(item, value) %>%
+    dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
+    dplyr::select(-survey_name)
+tds2_fmsi_long <- scorequaltrics::get_survey_data(tds2_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'qid') %>%
+    dplyr::filter(grepl(item_name_regex, item)) %>% 
+    dplyr::left_join(tds2_qid_sid, by = 'qid') %>%
+    dplyr::select(-qid, -id)
+
+#TDS1
+tds1_surveys <- survey_names_splt %>%
+    filter(grepl('(TDS1, Session 3 - Child$|TDS1 Session 1 - Post|TDS1 Session 1  - Pre)', SurveyName))
+tds1_qid_sid <- scorequaltrics::get_survey_data(tds1_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'SID') %>%
+    dplyr::filter(grepl('qid', item), SID != 999, SID != '') %>% 
+    dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
+    tidyr::spread(item, value) %>%
+    dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
+    dplyr::select(-survey_name)
+tds1_fmsi_long <- scorequaltrics::get_survey_data(tds1_surveys, 
+                                                   credentials, 
+                                                   pid_col = 'qid') %>%
+    dplyr::filter(grepl(item_name_regex, item)) %>% 
+    dplyr::left_join(tds1_qid_sid, by = 'qid') %>%
+    dplyr::select(-qid, -id)
+
+yadsv_fsmi_long <- dplyr::bind_rows(
+    yadsv_v1_fmsi_long, 
+    yadsv_v2_fmsi_long,
+    yadsv_v2o_fsmi_long)
+
+tds_fsmi_long <- dplyr::bind_rows(
+    tds1_fmsi_long,
+    tds2_fmsi_long)
 
 SID_filter <- '([1234]\\d\\d|[34]\\d{4}$|[1234]\\d\\d|99386)'
 
 yadsv_fsmi_long_nodupes <- yadsv_fsmi_long %>%
     filter(grepl(SID_filter, SID)) %>%
     scorequaltrics::clean_dupes(pid_col = 'SID')
+
+tds_fsmi_long_nodupes <- tds_fsmi_long %>%
+    filter(grepl(SID_filter, SID)) %>%
+    scorequaltrics::clean_dupes(pid_col = 'SID')
 ```
 
-```{r eval=F}
+```{r }
 #Check that dropped values weren't ambiguous
 yadsv_fsmi_long_nodupes %>% 
     filter(dropped) %>%
@@ -128,9 +180,16 @@ yadsv_fsmi_long_nodupes %>%
     filter(!all(length(unlist(old.value)) < 1)) %>%
     mutate(old.value = paste(old.value, collaps = ' ')) %>%
     knitr::kable(caption = "Questionnaire dupes")
+
+tds_fsmi_long_nodupes %>% 
+    filter(dropped) %>%
+    group_by(SID, item) %>%
+    filter(!all(length(unlist(old.value)) < 1)) %>%
+    mutate(old.value = paste(old.value, collaps = ' ')) %>%
+    knitr::kable(caption = "Questionnaire dupes")
 ```
 
-```{r eval=F}
+```{r }
 anon_id_cols <- readr::cols(
   id = readr::col_character(),
   sample = readr::col_character(),
@@ -164,7 +223,39 @@ if(!all(
         dplyr::rename(SID = anon_id, sample = anon_sample)
 }
 
-splt_fsmi_l <- dplyr::select(yadsv_fsmi_long_deid, SID, item, value)
+tds_fsmi_long_deid <- dplyr::full_join(
+    tds_fsmi_long_nodupes,
+    dplyr::filter(
+        readr::read_csv(anon_id_filename, col_types = anon_id_cols),
+        sample %in% c('TDS1', 'TDS2', 'TDS3')),
+    by = c('SID' = 'id'))
+
+if(!all(
+    dim(filter(tds_fsmi_long_deid, is.na(anon_id), !is.na(SID), is.na(exclude)))[1] == 0,
+    dim(filter(tds_fsmi_long_deid, 
+               !is.na(anon_id), is.na(SID), anon_sample %in% c('TDS1', 'TDS2', 'TDS3')))[1] == 0)) {
+    stop("Some participants not accounted for, or not anonymized")
+} else {
+    tds_fsmi_long_deid <- dplyr::left_join(
+        tds_fsmi_long_nodupes,
+        dplyr::filter(
+            readr::read_csv(anon_id_filename, col_types = anon_id_cols),
+            sample %in% c('TDS1', 'TDS2', 'TDS3')),
+        by = c('SID' = 'id')) %>%
+        dplyr::ungroup() %>%
+        dplyr::filter(is.na(exclude)) %>%
+        dplyr::select(-SID, -exclude, -sample) %>%
+        dplyr::rename(SID = anon_id, sample = anon_sample)
+}
+
+splt_fsmi_long_deid <- dplyr::bind_rows(tds_fsmi_long_deid, yadsv_fsmi_long_deid)
+
+```
+
+```{r eval=F}
+splt_fsmi_l <- dplyr::select(splt_fsmi_long_deid, SID, item, value)
 splt_fsmi <- tidyr::spread(splt_fsmi_l, item, value)
 devtools::use_data(splt_fsmi)
 ```
+
+
