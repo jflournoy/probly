@@ -17,7 +17,7 @@ bibliography: "/home/jflournoy/Rlibs/probly/bib/dissertation.bib"
 csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
 ---
 
-The below is a draft measurement model for the Fundamental Social Motives Inventory. 
+Below, I begin to examine the fit of scales measuring behaviors, beliefs, attitudes, and strategies relevant to mate-seeking and status motives. After examining the item distributions to see if there are any very problematic subsets, I fit a confirmatory factor analysis to remaining scales. I also confirm that an exploratory factor analysis shows expected factor structure.
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -28,7 +28,72 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setupoptions}
-rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
+college_rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
+adolescent_rubric_dir <- system.file('scoring_rubrics', 'adolescent', package = 'probly')
+
+relationship_status <- c('long_term' = 1, 'actively_dating' = 2, 'single_nodate' = 3, 'single_neverdate' = 4)
+
+##FORDEVLOPMENT:
+college_rubric_dir <- '~/code_new/probly/inst/scoring_rubrics/college/'
+adolescent_rubric_dir <- '~/code_new/probly/inst/scoring_rubrics/adolescent/'
+###
+make_factor_item_labels <- function(scale_key, factor_name_prefix = T, remove_string_from_factor = NULL){
+    items <- milav::get_items_from_keys(scale_key)
+    itemnames <- unlist(items)
+    
+    itemlabels <- unlist(
+        lapply(seq_along(items), 
+               function(i) {
+                   if(!is.null(remove_string_from_factor)){
+                       factor_name <- gsub(remove_string_from_factor, '', names(scale_key)[i])
+                   } else {
+                       factor_name <- names(scale_key)[i]
+                   }
+                   paste0(
+                       factor_name, 
+                       '_',
+                       gsub('.*?(\\d+)', '\\1', items[[i]]))
+               }))
+    return(list(names = itemnames, labels = itemlabels))
+}
+
+plot_item_histograms <- function(item_data, scale_key, factor_name_prefix = T, remove_string_from_factor = NULL){
+    name_labels <- make_factor_item_labels(
+        scale_key, 
+        factor_name_prefix = factor_name_prefix, 
+        remove_string_from_factor = remove_string_from_factor)
+    
+    scale_item_data <- dplyr::select_at(
+        item_data, 
+        dplyr::vars(name_labels$names))
+    
+    p <- ggplot2::ggplot(
+        dplyr::mutate(
+            tidyr::gather(scale_item_data, item, value),
+            item = factor(item, levels = name_labels$names, labels = name_labels$labels)),
+        ggplot2::aes(x = value)) + 
+        ggplot2::geom_histogram(ggplot2::aes(y=..density..), binwidth = 1, color = '#666666', fill = NA) + 
+        ggplot2::geom_density(ggplot2::aes(y=..density..), adjust = 2) + 
+        ggplot2::facet_wrap(~item) + 
+        ggplot2::theme_minimal()
+    return(p)
+}
+
+create_bifactor <- function(scale_key, scales_to_use, factor_name){
+    #returns factor and sets correlations to 0
+    method_fac <- paste0('\n',
+                         milav::make_factor_string(
+                             milav::get_items_from_keys(
+                                 scale_key[scales_to_use]),
+                             factor_name = factor_name),
+                         '\n', factor_name, ' ~~ ', 
+                         paste(
+                             paste0(
+                                 '0*', 
+                                 scales_to_use),
+                             collapse = ' + '))
+    return(method_fac)
+}
 ```
 
 ```{r packages}
@@ -47,112 +112,109 @@ data("splt_fsmi")
 data("splt_dev_and_demog")
 
 fsmi_rubric <- scorequaltrics::get_rubrics(
-    rubric_filenames = data_frame(file = file.path(rubric_dir, 'fsmi_scoring_rubric.csv')),
+    rubric_filenames = data_frame(
+        file = file.path(college_rubric_dir, 'fsmi_scoring_rubric.csv')),
     type = 'scoring')
+dnp_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = data_frame(
+        file = file.path(college_rubric_dir, 'DominanceAndPrestige_scoring_rubric.csv')),
+    type = 'scoring')
+ksqr_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = data_frame(
+        file = file.path(college_rubric_dir, 'K-SRQ_scoring_rubric.csv')),
+    type = 'scoring')
+saq_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = data_frame(
+        file = file.path(college_rubric_dir, 'SAQ_scoring_rubric.csv')),
+    type = 'scoring')
+upps_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = data_frame(
+        file = file.path(adolescent_rubric_dir, 'UPPSP_scoring_rubric.csv')),
+    type = 'scoring')
+
 ```
 
 
-```{r datacheck, fig.width=8, fig.height=10}
+# Checking Items
+
+```{r datacheck}
 fsmi_key <- scorequaltrics::create_key_from_rubric(fsmi_rubric)
 fsmi_key <- fsmi_key[names(fsmi_key) != 'fsmi_kin']
+dnp_key <- scorequaltrics::create_key_from_rubric(dnp_rubric)
+ksqr_key <- scorequaltrics::create_key_from_rubric(ksqr_rubric)
+saq_key <- scorequaltrics::create_key_from_rubric(saq_rubric)
+upps_key <- scorequaltrics::create_key_from_rubric(upps_rubric)
+
 fsmi_cfa_model <- milav::create_cfa_from_keylist(fsmi_key)
+dnp_cfa_model <- milav::create_cfa_from_keylist(dnp_key)
+ksqr_cfa_model <- milav::create_cfa_from_keylist(ksqr_key)
+saq_cfa_model <- milav::create_cfa_from_keylist(saq_key)
+upps_cfa_model <- milav::create_cfa_from_keylist(upps_key)
+```
 
-itemnames <- gsub('^-', '', unlist(fsmi_key))
-itemlabels <- unlist(
-    lapply(seq_along(fsmi_key), 
-           function(i) {
-               paste0(
-                   gsub('fsmi_', '', names(fsmi_key)[i]), 
-                   '_',
-                   gsub('-*fsmi_qs_', '', fsmi_key[[i]]))
-               }))
+## FSMI
 
-fsmi_items <- dplyr::select_at(splt_fsmi, vars(itemnames))
-
-ggplot2::ggplot(
-    dplyr::mutate(
-        tidyr::gather(fsmi_items, item, value),
-        item = factor(item, levels = itemnames, labels = itemlabels)),
-    ggplot2::aes(x = value)) + 
-    ggplot2::geom_histogram(ggplot2::aes(y=..density..), binwidth = 1, color = '#666666', fill = NA) + 
-    ggplot2::geom_density(ggplot2::aes(y=..density..), adjust = 2) + 
-    ggplot2::facet_wrap(~item) + 
-    ggplot2::theme_minimal()
+```{r fig.width=8, fig.height=10}
+plot_item_histograms(splt_fsmi, fsmi_key, remove_string_from_factor = 'fsmi_')
 ```
 
 The CFA will not include kin care (missing data), family care (highly skewed), and mate retention general (highly skewed).
 
-```{r cfa}
+## Dominance and Prestige
+
+```{r fig.width=6, fig.height=5}
+plot_item_histograms(splt_fsmi, dnp_key, remove_string_from_factor = '_score')
+```
+
+## Kids social reward questionnaire
+
+```{r fig.width=10, fig.height=7}
+plot_item_histograms(splt_fsmi, ksqr_key, remove_string_from_factor = 'k_srq_')
+```
+
+The CFA will not include negative social potency (highly skewed), or prosocial iteractions (highly skewed). Target scales to use for status and mate seeking motives are the admiration scale, passivity scale, sexual relationshups scale, and sociability scale.
+
+## Social achievement goals
+
+```{r fig.width=7, fig.height=5}
+plot_item_histograms(splt_fsmi, saq_key, remove_string_from_factor = 'saq_')
+```
+
+## Urgency, Premeditation, Perseverance, and Sensation Seeking
+
+```{r fig.width=8, fig.height=12}
+plot_item_histograms(splt_fsmi, upps_key) + 
+    ggplot2::theme(strip.text = ggplot2::element_text(size = 6))
+```
+
+# Confirmatory factor analyses and exploration
+
+## FSMI
+
+```{r fsmifullcfa}
 scales_to_use <- names(fsmi_key)[!names(fsmi_key) %in% c('fsmi_kin', 'fsmi_fam', 'fsmi_retgen')]
 fsmi_cfa_model <- milav::create_cfa_from_keylist(
     fsmi_key[scales_to_use])
 
 fsmi_cfa_model_method <- paste0(
     fsmi_cfa_model,
-    paste0('\n',
-           milav::make_factor_string(
-               milav::get_items_from_keys(
-                   fsmi_key[scales_to_use]),
-               factor_name = 'method'),
-           '\nmethod  ~~ ', 
-           paste(
-               paste0(
-                   '0*', 
-                   scales_to_use),
-               collapse = ' + ')))
+    create_bifactor(fsmi_key, scales_to_use, factor_name = 'fsmi_bifac'))
 
-fsmi_cfa <- lavaan::lavaan(model = fsmi_cfa_model, data = fsmi_items,
-                                  missing = 'fiml',
+fsmi_cfa <- lavaan::lavaan(model = fsmi_cfa_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
                                   int.ov.free = TRUE, int.lv.free = FALSE, 
                                   auto.fix.first = FALSE, std.lv = TRUE, 
                                   auto.fix.single = TRUE, auto.var = TRUE, 
                                   auto.cov.lv.x = TRUE, auto.th = TRUE, 
                                   auto.delta = TRUE, auto.cov.y = TRUE)
 
-fsmi_cfa_method <- lavaan::lavaan(model = fsmi_cfa_model_method, data = fsmi_items,
-                                  missing = 'fiml',
+fsmi_cfa_method <- lavaan::lavaan(model = fsmi_cfa_model_method, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
                                   int.ov.free = TRUE, int.lv.free = FALSE, 
                                   auto.fix.first = FALSE, std.lv = TRUE, 
                                   auto.fix.single = TRUE, auto.var = TRUE, 
                                   auto.cov.lv.x = TRUE, auto.th = TRUE, 
                                   auto.delta = TRUE, auto.cov.y = TRUE)
-
-fsmi_cfa_matestat_model <- milav::create_cfa_from_keylist(
-    fsmi_key[names(fsmi_key) %in% c('fsmi_mate', 'fsmi_stat')])
-
-fsmi_cfa_matestat_model_method <- paste0(
-    fsmi_cfa_matestat_model,
-    paste0('\n',
-           milav::make_factor_string(
-               milav::get_items_from_keys(
-                   fsmi_key[names(fsmi_key) %in% c('fsmi_mate', 'fsmi_stat')]),
-               factor_name = 'method')))
-
-fsmi_cfa_matestat <- lavaan::cfa(model = fsmi_cfa_matestat_model, data = fsmi_items, 
-                missing = 'fiml', std.lv = T, auto.cov.y = T)
-
-fsmi_cfa_matestat_method <- lavaan::cfa(model = fsmi_cfa_matestat_model_method, data = fsmi_items, 
-                missing = 'fiml', std.lv = T)
-
-```
-
-
-```{r cfaplot}
-
-knitr::kable(
-    cbind(
-        lavaan::anova(fsmi_cfa_matestat, fsmi_cfa_matestat_method),
-        do.call(
-            rbind,
-            lapply(c(fsmi_cfa_matestat_method, fsmi_cfa_matestat), 
-                   lavaan::fitmeasures,
-                   fit.measures = c('cfi', 'rmsea', 'mfi', 'aic', 'bic')))),
-    digits = 2)
-
-psych::fa.parallel(fsmi_items)
-print(psych::fa(fsmi_items, nfactors = 11, n.iter = 1, rotate = 'bifactor',
-                scores = 'tenBerge', missing = F, fm = 'ml'), 
-      sort = F, cut = .25)
 
 knitr::kable(
     cbind(
@@ -161,38 +223,300 @@ knitr::kable(
             rbind,
             lapply(c(fsmi_cfa_method, fsmi_cfa), 
                    lavaan::fitmeasures,
-                   fit.measures = c('cfi', 'rmsea', 'mfi', 'aic', 'bic')))),
+                   fit.measures = c('cfi', 'rmsea', 'mfi')))),
     digits = 3)
+
+summary(fsmi_cfa, stand = T)
 summary(fsmi_cfa_method, standardize = T)
+
+(fsmi_cfa_lrt <- lavTestLRT(fsmi_cfa, fsmi_cfa_method))
+(fsmi_cfa_fits <- list(
+    lapply(list('baseline'=fsmi_cfa, 'bifac'=fsmi_cfa_method),
+           lavaan::fitmeasures,
+           fit.measures = c('RMSEA', 'mfi')),
+    lapply(list('baseline'=fsmi_cfa, 'bifac'=fsmi_cfa_method),
+           semTools::moreFitIndices,
+           fit.measures = c('gammaHat', 'adjGammaHat'))))
+
+psych::fa.parallel(splt_fsmi[,unlist(get_items_from_keys(fsmi_key[scales_to_use]))])
+print(psych::fa(splt_fsmi[,unlist(get_items_from_keys(fsmi_key[scales_to_use]))], 
+                nfactors = 8, n.iter = 1,
+                scores = 'tenBerge', missing = F, fm = 'ml'), 
+      sort = T, cut = .25)
+print(psych::fa(splt_fsmi[,unlist(get_items_from_keys(fsmi_key[scales_to_use]))], 
+                nfactors = 9, n.iter = 1, rotate = 'bifactor',
+                scores = 'tenBerge', missing = F, fm = 'ml'), 
+      sort = F, cut = .25)
+```
+
+(ref:fsmicfaplot1) FSMI CFA with method bifactor. Path weight reflects standardized loading strength, with minimum cuttoff for showing path set at .20, and maximum weight at .90 (apparent for several mate-seeking items). Residual and means not shown.
+
+```{r fsmicfaplot1, fig.width=8, fig.height=5, fig.cap = '(ref:fsmicfaplot1)'}
+semPlot::semPaths(fsmi_cfa_method, 
+                  bifactor = 'fsmi_bifac', 
+                  layout = 'tree3', 
+                  rotation = 3, 
+                  intercepts = F, residuals = F, 
+                  what = 'std', whatLabels = 'none', 
+                  nCharNodes = 12, sizeMan = 1.5,
+                  minimum = .20, maximum = .9, curvature = 3.5)
+```
+
+(ref:fsmicfaplot2) FSMI CFA. Path weight reflects standardized loading strength, with minimum cuttoff for showing path set at .20, and maximum weight at .90 (apparent for several mate-seeking items). Residual and means not shown.
+
+```{r fsmicfaplot2, fig.width=8, fig.height=2.5, fig.cap = '(ref:fsmicfaplot2)'}
+semPlot::semPaths(fsmi_cfa, 
+                  bifactor = '', 
+                  layout = 'tree3', 
+                  rotation = 3, 
+                  intercepts = F, residuals = F, 
+                  what = 'std', whatLabels = 'none', 
+                  nCharNodes = 12, sizeMan = 1.5, sizeLat = 9,
+                  minimum = .20, maximum = .9, curvature = 1)
+```
+
+The factor model, fit to all but three of the original scale's factors (child-care, care for family, general mate retention; N = 225) shows somewhat reasonable, but not great, fit (RMSEA = `r round(fsmi_cfa_fits[[1]]$baseline[['rmsea']],3)`, $\hat\gamma$ = `r round(fsmi_cfa_fits[[2]]$baseline[['gammaHat']],3)`). 
+This deviates from the results reported by Neel and colleagues [-@neel2015], where each factor, or set of related factors, was tested independently.
+A parallel scree plot analysis (psych package version `r packageVersion('psych')`) suggested 8 factors, with all item loadings dominant on expected factors. 
+There is some evidence that including a factor that accounts for an overall method factor improve model fit.
+Adding such a method bifactor improved the fit somewhat (RMSEA = `r round(fsmi_cfa_fits[[1]]$bifac[['rmsea']],3)`, $\hat\gamma$ = `r round(fsmi_cfa_fits[[2]]$bifac[['gammaHat']],3)`).
+Model comparison substantially favors the less parsimonious model that includes the method bifactor (`r paste(paste(c('$\\delta$AIC = ','$\\delta$BIC = ', '$\\delta$Df = '), round(apply((fsmi_cfa_lrt[,c('AIC','BIC', 'Df')]),2,diff),0)), collapse = ', ')`).
+Although this bifactor does improve fit across all factors, it does not load strongly on either status or mate-seeking, so I do not account for in in analyses below.
+
+```{r mateseekingstatus}
+scales_to_use_mate_stat <- c('fsmi_mate', 'fsmi_stat')
+fsmi_cfa_matestat_model <- milav::create_cfa_from_keylist(
+    fsmi_key[scales_to_use_mate_stat])
+
+fsmi_cfa_matestat <- lavaan::lavaan(model = fsmi_cfa_matestat_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = FALSE, std.lv = TRUE, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE)
+
+(fsmi_matestat_cfa_fit <- list(
+    lavaan::fitmeasures(fsmi_cfa_matestat,
+                        fit.measures = c('rmsea', 'mfi')),
+    semTools::moreFitIndices(fsmi_cfa_matestat,
+           fit.measures = c('gammaHat', 'adjGammaHat'))))
+
+summary(fsmi_cfa_matestat, standardize = T)
 ```
 
 
-```{r agepub}
+(ref:fsmicfamatestatplot) FSMI mate-seeking & status CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
 
-splt_fsmi_dev <- dplyr::left_join(splt_fsmi, splt_dev_and_demog)
-fsmi_dev_items <- dplyr::select_at(splt_fsmi_dev, vars(itemnames, 'age', 'gender'))
-
-fsmi_cfa_model_method_dev <- paste(fsmi_cfa_model_method,
-                                     '\n', 
-                                     paste(scales_to_use, collapse = ' + '),
-                                     ' ~ gender')
-                                     
-
-fsmi_cfa_method_dev <- sem(fsmi_cfa_model_method_dev,
-                           data = splt_fsmi_dev,
-                           std.lv = T, 
-                           missing = 'fiml')
-
-knitr::kable(
-    cbind(
-        lavaan::anova(fsmi_cfa_method, fsmi_cfa_method_dev),
-        do.call(
-            rbind,
-            lapply(c(fsmi_cfa_method, fsmi_cfa_method_dev), 
-                   lavaan::fitmeasures,
-                   fit.measures = c('cfi', 'rmsea', 'mfi', 'aic', 'bic')))),
-    digits = 3)
-lavaan::summary(fsmi_cfa_method_dev, standardize = T)
+```{r fsmicfamatestatplot, fig.width=8, fig.height=2.5, fig.cap = '(ref:fsmicfamatestatplot)'}
+semPlot::semPaths(fsmi_cfa_matestat, 
+                  layout = 'tree2', 
+                  rotation = 1, 
+                  intercepts = F, residuals = F, exoVar = F,
+                  what = 'std', whatLabels = 'std', 
+                  nCharNodes = 12, sizeMan = 5, sizeLat = 9,
+                  minimum = .0, maximum = .9, curvature = 3.5)
 ```
+
+A CFA for mate-seeking and status factors fit well (RMSEA = `r round(fsmi_matestat_cfa_fit[[1]][['rmsea']],3)`, $\hat\gamma$ = `r round(fsmi_matestat_cfa_fit[[2]][['gammaHat']],3)`), with the two factors showing a small, positive, non-significant correlation.
+
+## K-SRQ
+
+```{r ksrq}
+scales_to_use_ksrq <- c('k_srq_admiration', 'k_srq_passivity', 
+                        'k_srq_sexual_relationships',
+                        'k_srq_sociability')
+ksrq_model <- milav::create_cfa_from_keylist(
+    ksqr_key[scales_to_use_ksrq])
+
+ksrq_cfa <- lavaan::lavaan(model = ksrq_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = FALSE, std.lv = TRUE, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE)
+
+(ksrq_cfa_fit <- list(
+    lavaan::fitmeasures(ksrq_cfa,
+                        fit.measures = c('rmsea', 'mfi')),
+    semTools::moreFitIndices(ksrq_cfa,
+           fit.measures = c('gammaHat', 'adjGammaHat'))))
+
+psych::fa.parallel(splt_fsmi[,unlist(get_items_from_keys(ksqr_key[scales_to_use_ksrq]))])
+print(psych::fa(splt_fsmi[,unlist(get_items_from_keys(ksqr_key[scales_to_use_ksrq]))], 
+                nfactors = 4, n.iter = 1,
+                scores = 'tenBerge', missing = F, fm = 'ml'), 
+      sort = T, cut = .25)
+print(psych::fa(splt_fsmi[,unlist(get_items_from_keys(ksqr_key[scales_to_use_ksrq]))], 
+                nfactors = 3, n.iter = 1,
+                scores = 'tenBerge', missing = F, fm = 'ml'), 
+      sort = T, cut = .25)
+
+ksrq_3factor_keys <- list(
+    ML1 = c('K_SRQ_11', 
+            'K_SRQ_18', 
+            'K_SRQ_1',  
+            'K_SRQ_7',  
+            'K_SRQ_10'),
+    ML2 = c('K_SRQ_4',  
+            'K_SRQ_20', 
+            'K_SRQ_13', 
+            'K_SRQ_9',  
+            'K_SRQ_15'),
+    ML3 = c('K_SRQ_12', 
+            'K_SRQ_21', 
+            'K_SRQ_23'))
+ksrq_3factor_model <- milav::create_cfa_from_keylist(ksrq_3factor_keys)
+
+ksrq_3factor_cfa <- lavaan::lavaan(model = ksrq_3factor_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = FALSE, std.lv = TRUE, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE)
+(ksrq_3fac_cfa_fit <- list(
+    lavaan::fitmeasures(ksrq_3factor_cfa,
+                        fit.measures = c('rmsea', 'mfi')),
+    semTools::moreFitIndices(ksrq_3factor_cfa,
+           fit.measures = c('gammaHat', 'adjGammaHat'))))
+
+summary(ksrq_cfa, standardize = T)
+summary(ksrq_3factor_cfa, stand = T)
+```
+
+
+(ref:ksrqcfaplot) K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
+
+```{r ksrqcfaplot, fig.width=8, fig.height=3.5, fig.cap = '(ref:ksrqcfaplot)'}
+semPlot::semPaths(ksrq_cfa, 
+                  layout = 'tree2', 
+                  intercepts = F, residuals = F, exoVar = F,
+                  what = 'std', whatLabels = 'std', 
+                  nCharNodes = 12, sizeMan = 6, sizeLat = 10,
+                  minimum = .0, maximum = 1, curvature = 1.25)
+```
+
+(ref:ksrq3faccfaplot) K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
+
+```{r ksrq3faccfaplot, fig.width=8, fig.height=3.5, fig.cap = '(ref:ksrq3faccfaplot)'}
+semPlot::semPaths(ksrq_3factor_cfa, 
+                  layout = 'tree2', 
+                  intercepts = F, residuals = F, exoVar = F,
+                  what = 'std', whatLabels = 'std', 
+                  nCharNodes = 12, sizeMan = 6, sizeLat = 10,
+                  minimum = .0, maximum = 1, curvature = 1.25)
+```
+
+```{r ksrq3facfsmimate}
+splt_fsmi$partnered <- as.numeric(splt_fsmi$fsmi_relstatus == relationship_status['long_term'])
+
+ksrq3_matestat_model <- paste(fsmi_cfa_matestat_model, ksrq_3factor_model, sep = '\n')
+ksrq3_matestat_cfa <- lavaan::lavaan(model = ksrq3_matestat_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = T, std.lv = F, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE, 
+                                  group = 'partnered')
+ksrq3_matestat_grp_const_cfa <- lavaan::lavaan(model = ksrq3_matestat_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = T, std.lv = F, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE, 
+                                  group = 'partnered',
+                                  group.equal = c('loadings'))
+ksrq3_matestat_grp_const_cfa_cov_m2_test <- lavaan::lavaan(model = ksrq3_matestat_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = T, std.lv = F, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE, 
+                                  group = 'partnered',
+                                  group.equal = c('loadings', 'lv.covariances'),
+                                  group.partial = c(
+                                      paste0('fsmi_mate~~', c('fsmi_stat','ML1','ML3')),
+                                      paste0('fsmi_stat~~', c('ML1','ML2','ML3')),
+                                      paste0('ML1~~', c('ML2','ML3')),
+                                      paste0('ML2~~', c('ML3'))
+                                  ))
+ksrq3_matestat_grp_const_cfa_cov_m1_test <- lavaan::lavaan(model = ksrq3_matestat_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = T, std.lv = F, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE, 
+                                  group = 'partnered',
+                                  group.equal = c('loadings', 'lv.covariances'),
+                                  group.partial = c(
+                                      paste0('fsmi_mate~~', c('fsmi_stat','ML1','ML2','ML3')),
+                                      paste0('fsmi_stat~~', c('ML2','ML3')),
+                                      paste0('ML1~~', c('ML2','ML3')),
+                                      paste0('ML2~~', c('ML3'))
+                                  ))
+summary(ksrq3_matestat_grp_const_cfa, stand = T)
+
+(ksrq3_matestat_cfa_fit <- list(
+    uncon = c(lavaan::fitmeasures(ksrq3_matestat_cfa,
+                                  fit.measures = c('rmsea', 'mfi')),
+              semTools::moreFitIndices(ksrq3_matestat_cfa,
+                                       fit.measures = c('gammaHat', 'adjGammaHat'))),
+    grpstrict = c(lavaan::fitmeasures(ksrq3_matestat_grp_const_cfa,
+                                  fit.measures = c('rmsea', 'mfi')),
+              semTools::moreFitIndices(ksrq3_matestat_grp_const_cfa,
+                                       fit.measures = c('gammaHat', 'adjGammaHat'))),
+    grpstrictcovm2 = c(lavaan::fitmeasures(ksrq3_matestat_grp_const_cfa_cov_m2_test,
+                                  fit.measures = c('rmsea', 'mfi')),
+              semTools::moreFitIndices(ksrq3_matestat_grp_const_cfa_cov_m2_test,
+                                       fit.measures = c('gammaHat', 'adjGammaHat'))),
+    grpstrictcovm1 = c(lavaan::fitmeasures(ksrq3_matestat_grp_const_cfa_cov_m1_test,
+                                  fit.measures = c('rmsea', 'mfi')),
+              semTools::moreFitIndices(ksrq3_matestat_grp_const_cfa_cov_m1_test,
+                                       fit.measures = c('gammaHat', 'adjGammaHat')))))
+ksrq3_matestat_cfa_fit$grpstrict - ksrq3_matestat_cfa_fit$uncon #probably metric invariant, can test cov
+ksrq3_matestat_cfa_fit$grpstrictcovm2 - ksrq3_matestat_cfa_fit$grpstrict
+ksrq3_matestat_cfa_fit$grpstrictcovm1 - ksrq3_matestat_cfa_fit$grpstrict
+
+ksrq_matestat_model <- paste(fsmi_cfa_matestat_model, 
+                             milav::create_cfa_from_keylist(
+                                 ksqr_key[c('k_srq_sexual_relationships', 
+                                            'k_srq_admiration',
+                                            'k_srq_sociability')]),
+                             sep = '\n')
+ksrq_matestat_cfa <- lavaan::lavaan(model = ksrq_matestat_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = TRUE, std.lv = FALSE, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE, 
+                                  group = 'partnered', group.equal = c('loadings'))
+summary(ksrq_matestat_cfa, stand = T)
+```
+
+A CFA for four of the K-SRQ factors (admiration, passivity, sexual relationships, and sociability) fit fairly well (RMSEA = `r round(ksrq_cfa_fit[[1]][['rmsea']],3)`, $\hat\gamma$ = `r round(ksrq_cfa_fit[[2]][['gammaHat']],3)`). 
+All factors except passivity were strongly inter-correlated, raising doubts about the discriminant validity of the separate factors.
+A parallel scree plot analysis suggests a 3 factor structure, with one item from the original sociability factor loading on a factor with the admiration items (weakly), and the other two loading with the sexual relationships items.
+A CFA using this factor structure (with no cross-loadings) demonstrates similar fit to the _a priori_ model (RMSEA = `r round(ksrq_3fac_cfa_fit[[1]][['rmsea']],3)`, $\hat\gamma$ = `r round(ksrq_3fac_cfa_fit[[2]][['gammaHat']],3)`), and with similarly substantial correlations between the former admiration and sexual relationships factors.
+A 4 factor EFA retains this general structure, while letting the sociability item, which previously loaded with admiration items, to dominate its own factor.
+The new 3-factor structure improves somewhat on the _a priori_ model, but the sexual relationships factor has not become any more interpretable as representing a mate-seeking motivation, per se.
+Moreover, the sexual relationship factor, as well as its cousin in the 3-factor model both show nominally higher correlations with FSMI status than FSMI mate-seeking.
+As would be expected, there is a notable difference in the sign of the correlation in people who report being in a long-term relationship than people how report dating, or being single and not dating. 
+That is, people who are in a long term relationship show a negative (non-significant) correlation between a factor characterized by looking for new partners, and a factor characterized by enjoyment of flirting. 
+For people who are not in long-term relationships, there is a positive, significant, correlation between FSMI mate-seeking and the sexual relationships factor from the 3 factor structure (r = 0.406, Z = 3.746).
+The relation between FSMI status and this same factor is, however, nominally higher (r = 0.497, Z = 3.060).
+This same pattern holds if one considers the original K-SRQ sexual relationship factor (FSMI mate-seeking, r = 0.400, Z = 2.928; FSMI status, r = 0.462, Z = 2.787).
+The K-SRQ sociability factor does not seem to perform any differently for people who are not in a long term relationship (FSMI mate-seeking, r = 0.309, Z = 2.806; FSMI status, r = 0.555, Z = 3.144) or for people who are (FSMI mate-seeking, r = -0.312, Z = -1.062; FSMI status, r = 0.466, Z = 2.502). 
+
+Given how differently the K-SRQ sexual relationships and it's 3-factor model cousin covary with other relevant contructs and across groups, it is clear that it is measuring something distinctly from what the FSMI mate seeking factor is measuring.
+The distinction between the seeking new romantic or sexual partners, and enjoyment of engaging in sexual behavior is possibly very important when examining how these motivational factors relat to risk-taking.
+Past work has shown that sexual activity (age at first sex, specifically), if it is in the context of a romantic relationshuip, is protective with respect to dellinquency [@harden2007,@harden2011a].
+
 
 
