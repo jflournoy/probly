@@ -413,6 +413,13 @@ semPlot::semPaths(ksrq_3factor_cfa,
 splt_fsmi$partnered <- as.numeric(splt_fsmi$fsmi_relstatus == relationship_status['long_term'])
 
 ksrq3_matestat_model <- paste(fsmi_cfa_matestat_model, ksrq_3factor_model, sep = '\n')
+ksrq3_matestat_cfa_nogrp <- lavaan::lavaan(model = ksrq3_matestat_model, data = splt_fsmi,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = T, std.lv = F, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE)
 ksrq3_matestat_cfa <- lavaan::lavaan(model = ksrq3_matestat_model, data = splt_fsmi,
                                   missing = 'fiml', estimator = 'MLR',
                                   int.ov.free = TRUE, int.lv.free = FALSE, 
@@ -513,6 +520,9 @@ For people who are not in long-term relationships, there is a positive, signific
 The relation between FSMI status and this same factor is, however, nominally higher (r = 0.497, Z = 3.060).
 This same pattern holds if one considers the original K-SRQ sexual relationship factor (FSMI mate-seeking, r = 0.400, Z = 2.928; FSMI status, r = 0.462, Z = 2.787).
 The K-SRQ sociability factor does not seem to perform any differently for people who are not in a long term relationship (FSMI mate-seeking, r = 0.309, Z = 2.806; FSMI status, r = 0.555, Z = 3.144) or for people who are (FSMI mate-seeking, r = -0.312, Z = -1.062; FSMI status, r = 0.466, Z = 2.502). 
+
+The K-SRQ admiration-derived factor in the 3 factor model (M1) showed reasonably high correlation with FSMI status (r = 0.680), although this was not dissimiler in magnitude from the correlation it shows with the K-SRQ sexual relationship factor (r = 0.662).
+This, again, does not lead to straigtforward interpretations about what is being measured by the K-SRQ subscales.
 
 Given how differently the K-SRQ sexual relationships and it's 3-factor model cousin covary with other relevant contructs and across groups, it is clear that it is measuring something distinctly from what the FSMI mate seeking factor is measuring.
 The distinction between the seeking new romantic or sexual partners, and enjoyment of engaging in sexual behavior is possibly very important when examining how these motivational factors relat to risk-taking.
