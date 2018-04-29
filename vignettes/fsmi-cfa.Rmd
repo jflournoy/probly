@@ -5,7 +5,7 @@ date: "`r Sys.Date()`"
 output: 
   bookdown::html_document2:
     toc: yes
-    toc_depth: 2
+    toc_depth: 3
     number_sections: FALSE
 pkgdown:
   as_is: true
@@ -275,12 +275,14 @@ semPlot::semPaths(fsmi_cfa,
                   minimum = .20, maximum = .9, curvature = 1)
 ```
 
+### FSMI Discussion
+
 The factor model, fit to all but three of the original scale's factors (child-care, care for family, general mate retention; N = 225) shows somewhat reasonable, but not great, fit (RMSEA = `r round(fsmi_cfa_fits[[1]]$baseline[['rmsea']],3)`, $\hat\gamma$ = `r round(fsmi_cfa_fits[[2]]$baseline[['gammaHat']],3)`). 
 This deviates from the results reported by Neel and colleagues [-@neel2015], where each factor, or set of related factors, was tested independently.
 A parallel scree plot analysis (psych package version `r packageVersion('psych')`) suggested 8 factors, with all item loadings dominant on expected factors. 
 There is some evidence that including a factor that accounts for an overall method factor improve model fit.
 Adding such a method bifactor improved the fit somewhat (RMSEA = `r round(fsmi_cfa_fits[[1]]$bifac[['rmsea']],3)`, $\hat\gamma$ = `r round(fsmi_cfa_fits[[2]]$bifac[['gammaHat']],3)`).
-Model comparison substantially favors the less parsimonious model that includes the method bifactor (`r paste(paste(c('$\\delta$AIC = ','$\\delta$BIC = ', '$\\delta$Df = '), round(apply((fsmi_cfa_lrt[,c('AIC','BIC', 'Df')]),2,diff),0)), collapse = ', ')`).
+Model comparison substantially favors the less parsimonious model that includes the method bifactor (`r paste(paste(c('$\\Delta$AIC = ','$\\Delta$BIC = ', '$\\Delta$Df = '), round(apply((fsmi_cfa_lrt[,c('AIC','BIC', 'Df')]),2,diff),0)), collapse = ', ')`).
 Although this bifactor does improve fit across all factors, it does not load strongly on either status or mate-seeking, so I do not account for in in analyses below.
 
 ```{r mateseekingstatus}
@@ -507,6 +509,8 @@ ksrq_matestat_cfa <- lavaan::lavaan(model = ksrq_matestat_model, data = splt_fsm
 summary(ksrq_matestat_cfa, stand = T)
 ```
 
+### K-SRQ Discussion
+
 A CFA for four of the K-SRQ factors (admiration, passivity, sexual relationships, and sociability) fit fairly well (RMSEA = `r round(ksrq_cfa_fit[[1]][['rmsea']],3)`, $\hat\gamma$ = `r round(ksrq_cfa_fit[[2]][['gammaHat']],3)`). 
 All factors except passivity were strongly inter-correlated, raising doubts about the discriminant validity of the separate factors.
 A parallel scree plot analysis suggests a 3 factor structure, with one item from the original sociability factor loading on a factor with the admiration items (weakly), and the other two loading with the sexual relationships items.
@@ -526,7 +530,7 @@ This, again, does not lead to straigtforward interpretations about what is being
 
 Given how differently the K-SRQ sexual relationships and it's 3-factor model cousin covary with other relevant contructs and across groups, it is clear that it is measuring something distinctly from what the FSMI mate seeking factor is measuring.
 The distinction between the seeking new romantic or sexual partners, and enjoyment of engaging in sexual behavior is possibly very important when examining how these motivational factors relat to risk-taking.
-Past work has shown that sexual activity (age at first sex, specifically), if it is in the context of a romantic relationshuip, is protective with respect to dellinquency [@harden2007,@harden2011a].
+Past work has shown that sexual activity (age at first sex, specifically), if it is in the context of a romantic relationshuip, is protective with respect to dellinquency [@harden2007;@harden2011a].
 
-
+# References
 
