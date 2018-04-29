@@ -52,7 +52,15 @@ survey_names_splt <- dplyr::filter(survey_names_all, grepl('.*(TDS1|TDS2|TDS3|YA
 Anonymize it, and make it part of the package while we'er at it.
 
 ```{r fsmiyadsv1}
-item_name_regex <- '(fsmi|K_SRQ_|SAQ_|dominance_prestige|UPPSP_)'
+SES_questions <- paste0('SES_', 
+                        c(5, 9, 11, '12_1_TEXT', '13_1_TEXT', 15, 16), '$')
+YRBS_questions <- paste0('YRBS_', 
+                        c(1:4, 9:19, 31:37),'$')
+
+item_name_regex <- paste0('(fsmi|K_SRQ_|SAQ_|dominance_prestige|UPPSP_|',
+                          paste(SES_questions, collapse = '|'), '|',
+                          paste(YRBS_questions, collapse = '|'),')')
+
 #version 1
 yadsv_v1_surveys <- survey_names_splt %>%
     filter(grepl('YADS-V$', SurveyName))
@@ -105,7 +113,7 @@ yadsv_v2o_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2o_surveys,
 yadsv_v2o_fsmi_long <- scorequaltrics::get_survey_data(yadsv_v2o_surveys, 
                                                    credentials, 
                                                    pid_col = 'qid') %>%
-    dplyr::filter(grepl(item_name_regex, item)) %>% 
+    dplyr::filter(grepl(item_name_regex, item) | grepl('(SES_12$|SES_13$)', item)) %>% 
     dplyr::left_join(yadsv_v2o_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
 
@@ -121,7 +129,7 @@ tds2_qid_sid <- scorequaltrics::get_survey_data(tds2_surveys,
                                 'R_2rkmtZI2W9Khoto',
                                 'R_b1xlYl5pNEoie1H'), #participant has odd pattern of responses for session 1
                   value != 'R_vSIlF9BkXhrLxZv', #participant restarted questionnaire
-                  value != 'R_1QbE1GP5I0CGwSa', #participant restarted questionnaire
+                  value != 'R_1QbE1GP5I0CGwSa' #participant restarted questionnaire
                   ) %>% 
     dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
     tidyr::spread(item, value) %>%
@@ -130,7 +138,7 @@ tds2_qid_sid <- scorequaltrics::get_survey_data(tds2_surveys,
 tds2_fmsi_long <- scorequaltrics::get_survey_data(tds2_surveys, 
                                                    credentials, 
                                                    pid_col = 'qid') %>%
-    dplyr::filter(grepl(item_name_regex, item)) %>% 
+    dplyr::filter(grepl(item_name_regex, item) & !(grepl('SES', item) & grepl('Session 1', survey_name))) %>% 
     dplyr::left_join(tds2_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
 
@@ -148,7 +156,7 @@ tds1_qid_sid <- scorequaltrics::get_survey_data(tds1_surveys,
 tds1_fmsi_long <- scorequaltrics::get_survey_data(tds1_surveys, 
                                                    credentials, 
                                                    pid_col = 'qid') %>%
-    dplyr::filter(grepl(item_name_regex, item)) %>% 
+    dplyr::filter(grepl(item_name_regex, item) & !(grepl('SES', item) & grepl('Session 1', survey_name))) %>% 
     dplyr::left_join(tds1_qid_sid, by = 'qid') %>%
     dplyr::select(-qid, -id)
 
@@ -248,8 +256,10 @@ if(!all(
         dplyr::rename(SID = anon_id, sample = anon_sample)
 }
 
-splt_fsmi_long_deid <- dplyr::bind_rows(tds_fsmi_long_deid, yadsv_fsmi_long_deid)
-
+splt_fsmi_long_deid <- dplyr::bind_rows(tds_fsmi_long_deid, yadsv_fsmi_long_deid) %>%
+    dplyr::mutate(item = ifelse(grepl('^SES_1[23]_1_TEXT$', item),
+                                sub('^(SES_1[23])_1_TEXT$', '\\1', item),
+                                item))
 ```
 
 ```{r eval=F}
