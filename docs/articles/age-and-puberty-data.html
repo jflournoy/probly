@@ -76,7 +76,7 @@
       <a href="../articles/test-simple-3l-mv-model.html">Test Simple 3-level Multivariate Normal Model</a>
     </li>
     <li>
-      <a href="../articles/test-simulated-data.html">Association of Age and Puberty with Learning Parameters</a>
+      <a href="../articles/test-simulated-data.html">Test Simulated Data</a>
     </li>
   </ul>
 </li>
@@ -96,7 +96,7 @@
       <h1>Age, Puberty, and Informant Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-04-20</h4>
+            <h4 class="date">2018-04-27</h4>
       
       
 
@@ -205,12 +205,13 @@ tds1_wave2_scored_pdss &lt;-<span class="st"> </span>scorequaltrics::<span class
                           <span class="dt">gendercode =</span> pdss_gender_code)
 
 tds1_wave2_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(tds1_wave2_scored_pds, tds1_wave2_scored_pdss)</code></pre></div>
-<div id="yads-v" class="section level2">
+</div>
+<div id="yads-v" class="section level1">
+<h1 class="hasAnchor">
+<a href="#yads-v" class="anchor"></a>YADS-V</h1>
+<div id="version-1" class="section level2">
 <h2 class="hasAnchor">
-<a href="#yads-v" class="anchor"></a>YADS-V</h2>
-<div id="version-1" class="section level3">
-<h3 class="hasAnchor">
-<a href="#version-1" class="anchor"></a>Version 1:</h3>
+<a href="#version-1" class="anchor"></a>Version 1:</h2>
 <ul>
 <li>SID</li>
 <li>PAL-2_Age</li>
@@ -298,9 +299,9 @@ yadsv_v1_scored_pdss &lt;-<span class="st"> </span>scorequaltrics::<span class="
 
 yadsv_v1_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(yadsv_v1_scored_pds, yadsv_v1_scored_pdss)</code></pre></div>
 </div>
-<div id="version-2-0" class="section level3">
-<h3 class="hasAnchor">
-<a href="#version-2-0" class="anchor"></a>Version 2.0</h3>
+<div id="version-2-0" class="section level2">
+<h2 class="hasAnchor">
+<a href="#version-2-0" class="anchor"></a>Version 2.0</h2>
 <ul>
 <li>SID</li>
 <li>Q327 how old</li>
@@ -378,9 +379,9 @@ yadsv_v2_scored_pdss &lt;-<span class="st"> </span>scorequaltrics::<span class="
 
 yadsv_v2_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(yadsv_v2_scored_pds, yadsv_v2_scored_pdss)</code></pre></div>
 </div>
-<div id="version-2-0-online" class="section level3">
-<h3 class="hasAnchor">
-<a href="#version-2-0-online" class="anchor"></a>Version 2.0 online</h3>
+<div id="version-2-0-online" class="section level2">
+<h2 class="hasAnchor">
+<a href="#version-2-0-online" class="anchor"></a>Version 2.0 online</h2>
 <ul>
 <li>participantid</li>
 <li>Q327 how old are you</li>
@@ -484,7 +485,6 @@ yadsv_v2o_scored_pdss &lt;-<span class="st"> </span>scorequaltrics::<span class=
                           <span class="dt">gendercode =</span> pdss_gender_code)
 
 yadsv_v2o_scored_puberty &lt;-<span class="st"> </span>dplyr::<span class="kw"><a href="http://dplyr.tidyverse.org/reference/bind.html">bind_rows</a></span>(yadsv_v2o_scored_pds, yadsv_v2o_scored_pdss)</code></pre></div>
-</div>
 </div>
 </div>
 <div id="combine-all-data" class="section level1">
@@ -660,9 +660,12 @@ all_relationships &lt;-<span class="st"> </span><span class="kw">sort</span>(<sp
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
       <ul class="nav nav-pills nav-stacked">
-<li>
-<a href="#tds">TDS</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#yads-v">YADS-V</a></li>
+<li><a href="#tds">TDS</a></li>
+      <li>
+<a href="#yads-v">YADS-V</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#version-1">Version 1:</a></li>
+      <li><a href="#version-2-0">Version 2.0</a></li>
+      <li><a href="#version-2-0-online">Version 2.0 online</a></li>
       </ul>
 </li>
       <li><a href="#combine-all-data">Combine all data</a></li>
