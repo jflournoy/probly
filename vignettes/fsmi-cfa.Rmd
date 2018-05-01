@@ -532,5 +532,91 @@ Given how differently the K-SRQ sexual relationships and it's 3-factor model cou
 The distinction between the seeking new romantic or sexual partners, and enjoyment of engaging in sexual behavior is possibly very important when examining how these motivational factors relat to risk-taking.
 Past work has shown that sexual activity (age at first sex, specifically), if it is in the context of a romantic relationshuip, is protective with respect to dellinquency [@harden2007;@harden2011a].
 
+```{r sesfsmiplot}
+ggplot2::theme_set(ggplot2::theme_minimal())
+splt_fsmi_devdemog <- dplyr::left_join(splt_fsmi, splt_dev_and_demog, by = 'SID')
+
+splt_fsmi_devdemog$ordered_sex_freq <- ordered(
+    ifelse(splt_fsmi_devdemog$SES_12 == 0, 
+           0, 
+           ifelse(splt_fsmi_devdemog$SES_12 <40, 
+                  splt_fsmi_devdemog$SES_12 %/% 10 + 1, 
+                  5)),
+    labels = c('0', '1-9', '10-19', '20-29', '30-39', '40 or more'))
+splt_fsmi_devdemog$ordered_num_partner <- ordered(
+    ifelse(splt_fsmi_devdemog$SES_13 < 4, splt_fsmi_devdemog$SES_13, 4),
+    levels = 0:4,
+    labels = c(0:3, '4 or more'))
+
+ggplot2::ggplot(data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$ordered_sex_freq) & !is.na(splt_fsmi_devdemog$partnered),],
+                ggplot2::aes(x = ordered_sex_freq,
+                             fill = as.factor(partnered))) + 
+    ggplot2::geom_histogram(stat = 'count',
+                            position = ggplot2::position_dodge(), alpha = .8)
+ggplot2::ggplot(data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$ordered_num_partner) & !is.na(splt_fsmi_devdemog$partnered),],
+                ggplot2::aes(x = ordered_num_partner,
+                             fill = as.factor(partnered))) + 
+    ggplot2::geom_histogram(stat = 'count',
+                            position = ggplot2::position_dodge(), alpha = .8)
+```
+
+```{r sesfsmisem}
+fsmi_num_partners_model <- paste(fsmi_cfa_matestat_model, 
+                                 'ordered_num_partner ~ fsmi_mate', sep = '\n')
+
+fsmi_num_partners_sem <- lavaan::lavaan(model = fsmi_num_partners_model, 
+                                        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0,],
+                                        missing = 'listwise', estimator = 'WLSMV',
+                                        int.ov.free = TRUE, int.lv.free = FALSE, 
+                                        auto.fix.first = T, std.lv = F, 
+                                        auto.fix.single = TRUE, auto.var = TRUE, 
+                                        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                        auto.delta = TRUE, auto.cov.y = TRUE)
+summary(fsmi_num_partners_sem, stand = T)
+
+ksrq_num_partners_model <- paste(ksrq_3factor_model, 
+                                 'ordered_num_partner ~ ML2', sep = '\n')
+
+ksrq_num_partners_sem <- lavaan::lavaan(model = ksrq_num_partners_model, 
+                                        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0,],
+                                        missing = 'listwise', estimator = 'WLSMV',
+                                        int.ov.free = TRUE, int.lv.free = FALSE, 
+                                        auto.fix.first = T, std.lv = F, std.ov = F,
+                                        auto.fix.single = TRUE, auto.var = TRUE, 
+                                        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                        auto.delta = TRUE, auto.cov.y = TRUE)
+summary(ksrq_num_partners_sem, stand = T)
+
+fsmi_sex_feq_model <- paste(fsmi_cfa_matestat_model, 
+                                 'ordered_sex_freq ~ fsmi_mate', sep = '\n')
+
+fsmi_sex_feq_sem <- lavaan::lavaan(model = fsmi_sex_feq_model, 
+                                        data = splt_fsmi_devdemog,
+                                        missing = 'listwise', estimator = 'WLSMV',
+                                        int.ov.free = TRUE, int.lv.free = FALSE, 
+                                        auto.fix.first = T, std.lv = F, 
+                                        auto.fix.single = TRUE, auto.var = TRUE, 
+                                        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                        auto.delta = TRUE, auto.cov.y = TRUE,
+                                   group = 'partnered')
+summary(fsmi_sex_feq_sem, stand = T)
+
+ksrq_sex_freq_model <- paste(ksrq_3factor_model, 
+                                 'ordered_sex_freq ~ ML2', sep = '\n')
+
+ksrq_sex_freq_sem <- lavaan::lavaan(model = ksrq_sex_freq_model, 
+                                        data = splt_fsmi_devdemog,
+                                        missing = 'listwise', estimator = 'WLSMV',
+                                        int.ov.free = TRUE, int.lv.free = FALSE, 
+                                        auto.fix.first = T, std.lv = F, std.ov = F,
+                                        auto.fix.single = TRUE, auto.var = TRUE, 
+                                        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                        auto.delta = TRUE, auto.cov.y = TRUE,
+                                        group = 'partnered')
+summary(ksrq_sex_freq_sem, stand = T)
+```
+
+FSMI mate-seeking and KSRQ sexual relationships modified factor show interesting relations to sexual behavior. FSMI mate-seeking relates positively to number of sexual partners (for people not in long-term relationships). KSRQ sexual relationships relates to number of sexual experiences for people not in long-term relationships. **Need to test constraining relation between partnered and non-partnered people. Need to examine KSRQ and mate-seeking in the same model.**
+
 # References
 
