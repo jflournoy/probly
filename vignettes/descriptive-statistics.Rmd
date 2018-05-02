@@ -2,7 +2,7 @@
 title: "Descriptive Statistics for SPLT data"
 author: "John Flournoy"
 date: "`r Sys.Date()`"
-output: 
+output:
   bookdown::html_document2:
     toc: yes
     toc_depth: 2
@@ -270,7 +270,7 @@ ptab(optimal_press_prop_table,
 (ref:reactiontime) Distribution of reaction times for all participants.
 The vertical line set a 1s, which is close to the mean reaction time across all samples.
 
-```{r reactiontime, fig.width=10.5, fig.height=8, cache=T, fig.cap='(ref:reactiontime)', cache=T}
+```{r reactiontime, fig.width=10.5, fig.height=8, cache=F, fig.cap='(ref:reactiontime)'}
 ggplot2::ggplot(
     dplyr::filter(splt, rt > 0),
     ggplot2::aes(x = rt/1000)) +
