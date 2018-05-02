@@ -270,20 +270,20 @@ ptab(optimal_press_prop_table,
 (ref:reactiontime) Distribution of reaction times for all participants.
 The vertical line set a 1s, which is close to the mean reaction time across all samples.
 
-```{r reactiontime, fig.width=10.5, fig.height=8, cache=F, fig.cap='(ref:reactiontime)'}
+```{r reactiontime, fig.width=5, fig.height=5, cache=F, fig.cap='(ref:reactiontime)'}
 ggplot2::ggplot(
     dplyr::filter(splt, rt > 0),
-    ggplot2::aes(x = rt/1000)) +
+    ggplot2::aes(x = rt/1000, color = id, group = id)) +
     ggplot2::geom_vline(xintercept = 1, size = .5, color = '#666666') +
-    ggplot2::geom_histogram(binwidth = .1, fill = 'black') +
+    ggplot2::geom_density(alpha = 0) +
     ggplot2::theme_minimal() +
     ggplot2::theme(strip.background = element_blank(),
                    strip.text = element_blank()) +
     ggplot2::scale_x_continuous(breaks = c(0, 1, 2)) +
-    facet_wrap(~id, ncol = 20) +
-    coord_cartesian(x = c(0, 2)) +
-    labs(x = 'Trial reaction-time (s)',
-         y = 'Count')
+    ggplot2::coord_cartesian(x = c(0, 2)) +
+    ggplot2::labs(x = 'Trial reaction-time (s)',
+         y = 'Density') +
+    ggplot2::theme(legend.position="none")
 ```
 
 
