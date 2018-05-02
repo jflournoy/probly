@@ -3,7 +3,7 @@
 library(probly)
 data(splt)
 data(splt_dev_and_demog)
-dim(splt)
+# dim(splt)
 splt <- dplyr::left_join(splt,
                   unique(splt_dev_and_demog[, c('SID', 'gender', 'PDS_mean_score', 'age')]),
                   by = c('id' = 'SID'))
@@ -13,16 +13,16 @@ splt <- splt[!is.na(splt$age) & !is.na(splt$gender) & splt$age < 30, ]
 splt$cue <- as.numeric(as.factor(paste0(splt$condition, '_', splt$sex)))
 splt$condition <- factor(splt$condition, levels = c('HngT', 'DtnL', 'PplU'))
 
-sum(na_age <- is.na(unique(splt[,c('id', 'age')])$age))
-sum(na_gender <- is.na(unique(splt[,c('id', 'gender')])$gender))
-sum(na_pds <- is.na(unique(splt[,c('id', 'PDS_mean_score')])$PDS_mean_score))
+na_age <- is.na(unique(splt[,c('id', 'age')])$age)
+na_gender <- is.na(unique(splt[,c('id', 'gender')])$gender)
+na_pds <- is.na(unique(splt[,c('id', 'PDS_mean_score')])$PDS_mean_score)
 age_sd <- sd(unique(splt[,c('id', 'age')])$age[unique(splt[,c('id', 'age')])$age < 30], na.rm = T)
 age_mean <- mean(unique(splt[,c('id', 'age')])$age[unique(splt[,c('id', 'age')])$age < 30], na.rm = T)
 pds_sd <- sd(as.numeric(unique(splt[,c('id', 'PDS_mean_score')])$PDS_mean_score), na.rm = T)
 pds_mean <- mean(as.numeric(unique(splt[,c('id', 'PDS_mean_score')])$PDS_mean_score), na.rm = T)
 splt$age_std <- (splt$age - age_mean)/age_sd
 splt$pds_std <- (as.numeric(splt$PDS_mean_score) - pds_mean)/pds_sd
-unique(splt$gender_c <- splt$gender - .5) #0 or -0.5 = male, 1 or .5 = female
+splt$gender_c <- splt$gender - .5 #0 or -0.5 = male, 1 or .5 = female
 
 # - N number of individuals
 # - M number of samples
