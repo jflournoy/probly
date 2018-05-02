@@ -9,6 +9,7 @@ library(future)
 library(future.batchtools)
 library(probly)
 library(listenv)
+library(rstan)
 
 if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     simiter <- 100 #number of sims we have already generated.
@@ -46,6 +47,52 @@ model_filename_list <- list(
     # rl_repar_exp_no_b = system.file('stan', 'splt_rl_reparam_exp_no_b.stan', package = 'probly')
 )
 
+source(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
+condition_mat[is.na(condition_mat)] <- -1
+outcome_arr[is.na(outcome_arr)] <- -1
+outcome_dummy <- matrix(rep(-1, N*max(Tsubj)), nrow = N)
+outcome_l <- outcome_arr[,,1]
+outcome_r <- outcome_arr[,,2]
+press_right_dummy <- matrix(rep(-1, N*max(Tsubj)), nrow = N)
+cue_mat[is.na(cue_mat)] <- -1
+
+J_pred <- 0
+Xj <- matrix(0,nrow=N,ncol=0)
+
+stan_sim_data <- list(
+    N = N,
+    `T` = max(Tsubj),
+    K = K,
+    ncue = max(cue_mat, na.rm = T),
+    Tsubj = Tsubj,
+    condition = condition_mat,
+    outcome = outcome_dummy,
+    outcome_r = outcome_r,
+    outcome_l = outcome_l,
+    press_right = press_right_dummy,
+    cue = cue_mat,
+    # J_pred = J_pred,
+    # Xj = Xj,
+    run_estimation = 0
+)
+
+message('Loading simulated data from: ', model_filename_list[[mod]]$sim_test_fn)
+mu_tau_parlist <- c('mu_delta_ep', 'mu_delta_rho', 'mu_delta_xi', 'tau_ep', 'tau_rho', 'tau_xi')
+beta_parlist <- c('beta_ep_prm', 'beta_rho_prm', 'beta_xi_prm')
+sim_data <- readRDS(model_filename_list[[1]]$sim_test_fn) #load data
+
+#for later comparison
+true_pars <- rstan::extract(sim_data, pars = c(mu_tau_parlist, beta_parlist))
+
+#get the predicted right presses from simulation
+#seems like we shouldn't do this for each sim, but it's a very small
+#amount of the total time (the sampling takes much longer)
+pright_pred_samps <- rstan::extract(sim_data, pars = 'pright_pred')[[1]]
+list_of_pright_pred_mats <- lapply(1:dim(pright_pred_samps)[1], function(i) pright_pred_samps[i,,])
+
+#done extracting from simulations. rm and gc
+rm(sim_data)
+gc(verbose = T)
 
 results_f <- listenv()
 
@@ -54,53 +101,6 @@ for(mod in seq_along(model_filename_list)){
     for(test_sim_num in 1:simiter){
         results_f[[test_sim_num]] %<-% {
             library(rstan)
-
-            source(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
-            condition_mat[is.na(condition_mat)] <- -1
-            outcome_arr[is.na(outcome_arr)] <- -1
-            outcome_dummy <- matrix(rep(-1, N*max(Tsubj)), nrow = N)
-            outcome_l <- outcome_arr[,,1]
-            outcome_r <- outcome_arr[,,2]
-            press_right_dummy <- matrix(rep(-1, N*max(Tsubj)), nrow = N)
-            cue_mat[is.na(cue_mat)] <- -1
-
-            J_pred <- 0
-            Xj <- matrix(0,nrow=N,ncol=0)
-
-            stan_sim_data <- list(
-                N = N,
-                `T` = max(Tsubj),
-                K = K,
-                ncue = max(cue_mat, na.rm = T),
-                Tsubj = Tsubj,
-                condition = condition_mat,
-                outcome = outcome_dummy,
-                outcome_r = outcome_r,
-                outcome_l = outcome_l,
-                press_right = press_right_dummy,
-                cue = cue_mat,
-                # J_pred = J_pred,
-                # Xj = Xj,
-                run_estimation = 0
-            )
-
-            message('Loading simulated data from: ', model_filename_list[[mod]]$sim_test_fn)
-            mu_tau_parlist <- c('mu_delta_ep', 'mu_delta_rho', 'mu_delta_xi', 'tau_ep', 'tau_rho', 'tau_xi')
-            beta_parlist <- c('beta_ep_prm', 'beta_rho_prm', 'beta_xi_prm')
-            sim_data <- readRDS(model_filename_list[[1]]$sim_test_fn) #load data
-
-            #for later comparison
-            true_pars <- rstan::extract(sim_data, pars = c(mu_tau_parlist, beta_parlist))
-
-            #get the predicted right presses from simulation
-            #seems like we shouldn't do this for each sim, but it's a very small
-            #amount of the total time (the sampling takes much longer)
-            pright_pred_samps <- rstan::extract(sim_data, pars = 'pright_pred')[[1]]
-            list_of_pright_pred_mats <- lapply(1:dim(pright_pred_samps)[1], function(i) pright_pred_samps[i,,])
-
-            #done extracting from simulations. rm and gc
-            rm(sim_data)
-            nada <- gc(verbose = F)
 
             message('Fitting simulated data for iter: ', test_sim_num)
             press_right_sim_mat <- list_of_pright_pred_mats[[test_sim_num]]
@@ -114,8 +114,6 @@ for(mod in seq_along(model_filename_list)){
             stan_sim_data_to_fit$run_estimation <- 1
 
             model_cpl <- rstan::stan_model(model_filename_list[[mod]]$stan_model_fn)
-
-
 
             afit <- rstan::sampling(
                 model_cpl,
