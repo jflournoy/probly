@@ -236,8 +236,6 @@ this_sim_plot <- probly::plot_splt_sim_behavior(
 this_sim_plot$overall
 ```
 
-## Top-level parameters ($\mu, \tau$)
-
 ```{r displots}
 estimated_mu_ep <- rstan::extract(rl_2l_nob_simfit, pars = 'mu_delta_ep')[[1]]
 estimated_mu_rho <- rstan::extract(rl_2l_nob_simfit, pars = 'mu_delta_rho')[[1]]
