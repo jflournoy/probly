@@ -18,7 +18,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-vignette">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -91,37 +91,54 @@
 
       
       </header><div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Test Simulated Data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-04-27</h4>
+            <h4 class="date">2018-05-02</h4>
       
       
+      <div class="hidden name"><code>test-simulated-data.Rmd</code></div>
 
     </div>
 
     
     
-<div class="contents">
 <p><strong>Aim 1a:</strong> Does framing reinforcement learning with (mate-seeking and status) motivational contexts sensitize the learner and potentiate learning?</p>
 <p>My approach to answering this question is to model how learning occurs in each of the three motive contexts and examine differences in how learning occurs.</p>
 <div id="a-model-for-reinforcement-learning" class="section level1">
 <h1 class="hasAnchor">
 <a href="#a-model-for-reinforcement-learning" class="anchor"></a>A model for reinforcement learning</h1>
-<p>In the context of this task, where the relation between the optimal response and the stimulus is constant, a simple model of the degree of learning could rely on a simple proportion of optimal responses <span class="math inline">\(P_{ok}\)</span> for each condition <span class="math inline">\(k\)</span>. The test of the hypothesis of the effect of framing would then be the difference between conditions in <span class="math inline">\(P_o\)</span>. This simple model sacrifice precision for simplicity, and so I will be modeling the data using a reinforcement learning model with several parameters that can account for deviations from a strict Rescorla-Wagner (RW) process. This increases the number of possible comparisons I am able to make between conditions, which may generate useful information about how motive-domain framing affects the learning process (as modeled, of course), but which also increases the complexity of patterns between conditions and parameters that must be interpreted. It will be helpful to keep in mind that the framing can only be said to potentiate learning if, regardless of its affect on any model parameters, it does not result in higher proportions of optimal responding.</p>
-<p>In this section, I simulate data as expected under the Rescorla-Wagner model implemented by <span class="citation">Ahn, Haines, &amp; Zhang (2017)</span> in their go-no-go model 2. Their original model handles binary decisions (button-press or no button-press) in response to four different cues. However, the form of the learning algorithm is generalizable to other binary choices in response to cues. In the case of the Social Probabilistic Learning Task (SPLT), participants are presented with a face (the cue), and must decide to press the left key or the right key. They are rewarded probabilistically such that for each cue, one or the other of the response options has an 80% chance of providing reinforcement. The go-no-go models used by <span class="citation">Ahn et al. (2017)</span> were derived from work by <span class="citation">Guitart-Masip et al. (2012)</span>. Their most flexible reinforcement learning model generates the probability of an action for each trial via N parameters: the learning rate, <span class="math inline">\(\epsilon\)</span>, the effective size of reinforcement, <span class="math inline">\(\rho\)</span>, a static bias parameter, <span class="math inline">\(b\)</span>, an irreducible noise parameter, <span class="math inline">\(\xi\)</span>, and a Pavlovian learning parameter, <span class="math inline">\(\pi\)</span>. In the SPLT, trial feedback does not vary by valence (responses result in reward, or no reward, but never punishment), so I use the model that does not include this Pavlovian component.</p>
+<p>In the context of this task, where the relation between the optimal response and the stimulus is constant, a simple model of the degree of learning could rely on a simple proportion of optimal responses <span class="math inline">\(P_{ok}\)</span> for each condition <span class="math inline">\(k\)</span>.
+The test of the hypothesis of the effect of framing would then be the difference between conditions in <span class="math inline">\(P_o\)</span>.
+This simple model sacrifice precision for simplicity, and so I will be modeling the data using a reinforcement learning model with several parameters that can account for deviations from a strict Rescorla-Wagner (RW) process.
+This increases the number of possible comparisons I am able to make between conditions, which may generate useful information about how motive-domain framing affects the learning process (as modeled, of course), but which also increases the complexity of patterns between conditions and parameters that must be interpreted.
+It will be helpful to keep in mind that the framing can only be said to potentiate learning if, regardless of its affect on any model parameters, it does not result in higher proportions of optimal responding.</p>
+<p>In this section, I simulate data as expected under the Rescorla-Wagner model implemented by <span class="citation">Ahn, Haines, &amp; Zhang (2017)</span> in their go-no-go model 2.
+Their original model handles binary decisions (button-press or no button-press) in response to four different cues.
+However, the form of the learning algorithm is generalizable to other binary choices in response to cues.
+In the case of the Social Probabilistic Learning Task (SPLT), participants are presented with a face (the cue), and must decide to press the left key or the right key.
+They are rewarded probabilistically such that for each cue, one or the other of the response options has an 80% chance of providing reinforcement.
+The go-no-go models used by <span class="citation">Ahn et al. (2017)</span> were derived from work by <span class="citation">Guitart-Masip et al. (2012)</span>.
+Their most flexible reinforcement learning model generates the probability of an action for each trial via N parameters: the learning rate, <span class="math inline">\(\epsilon\)</span>, the effective size of reinforcement, <span class="math inline">\(\rho\)</span>, a static bias parameter, <span class="math inline">\(b\)</span>, an irreducible noise parameter, <span class="math inline">\(\xi\)</span>, and a Pavlovian learning parameter, <span class="math inline">\(\pi\)</span>.
+In the SPLT, trial feedback does not vary by valence (responses result in reward, or no reward, but never punishment), so I use the model that does not include this Pavlovian component.</p>
 </div>
 <div id="reinforcement-learning-model-for-the-splt" class="section level1">
 <h1 class="hasAnchor">
 <a href="#reinforcement-learning-model-for-the-splt" class="anchor"></a>Reinforcement learning model for the SPLT</h1>
-<p>The model for an individual <span class="math inline">\(j\)</span>’s probability of pressing the right arrow key on trial <span class="math inline">\(t\)</span> given that stimulus <span class="math inline">\(s_{t}\)</span> is presented, <span class="math inline">\(P(a_{\rightarrow t} | s_{t})_{t}\)</span>, is determined by a logistic transformation of the action weight for pressing the right arrow key minus the action weight for pressing the left arrow key. This probability is then adjusted by a noise parameter, <span class="math inline">\(0 \leq\xi_{jk}\leq1\)</span> for each participant <span class="math inline">\(j\)</span> in condition <span class="math inline">\(k\)</span>. The noise parameter modulates the degree to which responses are non-systematic. When <span class="math inline">\(\xi\)</span> is 1, <span class="math inline">\(P_{it} = .5\)</span>, and because each individual has a unique noise parameter for each condition, I am able to account for participants who do not learn during the task, or in a particular condition. The full equation is:</p>
+<p>The model for an individual <span class="math inline">\(j\)</span>’s probability of pressing the right arrow key on trial <span class="math inline">\(t\)</span> given that stimulus <span class="math inline">\(s_{t}\)</span> is presented, <span class="math inline">\(P(a_{\rightarrow t} | s_{t})_{t}\)</span>, is determined by a logistic transformation of the action weight for pressing the right arrow key minus the action weight for pressing the left arrow key.
+This probability is then adjusted by a noise parameter, <span class="math inline">\(0 \leq\xi_{jk}\leq1\)</span> for each participant <span class="math inline">\(j\)</span> in condition <span class="math inline">\(k\)</span>.
+The noise parameter modulates the degree to which responses are non-systematic.
+When <span class="math inline">\(\xi\)</span> is 1, <span class="math inline">\(P_{it} = .5\)</span>, and because each individual has a unique noise parameter for each condition, I am able to account for participants who do not learn during the task, or in a particular condition.
+The full equation is:</p>
 <p><span class="math display">\[
 P(a_{\rightarrow t} | s_{t})_{t} = 
 \text{logit}^{-1}\big(W(a_{\rightarrow t}| s_{t}) - W(a_{\leftarrow t}| s_{t})\big)\cdot(1-\xi_{jk}) + \small\frac{\xi_{jk}}{2}.
 \]</span></p>
-<p>The action weight is determined by a Rescorla-Wagner (RW) updating equation and individual <span class="math inline">\(j\)</span>’s bias parameter, <span class="math inline">\(b_{jk}\)</span>, for that condition (which encodes a systematic preference for choosing the left or right response option). In each condition, the same two words are displayed in the same position, so <span class="math inline">\(b\)</span> encodes a learning-independent preference for one particular word or position. The equation for the action weight for each action on a particular trial is:</p>
+<p>The action weight is determined by a Rescorla-Wagner (RW) updating equation and individual <span class="math inline">\(j\)</span>’s bias parameter, <span class="math inline">\(b_{jk}\)</span>, for that condition (which encodes a systematic preference for choosing the left or right response option).
+In each condition, the same two words are displayed in the same position, so <span class="math inline">\(b\)</span> encodes a learning-independent preference for one particular word or position.
+The equation for the action weight for each action on a particular trial is:</p>
 <p><span class="math display">\[
 W_{t}(a,s) = \left\{
                 \begin{array}{ll}
@@ -129,17 +146,21 @@ W_{t}(a,s) = \left\{
                   Q_{t}(a, s), &amp; \text{otherwise}
                 \end{array}
               \right.
-\]</span> Finally, the RW updating equation that encodes instrumental learning is governed by the individual’s learning rate for that condition, <span class="math inline">\(\epsilon_{jk}\)</span>, and a scaling parameter <span class="math inline">\(\rho_{jk}\)</span> governing the effective size of the possible rewards <span class="math inline">\(r_t \in \{0, 1, 5\}\)</span>:</p>
+\]</span>
+Finally, the RW updating equation that encodes instrumental learning is governed by the individual’s learning rate for that condition, <span class="math inline">\(\epsilon_{jk}\)</span>, and a scaling parameter <span class="math inline">\(\rho_{jk}\)</span> governing the effective size of the possible rewards <span class="math inline">\(r_t \in \{0, 1, 5\}\)</span>:</p>
 <p><span class="math display">\[
 Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a_t, s_t)\big)
 \]</span></p>
 <div id="hierarchical-parameters" class="section level2">
 <h2 class="hasAnchor">
 <a href="#hierarchical-parameters" class="anchor"></a>Hierarchical Parameters</h2>
-<p>Each parameter (<span class="math inline">\(\epsilon, \rho, b, \xi\)</span>) varies by condition <span class="math inline">\(k \in 1:K\)</span>, and by participant <span class="math inline">\(j \in 1:J\)</span> nested in sample <span class="math inline">\(m \in 1:M\)</span>. The structure of the hierarchical part of the model is the same for each parameter, so the following description for <span class="math inline">\(\epsilon\)</span> will serve as a description for all of the parameters. For each individual <span class="math inline">\(j\)</span>, <span class="math inline">\(\beta_{\epsilon j}\)</span> is a <span class="math inline">\(K\)</span>-element row of coefficients for parameter <span class="math inline">\(\epsilon\)</span> for each condition:</p>
+<p>Each parameter (<span class="math inline">\(\epsilon, \rho, b, \xi\)</span>) varies by condition <span class="math inline">\(k \in 1:K\)</span>, and by participant <span class="math inline">\(j \in 1:J\)</span> nested in sample <span class="math inline">\(m \in 1:M\)</span>.
+The structure of the hierarchical part of the model is the same for each parameter, so the following description for <span class="math inline">\(\epsilon\)</span> will serve as a description for all of the parameters.
+For each individual <span class="math inline">\(j\)</span>, <span class="math inline">\(\beta_{\epsilon j}\)</span> is a <span class="math inline">\(K\)</span>-element row of coefficients for parameter <span class="math inline">\(\epsilon\)</span> for each condition:</p>
 <p><span class="math display">\[
 \beta_{\epsilon j} \sim \mathcal{N}(\delta_{\epsilon mm[j]}, \Sigma_{\epsilon})
-\]</span> where <span class="math inline">\(\delta_{\epsilon mm[j]}\)</span> is a column of <span class="math inline">\(K\)</span> means for individual <span class="math inline">\(j\)</span>’s sample <span class="math inline">\(M\)</span>, as indexed in the vector <span class="math inline">\(mm\)</span>, and <span class="math inline">\(\Sigma_{\epsilon}\)</span> is a <span class="math inline">\(K\times K\)</span> matrix of the covariance of individual coefficients between conditions.</p>
+\]</span>
+where <span class="math inline">\(\delta_{\epsilon mm[j]}\)</span> is a column of <span class="math inline">\(K\)</span> means for individual <span class="math inline">\(j\)</span>’s sample <span class="math inline">\(M\)</span>, as indexed in the vector <span class="math inline">\(mm\)</span>, and <span class="math inline">\(\Sigma_{\epsilon}\)</span> is a <span class="math inline">\(K\times K\)</span> matrix of the covariance of individual coefficients between conditions.</p>
 <p>Finally, across all <span class="math inline">\(M\)</span> samples, the means for each condition k are distributed such that:</p>
 <p><span class="math display">\[
 \delta_{\epsilon k} \sim \mathcal{N}(\mu_{\epsilon k}, \sigma_\epsilon)
@@ -154,105 +175,229 @@ Q_{t}(a_t, s_t) = Q_{t-1}(a_t, s_t) + \epsilon_{jk}\big(\rho_{jk}r_t - Q_{t-1}(a
 <div id="simulating-data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#simulating-data" class="anchor"></a>Simulating data</h1>
-<p>Before modeling the task data, I will confirm that this model can recover known parameters from simulated data. I simulate data based on the structure of the sample data, using the same number of participants per sample (see the section on <a href="descriptive-statistics.html">descriptive statistics</a>, as well as precisely the same task structure. For this aim, it is important to be able to recover all <span class="math inline">\(\mu_{\theta k}\)</span> for <span class="math inline">\(\theta \in \{\epsilon,\rho,b,\xi\}\)</span> and <span class="math inline">\(k \in \{1,2,3\}\)</span>, where 1 = Hungry/Thirsty, 2 = Popular/Unpopular, and 3 = Dating/Looking. Those parameters that account for idiosyncratic deviation from RW-expected behavior (<span class="math inline">\(b,\xi\)</span>) will not vary by condition. Based on interactive simulation (<a href="https://jflournoy.shinyapps.io/rw_model/">here</a>), reasonable parameter values for the control condition might be <span class="math inline">\(\mu_\epsilon = -1.65\)</span> and <span class="math inline">\(\mu_\rho = -0.3\)</span>.<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a></p>
+<p>Before modeling the task data, I will confirm that this model can recover known parameters from simulated data.
+I simulate data based on the structure of the sample data, using the same number of participants per sample (see the section on <a href="descriptive-statistics.html">descriptive statistics</a>, as well as precisely the same task structure.
+For this aim, it is important to be able to recover all <span class="math inline">\(\mu_{\theta k}\)</span> for <span class="math inline">\(\theta \in \{\epsilon,\rho,b,\xi\}\)</span> and <span class="math inline">\(k \in \{1,2,3\}\)</span>, where 1 = Hungry/Thirsty, 2 = Popular/Unpopular, and 3 = Dating/Looking. Those parameters that account for idiosyncratic deviation from RW-expected behavior (<span class="math inline">\(b,\xi\)</span>) will not vary by condition. Based on interactive simulation (<a href="https://jflournoy.shinyapps.io/rw_model/">here</a>), reasonable parameter values for the control condition might be <span class="math inline">\(\mu_\epsilon = -1.65\)</span> and <span class="math inline">\(\mu_\rho = -0.3\)</span>.<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
 <p>The <a href="http://github.com/jflournoy/probly"><code>probly</code></a> package contains functions that help generate sample- and individually-varying coefficients for parameters, as well as simulated data from task structure.</p>
-<p>One early indication that a model may not be well suited to a problem is that when generating from the prior distribution, datasets are produced that either do not adequately cover the range of reasonable values, or that cover ranges that are implausible <span class="citation">(Gabry, Simpson, Vehtari, Betancourt, &amp; Gelman, 2017)</span>. The simulated data do generally cover the range of the actual data when we look just at the proportion of optimal presses over time (Figure <a href="#fig:simdata"><strong>??</strong></a>, and importantly do not show implausible behavior (all mass around extreme values like 0, 1, or .5).</p>
+<pre><code>#&gt; [1] 120144     18
+#&gt; [1] 0
+#&gt; [1] 0
+#&gt; [1] 7
+#&gt; [1]  0.5 -0.5</code></pre>
+<p>One early indication that a model may not be well suited to a problem is that when generating from the prior distribution, datasets are produced that either do not adequately cover the range of reasonable values, or that cover ranges that are implausible <span class="citation">(Gabry, Simpson, Vehtari, Betancourt, &amp; Gelman, 2017)</span>.
+The simulated data do generally cover the range of the actual data when we look just at the proportion of optimal presses over time (Figure <a href="#fig:simdata">1</a>, and importantly do not show implausible behavior (all mass around extreme values like 0, 1, or .5).</p>
 
+<div class="figure">
+<span id="fig:simdata"></span>
+<img src="test-simulated-data_files/figure-html/simdata-1.png" alt="Simulated task data. This shows the the proportion of optimal presses across all participants for each trial, collapsed over simulations. It’s possible to see that trial-by-trial probability of choosing the optimal resonses, averaged across all participants, spans the full range of possible behavior (with the extreme exception that no simulation evinces all participants performing perfectly)." width="768"><p class="caption">
+Figure 1: Simulated task data. This shows the the proportion of optimal presses across all participants for each trial, collapsed over simulations. It’s possible to see that trial-by-trial probability of choosing the optimal resonses, averaged across all participants, spans the full range of possible behavior (with the extreme exception that no simulation evinces all participants performing perfectly).
+</p>
+</div>
 
+<div class="figure">
+<span id="fig:simdatcoverage"></span>
+<img src="test-simulated-data_files/figure-html/simdatcoverage-1.png" alt="Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model smooth and is only intended to give a rough sense of trends over trials. Each panel is one from 400 simulated data sets. The red line indicates random responding." width="1440"><p class="caption">
+Figure 2: Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model smooth and is only intended to give a rough sense of trends over trials. Each panel is one from 400 simulated data sets. The red line indicates random responding.
+</p>
+</div>
 
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-1.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-2.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-3.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-4.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-5.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-6.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-7.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-8.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-9.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<div class="figure">
+<span id="fig:priorplots"></span>
+<img src="test-simulated-data_files/figure-html/priorplots-10.png" alt="Priors, with \(epsilon\) and \(\xi\) on their transformed scales. Notice the very long tails for the individually varying \(rho\) parameters (beta_rho)." width="288"><p class="caption">
+Figure 3: Priors, with <span class="math inline">\(epsilon\)</span> and <span class="math inline">\(\xi\)</span> on their transformed scales. Notice the very long tails for the individually varying <span class="math inline">\(rho\)</span> parameters (beta_rho).
+</p>
+</div>
+<p><img src="test-simulated-data_files/figure-html/unnamed-chunk-1-1.png" width="1152"></p>
 </div>
 <div id="recovery-of-population-parameters" class="section level1">
 <h1 class="hasAnchor">
 <a href="#recovery-of-population-parameters" class="anchor"></a>Recovery of population parameters</h1>
-<p>The model as described above was fit to simulated data using RStan <span class="citation">(version 2.17.3; Stan Development Team, 2018)</span>, sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain. The posterior means for each parameter are compared to those that generated the simulated task behavior. The plots in Figure <a href="#fig:musimfitplot"><strong>??</strong></a> allow visual comparison of the fitted model posteriors for each parameter to the data-generating population means, as well as to the means of the data-generating parameters for each sample, and for each individual. It is clear from these plots that the parameter estimates from this particular run capture the generating parameters, with two exceptions. First, the estimate of the population mean of the irrudicble noise parameter, <span class="math inline">\(\xi\)</span>, for one condition did not capture the generating parameter. This may be because this parameter was intentionally set very low so that <span class="math inline">\(\xi^\prime \approx 0\)</span>. The second instance occurs with the bias parameter for one condition. This may be acceptable because the parameters of interest safely capture the generating values, and this single condition bias parameter is not very far from the identity line. Additionally, it should be noted that the fitted model does capture the mean of generating <span class="math inline">\(\delta_b\)</span> and <span class="math inline">\(\beta_b\)</span> parameters for all conditions.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(future)
-<span class="kw">library</span>(future.batchtools)
-<span class="kw">library</span>(probly)
-<span class="kw">library</span>(listenv)
-
-<span class="kw"><a href="http://www.rdocumentation.org/packages/future/topics/plan">plan</a></span>(batchtools_slurm,
-     <span class="dt">template =</span> <span class="kw">system.file</span>(<span class="st">'batchtools'</span>, <span class="st">'batchtools.slurm.tmpl'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),
-     <span class="dt">resources =</span> <span class="kw">list</span>(<span class="dt">ncpus =</span> <span class="dv">6</span>, <span class="dt">walltime =</span> <span class="dv">60</span>*<span class="dv">24</span>*<span class="dv">4</span>, <span class="dt">memory =</span> <span class="st">'1G'</span>,
-                      <span class="dt">partitions =</span> <span class="st">'long,longfat'</span>))
-
-data_dir &lt;-<span class="st"> '/home/flournoy/otherhome/data/splt/probly/'</span>
-if(!<span class="kw">file.exists</span>(data_dir)){
-    <span class="kw">stop</span>(<span class="st">'Data directory "'</span>, data_dir, <span class="st">'" does not exist'</span>)
-} else {
-    <span class="kw">message</span>(<span class="st">"Data goes here: "</span>, data_dir)
-}
-
-model_filename_list &lt;-<span class="st"> </span><span class="kw">list</span>(
-    <span class="co"># intercept_only = system.file('stan', 'splt_intercept_only.stan', package = 'probly'),</span>
-    <span class="dt">rl_2_level =</span> <span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl_2_level.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),
-    <span class="dt">rl_2_level_no_b =</span> <span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl_2_level_no_b.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),
-    <span class="dt">rl_repar_exp =</span> <span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl_reparam_exp.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),
-    <span class="dt">rl_repar_exp_no_b =</span> <span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl_reparam_exp_no_b.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>)
-)
-
-iter &lt;-<span class="st"> </span><span class="dv">100</span>
-results_f &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/listenv/topics/listenv">listenv</a></span>()
-
-for(mod in <span class="kw">seq_along</span>(model_filename_list)){
-    <span class="kw">print</span>(<span class="kw">paste0</span>(<span class="st">'Generating simulated behavior for: '</span>, <span class="kw">names</span>(model_filename_list)[mod]))
-    for(i in <span class="dv">1</span>:iter){
-        results_f[[i]] %&lt;-%<span class="st"> </span>{
-            <span class="kw">library</span>(rstan)
-            stan_sim_length &lt;-<span class="st"> </span><span class="kw">length</span>(stan_sim_data)
-            task_data &lt;-<span class="st"> </span>probly::<span class="kw"><a href="../reference/simulate_splt_data.html">simulate_splt_data</a></span>(task_structure,
-                                                    <span class="dt">mu_xi =</span> mu_xi,
-                                                    <span class="dt">mu_b =</span> mu_b,
-                                                    <span class="dt">mu_eps =</span> mu_eps,
-                                                    <span class="dt">mu_rho =</span> mu_rho)
-            task_data_stan &lt;-<span class="st"> </span>task_data$task_behavior
-            task_data_stan$outcome_realized[<span class="kw">is.na</span>(task_data_stan$outcome_realized)] &lt;-<span class="st"> </span>-<span class="dv">1</span>
-            task_data_stan$press_right[<span class="kw">is.na</span>(task_data_stan$press_right)] &lt;-<span class="st"> </span>-<span class="dv">1</span>
-
-            stan_sim_data$press_right =<span class="st"> </span>task_data_stan$press_right
-            stan_sim_data$outcome =<span class="st"> </span>task_data_stan$outcome
-
-            trial_num &lt;-<span class="st"> </span>-(<span class="kw">dim</span>(optimal_side_mat)[<span class="dv">2</span>]-<span class="dv">1</span>):<span class="dv">0</span>
-            prop_optimal_resp &lt;-<span class="st"> </span><span class="dv">100</span>*<span class="kw">apply</span>(
-                task_data$task_behavior$press_right ==<span class="st"> </span>(optimal_side_mat -<span class="st"> </span><span class="dv">1</span>),
-                <span class="dv">2</span>, mean, <span class="dt">na.rm =</span> T)
-            learning_traj &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(<span class="kw">lm</span>(prop_optimal_resp ~<span class="st"> </span>trial_num)))[,<span class="st">'Estimate'</span>]
-
-            <span class="co"># ##--TESTING</span>
-            <span class="co"># devtools::install_local('~/code_new/probly')</span>
-            <span class="co"># stan_rl_fn &lt;- '~/code_new/probly/inst/stan/splt_rl_reparam.stan'</span>
-            <span class="co"># stan_model_thing &lt;- rstan::stan_model(file = stan_rl_fn)</span>
-            <span class="co"># stan_optim &lt;- rstan::optimizing(stan_model_thing, data = stan_sim_data)</span>
-            <span class="co"># stan_optim_parnames &lt;- grep('mu', names(stan_optim$par), value = T)</span>
-            <span class="co"># stan_optim$par[stan_optim_parnames] - c(mu_xi, mu_eps, mu_b, mu_rho)</span>
-            <span class="co"># stan_vb &lt;- rstan::vb(stan_model_thing, data = stan_sim_data)</span>
-            <span class="co"># summary(stan_vb, pars = stan_optim_parnames)</span>
-            <span class="co"># ##--TESTING</span>
-
-            stanFit &lt;-<span class="st"> </span>rstan::<span class="kw"><a href="http://www.rdocumentation.org/packages/rstan/topics/stan">stan</a></span>(<span class="dt">file =</span> stan_rl_fn,
-                                   <span class="dt">data =</span> stan_sim_data,
-                                   <span class="dt">chains =</span> <span class="dv">4</span>, <span class="dt">cores =</span> <span class="dv">4</span>,
-                                   <span class="dt">iter =</span> <span class="dv">1500</span>, <span class="dt">warmup =</span> <span class="dv">1000</span>,
-                                   <span class="dt">control =</span> <span class="kw">list</span>(<span class="dt">max_treedepth =</span> <span class="dv">15</span>, <span class="dt">adapt_delta =</span> <span class="fl">0.99</span>))
-
-            model_summary &lt;-<span class="st"> </span>rstan::<span class="kw">summary</span>(stanFit)
-            sampler_params &lt;-<span class="st"> </span>rstan::<span class="kw"><a href="http://www.rdocumentation.org/packages/rstan/topics/stanfit-class">get_sampler_params</a></span>(stanFit)
-
-            return_list &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">fit_summary =</span> model_summary,
-                                <span class="dt">sampler_params =</span> sampler_params,
-                                <span class="dt">coefs =</span> learning_traj,
-                                <span class="dt">data =</span> task_data)
-
-            <span class="kw">saveRDS</span>(stanFit,
-                    <span class="kw">file.path</span>(data_dir,
-                              <span class="kw">paste0</span>(<span class="st">'splt-tght-'</span>, <span class="kw">names</span>(model_filename_list)[mod],
-                                     <span class="st">'-'</span>, <span class="kw">round</span>(<span class="kw">as.numeric</span>(<span class="kw">Sys.time</span>())/<span class="dv">1000</span>,<span class="dv">0</span>),<span class="st">'.RDS'</span>)))
-        }
-    }
-}
-
-results &lt;-<span class="st"> </span><span class="kw">as.list</span>(results_f)
-
-<span class="kw">saveRDS</span>(results, <span class="kw">file.path</span>(data_dir, <span class="st">'test_rez.RDS'</span>))</code></pre></div>
+<p>The model as described above was fit to simulated data using RStan <span class="citation">(version 2.17.3; Stan Development Team, 2018)</span>, sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain.
+The posterior means for each parameter are compared to those that generated the simulated task behavior.
+The plots in Figure <a href="#fig:musimfitplot"><strong>??</strong></a> allow visual comparison of the fitted model posteriors for each parameter to the data-generating population means, as well as to the means of the data-generating parameters for each sample, and for each individual.
+It is clear from these plots that the parameter estimates from this particular run capture the generating parameters, with two exceptions.
+First, the estimate of the population mean of the irrudicble noise parameter, <span class="math inline">\(\xi\)</span>, for one condition did not capture the generating parameter.
+This may be because this parameter was intentionally set very low so that <span class="math inline">\(\xi^\prime \approx 0\)</span>.
+The second instance occurs with the bias parameter for one condition.
+This may be acceptable because the parameters of interest safely capture the generating values, and this single condition bias parameter is not very far from the identity line.
+Additionally, it should be noted that the fitted model does capture the mean of generating <span class="math inline">\(\delta_b\)</span> and <span class="math inline">\(\beta_b\)</span> parameters for all conditions.</p>
+<div id="one-simulation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#one-simulation" class="anchor"></a>One simulation</h2>
+<p><img src="test-simulated-data_files/figure-html/onesimulation-1.png" width="672"></p>
+</div>
+<div id="top-level-parameters-mu-tau" class="section level2">
+<h2 class="hasAnchor">
+<a href="#top-level-parameters-mu-tau" class="anchor"></a>Top-level parameters (<span class="math inline">\(\mu, \tau\)</span>)</h2>
+</div>
+<div id="learning-rate-epsilon" class="section level2">
+<h2 class="hasAnchor">
+<a href="#learning-rate-epsilon" class="anchor"></a>Learning rate (<span class="math inline">\(\epsilon\)</span>)</h2>
+<p><img src="test-simulated-data_files/figure-html/unnamed-chunk-2-1.png" width="672"><img src="test-simulated-data_files/figure-html/unnamed-chunk-2-2.png" width="672"></p>
+<p><img src="test-simulated-data_files/figure-html/unnamed-chunk-3-1.png" width="672"><img src="test-simulated-data_files/figure-html/unnamed-chunk-3-2.png" width="672"><img src="test-simulated-data_files/figure-html/unnamed-chunk-3-3.png" width="672"></p>
+<p><img src="test-simulated-data_files/figure-html/showmanyiep-1.png" width="768"></p>
+</div>
+<div id="temperature-rho" class="section level2">
+<h2 class="hasAnchor">
+<a href="#temperature-rho" class="anchor"></a>Temperature (<span class="math inline">\(\rho\)</span>)</h2>
+<p><img src="test-simulated-data_files/figure-html/unnamed-chunk-4-1.png" width="672"><img src="test-simulated-data_files/figure-html/unnamed-chunk-4-2.png" width="672"></p>
+<p><img src="test-simulated-data_files/figure-html/unnamed-chunk-5-1.png" width="672"><img src="test-simulated-data_files/figure-html/unnamed-chunk-5-2.png" width="672"><img src="test-simulated-data_files/figure-html/unnamed-chunk-5-3.png" width="672"></p>
+<p><img src="test-simulated-data_files/figure-html/showmanyirho-1.png" width="768"></p>
+</div>
+<div id="noise-xi" class="section level2">
+<h2 class="hasAnchor">
+<a href="#noise-xi" class="anchor"></a>Noise (<span class="math inline">\(\xi\)</span>)</h2>
+<p><img src="test-simulated-data_files/figure-html/unnamed-chunk-6-1.png" width="672"><img src="test-simulated-data_files/figure-html/unnamed-chunk-6-2.png" width="672"></p>
+<p><img src="test-simulated-data_files/figure-html/unnamed-chunk-7-1.png" width="672"><img src="test-simulated-data_files/figure-html/unnamed-chunk-7-2.png" width="672"><img src="test-simulated-data_files/figure-html/unnamed-chunk-7-3.png" width="672"></p>
+<p><img src="test-simulated-data_files/figure-html/showmanyixi-1.png" width="768"></p>
+</div>
+<div id="final-probability-of-pressing-left-or-right" class="section level2">
+<h2 class="hasAnchor">
+<a href="#final-probability-of-pressing-left-or-right" class="anchor"></a>Final probability of pressing left or right</h2>
+<p><img src="test-simulated-data_files/figure-html/pRfinalplot-1.png" width="768"></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw">library</span>(future)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw">library</span>(future.batchtools)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw">library</span>(probly)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw">library</span>(listenv)</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="kw"><a href="http://www.rdocumentation.org/packages/future/topics/plan">plan</a></span>(batchtools_slurm,</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">     <span class="dt">template =</span> <span class="kw">system.file</span>(<span class="st">'batchtools'</span>, <span class="st">'batchtools.slurm.tmpl'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">     <span class="dt">resources =</span> <span class="kw">list</span>(<span class="dt">ncpus =</span> <span class="dv">6</span>, <span class="dt">walltime =</span> <span class="dv">60</span><span class="op">*</span><span class="dv">24</span><span class="op">*</span><span class="dv">4</span>, <span class="dt">memory =</span> <span class="st">'1G'</span>,</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">                      <span class="dt">partitions =</span> <span class="st">'long,longfat'</span>))</a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">data_dir &lt;-<span class="st"> '/home/flournoy/otherhome/data/splt/probly/'</span></a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"><span class="cf">if</span>(<span class="op">!</span><span class="kw">file.exists</span>(data_dir)){</a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">    <span class="kw">stop</span>(<span class="st">'Data directory "'</span>, data_dir, <span class="st">'" does not exist'</span>)</a>
+<a class="sourceLine" id="cb2-14" data-line-number="14">} <span class="cf">else</span> {</a>
+<a class="sourceLine" id="cb2-15" data-line-number="15">    <span class="kw">message</span>(<span class="st">"Data goes here: "</span>, data_dir)</a>
+<a class="sourceLine" id="cb2-16" data-line-number="16">}</a>
+<a class="sourceLine" id="cb2-17" data-line-number="17"></a>
+<a class="sourceLine" id="cb2-18" data-line-number="18">model_filename_list &lt;-<span class="st"> </span><span class="kw">list</span>(</a>
+<a class="sourceLine" id="cb2-19" data-line-number="19">    <span class="co"># intercept_only = system.file('stan', 'splt_intercept_only.stan', package = 'probly'),</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20">    <span class="dt">rl_2_level =</span> <span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl_2_level.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),</a>
+<a class="sourceLine" id="cb2-21" data-line-number="21">    <span class="dt">rl_2_level_no_b =</span> <span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl_2_level_no_b.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),</a>
+<a class="sourceLine" id="cb2-22" data-line-number="22">    <span class="dt">rl_repar_exp =</span> <span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl_reparam_exp.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>),</a>
+<a class="sourceLine" id="cb2-23" data-line-number="23">    <span class="dt">rl_repar_exp_no_b =</span> <span class="kw">system.file</span>(<span class="st">'stan'</span>, <span class="st">'splt_rl_reparam_exp_no_b.stan'</span>, <span class="dt">package =</span> <span class="st">'probly'</span>)</a>
+<a class="sourceLine" id="cb2-24" data-line-number="24">)</a>
+<a class="sourceLine" id="cb2-25" data-line-number="25"></a>
+<a class="sourceLine" id="cb2-26" data-line-number="26">iter &lt;-<span class="st"> </span><span class="dv">100</span></a>
+<a class="sourceLine" id="cb2-27" data-line-number="27">results_f &lt;-<span class="st"> </span><span class="kw"><a href="http://www.rdocumentation.org/packages/listenv/topics/listenv">listenv</a></span>()</a>
+<a class="sourceLine" id="cb2-28" data-line-number="28"></a>
+<a class="sourceLine" id="cb2-29" data-line-number="29"><span class="cf">for</span>(mod <span class="cf">in</span> <span class="kw">seq_along</span>(model_filename_list)){</a>
+<a class="sourceLine" id="cb2-30" data-line-number="30">    <span class="kw">print</span>(<span class="kw">paste0</span>(<span class="st">'Generating simulated behavior for: '</span>, <span class="kw">names</span>(model_filename_list)[mod]))</a>
+<a class="sourceLine" id="cb2-31" data-line-number="31">    <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span>iter){</a>
+<a class="sourceLine" id="cb2-32" data-line-number="32">        results_f[[i]] <span class="op">%&lt;-%</span><span class="st"> </span>{</a>
+<a class="sourceLine" id="cb2-33" data-line-number="33">            <span class="kw">library</span>(rstan)</a>
+<a class="sourceLine" id="cb2-34" data-line-number="34">            stan_sim_length &lt;-<span class="st"> </span><span class="kw">length</span>(stan_sim_data)</a>
+<a class="sourceLine" id="cb2-35" data-line-number="35">            task_data &lt;-<span class="st"> </span>probly<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/probly/topics/simulate_splt_data">simulate_splt_data</a></span>(task_structure,</a>
+<a class="sourceLine" id="cb2-36" data-line-number="36">                                                    <span class="dt">mu_xi =</span> mu_xi,</a>
+<a class="sourceLine" id="cb2-37" data-line-number="37">                                                    <span class="dt">mu_b =</span> mu_b,</a>
+<a class="sourceLine" id="cb2-38" data-line-number="38">                                                    <span class="dt">mu_eps =</span> mu_eps,</a>
+<a class="sourceLine" id="cb2-39" data-line-number="39">                                                    <span class="dt">mu_rho =</span> mu_rho)</a>
+<a class="sourceLine" id="cb2-40" data-line-number="40">            task_data_stan &lt;-<span class="st"> </span>task_data<span class="op">$</span>task_behavior</a>
+<a class="sourceLine" id="cb2-41" data-line-number="41">            task_data_stan<span class="op">$</span>outcome_realized[<span class="kw">is.na</span>(task_data_stan<span class="op">$</span>outcome_realized)] &lt;-<span class="st"> </span><span class="dv">-1</span></a>
+<a class="sourceLine" id="cb2-42" data-line-number="42">            task_data_stan<span class="op">$</span>press_right[<span class="kw">is.na</span>(task_data_stan<span class="op">$</span>press_right)] &lt;-<span class="st"> </span><span class="dv">-1</span></a>
+<a class="sourceLine" id="cb2-43" data-line-number="43"></a>
+<a class="sourceLine" id="cb2-44" data-line-number="44">            stan_sim_data<span class="op">$</span>press_right =<span class="st"> </span>task_data_stan<span class="op">$</span>press_right</a>
+<a class="sourceLine" id="cb2-45" data-line-number="45">            stan_sim_data<span class="op">$</span>outcome =<span class="st"> </span>task_data_stan<span class="op">$</span>outcome</a>
+<a class="sourceLine" id="cb2-46" data-line-number="46"></a>
+<a class="sourceLine" id="cb2-47" data-line-number="47">            trial_num &lt;-<span class="st"> </span><span class="op">-</span>(<span class="kw">dim</span>(optimal_side_mat)[<span class="dv">2</span>]<span class="op">-</span><span class="dv">1</span>)<span class="op">:</span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb2-48" data-line-number="48">            prop_optimal_resp &lt;-<span class="st"> </span><span class="dv">100</span><span class="op">*</span><span class="kw">apply</span>(</a>
+<a class="sourceLine" id="cb2-49" data-line-number="49">                task_data<span class="op">$</span>task_behavior<span class="op">$</span>press_right <span class="op">==</span><span class="st"> </span>(optimal_side_mat <span class="op">-</span><span class="st"> </span><span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb2-50" data-line-number="50">                <span class="dv">2</span>, mean, <span class="dt">na.rm =</span> T)</a>
+<a class="sourceLine" id="cb2-51" data-line-number="51">            learning_traj &lt;-<span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(<span class="kw">lm</span>(prop_optimal_resp <span class="op">~</span><span class="st"> </span>trial_num)))[,<span class="st">'Estimate'</span>]</a>
+<a class="sourceLine" id="cb2-52" data-line-number="52"></a>
+<a class="sourceLine" id="cb2-53" data-line-number="53">            <span class="co"># ##--</span><span class="al">TESTING</span></a>
+<a class="sourceLine" id="cb2-54" data-line-number="54">            <span class="co"># devtools::install_local('~/code_new/probly')</span></a>
+<a class="sourceLine" id="cb2-55" data-line-number="55">            <span class="co"># stan_rl_fn &lt;- '~/code_new/probly/inst/stan/splt_rl_reparam.stan'</span></a>
+<a class="sourceLine" id="cb2-56" data-line-number="56">            <span class="co"># stan_model_thing &lt;- rstan::stan_model(file = stan_rl_fn)</span></a>
+<a class="sourceLine" id="cb2-57" data-line-number="57">            <span class="co"># stan_optim &lt;- rstan::optimizing(stan_model_thing, data = stan_sim_data)</span></a>
+<a class="sourceLine" id="cb2-58" data-line-number="58">            <span class="co"># stan_optim_parnames &lt;- grep('mu', names(stan_optim$par), value = T)</span></a>
+<a class="sourceLine" id="cb2-59" data-line-number="59">            <span class="co"># stan_optim$par[stan_optim_parnames] - c(mu_xi, mu_eps, mu_b, mu_rho)</span></a>
+<a class="sourceLine" id="cb2-60" data-line-number="60">            <span class="co"># stan_vb &lt;- rstan::vb(stan_model_thing, data = stan_sim_data)</span></a>
+<a class="sourceLine" id="cb2-61" data-line-number="61">            <span class="co"># summary(stan_vb, pars = stan_optim_parnames)</span></a>
+<a class="sourceLine" id="cb2-62" data-line-number="62">            <span class="co"># ##--</span><span class="al">TESTING</span></a>
+<a class="sourceLine" id="cb2-63" data-line-number="63"></a>
+<a class="sourceLine" id="cb2-64" data-line-number="64">            stanFit &lt;-<span class="st"> </span>rstan<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rstan/topics/stan">stan</a></span>(<span class="dt">file =</span> stan_rl_fn,</a>
+<a class="sourceLine" id="cb2-65" data-line-number="65">                                   <span class="dt">data =</span> stan_sim_data,</a>
+<a class="sourceLine" id="cb2-66" data-line-number="66">                                   <span class="dt">chains =</span> <span class="dv">4</span>, <span class="dt">cores =</span> <span class="dv">4</span>,</a>
+<a class="sourceLine" id="cb2-67" data-line-number="67">                                   <span class="dt">iter =</span> <span class="dv">1500</span>, <span class="dt">warmup =</span> <span class="dv">1000</span>,</a>
+<a class="sourceLine" id="cb2-68" data-line-number="68">                                   <span class="dt">control =</span> <span class="kw">list</span>(<span class="dt">max_treedepth =</span> <span class="dv">15</span>, <span class="dt">adapt_delta =</span> <span class="fl">0.99</span>))</a>
+<a class="sourceLine" id="cb2-69" data-line-number="69"></a>
+<a class="sourceLine" id="cb2-70" data-line-number="70">            model_summary &lt;-<span class="st"> </span>rstan<span class="op">::</span><span class="kw">summary</span>(stanFit)</a>
+<a class="sourceLine" id="cb2-71" data-line-number="71">            sampler_params &lt;-<span class="st"> </span>rstan<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/rstan/topics/stanfit-class">get_sampler_params</a></span>(stanFit)</a>
+<a class="sourceLine" id="cb2-72" data-line-number="72"></a>
+<a class="sourceLine" id="cb2-73" data-line-number="73">            return_list &lt;-<span class="st"> </span><span class="kw">list</span>(<span class="dt">fit_summary =</span> model_summary,</a>
+<a class="sourceLine" id="cb2-74" data-line-number="74">                                <span class="dt">sampler_params =</span> sampler_params,</a>
+<a class="sourceLine" id="cb2-75" data-line-number="75">                                <span class="dt">coefs =</span> learning_traj,</a>
+<a class="sourceLine" id="cb2-76" data-line-number="76">                                <span class="dt">data =</span> task_data)</a>
+<a class="sourceLine" id="cb2-77" data-line-number="77"></a>
+<a class="sourceLine" id="cb2-78" data-line-number="78">            <span class="kw">saveRDS</span>(stanFit,</a>
+<a class="sourceLine" id="cb2-79" data-line-number="79">                    <span class="kw">file.path</span>(data_dir,</a>
+<a class="sourceLine" id="cb2-80" data-line-number="80">                              <span class="kw">paste0</span>(<span class="st">'splt-tght-'</span>, <span class="kw">names</span>(model_filename_list)[mod],</a>
+<a class="sourceLine" id="cb2-81" data-line-number="81">                                     <span class="st">'-'</span>, <span class="kw">round</span>(<span class="kw">as.numeric</span>(<span class="kw">Sys.time</span>())<span class="op">/</span><span class="dv">1000</span>,<span class="dv">0</span>),<span class="st">'.RDS'</span>)))</a>
+<a class="sourceLine" id="cb2-82" data-line-number="82">        }</a>
+<a class="sourceLine" id="cb2-83" data-line-number="83">    }</a>
+<a class="sourceLine" id="cb2-84" data-line-number="84">}</a>
+<a class="sourceLine" id="cb2-85" data-line-number="85"></a>
+<a class="sourceLine" id="cb2-86" data-line-number="86">results &lt;-<span class="st"> </span><span class="kw">as.list</span>(results_f)</a>
+<a class="sourceLine" id="cb2-87" data-line-number="87"></a>
+<a class="sourceLine" id="cb2-88" data-line-number="88"><span class="kw">saveRDS</span>(results, <span class="kw">file.path</span>(data_dir, <span class="st">'test_rez.RDS'</span>))</a></code></pre></div>
+</div>
 </div>
 <div id="conclusion" class="section level1">
 <h1 class="hasAnchor">
@@ -280,9 +425,8 @@ results &lt;-<span class="st"> </span><span class="kw">as.list</span>(results_f)
 <div class="footnotes">
 <hr>
 <ol>
-<li id="fn1"><p>Note that these are the <em>raw</em> parameter values which are transformed such that <span class="math inline">\(\epsilon^\prime \in [0,1]\)</span> and <span class="math inline">\(\rho^\prime \in [0,\infty)\)</span>. Similar to logistic regression, estimating the parameters on a scale the is not resticted improves estimation.<a href="#fnref1">↩</a></p></li>
+<li id="fn1"><p>Note that these are the <em>raw</em> parameter values which are transformed such that <span class="math inline">\(\epsilon^\prime \in [0,1]\)</span> and <span class="math inline">\(\rho^\prime \in [0,\infty)\)</span>. Similar to logistic regression, estimating the parameters on a scale the is not resticted improves estimation.<a href="#fnref1" class="footnote-back">↩</a></p></li>
 </ol>
-</div>
 </div>
   </div>
 
@@ -298,7 +442,16 @@ results &lt;-<span class="st"> </span><span class="kw">as.list</span>(results_f)
       </ul>
 </li>
       <li><a href="#simulating-data">Simulating data</a></li>
-      <li><a href="#recovery-of-population-parameters">Recovery of population parameters</a></li>
+      <li>
+<a href="#recovery-of-population-parameters">Recovery of population parameters</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#one-simulation">One simulation</a></li>
+      <li><a href="#top-level-parameters-mu-tau">Top-level parameters (<span class="math inline">\(\mu, \tau\)</span>)</a></li>
+      <li><a href="#learning-rate-epsilon">Learning rate (<span class="math inline">\(\epsilon\)</span>)</a></li>
+      <li><a href="#temperature-rho">Temperature (<span class="math inline">\(\rho\)</span>)</a></li>
+      <li><a href="#noise-xi">Noise (<span class="math inline">\(\xi\)</span>)</a></li>
+      <li><a href="#final-probability-of-pressing-left-or-right">Final probability of pressing left or right</a></li>
+      </ul>
+</li>
       <li><a href="#conclusion">Conclusion</a></li>
       <li><a href="#references">References</a></li>
       </ul>
