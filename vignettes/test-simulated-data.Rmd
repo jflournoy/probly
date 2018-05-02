@@ -17,52 +17,35 @@ bibliography: "/home/jflournoy/Rlibs/probly/bib/dissertation.bib"
 csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
 ---
 
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  echo=F,message=F,warning=F,error=F, eval = F
+  echo=F,message=F,warning=F,error=F
 )
+if(require(pkgdown, quietly = T, warn.conflicts = F) && pkgdown::in_pkgdown()){
+    knitr::opts_chunk$set(eval = T)
+    vignette_message <- ''
+} else {
+    knitr::opts_chunk$set(eval = F, echo = T) #Do not build vignette but provide text and code
+    vignette_message <- "
+------
+
+This vignette is not evaluated, but is included to provide 
+    text describing the model and code as example. The compiled document can be viewed
+    [on the `probly` package website](https://jflournoy.github.io/probly/).
+
+------    
+"
+}
 
 knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
 knitr::read_chunk(system.file('r_aux', 'test_simulation_2l_nob.R', package = 'probly'))
 knitr::read_chunk(system.file('batchtools', 'run_many_simulations.R', package = 'probly'))
 data_dir <- '/data/jflournoy/split/probly'
-
-plot_mu_estimates_v_sims <- function(estimated_samples, sim_params, transform = NULL, contrasted = TRUE){
-    if(contrasted){
-        estimated_samples_absolute <- t(apply(
-            estimated_samples, 
-            1, 
-            function(x) cbind(x[[1]], x[[1]] + x[[2]], x[[1]] + x[[3]])))
-        dimnames(estimated_samples_absolute)[[2]] <- dimnames(estimated_samples)[[2]]
-        sim_param_values <- sim_params[1] + c(0,sim_params[2:3])    
-    } else {
-        estimated_samples_absolute <- estimated_samples
-        sim_param_values <- sim_params
-    }
-    
-    
-    if(!is.null(transform)){
-        tf_func <- eval(parse(text=transform))
-        estimated_samples_absolute <- tf_func(estimated_samples_absolute)
-        sim_param_values <- tf_func(sim_param_values)
-    }
-    
-    sim_df <- data.frame(
-            value = sim_param_values, 
-            Parameter = names(sim_params))     
-    
-    bayesplot::mcmc_areas(estimated_samples_absolute,
-                          prob = .9, prob_outer = .95) + 
-        ggplot2::geom_segment(
-            ggplot2::aes(x = value, xend = value, 
-                         y = 4-as.numeric(Parameter), 
-                         yend = 4 - as.numeric(Parameter) + .67), 
-            data = sim_df)
-}
 ```
+
+`r vignette_message`
 
 **Aim 1a:** Does framing reinforcement learning with (mate-seeking and status) motivational contexts sensitize the learner and potentiate learning?
 
@@ -279,28 +262,30 @@ dimnames(estimated_tau_unif_ep)[[2]] <- c('tau_ep_1', 'tau_ep_2', 'tau_ep_3')
 dimnames(estimated_tau_xi)[[2]] <- c('tau_xi_1', 'tau_xi_2', 'tau_xi_3')
 dimnames(estimated_tau_rho)[[2]] <- c('tau_rho_1', 'tau_rho_2', 'tau_rho_3')
 dimnames(estimated_sample_pR_final)[[3]] <- paste0('cue_',1:6)
-
-plot_mu_estimates_v_sims(estimated_samples = estimated_mu_ep[,1,], 
-                         sim_params = true_mu_ep[test_sim_num,,], transform = 'pnorm')
-plot_mu_estimates_v_sims(estimated_samples = estimated_mu_rho[,1,], 
-                         sim_params = true_mu_rho[test_sim_num,,])
-plot_mu_estimates_v_sims(estimated_samples = estimated_mu_xi[,1,], 
-                         sim_params = true_mu_xi[test_sim_num,,], transform = 'pnorm')
-
-plot_mu_estimates_v_sims(estimated_samples = estimated_tau_ep, 
-                         sim_params = true_tau_ep[test_sim_num,], contrasted = F)
-plot_mu_estimates_v_sims(estimated_samples = estimated_tau_rho, 
-                         sim_params = true_tau_rho[test_sim_num,], contrasted = F)
-plot_mu_estimates_v_sims(estimated_samples = estimated_tau_xi, 
-                         sim_params = true_tau_xi[test_sim_num,], contrasted = F)
-
 ```
 
-## Lower level parameters ($\beta$)
+## Learning rate ($\epsilon$)
 
-### Learning rate ($\epsilon$)
+```{r}
+plot_mu_estimates_v_sims(estimated_samples = estimated_mu_ep[,1,], 
+                         sim_params = true_mu_ep[test_sim_num,,], transform = 'pnorm')
+plot_mu_estimates_v_sims(estimated_samples = estimated_tau_ep, 
+                         sim_params = true_tau_ep[test_sim_num,], contrasted = F)
+```
 
-```{r showmanyi, fig.width=8, fig.height=30}
+```{r}
+probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_ep[,,1], 
+                           sim_params = true_beta_ep[test_sim_num,,1], 
+                           title = expression(paste(beta[epsilon[1]])))
+probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_ep[,,2], 
+                           sim_params = true_beta_ep[test_sim_num,,2], 
+                           title = expression(paste(beta[epsilon[2]])))
+probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_ep[,,3], 
+                           sim_params = true_beta_ep[test_sim_num,,3], 
+                           title = expression(paste(beta[epsilon[3]])))
+```
+
+```{r showmanyiep, fig.width=8, fig.height=30}
 i_idx <- sample(1:308, size = 40)
 bayesplot::mcmc_hist_by_chain(qnorm(estimated_beta_ep[,i_idx,])) +
     ggplot2::coord_cartesian(xlim = c(-1,2)) +
@@ -312,34 +297,28 @@ bayesplot::mcmc_hist_by_chain(qnorm(estimated_beta_ep[,i_idx,])) +
             Chain = rep(1:length(i_idx), 3)))
 ```
 
-```{r}
-ggplot2::qplot(true_beta_ep[test_sim_num,,1], 
-               apply(estimated_beta_ep, c(2,3), median)[,1], 
-               geom = c('point', 'smooth'),
-               xlab = 'Generative',
-               ylab = 'Estimated',
-               main = expression(paste(beta[epsilon[1]]))) +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
-ggplot2::qplot(true_beta_ep[test_sim_num,,2], 
-               apply(estimated_beta_ep, c(2,3), median)[,2], 
-               geom = c('point', 'smooth'),
-               xlab = 'Generative',
-               ylab = 'Estimated',
-               main = expression(paste(beta[epsilon[2]]))) +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
-ggplot2::qplot(true_beta_ep[test_sim_num,,3], 
-               apply(estimated_beta_ep, c(2,3), median)[,3], 
-               geom = c('point', 'smooth'),
-               xlab = 'Generative',
-               ylab = 'Estimated',
-               main = expression(paste(beta[epsilon[3]]))) +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
+## Temperature ($\rho$)
 
+```{r}
+plot_mu_estimates_v_sims(estimated_samples = estimated_mu_rho[,1,], 
+                         sim_params = true_mu_rho[test_sim_num,,])
+plot_mu_estimates_v_sims(estimated_samples = estimated_tau_rho, 
+                         sim_params = true_tau_rho[test_sim_num,], contrasted = F)
 ```
 
-### Temperature ($\rho$)
+```{r}
+probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_rho[,,1], 
+                           sim_params = true_beta_rho[test_sim_num,,1], 
+                           title = expression(paste(beta[rho[1]])))
+probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_rho[,,2], 
+                           sim_params = true_beta_rho[test_sim_num,,2], 
+                           title = expression(paste(beta[rho[2]])))
+probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_rho[,,3], 
+                           sim_params = true_beta_rho[test_sim_num,,3], 
+                           title = expression(paste(beta[rho[3]])))
+```
 
-```{r showmanyi, fig.width=8, fig.height=30}
+```{r showmanyirho, fig.width=8, fig.height=30}
 i_idx <- sample(1:308, size = 40)
 bayesplot::mcmc_hist_by_chain(log(estimated_beta_rho[,i_idx,])) +
     ggplot2::geom_vline(
@@ -350,33 +329,28 @@ bayesplot::mcmc_hist_by_chain(log(estimated_beta_rho[,i_idx,])) +
             Chain = rep(1:length(i_idx), 3)))
 ```
 
+## Noise ($\xi$)
+
 ```{r}
-ggplot2::qplot(true_beta_rho[test_sim_num,,1], 
-               apply(estimated_beta_rho, c(2,3), median)[,1], 
-               geom = c('point', 'smooth'),
-               xlab = 'Generative',
-               ylab = 'Estimated',
-               main = expression(paste(beta[rho[1]]))) +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
-ggplot2::qplot(true_beta_rho[test_sim_num,,2], 
-               apply(estimated_beta_rho, c(2,3), median)[,2], 
-               geom = c('point', 'smooth'),
-               xlab = 'Generative',
-               ylab = 'Estimated',
-               main = expression(paste(beta[rho[2]]))) +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
-ggplot2::qplot(true_beta_rho[test_sim_num,,3], 
-               apply(estimated_beta_rho, c(2,3), median)[,3], 
-               geom = c('point', 'smooth'),
-               xlab = 'Generative',
-               ylab = 'Estimated',
-               main = expression(paste(beta[rho[3]]))) +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
+plot_mu_estimates_v_sims(estimated_samples = estimated_mu_xi[,1,], 
+                         sim_params = true_mu_xi[test_sim_num,,], transform = 'pnorm')
+plot_mu_estimates_v_sims(estimated_samples = estimated_tau_xi, 
+                         sim_params = true_tau_xi[test_sim_num,], contrasted = F)
 ```
 
-### Noise ($\xi$)
+```{r}
+probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_xi[,,1], 
+                           sim_params = true_beta_xi[test_sim_num,,1], 
+                           title = expression(paste(beta[xi[1]])))
+probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_xi[,,2], 
+                           sim_params = true_beta_xi[test_sim_num,,2], 
+                           title = expression(paste(beta[xi[2]])))
+probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_xi[,,3], 
+                           sim_params = true_beta_xi[test_sim_num,,3], 
+                           title = expression(paste(beta[xi[3]])))
+```
 
-```{r showmanyi, fig.width=8, fig.height=30}
+```{r showmanyixi, fig.width=8, fig.height=30}
 i_idx <- sample(1:308, size = 40)
 bayesplot::mcmc_hist_by_chain(qnorm(estimated_beta_xi[,i_idx,])) +
     ggplot2::geom_vline(
@@ -387,45 +361,16 @@ bayesplot::mcmc_hist_by_chain(qnorm(estimated_beta_xi[,i_idx,])) +
             Chain = rep(1:length(i_idx), 3)))
 ```
 
-```{r}
-ggplot2::qplot(true_beta_xi[test_sim_num,,1], 
-               apply(estimated_beta_xi, c(2,3), median)[,1], 
-               geom = c('point', 'smooth'),
-               xlab = 'Generative',
-               ylab = 'Estimated',
-               main = expression(paste(beta[epsilon[1]]))) +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
-ggplot2::qplot(true_beta_xi[test_sim_num,,2], 
-               apply(estimated_beta_xi, c(2,3), median)[,2], 
-               geom = c('point', 'smooth'),
-               xlab = 'Generative',
-               ylab = 'Estimated',
-               main = expression(paste(beta[epsilon[2]]))) +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
-ggplot2::qplot(true_beta_xi[test_sim_num,,3], 
-               apply(estimated_beta_xi, c(2,3), median)[,3], 
-               geom = c('point', 'smooth'),
-               xlab = 'Generative',
-               ylab = 'Estimated',
-               main = expression(paste(beta[epsilon[3]]))) +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
+## Final probability of pressing left or right
 
-```
-
-### Final probability of pressing left or right
-
-```{r pRfinalplot}
-ggplot2::ggplot(
-    data.frame(Generative = as.numeric(sample_pR_final[test_sim_num,,]), 
-               Estimated = as.numeric(apply(estimated_sample_pR_final, c(2,3), median)),
-               stimulus = rep(1:6, each = 308)), 
-    ggplot2::aes(x = Generative, y = Estimated)) + 
-    ggplot2::geom_point(alpha = .5) + 
-    ggplot2::facet_wrap(~stimulus) + 
-    ggplot2::labs(xlab = 'Generative',
-                  ylab = 'Estimated',
-                  title = 'Final Probability of Pressing Left (0) or Right (1)') +
-    ggplot2::geom_abline(intercept = 0, slope = 1)
+```{r pRfinalplot, fig.width=8, fig.height=5}
+pR_final_plots <- lapply(1:6, function(i){
+  probly::plot_beta_estimates_v_sims(estimated_samples = estimated_sample_pR_final[,,i], 
+                           sim_params = sample_pR_final[test_sim_num,,i], 
+                           title = paste0('Stimulus: ', i))
+})
+pR_final_plots[['nrow']] <- 2
+do.call(gridExtra::grid.arrange, pR_final_plots)
 ```
 
 ```{r run_many_simulations, eval = F, echo = T}
