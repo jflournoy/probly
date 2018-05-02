@@ -371,3 +371,94 @@ plot_splt_sim_behavior <- function(splt_df, press_right, se = T){
         return(list(sample = sample_plot, overall = overall_plot))
     }
 }
+
+
+#' Plot estimates versus simulation parameters
+#'
+#' @param estimated_samples A matrix or data.frame with iterations in rows and (3) parameters in columns.
+#' @param sim_params Vector with parameters that generated simulated data.
+#' @param transform String of name of function to use to transform values.
+#' @param contrasted If true, parameters are combined like: \code{params[1] + c(0, params[2:3])}
+#'
+#' @return a plot
+#' @export
+plot_mu_estimates_v_sims <- function(estimated_samples, sim_params, transform = NULL, contrasted = TRUE){
+    if(contrasted){
+        estimated_samples_absolute <- t(apply(
+            estimated_samples,
+            1,
+            function(x) cbind(x[[1]], x[[1]] + x[[2]], x[[1]] + x[[3]])))
+        dimnames(estimated_samples_absolute)[[2]] <- dimnames(estimated_samples)[[2]]
+        sim_param_values <- sim_params[1] + c(0,sim_params[2:3])
+    } else {
+        estimated_samples_absolute <- estimated_samples
+        sim_param_values <- sim_params
+    }
+
+
+    if(!is.null(transform)){
+        tf_func <- eval(parse(text=transform))
+        estimated_samples_absolute <- tf_func(estimated_samples_absolute)
+        sim_param_values <- tf_func(sim_param_values)
+    }
+
+    sim_df <- data.frame(
+        value = sim_param_values,
+        Parameter = names(sim_params))
+
+    bayesplot::mcmc_areas(estimated_samples_absolute,
+                          prob = .9, prob_outer = .95) +
+        ggplot2::geom_segment(
+            ggplot2::aes(x = value, xend = value,
+                         y = 4-as.numeric(Parameter),
+                         yend = 4 - as.numeric(Parameter) + .67),
+            data = sim_df)
+}
+
+
+#' Plot estimates versus simulation parameters
+#'
+#' @param estimated_samples A matrix or data.frame with iterations in rows and (3) parameters in columns.
+#' @param sim_params Vector with parameters that generated simulated data.
+#' @param transform String of name of function to use to transform values.
+#' @param title Title for the plot
+#'
+#' @return A plot
+#' @export
+plot_beta_estimates_v_sims <- function(estimated_samples, sim_params, transform = NULL, title = NULL){
+    if(!is.null(transform)){
+        estimated_samples <- eval(parse(text = transform))(estimated_samples)
+        sim_params <- eval(parse(text = transform))(sim_params)
+    }
+
+    estimated_mu_quant <- apply(estimated_samples,
+                                c(2),
+                                quantile,
+                                probs = c(0.025, 0.5, 0.975))
+    min_betas <- min(sim_params, estimated_mu_quant)
+    max_betas <- max(sim_params, estimated_mu_quant)
+
+    plot_df <- data.frame(
+        Estimated_median = estimated_mu_quant[2,],
+        Estimated_l = estimated_mu_quant[1,],
+        Estimated_u = estimated_mu_quant[3,],
+        Generative = sim_params)
+
+    aplot <- ggplot2::ggplot(
+        plot_df,
+        ggplot2::aes(x = Generative,
+                     y = Estimated_median)) +
+        ggplot2::geom_errorbar(
+            ggplot2::aes(ymin = Estimated_l,
+                         ymax = Estimated_u),
+            width = 0, alpha = .5) +
+        ggplot2::geom_point(alpha = .7) +
+        ggplot2::geom_smooth(method = 'loess') +
+        ggplot2::labs(x = 'Generative',
+                      y = 'Estimated',
+                      title = title) +
+        ggplot2::coord_cartesian(xlim = c(min_betas, max_betas),
+                                 ylim = c(min_betas, max_betas)) +
+        ggplot2::geom_abline(intercept = 0, slope = 1)
+    return(aplot)
+}
