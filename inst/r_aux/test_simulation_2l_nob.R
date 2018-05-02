@@ -104,7 +104,7 @@ message('Value of future, rl_2l_nob_sim_f, available? ', ifelse(any(grepl('rl_2l
 pright_pred_samps <- rstan::extract(rl_2l_nob_sim, pars = 'pright_pred')[[1]]
 list_of_pright_pred_mats <- lapply(1:dim(pright_pred_samps)[1], function(i) pright_pred_samps[i,,])
 # rm(rl_2l_nob_sim)
-gc()
+nada <- gc(verbose = F)
 
 if(!file.exists(sim_test_fit_fn)){
     message('Fitting simulated data')
