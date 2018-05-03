@@ -64,6 +64,11 @@ splt$sample <- factor(splt$sample, levels = names(sample_labels), labels = sampl
 splt_dev_and_demog$sample <- factor(splt_dev_and_demog$sample, levels = names(sample_labels), labels = sample_labels)
 splt_dev_and_demog$gender <- factor(splt_dev_and_demog$gender, levels = c(0, 1), labels = c('Male', 'Female'))
 splt_dev_and_demog$ethnicity <- factor(splt_dev_and_demog$ethnicity, levels = names(ethnicity_labels), labels = ethnicity_labels)
+save_out_list <- c()
+save_out_dir <- '~/code_new/social-motives-rl-writeup/rda/'
+if(!dir.exists(save_out_dir)){
+    dir.create(save_out_dir)
+}
 ```
 
 ```{r loadtablesandcss, results = 'asis'}
@@ -101,7 +106,7 @@ sample_table <- tables::tabular(
     (Sample=sample) ~ 
         (N = 1)*Heading()*(gender) +
         (Format(digits=2)*(Age = age) + 
-             Format(digits=1)*(PDSS = PDSS_pdss) + 
+             Format(digits=1)*(PDS = PDS_mean_score) + 
              Format(digits=0)*(`N~trials~` = ntrials))*Heading()*(gender)*
                   ((M = mean.na.rm) + 
                        (`SD` = sd.na.rm)), 
@@ -110,8 +115,8 @@ sample_table <- tables::tabular(
 missing_table <- tables::tabular(
     ((Sample=sample) + 1) ~ 
         (N=1) +
-             (((Age=age) + (PDSS=PDSS_pdss) + (Gender = gender_num) + (Task = ntrials))*
-                  ((`N~miss~` = nmissing) + Format(digits=1)*(`%` = Percent(fn = prct_missing)))), 
+             (((Age=age) + (PDS=PDS_mean_score) + (Gender = gender_num) + (Task = ntrials))*
+                  ((`N~miss~` = nmissing) + Format(digits=1)*(`\\%` = Percent(fn = prct_missing)))), 
     data = splt_dev_and_demog_task_sum)
 
 optimal_press_prop_table <- tables::tabular((Condition = condition)*(Sample = sample) ~ 
@@ -119,9 +124,11 @@ optimal_press_prop_table <- tables::tabular((Condition = condition)*(Sample = sa
                     identity*Heading()*Format(digits=3)*p_optimal_correct, 
                 data = splt_summary_optimal_feedback)
 ethnicity_table <- tables::tabular(
-    Heading('Percent (%)')*ethnicity*Heading()*Format(digits=1)*Percent(denom = 'col') ~
+    Heading('Percent (\\%)')*ethnicity*Heading()*Format(digits=1)*Percent(denom = 'col') ~
         1 + Heading()*(Sample = sample),
     data = splt_dev_and_demog_task_sum)
+
+save_out_list <- c(save_out_list, 'splt_dev_and_demog_task_sum', 'splt_summary_optimal_feedback')
 ```
 
 # Participants
@@ -135,9 +142,9 @@ Examining the table, it is clear that the proportion of missing data is small.
 The full sample consists of `r sum(!is.na(splt_dev_and_demog_task_sum$SID))` participants (`r sum(splt_dev_and_demog_task_sum$gender_num==1, na.rm=T)` male) with ages between `r round(min(splt_dev_and_demog_task_sum$age, na.rm = T), 1)` and `r round(max(splt_dev_and_demog_task_sum$age, na.rm = T), 1)` years (see Table \@ref(tab:samplestats) for full details). 
 The majority of participants in all samples identified as white, though in the both college samples this majority did not exceed 60% (Table \@ref(tab:ethnicitytable)).
 
-(ref:missingstats) (\#tab:missingstats) Missing data from each sample for age, PDSS, and gender
+(ref:missingstats) (\#tab:missingstats) Missing data from each sample for age, PDS, and gender
 
-(ref:samplestats) (\#tab:samplestats) Descriptive statistics on age, and PDSS for each sample
+(ref:samplestats) (\#tab:samplestats) Descriptive statistics on age, and PDS for each sample
 
 (ref:ethnicitytable) (\#tab:ethnicitytable) Race/ethnicity information by sample
 
@@ -214,7 +221,9 @@ pds_plot_2 <- splt_dev_and_demog_task_sum %>%
                   y = 'Pubertal development scale, mean',
                   x = 'Age (years)') + 
     ggplot2::coord_cartesian(xlim = c(12, 25), ylim = c(1, 4))
-gridExtra::grid.arrange(pds_plot_1, pds_plot_2,nrow=1)
+pds_plot_12 <- gridExtra::grid.arrange(pds_plot_1, pds_plot_2,nrow=1)
+
+save_out_list <- c(save_out_list, 'pds_plot_12')
 ```
 
 
@@ -271,7 +280,7 @@ ptab(optimal_press_prop_table,
 The vertical line set a 1s, which is close to the mean reaction time across all samples.
 
 ```{r reactiontime, fig.width=5, fig.height=5, cache=F, fig.cap='(ref:reactiontime)'}
-ggplot2::ggplot(
+reaction_time_plot <- ggplot2::ggplot(
     dplyr::filter(splt, rt > 0),
     ggplot2::aes(x = rt/1000, color = id, group = id)) +
     ggplot2::geom_vline(xintercept = 1, size = .5, color = '#666666') +
@@ -284,7 +293,12 @@ ggplot2::ggplot(
     ggplot2::labs(x = 'Trial reaction-time (s)',
          y = 'Density') +
     ggplot2::theme(legend.position="none")
+reaction_time_plot
+save_out_list <- c(save_out_list, 'reaction_time_plot')
 ```
 
+```{r echo = F, eval = F}
+save(list = save_out_list, file = file.path(save_out_dir, 'descriptive-statistics.rda'))
+```
 
 # References

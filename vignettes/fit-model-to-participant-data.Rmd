@@ -61,6 +61,12 @@ splt_confidence$sample <- factor(splt_confidence$sample, levels = names(sample_l
 splt_dev_and_demog$sample <- factor(splt_dev_and_demog$sample, levels = names(sample_labels), labels = sample_labels)
 splt_dev_and_demog$gender <- factor(splt_dev_and_demog$gender, levels = c(0, 1), labels = c('Male', 'Female'))
 splt_dev_and_demog$ethnicity <- factor(splt_dev_and_demog$ethnicity, levels = names(ethnicity_labels), labels = ethnicity_labels)
+
+save_out_list <- c()
+save_out_dir <- '~/code_new/social-motives-rl-writeup/rda/'
+if(!dir.exists(save_out_dir)){
+    dir.create(save_out_dir)
+}
 ```
 
 # Method
@@ -78,7 +84,7 @@ There is also some indication that learning occurs more quickly in the two socia
 
 (ref:trialaverages) Average number of optimal responses for each trial across all participants. Best fit lines are generalized additive models with 95% confidence intervals. 
 
-```{r trialaverages, fig.width=8, fig.height=5, cache=T, caption='(ref:trialaverages)'}
+```{r trialaverages, fig.width=9, fig.height=5, cache=T, caption='(ref:trialaverages)'}
 splt_averages <- splt %>%
     dplyr::group_by(sample, condition, condition_trial_index) %>%
     dplyr::summarize(p_optimal = mean(correcttrue, na.rm = T)) %>%
@@ -99,7 +105,7 @@ avg_per_sample_plot <- ggplot2::ggplot(
     ggplot2::geom_point(alpha = .1) +
     ggplot2::geom_smooth(
         color = 'black', size = .5,
-        method = 'gam', formula = y ~ s(x, bs = "cr", k = 6), se = T) +
+        method = 'gam', formula = y ~ s(x, bs = "cr", k = 6, fx = T), se = T) +
     ggplot2::facet_wrap(~sample, nrow = 2) +
     ggplot2::labs(x = 'Within-condition trial number',
                   y = 'Proportion of optimal responses',
@@ -118,7 +124,7 @@ avg_across_samples <- ggplot2::ggplot(
     ggplot2::geom_point(alpha = .1) +
     ggplot2::geom_smooth(
         color = 'black', size = .5,
-        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = T) +
+        method = 'gam', formula = y ~ s(x, bs = "cr", k = 6, fx = T), se = T) +
     ggplot2::labs(x = 'Within-condition trial number',
                   y = 'Proportion of optimal responses',
                   title = 'B') +
@@ -129,7 +135,10 @@ avg_across_samples <- ggplot2::ggplot(
                    legend.background = element_rect(fill = 'white', color = 'white')) + 
     ggplot2::coord_cartesian(ylim = c(.5, .8))
 
-gridExtra::grid.arrange(avg_per_sample_plot, avg_across_samples, nrow = 1)
+task_descriptive_figure <- gridExtra::grid.arrange(avg_per_sample_plot, avg_across_samples, nrow = 1)
+
+gridExtra::grid.arrange(task_descriptive_figure)
+save_out_list <- c(save_out_list, 'task_descriptive_figure')
 ```
 
 Participants also reported their confidence about which reponses would give them rewards most often (this single item measured confidence globally).
@@ -138,17 +147,24 @@ Confidence generally increases aross trials for all samples (Figure \@ref(fig:co
 (ref:confidenceplot) Self-reported confidence over blocks.
 
 ```{r confidenceplot, fig.width=6, fig.height=4, cache=T, fig.cap='(ref:confidenceplot)'}
-ggplot2::ggplot(
+confidence_description_plot <- ggplot2::ggplot(
     dplyr::filter(splt_confidence, !is.na(sample), sample != 'TDS3'),
     ggplot2::aes(x = block, y = confidence)) +
-    ggplot2::geom_point(position = ggplot2::position_jitter(w = .3, h = .3), alpha = .1) +
+    ggplot2::geom_violin(ggplot2::aes(group = block), scale = 'area', bw = .4, color = '#666666',alpha = 0,
+                         position = position_identity())+
     ggplot2::geom_smooth(
         ggplot2::aes(color = sample),
-        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8), se = F) +
+        method = 'gam', formula = y ~ s(x, bs = "cs", k = 8),
+        se = T,
+        alpha = .1, size = .5) +
+    ggplot2::scale_color_manual(values = ggsci::pal_rickandmorty()(8)[c(2:3,7:8)]) + 
     ggplot2::theme_minimal() +
+    ggplot2::guides(color = guide_legend(override.aes=list(fill=NA))) + 
     ggplot2::labs(x = 'Block number',
                   y = 'Self-report confidence about optimal label',
                   color = 'Sample')
+confidence_description_plot
+save_out_list <- c(save_out_list, 'confidence_description_plot')
 ```
 
 ### Proportion optimal presses per ID & condition
@@ -196,33 +212,158 @@ plot_opt_presses_per_id <- function(splt_df,
 }
 ```
 
-```{r proportion_trials_per_conditionca, fig.width=10, fig.height=22, cache=T}
+```{r proportion_trials_per_conditionca, fig.width=10, fig.height=22, cache=F, eval=F}
 plot_opt_presses_per_id(
     dplyr::filter(splt, sample == 'Community adolescents'),
     ncol = 5,
     title = 'Community adolescents')
 ```
 
-```{r proportion_trials_per_conditionfc, fig.width=10, fig.height=10, cache=T}
+```{r proportion_trials_per_conditionfc, fig.width=10, fig.height=10, cache=F, eval=F}
 plot_opt_presses_per_id(
     dplyr::filter(splt, sample == 'Foster-care involved adolescents'),
     ncol = 5,
     title = 'Foster-care involved adolescents')
 ```
 
-```{r proportion_trials_per_conditioncs, fig.width=10, fig.height=22, cache=T}
+```{r proportion_trials_per_conditioncs, fig.width=10, fig.height=22, cache=F, eval=F}
 plot_opt_presses_per_id(
     dplyr::filter(splt, sample == 'College students'),
     ncol = 5,
     title = 'College students')
 ```
 
-```{r proportion_trials_per_conditioncso, fig.width=10, fig.height=44, cache=T}
+```{r proportion_trials_per_conditioncso, fig.width=10, fig.height=44, cache=F, eval=F}
 plot_opt_presses_per_id(
     dplyr::filter(splt, sample == 'College students - online'),
     ncol = 5,
     title = 'College students - online')
 
+```
+
+# Results from logistic regression
+
+```{r}
+library(lme4)
+library(brms)
+library(future)
+
+logistic_saves_dir <- '/data/jflournoy/split/probly/logistic/'
+if(!dir.exists(logistic_saves_dir)) dir.create(logistic_saves_dir)
+
+#  [1] "id"                    "dir"                   "sample.x"             
+#  [4] "correcttrue"           "pressed_r"             "outcome"              
+#  [7] "correct_r"             "reward_possible"       "condition"            
+# [10] "condition_trial_index" "sex"                   "stim_image"           
+# [13] "trial_index"           "block"                 "proportion"           
+# [16] "rt"                    "time_elapsed"          "date_time_completed"  
+# [19] "opt_is_right"          "press_opt"             "PDS_female_menses"    
+# [22] "PDSS_adren"            "PDSS_gender"           "PDSS_gonad"           
+# [25] "PDSS_pdss"             "PDS_mean_score"        "gender"               
+# [28] "hispanic_yn"           "fsiq2"                 "sample.y"             
+# [31] "age"                   "ethnicity" 
+
+splt_no_na <- splt[!is.na(splt$pressed_r), ]
+splt_no_na$opt_is_right <- as.numeric(factor(splt_no_na$proportion,
+                                             levels = c('80_20', '20_80'))) - 1
+splt_no_na$press_opt <- as.numeric(splt_no_na$opt_is_right == splt_no_na$pressed_r)
+splt_no_na_dev <- dplyr::left_join(splt_no_na,
+                                   splt_dev_and_demog, by = c('id' = 'SID', 'sample'))
+
+splt_no_na_dev$trial_index_c0_s <- 
+    (splt_no_na_dev$trial_index - max(splt_no_na_dev$trial_index)) /
+    sd(splt_no_na_dev$trial_index)
+
+splt_no_na_dev$condition_trial_index_c0_s <- 
+    (splt_no_na_dev$condition_trial_index - max(splt_no_na_dev$condition_trial_index)) /
+    sd(splt_no_na_dev$condition_trial_index)
+
+null_id_only_m <- lme4::glmer(press_opt ~ 1 + (1 | id), 
+                              family = 'binomial',
+                              data = splt_no_na, REML = F)
+null_m <- lme4::glmer(press_opt ~ 1 + (1 | sample/id), 
+                      family = 'binomial',
+                      data = splt_no_na, REML = F)
+null_stim_rx_m <- lme4::glmer(press_opt ~ 1 + (1 | sample/id) + (1 | stim_image), 
+                              family = 'binomial', 
+                              data = splt_no_na, REML = F)
+summary(null_m)
+summary(null_stim_rx_m)
+arm::invlogit(lme4::fixef(null_m))
+arm::invlogit(lme4::fixef(null_stim_rx_m))
+anova(null_id_only_m, null_m, null_stim_rx_m)
+
+future::plan(future::multiprocess)
+null_id_only_bm_f <- future::future(
+    probly::CachedFit(
+        {
+            afit <- brms::brm(press_opt ~ 1 + (1 | id) + (1 | stim_image),
+                              family = 'bernoulli',
+                              data = splt_no_na, 
+                              cores = 4, chains = 4, 
+                              iter = 1500, warmup = 1000,
+                              control = list(adapt_delta = 0.99))
+            afit <- add_ic(afit, ic = c("loo", "waic"))
+            afit
+        },
+        rds_filename = file.path(logistic_saves_dir, 'null_id_only_bm.rds')))
+
+null_bm_f <- future::future(
+    probly::CachedFit(
+        {
+            afit <- brms::brm(press_opt ~ 1 + (1 | sample/id) + (1 | stim_image),
+                              family = 'bernoulli',
+                              data = splt_no_na, 
+                              cores = 4, chains = 4, 
+                              iter = 1500, warmup = 1000,
+                              control = list(adapt_delta = 0.99))
+            afit <- add_ic(afit, ic = c("loo", "waic"))
+            afit
+        },
+        rds_filename = file.path(logistic_saves_dir, 'null_bm.rds')))
+
+time_m_f <- future::future(
+    probly::CachedFit(
+        lme4::glmer(press_opt ~ 1 + trial_index_c0_s + 
+                        (1 + trial_index_c0_s | sample:id) + 
+                        (1 | sample) + 
+                        (1 + trial_index_c0_s | stim_image), 
+               family = 'binomial',
+               data = splt_no_na_dev, REML = F),
+        rds_filename = file.path(logistic_saves_dir, 'time_m.rds')))
+
+condition_m_f <- future::future(
+    probly::CachedFit(
+        lme4::glmer(press_opt ~ 1 + condition + 
+                        (1 + condition | sample:id) + 
+                        (1 | sample) + 
+                        (1 + condition | stim_image), 
+               family = 'binomial',
+               data = splt_no_na, REML = F),
+        rds_filename = file.path(logistic_saves_dir, 'condition_m.rds')))
+
+
+resolved(null_id_only_bm_f)
+resolved(null_bm_f)
+resolved(time_m_f)
+resolved(condition_m_f)
+
+null_id_only_bm <- value(null_id_only_bm_f)
+null_bm <- value(null_bm_f)
+time_m <- value(time_m_f)
+condition_m <- value(condition_m_f)
+
+summary(value(null_id_only_bm_f))
+add_ic(null_id_only_bm, ic = 'loo')
+
+summary(value(null_bm_f))
+add_ic(null_bm, ic = 'loo')
+
+summary(value(time_m_f))
+arm::invlogit(fixef(time_m)[1] + c(0, fixef(time_m)[2]*-3.45))
+
+summary(value(condition_m_f))
+arm::invlogit(fixef(condition_m)[1] + c(0, fixef(condition_m)[2:3]))
 ```
 
 # Results from Bayesian learning models
@@ -288,7 +429,7 @@ munames <- grep('mu', names(stanfit_2_level), value = T)
 stanfitmat <- as.array(stanfit_2_level)
 ggplot2::theme_set(ggplot2::theme_minimal())
 bayesplot::mcmc_combo(stanfitmat, pars = munames[4:6], facet_args = list(scales = 'fixed'),
-                      transformations = pnorm, 
+                      # transformations = pnorm, 
                       combo = c('areas_ridges', 'trace'), 
                       prob_outer = 1-.005, prob = .95, widths = c(3,4))
 
@@ -502,4 +643,8 @@ bayesplot::mcmc_pairs(
         Chain = rep(1:6, each=750)), 
     np = sumnuts,
     off_diag_fun = 'hex')
+```
+
+```{r echo = F, eval = F}
+save(list = save_out_list, file = file.path(save_out_dir, 'fit-model-to-participant-data.rda'))
 ```
