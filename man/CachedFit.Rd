@@ -4,16 +4,27 @@
 \alias{CachedFit}
 \title{Loads previous model fit, or fits and saves}
 \usage{
-CachedFit(expr, rds_filename)
+CachedFit(expr, rds_filename, save_only = F)
 }
 \arguments{
-\item{expr}{An expression (e.g., \code{\{lm(y ~ x, data = aDataFrame)\}}) to be evaluated.}
+\item{expr}{An expression (e.g., \code{\{lm(y ~ x, data = aDataFrame)\}}) to
+be evaluated.}
 
-\item{rds_filename}{A filename (full path, or filename in current working directory) to save or load using \code{saveRDS} or \code{loadRDS}.}
+\item{rds_filename}{A filename (full path, or filename in current working
+directory) to save or load using \code{saveRDS} or \code{loadRDS}.}
+
+\item{save_only}{Set to TRUE if you want the result to be saved, but don't
+want the object to be returned (default is FALSE)}
 }
 \value{
-the return value of \code{expr} or the object saved in the RDS object located at \code{rds_filename}
+the return value of \code{expr} or the object saved in the RDS object
+  located at \code{rds_filename}. If save_only is TRUE, returns TRUE, or an
+  object of class try-error if the call resulted in an error.
 }
 \description{
-\code{CachedFit} takes an expression to evaluate (presumably a model fitting call, but it could be anything), and the filename to which to save the fitted model. If the RDS object exists, it loads it instead of fitting the object. It does not check to make sure that the expression corresponds to that which resulted in the original model fit.
+\code{CachedFit} takes an expression to evaluate (presumably a model fitting
+call, but it could be anything), and the filename to which to save the fitted
+model. If the RDS object exists, it loads it instead of fitting the object.
+It does not check to make sure that the expression corresponds to that which
+resulted in the original model fit.
 }
