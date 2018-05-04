@@ -1,22 +1,44 @@
 #' Loads previous model fit, or fits and saves
 #'
-#' \code{CachedFit} takes an expression to evaluate (presumably a model fitting call, but it could be anything), and the filename to which to save the fitted model. If the RDS object exists, it loads it instead of fitting the object. It does not check to make sure that the expression corresponds to that which resulted in the original model fit.
+#' \code{CachedFit} takes an expression to evaluate (presumably a model fitting
+#' call, but it could be anything), and the filename to which to save the fitted
+#' model. If the RDS object exists, it loads it instead of fitting the object.
+#' It does not check to make sure that the expression corresponds to that which
+#' resulted in the original model fit.
 #'
-#' @param expr An expression (e.g., \code{\{lm(y ~ x, data = aDataFrame)\}}) to be evaluated.
-#' @param rds_filename A filename (full path, or filename in current working directory) to save or load using \code{saveRDS} or \code{loadRDS}.
+#' @param expr An expression (e.g., \code{\{lm(y ~ x, data = aDataFrame)\}}) to
+#'   be evaluated.
+#' @param rds_filename A filename (full path, or filename in current working
+#'   directory) to save or load using \code{saveRDS} or \code{loadRDS}.
+#' @param save_only Set to TRUE if you want the result to be saved, but don't
+#'   want the object to be returned (default is FALSE)
 #'
-#' @return the return value of \code{expr} or the object saved in the RDS object located at \code{rds_filename}
+#' @return the return value of \code{expr} or the object saved in the RDS object
+#'   located at \code{rds_filename}. If save_only is TRUE, returns TRUE, or an
+#'   object of class try-error if the call resulted in an error.
 #' @export
-CachedFit <- function(expr, rds_filename){
-  if(file.exists(rds_filename)){
+CachedFit <- function(expr, rds_filename, save_only = F){
+  if(file.exists(rds_filename) && !save_only){
     message('Loading...')
     theFit <- readRDS(rds_filename)
+  } else if(file.exists(rds_filename) && save_only){
+      message('save_only is TRUE but file already exists (returning NULL)')
+      return(NULL)
   } else {
-    message('Evaluating...')
+    message('Evaluating... (save_only = ', save_only, ')')
     theFit <- try(eval(expr))
+    message('Writing result to ', rds_filename)
     saveRDS(theFit, rds_filename)
   }
-  return(theFit)
+  if(save_only){
+      if(any('try-error' %in% class(theFit))){
+          return(theFit)
+      } else {
+          return(TRUE)
+      }
+  } else {
+      return(theFit)
+  }
 }
 
 #' Get par summaries
