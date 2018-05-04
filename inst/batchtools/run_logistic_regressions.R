@@ -1,6 +1,8 @@
+library(probly)
 library(lme4)
 library(brms)
 library(future)
+library(future.batchtools)
 library(listenv)
 
 if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
