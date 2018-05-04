@@ -52,7 +52,7 @@ formulae <- list(
 plan(batchtools_slurm,
      template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
      resources = list(ncpus = nchains, walltime = 60*24*4, memory = '1G',
-                      partitions = 'long,longfat'))
+                      partitions = 'short,fat,long,longfat'))
 
 brms_results <- listenv()
 
@@ -79,7 +79,7 @@ for(i in seq_along(formulae)){
 plan(batchtools_slurm,
      template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
      resources = list(ncpus = 1, walltime = 60*24*1, memory = '3G',
-                      partitions = 'short,fat'))
+                      partitions = 'short,fat,long,longfat'))
 
 lme4_results <- listenv()
 
