@@ -21,6 +21,8 @@ knitr::opts_chunk$set(
   comment = "#>",
   echo=F,message=F,warning=F,error=F
 )
+
+knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
 ```
 
 ```{r}
@@ -30,43 +32,15 @@ library(tidyr)
 library(ggplot2)
 library(rstan)
 library(bayesplot)
-data(splt, splt_confidence)
-sample_labels <- c(
-    'TDS1' = 'Foster-care involved adolescents',
-    'TDS2' = 'Community adolescents',
-    'yads' = 'College students',
-    'yads_online' = 'College students - online'
-)
-
-condition_labels <- c(
-    'HngT' = 'Hungry/Thirsty',
-    'DtnL' = 'Dating/Looking', 
-    'PplU' = 'Popular/Unpopular'
-)
-
-ethnicity_labels <- c(
-    'American Indian and Alaska Native' = 'AmIndn',
-    'Asian' = 'Asian',
-    'Black or African American' = 'Black/AA',
-    'Latinx/Hispanic' = 'Latinx/Hsp',
-    'Native Hawaiian and Other Pacific Islander' = 'Pcfc Islnd',
-    'Other' = 'Other',
-    'White' = 'White',
-    'White/Hispanic' = 'Wht/Hsp'
-)
-
-splt$condition <- factor(splt$condition, levels = names(condition_labels), labels = condition_labels)
-splt$sample <- factor(splt$sample, levels = names(sample_labels), labels = sample_labels)
-splt_confidence$sample <- factor(splt_confidence$sample, levels = names(sample_labels), labels = sample_labels)
-splt_dev_and_demog$sample <- factor(splt_dev_and_demog$sample, levels = names(sample_labels), labels = sample_labels)
-splt_dev_and_demog$gender <- factor(splt_dev_and_demog$gender, levels = c(0, 1), labels = c('Male', 'Female'))
-splt_dev_and_demog$ethnicity <- factor(splt_dev_and_demog$ethnicity, levels = names(ethnicity_labels), labels = ethnicity_labels)
 
 save_out_list <- c()
 save_out_dir <- '~/code_new/social-motives-rl-writeup/rda/'
 if(!dir.exists(save_out_dir)){
     dir.create(save_out_dir)
 }
+```
+
+```{r load_data_for_sim}
 ```
 
 # Method
@@ -244,12 +218,9 @@ plot_opt_presses_per_id(
 # Results from logistic regression
 
 ```{r}
-library(lme4)
-library(brms)
-library(future)
+data_dir <- '/data/jflournoy/split/probly'
+logistic_saves_dir <- file.path(data_dir,'/logistic/')
 
-logistic_saves_dir <- '/data/jflournoy/split/probly/logistic/'
-if(!dir.exists(logistic_saves_dir)) dir.create(logistic_saves_dir)
 
 #  [1] "id"                    "dir"                   "sample.x"             
 #  [4] "correcttrue"           "pressed_r"             "outcome"              
@@ -263,106 +234,40 @@ if(!dir.exists(logistic_saves_dir)) dir.create(logistic_saves_dir)
 # [28] "hispanic_yn"           "fsiq2"                 "sample.y"             
 # [31] "age"                   "ethnicity" 
 
-splt_no_na <- splt[!is.na(splt$pressed_r), ]
-splt_no_na$opt_is_right <- as.numeric(factor(splt_no_na$proportion,
-                                             levels = c('80_20', '20_80'))) - 1
-splt_no_na$press_opt <- as.numeric(splt_no_na$opt_is_right == splt_no_na$pressed_r)
-splt_no_na_dev <- dplyr::left_join(splt_no_na,
-                                   splt_dev_and_demog, by = c('id' = 'SID', 'sample'))
+null_id_only_m <- probly::CachedFit(
+    lme4::glmer(press_opt ~ 1 + (1 | id), 
+                family = 'binomial',
+                data = splt), 
+    rds_filename = file.path(logistic_saves_dir, 'null_id_only_m.rds'))
 
-splt_no_na_dev$trial_index_c0_s <- 
-    (splt_no_na_dev$trial_index - max(splt_no_na_dev$trial_index)) /
-    sd(splt_no_na_dev$trial_index)
-
-splt_no_na_dev$condition_trial_index_c0_s <- 
-    (splt_no_na_dev$condition_trial_index - max(splt_no_na_dev$condition_trial_index)) /
-    sd(splt_no_na_dev$condition_trial_index)
-
-null_id_only_m <- lme4::glmer(press_opt ~ 1 + (1 | id), 
-                              family = 'binomial',
-                              data = splt_no_na, REML = F)
-null_m <- lme4::glmer(press_opt ~ 1 + (1 | sample/id), 
+null_m <- probly::CachedFit(
+    lme4::glmer(press_opt ~ 1 + (1 | sample/id), 
                       family = 'binomial',
-                      data = splt_no_na, REML = F)
-null_stim_rx_m <- lme4::glmer(press_opt ~ 1 + (1 | sample/id) + (1 | stim_image), 
+                      data = splt), 
+    rds_filename = file.path(logistic_saves_dir, 'null_m.rds'))
+
+null_stim_rx_m <- probly::CachedFit(
+    lme4::glmer(press_opt ~ 1 + (1 | sample/id) + (1 | stim_image), 
                               family = 'binomial', 
-                              data = splt_no_na, REML = F)
+                              data = splt), 
+    rds_filename = file.path(logistic_saves_dir, 'null_stim_rx_m.rds'))
+
+summary(null_id_only_m)
 summary(null_m)
 summary(null_stim_rx_m)
+arm::invlogit(lme4::fixef(null_id_only_m))
 arm::invlogit(lme4::fixef(null_m))
 arm::invlogit(lme4::fixef(null_stim_rx_m))
 anova(null_id_only_m, null_m, null_stim_rx_m)
 
-future::plan(future::multiprocess)
-null_id_only_bm_f <- future::future(
-    probly::CachedFit(
-        {
-            afit <- brms::brm(press_opt ~ 1 + (1 | id) + (1 | stim_image),
-                              family = 'bernoulli',
-                              data = splt_no_na, 
-                              cores = 4, chains = 4, 
-                              iter = 1500, warmup = 1000,
-                              control = list(adapt_delta = 0.99))
-            afit <- add_ic(afit, ic = c("loo", "waic"))
-            afit
-        },
-        rds_filename = file.path(logistic_saves_dir, 'null_id_only_bm.rds')))
+summary(null_id_only_bm)
 
-null_bm_f <- future::future(
-    probly::CachedFit(
-        {
-            afit <- brms::brm(press_opt ~ 1 + (1 | sample/id) + (1 | stim_image),
-                              family = 'bernoulli',
-                              data = splt_no_na, 
-                              cores = 4, chains = 4, 
-                              iter = 1500, warmup = 1000,
-                              control = list(adapt_delta = 0.99))
-            afit <- add_ic(afit, ic = c("loo", "waic"))
-            afit
-        },
-        rds_filename = file.path(logistic_saves_dir, 'null_bm.rds')))
+summary(null_bm)
 
-time_m_f <- future::future(
-    probly::CachedFit(
-        lme4::glmer(press_opt ~ 1 + trial_index_c0_s + 
-                        (1 + trial_index_c0_s | sample:id) + 
-                        (1 | sample) + 
-                        (1 + trial_index_c0_s | stim_image), 
-               family = 'binomial',
-               data = splt_no_na_dev, REML = F),
-        rds_filename = file.path(logistic_saves_dir, 'time_m.rds')))
-
-condition_m_f <- future::future(
-    probly::CachedFit(
-        lme4::glmer(press_opt ~ 1 + condition + 
-                        (1 + condition | sample:id) + 
-                        (1 | sample) + 
-                        (1 + condition | stim_image), 
-               family = 'binomial',
-               data = splt_no_na, REML = F),
-        rds_filename = file.path(logistic_saves_dir, 'condition_m.rds')))
-
-
-resolved(null_id_only_bm_f)
-resolved(null_bm_f)
-resolved(time_m_f)
-resolved(condition_m_f)
-
-null_id_only_bm <- value(null_id_only_bm_f)
-null_bm <- value(null_bm_f)
-time_m <- value(time_m_f)
-condition_m <- value(condition_m_f)
-
-summary(value(null_id_only_bm_f))
-add_ic(null_id_only_bm, ic = 'loo')
-
-summary(value(null_bm_f))
-add_ic(null_bm, ic = 'loo')
-
-summary(value(time_m_f))
+summary(time_m)
 arm::invlogit(fixef(time_m)[1] + c(0, fixef(time_m)[2]*-3.45))
 
-summary(value(condition_m_f))
+summary(condition_m)
 arm::invlogit(fixef(condition_m)[1] + c(0, fixef(condition_m)[2:3]))
 ```
 
