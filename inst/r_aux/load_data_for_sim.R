@@ -1,17 +1,45 @@
 ## ---- load_data_for_sim
 
 library(probly)
+library(dplyr)
+library(tidyr)
+
 data(splt)
 data(splt_dev_and_demog)
-# dim(splt)
+data(splt_confidence)
+
 splt <- dplyr::left_join(splt,
                   unique(splt_dev_and_demog[, c('SID', 'gender', 'PDS_mean_score', 'age')]),
                   by = c('id' = 'SID'))
+
+sample_labels <- c(
+    'TDS1' = 'Foster-care involved adolescents',
+    'TDS2' = 'Community adolescents',
+    'yads' = 'College students',
+    'yads_online' = 'College students - online'
+)
+
+condition_labels <- c(
+    'HngT' = 'Hungry/Thirsty',
+    'DtnL' = 'Dating/Looking',
+    'PplU' = 'Popular/Unpopular'
+)
+
+splt$condition <- factor(splt$condition, levels = names(condition_labels), labels = condition_labels)
+splt$sample <- factor(splt$sample, levels = names(sample_labels), labels = sample_labels)
+
+splt$gender <- factor(splt$gender, levels = c(0, 1), labels = c('Male', 'Female'))
+
+splt_confidence$sample <- factor(splt_confidence$sample, levels = names(sample_labels), labels = sample_labels)
+
 splt <- splt[!is.na(splt$pressed_r), ]
 splt <- splt[!is.na(splt$age) & !is.na(splt$gender) & splt$age < 30, ]
 
+splt$opt_is_right <- as.numeric(factor(splt$proportion,
+                                             levels = c('80_20', '20_80'))) - 1
+splt$press_opt <- as.numeric(splt$opt_is_right == splt$pressed_r)
+
 splt$cue <- as.numeric(as.factor(paste0(splt$condition, '_', splt$sex)))
-splt$condition <- factor(splt$condition, levels = c('HngT', 'DtnL', 'PplU'))
 
 na_age <- is.na(unique(splt[,c('id', 'age')])$age)
 na_gender <- is.na(unique(splt[,c('id', 'gender')])$gender)
@@ -22,7 +50,15 @@ pds_sd <- sd(as.numeric(unique(splt[,c('id', 'PDS_mean_score')])$PDS_mean_score)
 pds_mean <- mean(as.numeric(unique(splt[,c('id', 'PDS_mean_score')])$PDS_mean_score), na.rm = T)
 splt$age_std <- (splt$age - age_mean)/age_sd
 splt$pds_std <- (as.numeric(splt$PDS_mean_score) - pds_mean)/pds_sd
-splt$gender_c <- splt$gender - .5 #0 or -0.5 = male, 1 or .5 = female
+splt$gender_c <- as.numeric(splt$gender) - 1.5 #0 or -0.5 = male, 1 or .5 = female
+
+splt$trial_index_c0_s <-
+    (splt$trial_index - max(splt$trial_index)) /
+    sd(splt$trial_index)
+
+splt$condition_trial_index_c0_s <-
+    (splt$condition_trial_index - max(splt$condition_trial_index)) /
+    sd(splt$condition_trial_index)
 
 # - N number of individuals
 # - M number of samples
@@ -43,7 +79,7 @@ splt$gender_c <- splt$gender - .5 #0 or -0.5 = male, 1 or .5 = female
 #   matrices of the individually varying parameter
 #   coefficients
 
-group_index_mm <- get_sample_index(splt, levels = c("TDS1", "TDS2", "yads", "yads_online"))
+group_index_mm <- get_sample_index(splt, levels = sample_labels)
 N <- dim(group_index_mm)[1]
 M <- length(levels(group_index_mm$m_fac))
 K <- length(unique(splt$condition))
