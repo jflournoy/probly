@@ -51,7 +51,7 @@ formulae <- list(
 ##brms models
 plan(batchtools_slurm,
      template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
-     resources = list(ncpus = nchains, walltime = 60*24*4, memory = '1G',
+     resources = list(ncpus = nchains, walltime = 60*24*1, memory = '1G',
                       partitions = 'short,fat,long,longfat'))
 
 brms_results <- listenv()
