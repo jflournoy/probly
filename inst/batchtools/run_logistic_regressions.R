@@ -93,4 +93,6 @@ for(i in seq_along(formulae)){
             save_only = TRUE))
 }
 
+print(lme4_results)
+print(brms_results)
 
