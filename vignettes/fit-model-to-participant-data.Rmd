@@ -234,42 +234,202 @@ logistic_saves_dir <- file.path(data_dir,'/logistic/')
 # [28] "hispanic_yn"           "fsiq2"                 "sample.y"             
 # [31] "age"                   "ethnicity" 
 
-null_id_only_m <- probly::CachedFit(
+check_stim_rx_null_id_only_m <- probly::CachedFit(
     lme4::glmer(press_opt ~ 1 + (1 | id), 
                 family = 'binomial',
                 data = splt), 
-    rds_filename = file.path(logistic_saves_dir, 'null_id_only_m.rds'))
+    rds_filename = file.path(logistic_saves_dir, 'check_stim_rx_null_id_only_m.rds'))
 
-null_m <- probly::CachedFit(
+check_stim_rx_null_m <- probly::CachedFit(
     lme4::glmer(press_opt ~ 1 + (1 | sample/id), 
                       family = 'binomial',
                       data = splt), 
-    rds_filename = file.path(logistic_saves_dir, 'null_m.rds'))
+    rds_filename = file.path(logistic_saves_dir, 'check_stim_rx_null_m.rds'))
 
-null_stim_rx_m <- probly::CachedFit(
+check_stim_rx_null_stim_rx_m <- probly::CachedFit(
     lme4::glmer(press_opt ~ 1 + (1 | sample/id) + (1 | stim_image), 
                               family = 'binomial', 
                               data = splt), 
-    rds_filename = file.path(logistic_saves_dir, 'null_stim_rx_m.rds'))
+    rds_filename = file.path(logistic_saves_dir, 'check_stim_rx_null_stim_rx_m.rds'))
 
-summary(null_id_only_m)
-summary(null_m)
-summary(null_stim_rx_m)
-arm::invlogit(lme4::fixef(null_id_only_m))
-arm::invlogit(lme4::fixef(null_m))
-arm::invlogit(lme4::fixef(null_stim_rx_m))
-anova(null_id_only_m, null_m, null_stim_rx_m)
+summary(check_stim_rx_null_id_only_m)
+summary(check_stim_rx_null_m)
+summary(check_stim_rx_null_stim_rx_m)
+arm::invlogit(lme4::fixef(check_stim_rx_null_id_only_m))
+arm::invlogit(lme4::fixef(check_stim_rx_null_m))
+arm::invlogit(lme4::fixef(check_stim_rx_null_stim_rx_m))
+options(knitr.kable.NA = '')
+knitr::kable(anova(check_stim_rx_null_id_only_m, check_stim_rx_null_m, check_stim_rx_null_stim_rx_m), 
+             digits = 4,
+             caption = 'Check if adding sample and stimulus random effects makes a difference')
 
-summary(null_id_only_bm)
+null_id_only_lm <- readRDS(file.path(data_dir, 'logistic', 'null_id_only_lm.rds'))
+null_lm <- readRDS(file.path(data_dir, 'logistic', 'null_lm.rds'))
+time_lm <- readRDS(file.path(data_dir, 'logistic', 'time_lm.rds'))
+condition_lm <- readRDS(file.path(data_dir, 'logistic', 'condition_lm.rds'))
 
-summary(null_bm)
+knitr::kable(anova(null_lm,
+                   time_lm), 
+             digits = 4, 
+             caption = 'Compare trial model to null')
 
-summary(time_m)
-arm::invlogit(fixef(time_m)[1] + c(0, fixef(time_m)[2]*-3.45))
+knitr::kable(anova(null_lm,
+      condition_lm), 
+             digits = 4, 
+             caption = 'Compare condition model to null')
 
-summary(condition_m)
-arm::invlogit(fixef(condition_m)[1] + c(0, fixef(condition_m)[2:3]))
+# # condition_lm.rds
+#     Terminated normally
+
+# # null_bm.rds
+#     Warning: There were 3 divergent transitions after warmup. Increasing
+#     adapt_delta above 0.99 may help. See 
+#     http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup 
+#     Warning: There were 332 transitions after warmup that exceeded the maximum
+#     treedepth. Increase max_treedepth above 10. See 
+#     http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded Warning:
+#     Examine the pairs() plot to diagnose sampling problems
+
+# # null_id_only_bm.rds
+#     Terminated normally
+
+# # null_id_only_lm.rds
+#     Terminated normally
+
+# # null_lm.rds
+#     Terminated normally
+
+# # time_bm.rds
+#     Warning: There were 2 divergent transitions after warmup. Increasing
+#     adapt_delta above 0.99 may help. See 
+#     http://mc-stan.org/misc/warnings.html#divergent-transitions-after-warmup 
+#     Warning: There were 334 transitions after warmup that exceeded the maximum
+#     treedepth. Increase max_treedepth above 10. See 
+#     http://mc-stan.org/misc/warnings.html#maximum-treedepth-exceeded Warning:
+#     Examine the pairs() plot to diagnose sampling problems
+#     
+#     Switching to pointwise evaluation to reduce RAM requirements. This will
+#     likely increase computation time. You may overwrite the default behavior
+#     with the 'pointwise' argument. Switching to pointwise evaluation to reduce
+#     RAM requirements. This will likely increase computation time. You may
+#     overwrite the default behavior with the 'pointwise' argument.
+
+# # time_lm.rds
+#    Evaluating... (save_only = TRUE) Warning in checkConv(attr(opt, "derivs"),
+#    opt$par, ctrl = control$checkConv,  : Model failed to converge with
+#    max|grad| = 0.00466005 (tol = 0.001, component 1) Writing result to
+#    /gpfs/projects/dsnlab/flournoy/data/splt/probly/logistics/time_lm.rds
+
+# # timeXcondition_age_lm.rds
+#     Warning in commonArgs(par, fn, control, environment()) : maxfun < 10 *
+#     length(par)^2 is not recommended. Warning in optwrap(optimizer, devfun,
+#     start, rho$lower, control = control,  : convergence code 1 from bobyqa:
+#     bobyqa -- maximum number of function evaluations exceeded Warning in
+#     (function (fn, par, lower = rep.int(-Inf, n), upper = rep.int(Inf,  : 
+#     failure to converge in 10000 evaluations Warning in checkConv(attr(opt,
+#     "derivs"), opt$par, ctrl = control$checkConv,  : Model failed to converge
+#     with max|grad| = 0.10435 (tol = 0.001, component 1)
+
+# # timeXcondition_dev_lm.rds
+#     Warning in commonArgs(par, fn, control, environment()) : maxfun < 10 *
+#     length(par)^2 is not recommended. Warning in optwrap(optimizer, devfun,
+#     start, rho$lower, control = control,  : convergence code 1 from bobyqa:
+#     bobyqa -- maximum number of function evaluations exceeded Warning in
+#     (function (fn, par, lower = rep.int(-Inf, n), upper = rep.int(Inf,  : 
+#     failure to converge in 10000 evaluations Warning in checkConv(attr(opt,
+#     "derivs"), opt$par, ctrl = control$checkConv,  : unable to evaluate scaled
+#     gradient Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl =
+#     control$checkConv,  : Model failed to converge: degenerate  Hessian with 1
+#     negative eigenvalues
+
+# # timeXcondition_lm.rds
+#     Evaluating... (save_only = TRUE) Warning in commonArgs(par, fn, control,
+#     environment()) : maxfun < 10 * length(par)^2 is not recommended. Warning
+#     in optwrap(optimizer, devfun, start, rho$lower, control = control,  : 
+#     convergence code 1 from bobyqa: bobyqa -- maximum number of function
+#     evaluations exceeded Warning in (function (fn, par, lower = rep.int(-Inf,
+#     n), upper = rep.int(Inf,  : failure to converge in 10000 evaluations 
+#     Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl =
+#     control$checkConv,  : unable to evaluate scaled gradient Warning in
+#     checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv,  : Model
+#     failed to converge: degenerate  Hessian with 3 negative eigenvalues 
+#     Writing result to
+#     /gpfs/projects/dsnlab/flournoy/data/splt/probly/logistics/timeXcondition_lm.rds
+
+
 ```
+
+## Relation to FSMI subscales
+
+```{r fsmireliability}
+scales_for_reliability_stats <- list(
+    'fsmi_mate', 'fsmi_stat', 
+    'm2', 'm1',
+    'k_srq_sexual_relationships', 'k_srq_admiration',
+    'dominance_score', 'prestige_score',
+    'sensation_seeking')
+
+fsmi_reliability_list <- lapply(
+    scales_for_reliability_stats,
+    function(scale_name){
+        key <- self_report_motive_keys[[scale_name]]
+        nitems <- length(key)
+        nfactors <- ifelse(nitems > 6, 3, 1)
+        omega_stat <- psych::omega(
+            splt_fsmi[,gsub('-', '', key)], 
+            nfactors = nfactors, 
+            key = as.numeric(gsub('(-*).*', '\\11', key)), 
+            plot = F)
+        omega_df <- data.frame(scale = scale_name,
+                               omega_h = ifelse(nitems > 5, round(omega_stat$omega_h,2), '-'), 
+                               omega_t = ifelse(nitems > 5, round(omega_stat$omega.tot,2), '-'),
+                               alpha = omega_stat$alpha)
+        return(omega_df)
+    }
+)
+
+fsmi_scale_reliability_df <- do.call(rbind, fsmi_reliability_list)
+fsmi_scale_reliability_df$scale <- factor(
+    fsmi_scale_reliability_df$scale,
+    levels = c('fsmi_mate','fsmi_stat',
+               'm2','m1',
+               'k_srq_sexual_relationships','k_srq_admiration',
+               'dominance_score','prestige_score',
+               'sensation_seeking'),
+    labels = c('FSMI mate-seeking','FSMI status',
+               'K-SRQ sexual relationships factor','K-SRQ admiration factor',
+               'K-SRQ sexual relationships scale','K-SRQ admiration scale',
+               'Dominance','Prestige',
+               'Sensation seeking'))
+
+library(tables)
+fsmi_scale_reliability_table <- tables::tabular(
+    (Scale = scale) ~ Heading()*identity*DropEmpty(empty='-')*Format(digits = 2)*
+        ((`$\\omega_h$` = omega_h)*DropEmpty(empty='-') + 
+             (`$\\omega_t$` = omega_t)*DropEmpty(empty='-') + 
+             (`$\\alpha$` = alpha)), 
+    data = fsmi_scale_reliability_df)
+
+Hmisc::html(fsmi_scale_reliability_table)
+
+save_out_list <- c(save_out_list, 'fsmi_scale_reliability_table')
+```
+
+In addition to confirmatory factor analyses, scale reliability and general-factor validity were assessed via the $\omega_{h}$ and $\omega_t$ statistics. 
+These statistics account for the possibility that variance on items is due to both a general latent factor common to all items, and several group fators that account for variance in subsets of items [@zinbarg2006].
+The $\omega_{h}$ statistic captures the proportion of variance due to a general factor, and so is proportional to the degree of expected correspondence between the scale and another measure of the construct (on a different scale, or at retest), and also indexes the validity of the scale as a measure of the ostensible latent construct.
+The reliability of the whole scale is indexed by $\omega_t$, which includes variance due to both group and general factors.
+Cronebach's $\alpha$ is also reported because it is the default practice, and it may be helpful to demonstrate the differences between the two approaches.
+All three statistics were calculated using the `omega` function in the `psych` package for R [@revelle2017].
+
+The mate-seeking and status motive scales from the FSMI showed adequate reliability, with $\alpha$ and $\omega_t$ in the acceptable to excellent range according to some rules of thumb (Table ref(tab:fsmi_reliability). 
+However, $\omega_h$ indicates that only about 68% of the variance in FSMI Status and 80% of the variance in FSMI mate-seeking are due to the general factor.
+In light of this, any correlations of scale responses with other constructs of interest should be interpretted in light of the possibility that they are due, in part, to associations between variance _not_ due to the general factor (and thus _note_ due to the construct of interest).
+Of course, the variance due to other latent causes may also be a reason true relations are attentuated.
+
+```{r fsmiregression}
+```
+
 
 # Results from Bayesian learning models
 
@@ -330,21 +490,28 @@ GGally::ggpairs(as.data.frame(betas_rho_means), title = expression(rho))
 ### Learning rate
 
 ```{r}
-munames <- grep('mu', names(stanfit_2_level), value = T)
-stanfitmat <- as.array(stanfit_2_level)
+munames <- grep('mu', names(stanfit_2_level_no_b), value = T)
+stanfitmat <- as.array(stanfit_2_level_no_b)
 ggplot2::theme_set(ggplot2::theme_minimal())
 bayesplot::mcmc_combo(stanfitmat, pars = munames[4:6], facet_args = list(scales = 'fixed'),
                       # transformations = pnorm, 
                       combo = c('areas_ridges', 'trace'), 
                       prob_outer = 1-.005, prob = .95, widths = c(3,4))
 
-mu_ep_1 <- rstan::extract(stanfit_2_level, pars = munames[4])[[1]]
-mu_ep_2 <- rstan::extract(stanfit_2_level, pars = munames[5])[[1]]
-mu_ep_3 <- rstan::extract(stanfit_2_level, pars = munames[6])[[1]]
+mu_ep_1 <- rstan::extract(stanfit_2_level_no_b, pars = munames[4])[[1]]
+mu_ep_2 <- rstan::extract(stanfit_2_level_no_b, pars = munames[5])[[1]]
+mu_ep_3 <- rstan::extract(stanfit_2_level_no_b, pars = munames[6])[[1]]
 
-bayesplot::mcmc_areas(data.frame(diff_ep2_ep1 = pnorm(mu_ep_2) - pnorm(mu_ep_1),
-                                 diff_ep3_ep1 = pnorm(mu_ep_3) - pnorm(mu_ep_1),
-                                 diff_ep3_ep2 = pnorm(mu_ep_3) - pnorm(mu_ep_2)), prob_outer = 1-.005, prob = .95)
+epsilon_difference_plot <- bayesplot::mcmc_areas(dplyr::data_frame(`e_2 - e_1` = pnorm(mu_ep_2) - pnorm(mu_ep_1),
+                                 `e_3 - e_1` = pnorm(mu_ep_3) - pnorm(mu_ep_1),
+                                 `e_3 - e_2` = pnorm(mu_ep_3) - pnorm(mu_ep_2)), prob_outer = 1-.005, prob = .95) + 
+    ggplot2::scale_y_discrete(breaks = c('e_3 - e_2', 'e_3 - e_1', 'e_2 - e_1'),
+                              labels = c(expression(epsilon[3]-epsilon[2]),
+                                         expression(epsilon[3]-epsilon[1]),
+                                         expression(epsilon[2]-epsilon[1])))
+epsilon_difference_plot
+
+save_out_list <- c(save_out_list, 'epsilon_difference_plot')
 ```
 
 ### Size of reward modifier
