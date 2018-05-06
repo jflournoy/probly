@@ -111,6 +111,10 @@ for(i in seq_along(formulae)){
 }
 
 ##lme4 models
+plan(batchtools_slurm,
+     template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
+     resources = list(ncpus = 1, walltime = 60*24*4, memory = '2G',
+                      partitions = 'long,longfat'))
 
 lme4_results <- listenv()
 
