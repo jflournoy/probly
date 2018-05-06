@@ -69,12 +69,12 @@ formulae <- list(
 
     timeXcondition_age_samprx_m_form = press_opt ~ 1 + condition*trial_index_c0_s*age_std*gender +
         (1 + condition*trial_index_c0_s | sample:id) +
-        (1 + age_std*gender | sample)
+        (1 + age_std*gender | sample) +
         (1 | stim_image),
 
     timeXcondition_dev_samprx_m_form = press_opt ~ 1 + condition*trial_index_c0_s*pds_std*gender +
         (1 + condition*trial_index_c0_s | sample:id) +
-        (1 + pds_std*gender | sample)
+        (1 + pds_std*gender | sample) +
         (1 | stim_image)
 )
 
@@ -129,7 +129,7 @@ for(i in seq_along(formulae)){
                     l <- length(x)
                     (l*(l-1))/2+l
                 })))
-                max_maxfun <- 10*(max_numFx+max_numRx+1)^2
+                max_maxfun <- max(c(10*(max_numFx+max_numRx+1)^2,1e4))
                 lme4_control_options <- lme4::glmerControl(optCtrl=list(maxfun=max_maxfun),
                                                            optimizer = "nloptwrap")
 
@@ -150,3 +150,14 @@ for(i in seq_along(formulae)){
 print(lme4_results)
 print(brms_results)
 
+# # Check functions
+# for(i in seq_along(formulae)){
+#     max_aformula <- lme4::lFormula(formulae[[i]], data = splt)
+#     max_numFx <- length(dimnames(max_aformula$X)[[2]])
+#     max_numRx <- sum(as.numeric(lapply(max_aformula$reTrms$cnms, function(x) {
+#         l <- length(x)
+#         (l*(l-1))/2+l
+#     })))
+#     max_maxfun <- max(c(10*(max_numFx+max_numRx+1)^2,1e4))
+#     print(max_maxfun)
+# }
