@@ -371,7 +371,102 @@ pR_final_plots[['nrow']] <- 2
 do.call(gridExtra::grid.arrange, pR_final_plots)
 ```
 
+# Fitting to many simulations
+
+After generating 100 simulated data sets, models were fit to each. The empirical cummulative density function was composed to each posterior distribution for each parameter, and the generating value (from the simulation) was located within that density. If the posterior is a reasonable estimate of the generating parameter, then the generating parameter should be a random draw from that posterior. As such, the distribution of the "_p_-value" of the generating parameters (in relation to the posteriors) should be uniform. Below you are demonstrations of adherence to or departure from this.
+
 ```{r run_many_simulations, eval = F, echo = T}
+```
+
+```{r}
+ecdf_files <- dir(file.path(data_dir), pattern = '*ecdf*', full.names = T)
+
+mu_ecdfrez_df <- do.call(
+    rbind,
+    lapply(ecdf_files, function(filename){
+        some_ecdfs <- readRDS(filename)
+        mu_ecdfs <- do.call(rbind, lapply(some_ecdfs$mu_tau_ecdf_quantiles, unlist))
+        mu_ecdfs_df <- as.data.frame(mu_ecdfs)
+        mu_ecdfs_df$param <- rownames(mu_ecdfs)
+        mu_ecdfs_df
+    }))
+mu_ecdfrez_df <- tidyr::gather(mu_ecdfrez_df, k, value, -param)
+
+beta_ecdfrez_df <- do.call(
+    rbind,
+    lapply(ecdf_files, function(filename){
+        some_ecdfs <- readRDS(filename)
+        beta_ecdfs <- do.call(rbind, some_ecdfs$beta_ecdf_quantiles)
+        beta_ecdfs_df <- as.data.frame(beta_ecdfs)
+        beta_ecdfs_df$param <- rownames(beta_ecdfs)
+        beta_ecdfs_df
+    }))
+beta_ecdfrez_df <- tidyr::extract(beta_ecdfrez_df, param, into = c('param_name', 'id'), regex = '(.*)\\.(.*)')
+
+
+ggplot2::ggplot(mu_ecdfrez_df,
+                 ggplot2::aes(x = value)) + 
+    ggplot2::geom_histogram(binwidth = 1/3) + 
+    ggplot2::facet_grid(param ~ k)
+
+ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::arrange(
+            dplyr::group_by(mu_ecdfrez_df,
+                            param, k),
+            value),
+        unif_df = punif(seq(min(value), max(value), length.out = n()))),
+    ggplot2::aes(x = unif_df, y = value)) +
+    ggplot2::geom_abline(intercept = 0, slope = 1, color = 'red') +
+    ggplot2::geom_step()+
+    ggplot2::coord_cartesian(xlim = c(0,1), ylim = c(0,1)) + 
+    ggplot2::facet_grid(param ~ k)
+
+knitr::kable(
+    dplyr::summarize(dplyr::group_by(mu_ecdfrez_df, param),
+                     p_in_outer_5 = mean(value > .975 | value < .025),
+                     p_in_inner_95 = mean(value <= .975 & value >= .025),
+                     N = n(),
+                     pse = (p_in_outer_5*p_in_inner_95/N)^.5,
+                     p_in_outer_5_l = p_in_outer_5 - 2*pse,
+                     p_in_outer_5_u = p_in_outer_5 + 2*pse,
+                     ks.D = ks.test(unique(value), punif)$statistic,
+                     ks.p = ks.test(unique(value), punif)$p.value),
+    digits = 3)
+
+ggplot2::ggplot(beta_ecdfrez_df,
+                 ggplot2::aes(x = ecdf_quantile)) + 
+    ggplot2::geom_density(bw = .08) + 
+    ggplot2::geom_vline(xintercept = c(.025, .975)) + 
+    ggplot2::facet_grid(param_name ~ k)
+
+ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::arrange(
+            dplyr::group_by(beta_ecdfrez_df,
+                            param_name, k),
+            ecdf_quantile),
+        unif_df = punif(seq(min(ecdf_quantile), max(ecdf_quantile), length.out = n()))),
+    ggplot2::aes(x = unif_df, y = ecdf_quantile)) +
+    ggplot2::geom_abline(intercept = 0, slope = 1, color = 'red') +
+    ggplot2::geom_step()+
+    ggplot2::coord_cartesian(xlim = c(0,1), ylim = c(0,1)) + 
+    ggplot2::facet_grid(param_name ~ k)
+
+knitr::kable(
+    dplyr::summarize(dplyr::group_by(beta_ecdfrez_df, param_name, k),
+                     p_in_outer_5 = mean(ecdf_quantile > .975 | ecdf_quantile< .025),
+                     p_in_inner_95 = mean(ecdf_quantile <= .975 & ecdf_quantile >= .025),
+                     N = n(),
+                     pse = (p_in_outer_5*p_in_inner_95/N)^.5,
+                     p_in_outer_5_l = p_in_outer_5 - 2*pse,
+                     p_in_outer_5_u = p_in_outer_5 + 2*pse,
+                     ks.D = ks.test(unique(ecdf_quantile), punif)$statistic,
+                     ks.p = ks.test(unique(ecdf_quantile), punif)$p.value),
+    digits = 3)
+
+
+
 ```
 
 
