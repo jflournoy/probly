@@ -7,10 +7,53 @@ library(tidyr)
 data(splt)
 data(splt_dev_and_demog)
 data(splt_confidence)
+data(splt_fsmi)
+
+college_rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
+adolescent_rubric_dir <- system.file('scoring_rubrics', 'adolescent', package = 'probly')
+relationship_status <- c('long_term' = 1, 'actively_dating' = 2, 'single_nodate' = 3, 'single_neverdate' = 4)
+
+fsmi_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = data_frame(
+        file = file.path(college_rubric_dir, 'fsmi_scoring_rubric.csv')),
+    type = 'scoring')
+dnp_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = data_frame(
+        file = file.path(college_rubric_dir, 'DominanceAndPrestige_scoring_rubric.csv')),
+    type = 'scoring')
+ksqr_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = data_frame(
+        file = file.path(college_rubric_dir, 'K-SRQ_scoring_rubric.csv')),
+    type = 'scoring')
+upps_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = data_frame(
+        file = file.path(adolescent_rubric_dir, 'UPPSP_scoring_rubric.csv')),
+    type = 'scoring')
+
+fsmi_key <- scorequaltrics::create_key_from_rubric(fsmi_rubric)
+dnp_key <- scorequaltrics::create_key_from_rubric(dnp_rubric)
+ksqr_key <- scorequaltrics::create_key_from_rubric(ksqr_rubric)
+ksrq_EFA_key <- list(m1 = c('K_SRQ_11', 'K_SRQ_18', 'K_SRQ_1', 'K_SRQ_7'),
+                     m2 = c('K_SRQ_4', 'K_SRQ_20', 'K_SRQ_13', 'K_SRQ_9'))
+upps_key <- scorequaltrics::create_key_from_rubric(upps_rubric)
+
+self_report_motive_keys <- c(fsmi_key, dnp_key,
+                             ksqr_key, ksrq_EFA_key,
+                             upps_key)
+
+fsmi_scored <- psych::scoreItems(keys = self_report_motive_keys,
+                                 items = splt_fsmi,
+                                 missing = TRUE, impute = 'none')
+
+fsmi_scores_df <- as.data.frame(fsmi_scored$scores)
+fsmi_scores_df$SID <- splt_fsmi$SID
 
 splt <- dplyr::left_join(splt,
                   unique(splt_dev_and_demog[, c('SID', 'gender', 'PDS_mean_score', 'age')]),
                   by = c('id' = 'SID'))
+splt <- dplyr::left_join(splt,
+                         fsmi_scores_df,
+                         by = c('id' = 'SID'))
 
 sample_labels <- c(
     'TDS1' = 'Foster-care involved adolescents',

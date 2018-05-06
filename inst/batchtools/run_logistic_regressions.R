@@ -45,14 +45,47 @@ formulae <- list(
     timeXcondition_dev_m_form = press_opt ~ 1 + condition*trial_index_c0_s*pds_std*gender +
         (1 + condition*trial_index_c0_s | sample:id) +
         (1 | sample) +
-        (1 + condition*trial_index_c0_s | stim_image)
+        (1 + condition*trial_index_c0_s | stim_image),
+
+    condition_smpstim_m_form = press_opt ~ 1 + condition +
+        (1 + condition | sample:id) +
+        (1 | sample) +
+        (1 | stim_image),
+
+    timeXcondition_smpstim_m_form = press_opt ~ 1 + condition*trial_index_c0_s +
+        (1 + condition*trial_index_c0_s | sample:id) +
+        (1 | sample) +
+        (1 | stim_image),
+
+    timeXcondition_age_smpstim_m_form = press_opt ~ 1 + condition*trial_index_c0_s*age_std*gender +
+        (1 + condition*trial_index_c0_s | sample:id) +
+        (1 | sample) +
+        (1 | stim_image),
+
+    timeXcondition_dev_smpstim_m_form = press_opt ~ 1 + condition*trial_index_c0_s*pds_std*gender +
+        (1 + condition*trial_index_c0_s | sample:id) +
+        (1 | sample) +
+        (1 | stim_image),
+
+    timeXcondition_age_samprx_m_form = press_opt ~ 1 + condition*trial_index_c0_s*age_std*gender +
+        (1 + condition*trial_index_c0_s | sample:id) +
+        (1 + age_std*gender | sample)
+        (1 | stim_image),
+
+    timeXcondition_dev_samprx_m_form = press_opt ~ 1 + condition*trial_index_c0_s*pds_std*gender +
+        (1 + condition*trial_index_c0_s | sample:id) +
+        (1 + pds_std*gender | sample)
+        (1 | stim_image)
 )
+
+
+brms_control_options <- list(max_treedepth = 15, adapt_delta = 0.99)
 
 ##brms models
 plan(batchtools_slurm,
      template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
-     resources = list(ncpus = nchains, walltime = 60*24*1, memory = '1G',
-                      partitions = 'short,fat,long,longfat'))
+     resources = list(ncpus = nchains, walltime = 60*24*4, memory = '1G',
+                      partitions = 'long,longfat'))
 
 brms_results <- listenv()
 
@@ -61,12 +94,14 @@ for(i in seq_along(formulae)){
     brms_results[[i]] <- future::future(
         probly::CachedFit(
             {
+                message('Estimating brms model: ', names(formulae)[[i]])
                 afit <- brms::brm(formulae[[i]],
                                   family = 'bernoulli',
                                   data = splt,
                                   cores = nchains, chains = nchains,
                                   iter = warmup + niterperchain, warmup = warmup,
-                                  control = list(adapt_delta = 0.99))
+                                  control = brms_control_options,
+                                  silent = F)
                 afit <- add_ic(afit, ic = c("loo", "waic"))
                 afit
             },
@@ -76,10 +111,6 @@ for(i in seq_along(formulae)){
 }
 
 ##lme4 models
-plan(batchtools_slurm,
-     template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
-     resources = list(ncpus = 1, walltime = 60*24*1, memory = '3G',
-                      partitions = 'short,fat,long,longfat'))
 
 lme4_results <- listenv()
 
@@ -87,9 +118,26 @@ for(i in seq_along(formulae)){
     message('Deploying lme4 model: ', names(formulae)[[i]])
     lme4_results[[i]] <- future::future(
         probly::CachedFit(
-            lme4::glmer(formulae[[i]],
-                        family = 'binomial',
-                        data = splt),
+            {
+                max_aformula <- lme4::lFormula(formulae[[i]], data = splt)
+                max_numFx <- length(dimnames(max_aformula$X)[[2]])
+                max_numRx <- sum(as.numeric(lapply(max_aformula$reTrms$cnms, function(x) {
+                    l <- length(x)
+                    (l*(l-1))/2+l
+                })))
+                max_maxfun <- 10*(max_numFx+max_numRx+1)^2
+                lme4_control_options <- lme4::glmerControl(optCtrl=list(maxfun=max_maxfun),
+                                                           optimizer = "nloptwrap")
+
+                message('Deploying lme4 model: ', names(formulae)[[i]],
+                        '; maxfun: ', max_maxfun)
+                afit <- lme4::glmer(formulae[[i]],
+                                    family = 'binomial',
+                                    data = splt,
+                                    control=lme4_control_options,
+                                    verbose = 2)
+                afit
+            },
             rds_filename = file.path(data_dir,
                                      paste0(sub('_m_form$', '', names(formulae)[[i]]), '_lm.rds')),
             save_only = TRUE))
