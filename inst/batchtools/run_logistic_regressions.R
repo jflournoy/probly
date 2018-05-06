@@ -131,7 +131,7 @@ for(i in seq_along(formulae)){
                 })))
                 max_maxfun <- max(c(10*(max_numFx+max_numRx+1)^2,1e4))
                 lme4_control_options <- lme4::glmerControl(optCtrl=list(maxfun=max_maxfun),
-                                                           optimizer = "nloptwrap")
+                                                           optimizer = c("nloptwrap", "bobyqa"))
 
                 message('Deploying lme4 model: ', names(formulae)[[i]],
                         '; maxfun: ', max_maxfun)
