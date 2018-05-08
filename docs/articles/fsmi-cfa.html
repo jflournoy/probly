@@ -18,7 +18,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-vignette">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -91,20 +91,20 @@
 
       
       </header><div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Fundamental Social Motives Confirmatory Factor Analysis</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-04-27</h4>
+            <h4 class="date">2018-05-08</h4>
       
       
+      <div class="hidden name"><code>fsmi-cfa.Rmd</code></div>
 
     </div>
 
     
     
-<div class="contents">
 <p>Below, I begin to examine the fit of scales measuring behaviors, beliefs, attitudes, and strategies relevant to mate-seeking and status motives. After examining the item distributions to see if there are any very problematic subsets, I fit a confirmatory factor analysis to remaining scales. I also confirm that an exploratory factor analysis shows expected factor structure.</p>
 <div id="checking-items" class="section level1">
 <h1 class="hasAnchor">
@@ -718,337 +718,68 @@
 #&gt;     fsmi_prot         1.000                               1.000    1.000
 #&gt;     fsmi_stat         1.000                               1.000    1.000
 #&gt;     fsmi_mate         1.000                               1.000    1.000
-#&gt;     fsmi_bifac        1.000                               1.000    1.000
-#&gt; Scaled Chi Square Difference Test (method = "satorra.bentler.2001")
-#&gt; 
-#&gt;                   Df   AIC   BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)    
-#&gt; fsmi_cfa_method 1004 35416 36167 1685.7                                  
-#&gt; fsmi_cfa        1052 35670 36258 2036.4     2408.1      48  &lt; 2.2e-16 ***
-#&gt; ---
-#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#&gt; [[1]]
-#&gt; [[1]]$baseline
-#&gt; rmsea   mfi 
-#&gt; 0.064 0.112 
-#&gt; 
-#&gt; [[1]]$bifac
-#&gt; rmsea   mfi 
-#&gt; 0.055 0.220 
-#&gt; 
-#&gt; 
-#&gt; [[2]]
-#&gt; [[2]]$baseline
-#&gt;    gammaHat adjGammaHat 
-#&gt;   0.8452247   0.8269812 
-#&gt; 
-#&gt; [[2]]$bifac
-#&gt;    gammaHat adjGammaHat 
-#&gt;   0.8874594   0.8681796</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/fsmifullcfa-1.png" width="672"></p>
-<pre><code>#&gt; Parallel analysis suggests that the number of factors =  8  and the number of components =  8
-#&gt; Factor Analysis using method =  ml
-#&gt; Call: psych::fa(r = splt_fsmi[, unlist(get_items_from_keys(fsmi_key[scales_to_use]))], 
-#&gt;     nfactors = 8, n.iter = 1, scores = "tenBerge", missing = F, 
-#&gt;     fm = "ml")
-#&gt; Standardized loadings (pattern matrix) based upon correlation matrix
-#&gt;            item   ML4   ML6   ML1   ML2   ML3   ML5   ML7   ML8   h2   u2
-#&gt; fsmi_qs_9    27  0.87                                           0.75 0.25
-#&gt; fsmi_qs_10   28  0.85                                           0.75 0.25
-#&gt; fsmi_qs_7    25  0.81                                           0.71 0.29
-#&gt; fsmi_qs_12   30  0.70                                           0.58 0.42
-#&gt; fsmi_qs_8    26  0.62                                           0.49 0.51
-#&gt; fsmi_qs_11   29  0.58                                           0.40 0.60
-#&gt; fsmi_qs_38    8        0.77                                     0.65 0.35
-#&gt; fsmi_qs_37    7        0.77                                     0.61 0.39
-#&gt; fsmi_qs_39    9        0.71                                     0.63 0.37
-#&gt; fsmi_qs_40   10        0.66                                     0.54 0.46
-#&gt; fsmi_qs_41   11        0.63                                     0.49 0.51
-#&gt; fsmi_qs_42   12        0.62                                     0.50 0.50
-#&gt; fsmi_qs_56   44              0.91                               0.85 0.15
-#&gt; fsmi_qs_60   48              0.90                               0.84 0.16
-#&gt; fsmi_qs_57   45             -0.75                               0.56 0.44
-#&gt; fsmi_qs_55   43              0.73                               0.60 0.40
-#&gt; fsmi_qs_58   46             -0.57                               0.37 0.63
-#&gt; fsmi_qs_59   47             -0.48                               0.30 0.70
-#&gt; fsmi_qs_23   35                    0.81                         0.67 0.33
-#&gt; fsmi_qs_19   31                    0.80                         0.67 0.33
-#&gt; fsmi_qs_24   36                    0.79                         0.60 0.40
-#&gt; fsmi_qs_22   34                    0.67                         0.58 0.42
-#&gt; fsmi_qs_20   32                    0.66                         0.52 0.48
-#&gt; fsmi_qs_21   33                   -0.45                         0.32 0.68
-#&gt; fsmi_qs_48   18                          0.82                   0.66 0.34
-#&gt; fsmi_qs_47   17                          0.73                   0.53 0.47
-#&gt; fsmi_qs_46   16                          0.72                   0.60 0.40
-#&gt; fsmi_qs_43   13                          0.61       -0.32       0.62 0.38
-#&gt; fsmi_qs_44   14                          0.54       -0.26       0.42 0.58
-#&gt; fsmi_qs_45   15                          0.45                   0.41 0.59
-#&gt; fsmi_qs_30   24                                0.82             0.68 0.32
-#&gt; fsmi_qs_28   22                                0.73             0.59 0.41
-#&gt; fsmi_qs_29   23                                0.70             0.51 0.49
-#&gt; fsmi_qs_26   20                               -0.62             0.45 0.55
-#&gt; fsmi_qs_27   21                               -0.57             0.41 0.59
-#&gt; fsmi_qs_25   19                               -0.53             0.33 0.67
-#&gt; fsmi_qs_33    3                                      0.80       0.71 0.29
-#&gt; fsmi_qs_32    2                                      0.78       0.64 0.36
-#&gt; fsmi_qs_34    4                                     -0.50       0.30 0.70
-#&gt; fsmi_qs_31    1        0.33                          0.44       0.53 0.47
-#&gt; fsmi_qs_36    6        0.27                          0.37       0.35 0.65
-#&gt; fsmi_qs_35    5                                      0.35       0.28 0.72
-#&gt; fsmi_qs_50   38                                            0.68 0.49 0.51
-#&gt; fsmi_qs_51   39                                            0.61 0.42 0.58
-#&gt; fsmi_qs_49   37                                            0.57 0.38 0.62
-#&gt; fsmi_qs_53   41                                            0.49 0.34 0.66
-#&gt; fsmi_qs_52   40        0.30                                0.41 0.34 0.66
-#&gt; fsmi_qs_54   42                          0.28        0.28 -0.34 0.27 0.73
-#&gt;            com
-#&gt; fsmi_qs_9  1.0
-#&gt; fsmi_qs_10 1.0
-#&gt; fsmi_qs_7  1.0
-#&gt; fsmi_qs_12 1.2
-#&gt; fsmi_qs_8  1.2
-#&gt; fsmi_qs_11 1.3
-#&gt; fsmi_qs_38 1.1
-#&gt; fsmi_qs_37 1.1
-#&gt; fsmi_qs_39 1.3
-#&gt; fsmi_qs_40 1.3
-#&gt; fsmi_qs_41 1.4
-#&gt; fsmi_qs_42 1.3
-#&gt; fsmi_qs_56 1.0
-#&gt; fsmi_qs_60 1.0
-#&gt; fsmi_qs_57 1.1
-#&gt; fsmi_qs_55 1.1
-#&gt; fsmi_qs_58 1.3
-#&gt; fsmi_qs_59 1.5
-#&gt; fsmi_qs_23 1.1
-#&gt; fsmi_qs_19 1.1
-#&gt; fsmi_qs_24 1.1
-#&gt; fsmi_qs_22 1.3
-#&gt; fsmi_qs_20 1.2
-#&gt; fsmi_qs_21 2.1
-#&gt; fsmi_qs_48 1.0
-#&gt; fsmi_qs_47 1.1
-#&gt; fsmi_qs_46 1.3
-#&gt; fsmi_qs_43 1.8
-#&gt; fsmi_qs_44 1.5
-#&gt; fsmi_qs_45 2.7
-#&gt; fsmi_qs_30 1.0
-#&gt; fsmi_qs_28 1.1
-#&gt; fsmi_qs_29 1.1
-#&gt; fsmi_qs_26 1.3
-#&gt; fsmi_qs_27 1.4
-#&gt; fsmi_qs_25 1.2
-#&gt; fsmi_qs_33 1.0
-#&gt; fsmi_qs_32 1.0
-#&gt; fsmi_qs_34 1.6
-#&gt; fsmi_qs_31 2.5
-#&gt; fsmi_qs_36 2.9
-#&gt; fsmi_qs_35 2.5
-#&gt; fsmi_qs_50 1.2
-#&gt; fsmi_qs_51 1.2
-#&gt; fsmi_qs_49 1.2
-#&gt; fsmi_qs_53 1.5
-#&gt; fsmi_qs_52 2.4
-#&gt; fsmi_qs_54 4.0
-#&gt; 
-#&gt;                        ML4  ML6  ML1  ML2  ML3  ML5  ML7  ML8
-#&gt; SS loadings           3.83 3.79 3.55 3.39 2.99 2.90 2.63 2.13
-#&gt; Proportion Var        0.08 0.08 0.07 0.07 0.06 0.06 0.05 0.04
-#&gt; Cumulative Var        0.08 0.16 0.23 0.30 0.37 0.43 0.48 0.53
-#&gt; Proportion Explained  0.15 0.15 0.14 0.13 0.12 0.11 0.10 0.08
-#&gt; Cumulative Proportion 0.15 0.30 0.44 0.58 0.70 0.81 0.92 1.00
-#&gt; 
-#&gt;  With factor correlations of 
-#&gt;      ML4   ML6   ML1   ML2   ML3   ML5   ML7  ML8
-#&gt; ML4 1.00  0.24  0.30  0.10  0.10  0.05  0.03 0.02
-#&gt; ML6 0.24  1.00  0.15  0.13 -0.09 -0.06  0.20 0.18
-#&gt; ML1 0.30  0.15  1.00 -0.10 -0.07  0.07  0.12 0.06
-#&gt; ML2 0.10  0.13 -0.10  1.00  0.13 -0.16  0.10 0.20
-#&gt; ML3 0.10 -0.09 -0.07  0.13  1.00 -0.04 -0.23 0.01
-#&gt; ML5 0.05 -0.06  0.07 -0.16 -0.04  1.00  0.12 0.02
-#&gt; ML7 0.03  0.20  0.12  0.10 -0.23  0.12  1.00 0.23
-#&gt; ML8 0.02  0.18  0.06  0.20  0.01  0.02  0.23 1.00
-#&gt; 
-#&gt; Mean item complexity =  1.4
-#&gt; Test of the hypothesis that 8 factors are sufficient.
-#&gt; 
-#&gt; The degrees of freedom for the null model are  1128  and the objective function was  27.8 with Chi Square of  8816.35
-#&gt; The degrees of freedom for the model are 772  and the objective function was  5.99 
-#&gt; 
-#&gt; The root mean square of the residuals (RMSR) is  0.04 
-#&gt; The df corrected root mean square of the residuals is  0.04 
-#&gt; 
-#&gt; The harmonic number of observations is  221 with the empirical chi square  645.35  with prob &lt;  1 
-#&gt; The total number of observations was  335  with Likelihood Chi Square =  1867.17  with prob &lt;  2.5e-92 
-#&gt; 
-#&gt; Tucker Lewis Index of factoring reliability =  0.788
-#&gt; RMSEA index =  0.069  and the 90 % confidence intervals are  0.061 NA
-#&gt; BIC =  -2621.34
-#&gt; Fit based upon off diagonal values = 0.97
-#&gt; Measures of factor score adequacy             
-#&gt;                                                    ML4  ML6  ML1  ML2  ML3
-#&gt; Correlation of (regression) scores with factors   0.96 0.94 0.97 0.94 0.93
-#&gt; Multiple R square of scores with factors          0.92 0.89 0.93 0.89 0.87
-#&gt; Minimum correlation of possible factor scores     0.84 0.79 0.87 0.79 0.75
-#&gt;                                                    ML5  ML7  ML8
-#&gt; Correlation of (regression) scores with factors   0.93 0.93 0.88
-#&gt; Multiple R square of scores with factors          0.87 0.86 0.78
-#&gt; Minimum correlation of possible factor scores     0.73 0.72 0.56
-#&gt; 
-#&gt;  Factor scores estimated using the  tenBerge  method  have correlations of 
-#&gt;                                                 ML4  ML6  ML1  ML2  ML3
-#&gt; Correlation of scores with factors             0.98 0.97 0.98 0.97 0.97
-#&gt; Multiple R square of scores with factors       0.96 0.94 0.97 0.94 0.93
-#&gt; Minimum correlation of possible factor scores  0.92 0.89 0.93 0.89 0.87
-#&gt;                                                 ML5  ML7  ML8
-#&gt; Correlation of scores with factors             0.96 0.96 0.94
-#&gt; Multiple R square of scores with factors       0.93 0.93 0.88
-#&gt; Minimum correlation of possible factor scores  0.86 0.85 0.76
-#&gt; Factor Analysis using method =  ml
-#&gt; Call: psych::fa(r = splt_fsmi[, unlist(get_items_from_keys(fsmi_key[scales_to_use]))], 
-#&gt;     nfactors = 9, n.iter = 1, rotate = "bifactor", scores = "tenBerge", 
-#&gt;     missing = F, fm = "ml")
-#&gt; Standardized loadings (pattern matrix) based upon correlation matrix
-#&gt;              ML1   ML2   ML6   ML4   ML5   ML3   ML9   ML8   ML7   h2   u2
-#&gt; fsmi_qs_31  0.60                                            0.31 0.52 0.48
-#&gt; fsmi_qs_32  0.46                                            0.70 0.72 0.28
-#&gt; fsmi_qs_33  0.53                                            0.59 0.67 0.33
-#&gt; fsmi_qs_34                                                 -0.61 0.45 0.55
-#&gt; fsmi_qs_35  0.36                                                 0.27 0.73
-#&gt; fsmi_qs_36  0.61                                                 0.43 0.57
-#&gt; fsmi_qs_37  0.47                                0.61             0.62 0.38
-#&gt; fsmi_qs_38  0.57                                0.54             0.64 0.36
-#&gt; fsmi_qs_39  0.59                                0.49             0.63 0.37
-#&gt; fsmi_qs_40  0.54                                0.43             0.57 0.43
-#&gt; fsmi_qs_41  0.28                                0.60             0.52 0.48
-#&gt; fsmi_qs_42  0.49                                0.44             0.51 0.49
-#&gt; fsmi_qs_43 -0.45                          0.56  0.30             0.70 0.30
-#&gt; fsmi_qs_44 -0.39                          0.48                   0.50 0.50
-#&gt; fsmi_qs_45 -0.55                          0.36        0.31       0.58 0.42
-#&gt; fsmi_qs_46                                0.70                   0.60 0.40
-#&gt; fsmi_qs_47                                0.74                   0.56 0.44
-#&gt; fsmi_qs_48                                0.83                   0.71 0.29
-#&gt; fsmi_qs_25                         -0.54                         0.35 0.65
-#&gt; fsmi_qs_26                         -0.62                         0.46 0.54
-#&gt; fsmi_qs_27                         -0.58                         0.42 0.58
-#&gt; fsmi_qs_28                          0.74                         0.59 0.41
-#&gt; fsmi_qs_29                          0.69                         0.51 0.49
-#&gt; fsmi_qs_30                          0.81                         0.68 0.32
-#&gt; fsmi_qs_7   0.32        0.77                                     0.72 0.28
-#&gt; fsmi_qs_8   0.36        0.57                                     0.49 0.51
-#&gt; fsmi_qs_9   0.30        0.79                                     0.75 0.25
-#&gt; fsmi_qs_10  0.40        0.76                                     0.76 0.24
-#&gt; fsmi_qs_11  0.30        0.51                                     0.40 0.60
-#&gt; fsmi_qs_12              0.67                                     0.57 0.43
-#&gt; fsmi_qs_19        0.78                                           0.67 0.33
-#&gt; fsmi_qs_20        0.67                                           0.52 0.48
-#&gt; fsmi_qs_21       -0.46                                           0.32 0.68
-#&gt; fsmi_qs_22        0.67                                           0.58 0.42
-#&gt; fsmi_qs_23        0.79                                           0.67 0.33
-#&gt; fsmi_qs_24        0.77                                           0.61 0.39
-#&gt; fsmi_qs_49  0.32                                      0.52       0.39 0.61
-#&gt; fsmi_qs_50                                     -0.26  0.57       0.50 0.50
-#&gt; fsmi_qs_51                                            0.61       0.45 0.55
-#&gt; fsmi_qs_52  0.32                                      0.37       0.34 0.66
-#&gt; fsmi_qs_53  0.38                                      0.40       0.35 0.65
-#&gt; fsmi_qs_54                                           -0.30       0.26 0.74
-#&gt; fsmi_qs_55  0.30              0.69                               0.62 0.38
-#&gt; fsmi_qs_56  0.36              0.83                               0.84 0.16
-#&gt; fsmi_qs_57 -0.26             -0.69                               0.56 0.44
-#&gt; fsmi_qs_58                   -0.52                               0.40 0.60
-#&gt; fsmi_qs_59 -0.25             -0.43                               0.33 0.67
-#&gt; fsmi_qs_60  0.33              0.84                               0.84 0.16
-#&gt;            com
-#&gt; fsmi_qs_31 1.9
-#&gt; fsmi_qs_32 1.8
-#&gt; fsmi_qs_33 2.3
-#&gt; fsmi_qs_34 1.4
-#&gt; fsmi_qs_35 3.2
-#&gt; fsmi_qs_36 1.3
-#&gt; fsmi_qs_37 2.1
-#&gt; fsmi_qs_38 2.2
-#&gt; fsmi_qs_39 2.2
-#&gt; fsmi_qs_40 2.7
-#&gt; fsmi_qs_41 2.0
-#&gt; fsmi_qs_42 2.7
-#&gt; fsmi_qs_43 3.3
-#&gt; fsmi_qs_44 3.2
-#&gt; fsmi_qs_45 2.9
-#&gt; fsmi_qs_46 1.4
-#&gt; fsmi_qs_47 1.1
-#&gt; fsmi_qs_48 1.1
-#&gt; fsmi_qs_25 1.4
-#&gt; fsmi_qs_26 1.4
-#&gt; fsmi_qs_27 1.5
-#&gt; fsmi_qs_28 1.2
-#&gt; fsmi_qs_29 1.1
-#&gt; fsmi_qs_30 1.1
-#&gt; fsmi_qs_7  1.5
-#&gt; fsmi_qs_8  2.0
-#&gt; fsmi_qs_9  1.4
-#&gt; fsmi_qs_10 1.6
-#&gt; fsmi_qs_11 2.0
-#&gt; fsmi_qs_12 1.6
-#&gt; fsmi_qs_19 1.2
-#&gt; fsmi_qs_20 1.3
-#&gt; fsmi_qs_21 2.1
-#&gt; fsmi_qs_22 1.6
-#&gt; fsmi_qs_23 1.2
-#&gt; fsmi_qs_24 1.1
-#&gt; fsmi_qs_49 1.8
-#&gt; fsmi_qs_50 2.1
-#&gt; fsmi_qs_51 1.5
-#&gt; fsmi_qs_52 3.4
-#&gt; fsmi_qs_53 2.6
-#&gt; fsmi_qs_54 4.4
-#&gt; fsmi_qs_55 1.6
-#&gt; fsmi_qs_56 1.4
-#&gt; fsmi_qs_57 1.4
-#&gt; fsmi_qs_58 2.1
-#&gt; fsmi_qs_59 2.7
-#&gt; fsmi_qs_60 1.4
-#&gt; 
-#&gt;                        ML1  ML2  ML6  ML4  ML5  ML3  ML9  ML8  ML7
-#&gt; SS loadings           5.33 3.33 3.31 3.08 2.90 2.79 2.11 1.66 1.62
-#&gt; Proportion Var        0.11 0.07 0.07 0.06 0.06 0.06 0.04 0.03 0.03
-#&gt; Cumulative Var        0.11 0.18 0.25 0.31 0.37 0.43 0.48 0.51 0.54
-#&gt; Proportion Explained  0.20 0.13 0.13 0.12 0.11 0.11 0.08 0.06 0.06
-#&gt; Cumulative Proportion 0.20 0.33 0.46 0.58 0.69 0.79 0.87 0.94 1.00
-#&gt; 
-#&gt; Mean item complexity =  1.9
-#&gt; Test of the hypothesis that 9 factors are sufficient.
-#&gt; 
-#&gt; The degrees of freedom for the null model are  1128  and the objective function was  27.8 with Chi Square of  8816.35
-#&gt; The degrees of freedom for the model are 732  and the objective function was  5.37 
-#&gt; 
-#&gt; The root mean square of the residuals (RMSR) is  0.03 
-#&gt; The df corrected root mean square of the residuals is  0.04 
-#&gt; 
-#&gt; The harmonic number of observations is  221 with the empirical chi square  520.46  with prob &lt;  1 
-#&gt; The total number of observations was  335  with Likelihood Chi Square =  1669.76  with prob &lt;  4.6e-75 
-#&gt; 
-#&gt; Tucker Lewis Index of factoring reliability =  0.808
-#&gt; RMSEA index =  0.066  and the 90 % confidence intervals are  0.058 0.066
-#&gt; BIC =  -2586.19
-#&gt; Fit based upon off diagonal values = 0.97
-#&gt; Measures of factor score adequacy             
-#&gt;                                                    ML1  ML2  ML6  ML4  ML5
-#&gt; Correlation of (regression) scores with factors   0.94 0.94 0.94 0.95 0.93
-#&gt; Multiple R square of scores with factors          0.88 0.88 0.89 0.91 0.86
-#&gt; Minimum correlation of possible factor scores     0.76 0.75 0.78 0.81 0.72
-#&gt;                                                    ML3  ML9  ML8  ML7
-#&gt; Correlation of (regression) scores with factors   0.93 0.89 0.86 0.87
-#&gt; Multiple R square of scores with factors          0.86 0.79 0.73 0.76
-#&gt; Minimum correlation of possible factor scores     0.71 0.58 0.47 0.53
-#&gt; 
-#&gt;  Factor scores estimated using the  tenBerge  method  have correlations of 
-#&gt;                                                 ML1  ML2  ML6  ML4  ML5
-#&gt; Correlation of scores with factors             0.97 0.97 0.97 0.98 0.96
-#&gt; Multiple R square of scores with factors       0.94 0.94 0.94 0.95 0.93
-#&gt; Minimum correlation of possible factor scores  0.87 0.87 0.88 0.90 0.85
-#&gt;                                                 ML3  ML9  ML8  ML7
-#&gt; Correlation of scores with factors             0.96 0.94 0.93 0.93
-#&gt; Multiple R square of scores with factors       0.92 0.89 0.86 0.87
-#&gt; Minimum correlation of possible factor scores  0.85 0.77 0.71 0.75</code></pre>
+#&gt;     fsmi_bifac        1.000                               1.000    1.000</code></pre>
+<p>A model for the FSMI scale without a method bifactor fits substantially worse than that with the method factor.</p>
+<table class="table">
+<thead><tr class="header">
+<th></th>
+<th align="right">Df</th>
+<th align="right">AIC</th>
+<th align="right">BIC</th>
+<th align="right">Chisq</th>
+<th align="right">Chisq diff</th>
+<th align="right">Df diff</th>
+<th align="right">Pr(&gt;Chisq)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>fsmi_cfa_method</td>
+<td align="right">1004</td>
+<td align="right">35415.74</td>
+<td align="right">36167.29</td>
+<td align="right">1685.742</td>
+<td align="right"></td>
+<td align="right"></td>
+<td align="right"></td>
+</tr>
+<tr class="even">
+<td>fsmi_cfa</td>
+<td align="right">1052</td>
+<td align="right">35670.44</td>
+<td align="right">36258.01</td>
+<td align="right">2036.439</td>
+<td align="right">2408.134</td>
+<td align="right">48</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead><tr class="header">
+<th></th>
+<th align="right">rmsea</th>
+<th align="right">mfi</th>
+<th align="right">gammaHat</th>
+<th align="right">adjGammaHat</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>baseline</td>
+<td align="right">0.0644904</td>
+<td align="right">0.1121809</td>
+<td align="right">0.8452247</td>
+<td align="right">0.8269812</td>
+</tr>
+<tr class="even">
+<td>bifac</td>
+<td align="right">0.0549353</td>
+<td align="right">0.2198122</td>
+<td align="right">0.8874594</td>
+<td align="right">0.8681796</td>
+</tr>
+</tbody>
+</table>
+<p>Exploratory factor analysis (not shown, but code for which is above) results in 8 factors, with high loadings grouped as expected and minimal cross loadings &gt; .25. The bifactor rotation (with 9 factors) also shows this pattern.</p>
 
 <div class="figure">
 <span id="fig:fsmicfaplot1"></span>
@@ -1063,91 +794,17 @@ Figure 1: FSMI CFA with method bifactor. Path weight reflects standardized loadi
 Figure 2: FSMI CFA. Path weight reflects standardized loading strength, with minimum cuttoff for showing path set at .20, and maximum weight at .90 (apparent for several mate-seeking items). Residual and means not shown.
 </p>
 </div>
+<p>The two factor structures are shown above.</p>
 <div id="fsmi-discussion" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fsmi-discussion" class="anchor"></a>FSMI Discussion</h3>
-<p>The factor model, fit to all but three of the original scale’s factors (child-care, care for family, general mate retention; N = 225) shows somewhat reasonable, but not great, fit (RMSEA = 0.064, <span class="math inline">\(\hat\gamma\)</span> = 0.845). This deviates from the results reported by Neel and colleagues <span class="citation">(2015)</span>, where each factor, or set of related factors, was tested independently. A parallel scree plot analysis (psych package version 1.7.8) suggested 8 factors, with all item loadings dominant on expected factors. There is some evidence that including a factor that accounts for an overall method factor improve model fit. Adding such a method bifactor improved the fit somewhat (RMSEA = 0.055, <span class="math inline">\(\hat\gamma\)</span> = 0.887). Model comparison substantially favors the less parsimonious model that includes the method bifactor (<span class="math inline">\(\Delta\)</span>AIC = 255, <span class="math inline">\(\Delta\)</span>BIC = 91, <span class="math inline">\(\Delta\)</span>Df = 48). Although this bifactor does improve fit across all factors, it does not load strongly on either status or mate-seeking, so I do not account for in in analyses below.</p>
-<pre><code>#&gt; [[1]]
-#&gt; rmsea   mfi 
-#&gt; 0.051 0.933 
-#&gt; 
-#&gt; [[2]]
-#&gt;    gammaHat adjGammaHat 
-#&gt;   0.9772611   0.9665352
-#&gt; lavaan (0.6-1.1193) converged normally after  47 iterations
-#&gt; 
-#&gt;                                                   Used       Total
-#&gt;   Number of observations                           225         335
-#&gt;   Number of missing patterns                        10
-#&gt; 
-#&gt;   Estimator                                         ML      Robust
-#&gt;   Model Fit Test Statistic                      84.272      72.161
-#&gt;   Degrees of freedom                                53          53
-#&gt;   P-value (Chi-square)                           0.004       0.041
-#&gt;   Scaling correction factor                                  1.168
-#&gt;     for the Yuan-Bentler correction
-#&gt; 
-#&gt; Parameter Estimates:
-#&gt; 
-#&gt;   Information                                 Observed
-#&gt;   Observed information based on                Hessian
-#&gt;   Standard Errors                   Robust.huber.white
-#&gt; 
-#&gt; Latent Variables:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;   fsmi_mate =~                                                          
-#&gt;     fsmi_qs_55        1.408    0.091   15.526    0.000    1.408    0.762
-#&gt;     fsmi_qs_56        1.893    0.074   25.609    0.000    1.893    0.914
-#&gt;     fsmi_qs_57       -1.447    0.110  -13.108    0.000   -1.447   -0.727
-#&gt;     fsmi_qs_58       -1.022    0.119   -8.558    0.000   -1.022   -0.576
-#&gt;     fsmi_qs_59       -0.930    0.131   -7.086    0.000   -0.930   -0.507
-#&gt;     fsmi_qs_60        1.902    0.067   28.187    0.000    1.902    0.916
-#&gt;   fsmi_stat =~                                                          
-#&gt;     fsmi_qs_49        0.845    0.125    6.758    0.000    0.845    0.580
-#&gt;     fsmi_qs_50        0.772    0.108    7.151    0.000    0.772    0.562
-#&gt;     fsmi_qs_51        0.814    0.099    8.194    0.000    0.814    0.638
-#&gt;     fsmi_qs_52        0.776    0.116    6.690    0.000    0.776    0.548
-#&gt;     fsmi_qs_53        0.814    0.116    7.021    0.000    0.814    0.593
-#&gt;     fsmi_qs_54       -0.451    0.131   -3.436    0.001   -0.451   -0.326
-#&gt; 
-#&gt; Covariances:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;   fsmi_mate ~~                                                          
-#&gt;     fsmi_stat         0.111    0.087    1.273    0.203    0.111    0.111
-#&gt; 
-#&gt; Intercepts:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        3.545    0.123   28.754    0.000    3.545    1.919
-#&gt;    .fsmi_qs_56        3.820    0.138   27.610    0.000    3.820    1.844
-#&gt;    .fsmi_qs_57        3.667    0.133   27.623    0.000    3.667    1.842
-#&gt;    .fsmi_qs_58        4.649    0.119   39.147    0.000    4.649    2.622
-#&gt;    .fsmi_qs_59        3.402    0.122   27.820    0.000    3.402    1.854
-#&gt;    .fsmi_qs_60        3.622    0.138   26.156    0.000    3.622    1.744
-#&gt;    .fsmi_qs_49        4.637    0.097   47.674    0.000    4.637    3.183
-#&gt;    .fsmi_qs_50        5.022    0.092   54.511    0.000    5.022    3.655
-#&gt;    .fsmi_qs_51        4.707    0.085   55.291    0.000    4.707    3.693
-#&gt;    .fsmi_qs_52        4.243    0.095   44.885    0.000    4.243    2.998
-#&gt;    .fsmi_qs_53        5.044    0.091   55.149    0.000    5.044    3.677
-#&gt;    .fsmi_qs_54        4.183    0.092   45.327    0.000    4.183    3.028
-#&gt;     fsmi_mate         0.000                               0.000    0.000
-#&gt;     fsmi_stat         0.000                               0.000    0.000
-#&gt; 
-#&gt; Variances:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        1.431    0.174    8.204    0.000    1.431    0.419
-#&gt;    .fsmi_qs_56        0.710    0.170    4.174    0.000    0.710    0.165
-#&gt;    .fsmi_qs_57        1.871    0.269    6.956    0.000    1.871    0.472
-#&gt;    .fsmi_qs_58        2.100    0.292    7.203    0.000    2.100    0.668
-#&gt;    .fsmi_qs_59        2.502    0.257    9.741    0.000    2.502    0.743
-#&gt;    .fsmi_qs_60        0.698    0.152    4.599    0.000    0.698    0.162
-#&gt;    .fsmi_qs_49        1.407    0.216    6.519    0.000    1.407    0.663
-#&gt;    .fsmi_qs_50        1.291    0.163    7.907    0.000    1.291    0.684
-#&gt;    .fsmi_qs_51        0.963    0.152    6.322    0.000    0.963    0.592
-#&gt;    .fsmi_qs_52        1.401    0.179    7.817    0.000    1.401    0.699
-#&gt;    .fsmi_qs_53        1.220    0.172    7.073    0.000    1.220    0.648
-#&gt;    .fsmi_qs_54        1.705    0.185    9.206    0.000    1.705    0.894
-#&gt;     fsmi_mate         1.000                               1.000    1.000
-#&gt;     fsmi_stat         1.000                               1.000    1.000</code></pre>
+<p>The factor model, fit to all but three of the original scale’s factors (child-care, care for family, general mate retention; N = 225) shows somewhat reasonable, but not great, fit (RMSEA = 0.064, <span class="math inline">\(\hat\gamma\)</span> = 0.845).
+This deviates from the results reported by Neel and colleagues <span class="citation">(2015)</span>, where each factor, or set of related factors, was tested independently.
+A parallel scree plot analysis (psych package version 1.7.8) suggested 8 factors, with all item loadings dominant on expected factors.
+There is some evidence that including a factor that accounts for an overall method factor improve model fit.
+Adding such a method bifactor improved the fit somewhat (RMSEA = 0.055, <span class="math inline">\(\hat\gamma\)</span> = 0.887).
+Model comparison substantially favors the less parsimonious model that includes the method bifactor (<span class="math inline">\(\Delta\)</span>AIC = 255, <span class="math inline">\(\Delta\)</span>BIC = 91, <span class="math inline">\(\Delta\)</span>Df = 48).
+Although this bifactor does improve fit across all factors, it does not load strongly on either status or mate-seeking, so I do not account for in in analyses below.</p>
 
 <div class="figure">
 <span id="fig:fsmicfamatestatplot"></span>
@@ -1155,150 +812,14 @@ Figure 2: FSMI CFA. Path weight reflects standardized loading strength, with min
 Figure 3: FSMI mate-seeking &amp; status CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
 </p>
 </div>
-<p>A CFA for mate-seeking and status factors fit well (RMSEA = 0.051, <span class="math inline">\(\hat\gamma\)</span> = 0.977), with the two factors showing a small, positive, non-significant correlation.</p>
+<p>A CFA for mate-seeking and status factors fit well (RMSEA = 0.051, <span class="math inline">\(\hat\gamma\)</span> = 0.977), with the two factors showing a small, positive, non-significant correlation (<span class="math inline">\(r = 0.11, Z = 1.27\)</span>).</p>
+<p>Note that item 54, “I do not worry very much about losing status” has a particularly low loading on the status factor.</p>
 </div>
 </div>
 <div id="k-srq" class="section level2">
 <h2 class="hasAnchor">
 <a href="#k-srq" class="anchor"></a>K-SRQ</h2>
-<pre><code>#&gt; [[1]]
-#&gt; rmsea   mfi 
-#&gt; 0.064 0.887 
-#&gt; 
-#&gt; [[2]]
-#&gt;    gammaHat adjGammaHat 
-#&gt;   0.9643227   0.9449723</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/ksrq-1.png" width="672"></p>
-<pre><code>#&gt; Parallel analysis suggests that the number of factors =  3  and the number of components =  3
-#&gt; Factor Analysis using method =  ml
-#&gt; Call: psych::fa(r = splt_fsmi[, unlist(get_items_from_keys(ksqr_key[scales_to_use_ksrq]))], 
-#&gt;     nfactors = 4, n.iter = 1, scores = "tenBerge", missing = F, 
-#&gt;     fm = "ml")
-#&gt; Standardized loadings (pattern matrix) based upon correlation matrix
-#&gt;          item   ML1   ML3   ML2   ML4   h2   u2 com
-#&gt; K_SRQ_18    4  0.78                   0.60 0.40 1.0
-#&gt; K_SRQ_11    3  0.77                   0.67 0.33 1.0
-#&gt; K_SRQ_1     1  0.72                   0.59 0.41 1.0
-#&gt; K_SRQ_7     2  0.67                   0.60 0.40 1.3
-#&gt; K_SRQ_20   10        0.77             0.65 0.35 1.1
-#&gt; K_SRQ_4    11 -0.26  0.64             0.43 0.57 1.5
-#&gt; K_SRQ_13    9        0.61             0.49 0.51 1.1
-#&gt; K_SRQ_9     8        0.56             0.42 0.58 1.1
-#&gt; K_SRQ_15   13  0.29  0.38             0.39 0.61 2.1
-#&gt; K_SRQ_12    5              0.78       0.60 0.40 1.0
-#&gt; K_SRQ_21    6              0.77       0.61 0.39 1.0
-#&gt; K_SRQ_23    7              0.66       0.44 0.56 1.1
-#&gt; K_SRQ_10   12                    0.80 0.73 0.27 1.0
-#&gt; 
-#&gt;                        ML1  ML3  ML2  ML4
-#&gt; SS loadings           2.57 2.06 1.66 0.92
-#&gt; Proportion Var        0.20 0.16 0.13 0.07
-#&gt; Cumulative Var        0.20 0.36 0.48 0.56
-#&gt; Proportion Explained  0.36 0.29 0.23 0.13
-#&gt; Cumulative Proportion 0.36 0.64 0.87 1.00
-#&gt; 
-#&gt;  With factor correlations of 
-#&gt;      ML1  ML3  ML2  ML4
-#&gt; ML1 1.00 0.48 0.02 0.37
-#&gt; ML3 0.48 1.00 0.15 0.41
-#&gt; ML2 0.02 0.15 1.00 0.08
-#&gt; ML4 0.37 0.41 0.08 1.00
-#&gt; 
-#&gt; Mean item complexity =  1.2
-#&gt; Test of the hypothesis that 4 factors are sufficient.
-#&gt; 
-#&gt; The degrees of freedom for the null model are  78  and the objective function was  4.92 with Chi Square of  1617.33
-#&gt; The degrees of freedom for the model are 32  and the objective function was  0.15 
-#&gt; 
-#&gt; The root mean square of the residuals (RMSR) is  0.02 
-#&gt; The df corrected root mean square of the residuals is  0.03 
-#&gt; 
-#&gt; The harmonic number of observations is  314 with the empirical chi square  22.67  with prob &lt;  0.89 
-#&gt; The total number of observations was  335  with Likelihood Chi Square =  47.91  with prob &lt;  0.035 
-#&gt; 
-#&gt; Tucker Lewis Index of factoring reliability =  0.975
-#&gt; RMSEA index =  0.04  and the 90 % confidence intervals are  0.011 0.06
-#&gt; BIC =  -138.14
-#&gt; Fit based upon off diagonal values = 1
-#&gt; Measures of factor score adequacy             
-#&gt;                                                    ML1  ML3  ML2  ML4
-#&gt; Correlation of (regression) scores with factors   0.93 0.90 0.89 0.86
-#&gt; Multiple R square of scores with factors          0.87 0.82 0.80 0.75
-#&gt; Minimum correlation of possible factor scores     0.73 0.63 0.59 0.49
-#&gt; 
-#&gt;  Factor scores estimated using the  tenBerge  method  have correlations of 
-#&gt;                                                 ML1  ML3  ML2  ML4
-#&gt; Correlation of scores with factors             0.96 0.95 0.94 0.93
-#&gt; Multiple R square of scores with factors       0.93 0.90 0.89 0.86
-#&gt; Minimum correlation of possible factor scores  0.86 0.80 0.78 0.72
-#&gt; Factor Analysis using method =  ml
-#&gt; Call: psych::fa(r = splt_fsmi[, unlist(get_items_from_keys(ksqr_key[scales_to_use_ksrq]))], 
-#&gt;     nfactors = 3, n.iter = 1, scores = "tenBerge", missing = F, 
-#&gt;     fm = "ml")
-#&gt; Standardized loadings (pattern matrix) based upon correlation matrix
-#&gt;          item   ML1   ML3   ML2   h2   u2 com
-#&gt; K_SRQ_11    3  0.81             0.68 0.32 1.0
-#&gt; K_SRQ_18    4  0.76             0.56 0.44 1.0
-#&gt; K_SRQ_1     1  0.76             0.60 0.40 1.0
-#&gt; K_SRQ_7     2  0.74             0.57 0.43 1.0
-#&gt; K_SRQ_10   12  0.31  0.29       0.27 0.73 2.0
-#&gt; K_SRQ_4    11        0.74       0.44 0.56 1.2
-#&gt; K_SRQ_20   10        0.68       0.58 0.42 1.1
-#&gt; K_SRQ_13    9        0.61       0.48 0.52 1.1
-#&gt; K_SRQ_9     8        0.59       0.43 0.57 1.1
-#&gt; K_SRQ_15   13  0.32  0.39       0.39 0.61 2.0
-#&gt; K_SRQ_12    5              0.78 0.59 0.41 1.0
-#&gt; K_SRQ_21    6              0.77 0.62 0.38 1.0
-#&gt; K_SRQ_23    7              0.66 0.43 0.57 1.0
-#&gt; 
-#&gt;                        ML1  ML3  ML2
-#&gt; SS loadings           2.84 2.15 1.65
-#&gt; Proportion Var        0.22 0.17 0.13
-#&gt; Cumulative Var        0.22 0.38 0.51
-#&gt; Proportion Explained  0.43 0.32 0.25
-#&gt; Cumulative Proportion 0.43 0.75 1.00
-#&gt; 
-#&gt;  With factor correlations of 
-#&gt;      ML1  ML3  ML2
-#&gt; ML1 1.00 0.50 0.03
-#&gt; ML3 0.50 1.00 0.17
-#&gt; ML2 0.03 0.17 1.00
-#&gt; 
-#&gt; Mean item complexity =  1.2
-#&gt; Test of the hypothesis that 3 factors are sufficient.
-#&gt; 
-#&gt; The degrees of freedom for the null model are  78  and the objective function was  4.92 with Chi Square of  1617.33
-#&gt; The degrees of freedom for the model are 42  and the objective function was  0.27 
-#&gt; 
-#&gt; The root mean square of the residuals (RMSR) is  0.03 
-#&gt; The df corrected root mean square of the residuals is  0.04 
-#&gt; 
-#&gt; The harmonic number of observations is  314 with the empirical chi square  48.81  with prob &lt;  0.22 
-#&gt; The total number of observations was  335  with Likelihood Chi Square =  88.81  with prob &lt;  3.4e-05 
-#&gt; 
-#&gt; Tucker Lewis Index of factoring reliability =  0.943
-#&gt; RMSEA index =  0.059  and the 90 % confidence intervals are  0.041 0.074
-#&gt; BIC =  -155.39
-#&gt; Fit based upon off diagonal values = 0.99
-#&gt; Measures of factor score adequacy             
-#&gt;                                                    ML1  ML3  ML2
-#&gt; Correlation of (regression) scores with factors   0.93 0.90 0.89
-#&gt; Multiple R square of scores with factors          0.87 0.81 0.79
-#&gt; Minimum correlation of possible factor scores     0.75 0.61 0.59
-#&gt; 
-#&gt;  Factor scores estimated using the  tenBerge  method  have correlations of 
-#&gt;                                                 ML1  ML3  ML2
-#&gt; Correlation of scores with factors             0.97 0.95 0.94
-#&gt; Multiple R square of scores with factors       0.93 0.90 0.89
-#&gt; Minimum correlation of possible factor scores  0.87 0.79 0.78
-#&gt; [[1]]
-#&gt; rmsea   mfi 
-#&gt; 0.066 0.874 
-#&gt; 
-#&gt; [[2]]
-#&gt;    gammaHat adjGammaHat 
-#&gt;   0.9600320   0.9413373
-#&gt; lavaan (0.6-1.1193) converged normally after  58 iterations
+<pre><code>#&gt; lavaan (0.6-1.1193) converged normally after  58 iterations
 #&gt; 
 #&gt;                                                   Used       Total
 #&gt;   Number of observations                           320         335
@@ -1513,631 +1034,630 @@ Figure 4: K-SRQ CFA. Path weights and labels reflect standardized loading streng
 Figure 5: K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
 </p>
 </div>
-<pre><code>#&gt; lavaan (0.6-1.1193) converged normally after 110 iterations
-#&gt; 
-#&gt;   Number of observations per group         
-#&gt;   0                                                164
-#&gt;   1                                                 61
-#&gt;   Number of missing patterns per group     
-#&gt;   0                                                 14
-#&gt;   1                                                  8
-#&gt; 
-#&gt;   Estimator                                         ML      Robust
-#&gt;   Model Fit Test Statistic                     884.026          NA
-#&gt;   Degrees of freedom                               550         550
-#&gt;   P-value (Chi-square)                           0.000          NA
-#&gt;   Scaling correction factor                                     NA
-#&gt;     for the Yuan-Bentler correction
-#&gt; 
-#&gt; Chi-square for each group:
-#&gt; 
-#&gt;   0                                            403.218          NA
-#&gt;   1                                            480.808          NA
-#&gt; 
-#&gt; Parameter Estimates:
-#&gt; 
-#&gt;   Information                                 Observed
-#&gt;   Observed information based on                Hessian
-#&gt;   Standard Errors                   Robust.huber.white
-#&gt; 
-#&gt; 
-#&gt; Group 1 [0]:
-#&gt; 
-#&gt; Latent Variables:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;   fsmi_mate =~                                                          
-#&gt;     fsm__55           1.000                               1.169    0.680
-#&gt;     fsm__56 (.p2.)    1.356    0.139    9.758    0.000    1.585    0.888
-#&gt;     fsm__57 (.p3.)   -0.926    0.111   -8.325    0.000   -1.082   -0.638
-#&gt;     fsm__58 (.p4.)   -0.669    0.118   -5.695    0.000   -0.782   -0.489
-#&gt;     fsm__59 (.p5.)   -0.564    0.108   -5.248    0.000   -0.660   -0.435
-#&gt;     fsm__60 (.p6.)    1.369    0.140    9.754    0.000    1.600    0.866
-#&gt;   fsmi_stat =~                                                          
-#&gt;     fsm__49           1.000                               0.888    0.606
-#&gt;     fsm__50 (.p8.)    0.857    0.137    6.266    0.000    0.761    0.569
-#&gt;     fsm__51 (.p9.)    0.801    0.141    5.696    0.000    0.711    0.576
-#&gt;     fsm__52 (.10.)    0.812    0.160    5.070    0.000    0.721    0.512
-#&gt;     fsm__53 (.11.)    0.910    0.187    4.862    0.000    0.808    0.632
-#&gt;     fsm__54 (.12.)   -0.412    0.174   -2.366    0.018   -0.366   -0.287
-#&gt;   ML1 =~                                                                
-#&gt;     K_SRQ_1           1.000                               0.967    0.776
-#&gt;     K_SRQ_1 (.14.)    0.959    0.094   10.217    0.000    0.927    0.730
-#&gt;     K_SRQ_1 (.15.)    0.976    0.099    9.852    0.000    0.945    0.812
-#&gt;     K_SRQ_7 (.16.)    0.885    0.069   12.753    0.000    0.856    0.757
-#&gt;     K_SRQ_1 (.17.)    0.714    0.112    6.351    0.000    0.690    0.596
-#&gt;   ML2 =~                                                                
-#&gt;     K_SRQ_4           1.000                               0.887    0.519
-#&gt;     K_SRQ_2 (.19.)    1.220    0.168    7.270    0.000    1.083    0.812
-#&gt;     K_SRQ_1 (.20.)    1.030    0.171    6.006    0.000    0.914    0.765
-#&gt;     K_SRQ_9 (.21.)    1.074    0.174    6.168    0.000    0.953    0.638
-#&gt;     K_SRQ_1 (.22.)    1.083    0.193    5.599    0.000    0.961    0.646
-#&gt;   ML3 =~                                                                
-#&gt;     K_SRQ_1           1.000                               1.205    0.821
-#&gt;     K_SRQ_2 (.24.)    1.057    0.172    6.130    0.000    1.273    0.788
-#&gt;     K_SRQ_2 (.25.)    0.743    0.107    6.966    0.000    0.895    0.615
-#&gt; 
-#&gt; Covariances:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;   fsmi_mate ~~                                                          
-#&gt;     fsmi_stat         0.256    0.113    2.270    0.023    0.247    0.247
-#&gt;     ML1               0.381    0.107    3.562    0.000    0.337    0.337
-#&gt;     ML2               0.421    0.112    3.746    0.000    0.406    0.406
-#&gt;     ML3               0.471    0.155    3.046    0.002    0.334    0.334
-#&gt;   fsmi_stat ~~                                                          
-#&gt;     ML1               0.588    0.140    4.203    0.000    0.685    0.685
-#&gt;     ML2               0.391    0.128    3.060    0.002    0.497    0.497
-#&gt;     ML3              -0.061    0.122   -0.498    0.618   -0.057   -0.057
-#&gt;   ML1 ~~                                                                
-#&gt;     ML2               0.610    0.107    5.680    0.000    0.710    0.710
-#&gt;     ML3               0.248    0.107    2.313    0.021    0.213    0.213
-#&gt;   ML2 ~~                                                                
-#&gt;     ML3               0.139    0.093    1.496    0.135    0.130    0.130
-#&gt; 
-#&gt; Intercepts:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        4.133    0.130   31.781    0.000    4.133    2.405
-#&gt;    .fsmi_qs_56        4.571    0.141   32.457    0.000    4.571    2.561
-#&gt;    .fsmi_qs_57        3.030    0.130   23.355    0.000    3.030    1.787
-#&gt;    .fsmi_qs_58        4.207    0.125   33.711    0.000    4.207    2.629
-#&gt;    .fsmi_qs_59        2.984    0.117   25.418    0.000    2.984    1.970
-#&gt;    .fsmi_qs_60        4.372    0.146   29.919    0.000    4.372    2.368
-#&gt;    .fsmi_qs_49        4.592    0.113   40.547    0.000    4.592    3.133
-#&gt;    .fsmi_qs_50        5.010    0.107   47.042    0.000    5.010    3.745
-#&gt;    .fsmi_qs_51        4.675    0.096   48.607    0.000    4.675    3.788
-#&gt;    .fsmi_qs_52        4.222    0.110   38.501    0.000    4.222    3.003
-#&gt;    .fsmi_qs_53        5.085    0.101   50.494    0.000    5.085    3.974
-#&gt;    .fsmi_qs_54        4.116    0.100   41.234    0.000    4.116    3.227
-#&gt;    .K_SRQ_11          5.288    0.096   55.307    0.000    5.288    4.244
-#&gt;    .K_SRQ_18          5.267    0.100   52.419    0.000    5.267    4.148
-#&gt;    .K_SRQ_1           5.632    0.094   60.069    0.000    5.632    4.841
-#&gt;    .K_SRQ_7           5.406    0.088   61.736    0.000    5.406    4.782
-#&gt;    .K_SRQ_10          5.699    0.089   63.790    0.000    5.699    4.919
-#&gt;    .K_SRQ_4           5.003    0.135   37.110    0.000    5.003    2.928
-#&gt;    .K_SRQ_20          5.496    0.104   53.070    0.000    5.496    4.122
-#&gt;    .K_SRQ_13          5.974    0.095   63.100    0.000    5.974    5.000
-#&gt;    .K_SRQ_9           5.151    0.124   41.604    0.000    5.151    3.451
-#&gt;    .K_SRQ_15          5.563    0.114   48.608    0.000    5.563    3.741
-#&gt;    .K_SRQ_12          2.911    0.116   25.038    0.000    2.911    1.983
-#&gt;    .K_SRQ_21          3.328    0.126   26.502    0.000    3.328    2.060
-#&gt;    .K_SRQ_23          3.449    0.113   30.472    0.000    3.449    2.368
-#&gt;     fsmi_mate         0.000                               0.000    0.000
-#&gt;     fsmi_stat         0.000                               0.000    0.000
-#&gt;     ML1               0.000                               0.000    0.000
-#&gt;     ML2               0.000                               0.000    0.000
-#&gt;     ML3               0.000                               0.000    0.000
-#&gt; 
-#&gt; Variances:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        1.586    0.208    7.635    0.000    1.586    0.537
-#&gt;    .fsmi_qs_56        0.675    0.138    4.895    0.000    0.675    0.212
-#&gt;    .fsmi_qs_57        1.706    0.266    6.411    0.000    1.706    0.593
-#&gt;    .fsmi_qs_58        1.949    0.243    8.008    0.000    1.949    0.761
-#&gt;    .fsmi_qs_59        1.860    0.269    6.915    0.000    1.860    0.810
-#&gt;    .fsmi_qs_60        0.851    0.193    4.412    0.000    0.851    0.249
-#&gt;    .fsmi_qs_49        1.360    0.262    5.185    0.000    1.360    0.633
-#&gt;    .fsmi_qs_50        1.211    0.192    6.322    0.000    1.211    0.677
-#&gt;    .fsmi_qs_51        1.018    0.149    6.826    0.000    1.018    0.668
-#&gt;    .fsmi_qs_52        1.458    0.183    7.968    0.000    1.458    0.737
-#&gt;    .fsmi_qs_53        0.985    0.171    5.766    0.000    0.985    0.601
-#&gt;    .fsmi_qs_54        1.493    0.195    7.662    0.000    1.493    0.918
-#&gt;    .K_SRQ_11          0.617    0.114    5.429    0.000    0.617    0.397
-#&gt;    .K_SRQ_18          0.752    0.152    4.943    0.000    0.752    0.467
-#&gt;    .K_SRQ_1           0.461    0.076    6.070    0.000    0.461    0.341
-#&gt;    .K_SRQ_7           0.545    0.095    5.712    0.000    0.545    0.427
-#&gt;    .K_SRQ_10          0.866    0.119    7.269    0.000    0.866    0.645
-#&gt;    .K_SRQ_4           2.132    0.282    7.549    0.000    2.132    0.730
-#&gt;    .K_SRQ_20          0.605    0.118    5.136    0.000    0.605    0.340
-#&gt;    .K_SRQ_13          0.593    0.089    6.673    0.000    0.593    0.415
-#&gt;    .K_SRQ_9           1.320    0.285    4.638    0.000    1.320    0.592
-#&gt;    .K_SRQ_15          1.288    0.209    6.159    0.000    1.288    0.583
-#&gt;    .K_SRQ_12          0.704    0.274    2.568    0.010    0.704    0.327
-#&gt;    .K_SRQ_21          0.989    0.273    3.619    0.000    0.989    0.379
-#&gt;    .K_SRQ_23          1.319    0.179    7.368    0.000    1.319    0.622
-#&gt;     fsmi_mate         1.366    0.249    5.481    0.000    1.000    1.000
-#&gt;     fsmi_stat         0.788    0.216    3.648    0.000    1.000    1.000
-#&gt;     ML1               0.936    0.139    6.755    0.000    1.000    1.000
-#&gt;     ML2               0.788    0.212    3.712    0.000    1.000    1.000
-#&gt;     ML3               1.452    0.346    4.198    0.000    1.000    1.000
-#&gt; 
-#&gt; 
-#&gt; Group 2 [1]:
-#&gt; 
-#&gt; Latent Variables:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;   fsmi_mate =~                                                          
-#&gt;     fsm__55           1.000                               0.662    0.555
-#&gt;     fsm__56 (.p2.)    1.356    0.139    9.758    0.000    0.897    0.685
-#&gt;     fsm__57 (.p3.)   -0.926    0.111   -8.325    0.000   -0.613   -0.369
-#&gt;     fsm__58 (.p4.)   -0.669    0.118   -5.695    0.000   -0.443   -0.266
-#&gt;     fsm__59 (.p5.)   -0.564    0.108   -5.248    0.000   -0.373   -0.178
-#&gt;     fsm__60 (.p6.)    1.369    0.140    9.754    0.000    0.906    0.919
-#&gt;   fsmi_stat =~                                                          
-#&gt;     fsm__49           1.000                               1.033    0.717
-#&gt;     fsm__50 (.p8.)    0.857    0.137    6.266    0.000    0.886    0.602
-#&gt;     fsm__51 (.p9.)    0.801    0.141    5.696    0.000    0.827    0.601
-#&gt;     fsm__52 (.10.)    0.812    0.160    5.070    0.000    0.839    0.583
-#&gt;     fsm__53 (.11.)    0.910    0.187    4.862    0.000    0.941    0.586
-#&gt;     fsm__54 (.12.)   -0.412    0.174   -2.366    0.018   -0.426   -0.264
-#&gt;   ML1 =~                                                                
-#&gt;     K_SRQ_1           1.000                               1.163    0.880
-#&gt;     K_SRQ_1 (.14.)    0.959    0.094   10.217    0.000    1.114    0.781
-#&gt;     K_SRQ_1 (.15.)    0.976    0.099    9.852    0.000    1.135    0.790
-#&gt;     K_SRQ_7 (.16.)    0.885    0.069   12.753    0.000    1.029    0.852
-#&gt;     K_SRQ_1 (.17.)    0.714    0.112    6.351    0.000    0.830    0.610
-#&gt;   ML2 =~                                                                
-#&gt;     K_SRQ_4           1.000                               0.795    0.436
-#&gt;     K_SRQ_2 (.19.)    1.220    0.168    7.270    0.000    0.970    0.544
-#&gt;     K_SRQ_1 (.20.)    1.030    0.171    6.006    0.000    0.818    0.704
-#&gt;     K_SRQ_9 (.21.)    1.074    0.174    6.168    0.000    0.854    0.604
-#&gt;     K_SRQ_1 (.22.)    1.083    0.193    5.599    0.000    0.861    0.608
-#&gt;   ML3 =~                                                                
-#&gt;     K_SRQ_1           1.000                               1.211    0.774
-#&gt;     K_SRQ_2 (.24.)    1.057    0.172    6.130    0.000    1.279    0.832
-#&gt;     K_SRQ_2 (.25.)    0.743    0.107    6.966    0.000    0.900    0.617
-#&gt; 
-#&gt; Covariances:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;   fsmi_mate ~~                                                          
-#&gt;     fsmi_stat        -0.063    0.125   -0.505    0.613   -0.092   -0.092
-#&gt;     ML1              -0.216    0.184   -1.176    0.239   -0.281   -0.281
-#&gt;     ML2              -0.159    0.166   -0.958    0.338   -0.302   -0.302
-#&gt;     ML3               0.065    0.157    0.412    0.681    0.081    0.081
-#&gt;   fsmi_stat ~~                                                          
-#&gt;     ML1               0.691    0.229    3.020    0.003    0.576    0.576
-#&gt;     ML2               0.267    0.159    1.678    0.093    0.326    0.326
-#&gt;     ML3              -0.363    0.280   -1.293    0.196   -0.290   -0.290
-#&gt;   ML1 ~~                                                                
-#&gt;     ML2               0.755    0.313    2.408    0.016    0.817    0.817
-#&gt;     ML3              -0.042    0.243   -0.173    0.863   -0.030   -0.030
-#&gt;   ML2 ~~                                                                
-#&gt;     ML3               0.092    0.183    0.500    0.617    0.095    0.095
-#&gt; 
-#&gt; Intercepts:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        1.967    0.169   11.659    0.000    1.967    1.650
-#&gt;    .fsmi_qs_56        1.790    0.156   11.480    0.000    1.790    1.367
-#&gt;    .fsmi_qs_57        5.377    0.229   23.529    0.000    5.377    3.242
-#&gt;    .fsmi_qs_58        5.848    0.218   26.863    0.000    5.848    3.507
-#&gt;    .fsmi_qs_59        4.525    0.275   16.459    0.000    4.525    2.162
-#&gt;    .fsmi_qs_60        1.607    0.123   13.031    0.000    1.607    1.630
-#&gt;    .fsmi_qs_49        4.754    0.189   25.117    0.000    4.754    3.301
-#&gt;    .fsmi_qs_50        5.050    0.182   27.677    0.000    5.050    3.434
-#&gt;    .fsmi_qs_51        4.787    0.178   26.855    0.000    4.787    3.480
-#&gt;    .fsmi_qs_52        4.295    0.186   23.096    0.000    4.295    2.985
-#&gt;    .fsmi_qs_53        4.934    0.201   24.598    0.000    4.934    3.076
-#&gt;    .fsmi_qs_54        4.361    0.207   21.025    0.000    4.361    2.699
-#&gt;    .K_SRQ_11          5.392    0.176   30.649    0.000    5.392    4.082
-#&gt;    .K_SRQ_18          5.408    0.181   29.878    0.000    5.408    3.790
-#&gt;    .K_SRQ_1           5.510    0.169   32.646    0.000    5.510    3.832
-#&gt;    .K_SRQ_7           5.493    0.160   34.295    0.000    5.493    4.546
-#&gt;    .K_SRQ_10          5.459    0.184   29.712    0.000    5.459    4.012
-#&gt;    .K_SRQ_4           4.415    0.236   18.727    0.000    4.415    2.423
-#&gt;    .K_SRQ_20          4.986    0.243   20.512    0.000    4.986    2.797
-#&gt;    .K_SRQ_13          6.172    0.145   42.701    0.000    6.172    5.307
-#&gt;    .K_SRQ_9           5.412    0.185   29.234    0.000    5.412    3.832
-#&gt;    .K_SRQ_15          5.443    0.193   28.264    0.000    5.443    3.849
-#&gt;    .K_SRQ_12          3.254    0.194   16.813    0.000    3.254    2.082
-#&gt;    .K_SRQ_21          3.068    0.203   15.112    0.000    3.068    1.994
-#&gt;    .K_SRQ_23          3.438    0.199   17.247    0.000    3.438    2.358
-#&gt;     fsmi_mate         0.000                               0.000    0.000
-#&gt;     fsmi_stat         0.000                               0.000    0.000
-#&gt;     ML1               0.000                               0.000    0.000
-#&gt;     ML2               0.000                               0.000    0.000
-#&gt;     ML3               0.000                               0.000    0.000
-#&gt; 
-#&gt; Variances:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        0.984    0.271    3.628    0.000    0.984    0.692
-#&gt;    .fsmi_qs_56        0.909    0.428    2.122    0.034    0.909    0.530
-#&gt;    .fsmi_qs_57        2.376    0.614    3.869    0.000    2.376    0.864
-#&gt;    .fsmi_qs_58        2.585    0.819    3.156    0.002    2.585    0.930
-#&gt;    .fsmi_qs_59        4.239    0.520    8.153    0.000    4.239    0.968
-#&gt;    .fsmi_qs_60        0.151    0.139    1.090    0.276    0.151    0.156
-#&gt;    .fsmi_qs_49        1.007    0.219    4.600    0.000    1.007    0.485
-#&gt;    .fsmi_qs_50        1.378    0.279    4.945    0.000    1.378    0.637
-#&gt;    .fsmi_qs_51        1.207    0.255    4.740    0.000    1.207    0.638
-#&gt;    .fsmi_qs_52        1.367    0.329    4.152    0.000    1.367    0.660
-#&gt;    .fsmi_qs_53        1.689    0.385    4.384    0.000    1.689    0.656
-#&gt;    .fsmi_qs_54        2.429    0.348    6.982    0.000    2.429    0.930
-#&gt;    .K_SRQ_11          0.393    0.123    3.202    0.001    0.393    0.225
-#&gt;    .K_SRQ_18          0.795    0.290    2.740    0.006    0.795    0.390
-#&gt;    .K_SRQ_1           0.778    0.207    3.762    0.000    0.778    0.377
-#&gt;    .K_SRQ_7           0.401    0.129    3.114    0.002    0.401    0.275
-#&gt;    .K_SRQ_10          1.163    0.350    3.322    0.001    1.163    0.628
-#&gt;    .K_SRQ_4           2.688    0.385    6.978    0.000    2.688    0.810
-#&gt;    .K_SRQ_20          2.237    0.480    4.664    0.000    2.237    0.704
-#&gt;    .K_SRQ_13          0.683    0.179    3.809    0.000    0.683    0.505
-#&gt;    .K_SRQ_9           1.266    0.357    3.550    0.000    1.266    0.635
-#&gt;    .K_SRQ_15          1.260    0.395    3.192    0.001    1.260    0.630
-#&gt;    .K_SRQ_12          0.979    0.354    2.763    0.006    0.979    0.400
-#&gt;    .K_SRQ_21          0.730    0.427    1.708    0.088    0.730    0.309
-#&gt;    .K_SRQ_23          1.317    0.329    3.996    0.000    1.317    0.619
-#&gt;     fsmi_mate         0.438    0.154    2.851    0.004    1.000    1.000
-#&gt;     fsmi_stat         1.067    0.362    2.950    0.003    1.000    1.000
-#&gt;     ML1               1.352    0.373    3.622    0.000    1.000    1.000
-#&gt;     ML2               0.632    0.315    2.003    0.045    1.000    1.000
-#&gt;     ML3               1.466    0.315    4.658    0.000    1.000    1.000
-#&gt; $uncon
-#&gt;       rmsea         mfi    gammaHat adjGammaHat 
-#&gt;  0.07378187  0.48612050  0.89611917  0.87259898 
-#&gt; 
-#&gt; $grpstrict
-#&gt;       rmsea         mfi    gammaHat adjGammaHat 
-#&gt;   0.0734738   0.4760274   0.8934195   0.8740413 
-#&gt; 
-#&gt; $grpstrictcovm2
-#&gt;       rmsea         mfi    gammaHat adjGammaHat 
-#&gt;  0.07541729  0.45680901  0.88816413  0.86807021 
-#&gt; 
-#&gt; $grpstrictcovm1
-#&gt;       rmsea         mfi    gammaHat adjGammaHat 
-#&gt;  0.07332111  0.47685537  0.89364252  0.87453292
-#&gt;         rmsea           mfi      gammaHat   adjGammaHat 
-#&gt; -0.0003080717 -0.0100930859 -0.0026996269  0.0014422962
-#&gt;        rmsea          mfi     gammaHat  adjGammaHat 
-#&gt;  0.001943489 -0.019218410 -0.005255410 -0.005971066
-#&gt;         rmsea           mfi      gammaHat   adjGammaHat 
-#&gt; -0.0001526822  0.0008279537  0.0002229823  0.0004916465
-#&gt; lavaan (0.6-1.1193) converged normally after 112 iterations
-#&gt; 
-#&gt;   Number of observations per group         
-#&gt;   0                                                164
-#&gt;   1                                                 61
-#&gt;   Number of missing patterns per group     
-#&gt;   0                                                 13
-#&gt;   1                                                  7
-#&gt; 
-#&gt;   Estimator                                         ML      Robust
-#&gt;   Model Fit Test Statistic                     664.623     658.338
-#&gt;   Degrees of freedom                               415         415
-#&gt;   P-value (Chi-square)                           0.000       0.000
-#&gt;   Scaling correction factor                                  1.010
-#&gt;     for the Yuan-Bentler correction
-#&gt; 
-#&gt; Chi-square for each group:
-#&gt; 
-#&gt;   0                                            304.635     301.755
-#&gt;   1                                            359.987     356.584
-#&gt; 
-#&gt; Parameter Estimates:
-#&gt; 
-#&gt;   Information                                 Observed
-#&gt;   Observed information based on                Hessian
-#&gt;   Standard Errors                   Robust.huber.white
-#&gt; 
-#&gt; 
-#&gt; Group 1 [0]:
-#&gt; 
-#&gt; Latent Variables:
-#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
-#&gt;   fsmi_mate =~                                                     
-#&gt;     fsm__55                        1.000                           
-#&gt;     fsm__56 (.p2.)                 1.380    0.139    9.896    0.000
-#&gt;     fsm__57 (.p3.)                -0.940    0.112   -8.358    0.000
-#&gt;     fsm__58 (.p4.)                -0.670    0.119   -5.631    0.000
-#&gt;     fsm__59 (.p5.)                -0.568    0.109   -5.218    0.000
-#&gt;     fsm__60 (.p6.)                 1.383    0.141    9.827    0.000
-#&gt;   fsmi_stat =~                                                     
-#&gt;     fsm__49                        1.000                           
-#&gt;     fsm__50 (.p8.)                 0.822    0.128    6.444    0.000
-#&gt;     fsm__51 (.p9.)                 0.792    0.138    5.756    0.000
-#&gt;     fsm__52 (.10.)                 0.848    0.165    5.152    0.000
-#&gt;     fsm__53 (.11.)                 0.889    0.182    4.884    0.000
-#&gt;     fsm__54 (.12.)                -0.435    0.179   -2.437    0.015
-#&gt;   k_srq_sexual_relationships =~                                    
-#&gt;     K_SRQ_9                        1.000                           
-#&gt;     K_SRQ_1 (.14.)                 1.030    0.166    6.224    0.000
-#&gt;     K_SRQ_2 (.15.)                 1.170    0.163    7.166    0.000
-#&gt;   k_srq_admiration =~                                              
-#&gt;     K_SRQ_1                        1.000                           
-#&gt;     K_SRQ_7 (.17.)                 0.908    0.094    9.694    0.000
-#&gt;     K_SRQ_1 (.18.)                 1.038    0.103   10.120    0.000
-#&gt;     K_SRQ_1 (.19.)                 0.994    0.089   11.199    0.000
-#&gt;   k_srq_sociability =~                                             
-#&gt;     K_SRQ_4                        1.000                           
-#&gt;     K_SRQ_1 (.21.)                 0.927    0.165    5.605    0.000
-#&gt;     K_SRQ_1 (.22.)                 1.181    0.224    5.266    0.000
-#&gt;    Std.lv  Std.all
-#&gt;                   
-#&gt;     1.156    0.672
-#&gt;     1.596    0.894
-#&gt;    -1.087   -0.641
-#&gt;    -0.775   -0.484
-#&gt;    -0.656   -0.433
-#&gt;     1.600    0.866
-#&gt;                   
-#&gt;     0.892    0.609
-#&gt;     0.733    0.548
-#&gt;     0.706    0.573
-#&gt;     0.756    0.536
-#&gt;     0.793    0.620
-#&gt;    -0.388   -0.304
-#&gt;                   
-#&gt;     0.939    0.626
-#&gt;     0.968    0.801
-#&gt;     1.099    0.828
-#&gt;                   
-#&gt;     0.945    0.811
-#&gt;     0.858    0.758
-#&gt;     0.981    0.786
-#&gt;     0.939    0.737
-#&gt;                   
-#&gt;     0.831    0.492
-#&gt;     0.770    0.658
-#&gt;     0.981    0.679
-#&gt; 
-#&gt; Covariances:
-#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
-#&gt;   fsmi_mate ~~                                                     
-#&gt;     fsmi_stat                      0.254    0.113    2.252    0.024
-#&gt;     k_srq_sxl_rltn                 0.431    0.143    3.012    0.003
-#&gt;     k_srq_admiratn                 0.382    0.103    3.705    0.000
-#&gt;     k_srq_sociblty                 0.297    0.106    2.806    0.005
-#&gt;   fsmi_stat ~~                                                     
-#&gt;     k_srq_sxl_rltn                 0.389    0.138    2.810    0.005
-#&gt;     k_srq_admiratn                 0.579    0.151    3.839    0.000
-#&gt;     k_srq_sociblty                 0.411    0.131    3.144    0.002
-#&gt;   k_srq_sexual_relationships ~~                                    
-#&gt;     k_srq_admiratn                 0.583    0.147    3.970    0.000
-#&gt;     k_srq_sociblty                 0.627    0.184    3.418    0.001
-#&gt;   k_srq_admiration ~~                                              
-#&gt;     k_srq_sociblty                 0.626    0.139    4.497    0.000
-#&gt;    Std.lv  Std.all
-#&gt;                   
-#&gt;     0.246    0.246
-#&gt;     0.397    0.397
-#&gt;     0.350    0.350
-#&gt;     0.309    0.309
-#&gt;                   
-#&gt;     0.465    0.465
-#&gt;     0.688    0.688
-#&gt;     0.555    0.555
-#&gt;                   
-#&gt;     0.657    0.657
-#&gt;     0.804    0.804
-#&gt;                   
-#&gt;     0.797    0.797
-#&gt; 
-#&gt; Intercepts:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        4.133    0.130   31.782    0.000    4.133    2.403
-#&gt;    .fsmi_qs_56        4.572    0.141   32.455    0.000    4.572    2.561
-#&gt;    .fsmi_qs_57        3.030    0.130   23.355    0.000    3.030    1.787
-#&gt;    .fsmi_qs_58        4.207    0.125   33.711    0.000    4.207    2.629
-#&gt;    .fsmi_qs_59        2.984    0.117   25.414    0.000    2.984    1.970
-#&gt;    .fsmi_qs_60        4.372    0.146   29.919    0.000    4.372    2.366
-#&gt;    .fsmi_qs_49        4.592    0.113   40.550    0.000    4.592    3.137
-#&gt;    .fsmi_qs_50        5.009    0.106   47.049    0.000    5.009    3.750
-#&gt;    .fsmi_qs_51        4.675    0.096   48.602    0.000    4.675    3.796
-#&gt;    .fsmi_qs_52        4.222    0.110   38.506    0.000    4.222    2.993
-#&gt;    .fsmi_qs_53        5.085    0.101   50.494    0.000    5.085    3.975
-#&gt;    .fsmi_qs_54        4.116    0.100   41.238    0.000    4.116    3.221
-#&gt;    .K_SRQ_9           5.155    0.124   41.575    0.000    5.155    3.435
-#&gt;    .K_SRQ_13          5.974    0.095   63.103    0.000    5.974    4.949
-#&gt;    .K_SRQ_20          5.496    0.104   53.066    0.000    5.496    4.140
-#&gt;    .K_SRQ_1           5.632    0.094   60.066    0.000    5.632    4.832
-#&gt;    .K_SRQ_7           5.406    0.088   61.756    0.000    5.406    4.776
-#&gt;    .K_SRQ_11          5.288    0.096   55.308    0.000    5.288    4.236
-#&gt;    .K_SRQ_18          5.267    0.100   52.426    0.000    5.267    4.132
-#&gt;    .K_SRQ_4           5.003    0.135   37.115    0.000    5.003    2.964
-#&gt;    .K_SRQ_10          5.699    0.089   63.797    0.000    5.699    4.872
-#&gt;    .K_SRQ_15          5.564    0.114   48.632    0.000    5.564    3.851
-#&gt;     fsmi_mate         0.000                               0.000    0.000
-#&gt;     fsmi_stat         0.000                               0.000    0.000
-#&gt;     k_srq_sxl_rltn    0.000                               0.000    0.000
-#&gt;     k_srq_admiratn    0.000                               0.000    0.000
-#&gt;     k_srq_sociblty    0.000                               0.000    0.000
-#&gt; 
-#&gt; Variances:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        1.622    0.208    7.803    0.000    1.622    0.548
-#&gt;    .fsmi_qs_56        0.640    0.130    4.928    0.000    0.640    0.201
-#&gt;    .fsmi_qs_57        1.696    0.267    6.360    0.000    1.696    0.590
-#&gt;    .fsmi_qs_58        1.961    0.242    8.088    0.000    1.961    0.766
-#&gt;    .fsmi_qs_59        1.864    0.269    6.918    0.000    1.864    0.812
-#&gt;    .fsmi_qs_60        0.854    0.191    4.476    0.000    0.854    0.250
-#&gt;    .fsmi_qs_49        1.348    0.257    5.246    0.000    1.348    0.629
-#&gt;    .fsmi_qs_50        1.248    0.191    6.521    0.000    1.248    0.699
-#&gt;    .fsmi_qs_51        1.019    0.149    6.815    0.000    1.019    0.672
-#&gt;    .fsmi_qs_52        1.418    0.179    7.941    0.000    1.418    0.713
-#&gt;    .fsmi_qs_53        1.008    0.171    5.910    0.000    1.008    0.616
-#&gt;    .fsmi_qs_54        1.483    0.199    7.469    0.000    1.483    0.908
-#&gt;    .K_SRQ_9           1.370    0.305    4.495    0.000    1.370    0.608
-#&gt;    .K_SRQ_13          0.521    0.082    6.335    0.000    0.521    0.358
-#&gt;    .K_SRQ_20          0.555    0.127    4.355    0.000    0.555    0.315
-#&gt;    .K_SRQ_1           0.465    0.074    6.249    0.000    0.465    0.343
-#&gt;    .K_SRQ_7           0.546    0.097    5.651    0.000    0.546    0.426
-#&gt;    .K_SRQ_11          0.596    0.113    5.268    0.000    0.596    0.382
-#&gt;    .K_SRQ_18          0.743    0.151    4.918    0.000    0.743    0.457
-#&gt;    .K_SRQ_4           2.160    0.324    6.675    0.000    2.160    0.758
-#&gt;    .K_SRQ_10          0.775    0.127    6.118    0.000    0.775    0.567
-#&gt;    .K_SRQ_15          1.125    0.220    5.116    0.000    1.125    0.539
-#&gt;     fsmi_mate         1.337    0.246    5.427    0.000    1.000    1.000
-#&gt;     fsmi_stat         0.795    0.218    3.654    0.000    1.000    1.000
-#&gt;     k_srq_sxl_rltn    0.882    0.234    3.773    0.000    1.000    1.000
-#&gt;     k_srq_admiratn    0.893    0.174    5.142    0.000    1.000    1.000
-#&gt;     k_srq_sociblty    0.690    0.250    2.756    0.006    1.000    1.000
-#&gt; 
-#&gt; 
-#&gt; Group 2 [1]:
-#&gt; 
-#&gt; Latent Variables:
-#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
-#&gt;   fsmi_mate =~                                                     
-#&gt;     fsm__55                        1.000                           
-#&gt;     fsm__56 (.p2.)                 1.380    0.139    9.896    0.000
-#&gt;     fsm__57 (.p3.)                -0.940    0.112   -8.358    0.000
-#&gt;     fsm__58 (.p4.)                -0.670    0.119   -5.631    0.000
-#&gt;     fsm__59 (.p5.)                -0.568    0.109   -5.218    0.000
-#&gt;     fsm__60 (.p6.)                 1.383    0.141    9.827    0.000
-#&gt;   fsmi_stat =~                                                     
-#&gt;     fsm__49                        1.000                           
-#&gt;     fsm__50 (.p8.)                 0.822    0.128    6.444    0.000
-#&gt;     fsm__51 (.p9.)                 0.792    0.138    5.756    0.000
-#&gt;     fsm__52 (.10.)                 0.848    0.165    5.152    0.000
-#&gt;     fsm__53 (.11.)                 0.889    0.182    4.884    0.000
-#&gt;     fsm__54 (.12.)                -0.435    0.179   -2.437    0.015
-#&gt;   k_srq_sexual_relationships =~                                    
-#&gt;     K_SRQ_9                        1.000                           
-#&gt;     K_SRQ_1 (.14.)                 1.030    0.166    6.224    0.000
-#&gt;     K_SRQ_2 (.15.)                 1.170    0.163    7.166    0.000
-#&gt;   k_srq_admiration =~                                              
-#&gt;     K_SRQ_1                        1.000                           
-#&gt;     K_SRQ_7 (.17.)                 0.908    0.094    9.694    0.000
-#&gt;     K_SRQ_1 (.18.)                 1.038    0.103   10.120    0.000
-#&gt;     K_SRQ_1 (.19.)                 0.994    0.089   11.199    0.000
-#&gt;   k_srq_sociability =~                                             
-#&gt;     K_SRQ_4                        1.000                           
-#&gt;     K_SRQ_1 (.21.)                 0.927    0.165    5.605    0.000
-#&gt;     K_SRQ_1 (.22.)                 1.181    0.224    5.266    0.000
-#&gt;    Std.lv  Std.all
-#&gt;                   
-#&gt;     0.655    0.550
-#&gt;     0.903    0.686
-#&gt;    -0.615   -0.371
-#&gt;    -0.439   -0.263
-#&gt;    -0.372   -0.177
-#&gt;     0.906    0.920
-#&gt;                   
-#&gt;     1.041    0.721
-#&gt;     0.856    0.579
-#&gt;     0.824    0.596
-#&gt;     0.883    0.618
-#&gt;     0.926    0.577
-#&gt;    -0.453   -0.282
-#&gt;                   
-#&gt;     0.765    0.555
-#&gt;     0.789    0.703
-#&gt;     0.896    0.493
-#&gt;                   
-#&gt;     1.121    0.784
-#&gt;     1.017    0.844
-#&gt;     1.164    0.884
-#&gt;     1.114    0.788
-#&gt;                   
-#&gt;     0.897    0.474
-#&gt;     0.831    0.628
-#&gt;     1.059    0.692
-#&gt; 
-#&gt; Covariances:
-#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
-#&gt;   fsmi_mate ~~                                                     
-#&gt;     fsmi_stat                     -0.060    0.124   -0.484    0.629
-#&gt;     k_srq_sxl_rltn                -0.193    0.176   -1.093    0.274
-#&gt;     k_srq_admiratn                -0.195    0.171   -1.141    0.254
-#&gt;     k_srq_sociblty                -0.183    0.173   -1.062    0.288
-#&gt;   fsmi_stat ~~                                                     
-#&gt;     k_srq_sxl_rltn                 0.160    0.159    1.007    0.314
-#&gt;     k_srq_admiratn                 0.691    0.229    3.017    0.003
-#&gt;     k_srq_sociblty                 0.435    0.174    2.502    0.012
-#&gt;   k_srq_sexual_relationships ~~                                    
-#&gt;     k_srq_admiratn                 0.681    0.306    2.227    0.026
-#&gt;     k_srq_sociblty                 0.727    0.316    2.300    0.021
-#&gt;   k_srq_admiration ~~                                              
-#&gt;     k_srq_sociblty                 0.870    0.312    2.788    0.005
-#&gt;    Std.lv  Std.all
-#&gt;                   
-#&gt;    -0.088   -0.088
-#&gt;    -0.385   -0.385
-#&gt;    -0.266   -0.266
-#&gt;    -0.312   -0.312
-#&gt;                   
-#&gt;     0.201    0.201
-#&gt;     0.592    0.592
-#&gt;     0.466    0.466
-#&gt;                   
-#&gt;     0.794    0.794
-#&gt;     1.059    1.059
-#&gt;                   
-#&gt;     0.866    0.866
-#&gt; 
-#&gt; Intercepts:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        1.967    0.169   11.659    0.000    1.967    1.653
-#&gt;    .fsmi_qs_56        1.790    0.156   11.480    0.000    1.790    1.360
-#&gt;    .fsmi_qs_57        5.377    0.229   23.529    0.000    5.377    3.242
-#&gt;    .fsmi_qs_58        5.848    0.218   26.857    0.000    5.848    3.508
-#&gt;    .fsmi_qs_59        4.525    0.275   16.459    0.000    4.525    2.161
-#&gt;    .fsmi_qs_60        1.607    0.123   13.031    0.000    1.607    1.632
-#&gt;    .fsmi_qs_49        4.754    0.189   25.117    0.000    4.754    3.293
-#&gt;    .fsmi_qs_50        5.048    0.183   27.635    0.000    5.048    3.416
-#&gt;    .fsmi_qs_51        4.787    0.178   26.855    0.000    4.787    3.463
-#&gt;    .fsmi_qs_52        4.295    0.186   23.096    0.000    4.295    3.006
-#&gt;    .fsmi_qs_53        4.934    0.201   24.598    0.000    4.934    3.073
-#&gt;    .fsmi_qs_54        4.361    0.207   21.025    0.000    4.361    2.713
-#&gt;    .K_SRQ_9           5.426    0.180   30.114    0.000    5.426    3.936
-#&gt;    .K_SRQ_13          6.173    0.144   42.771    0.000    6.173    5.500
-#&gt;    .K_SRQ_20          4.987    0.243   20.506    0.000    4.987    2.745
-#&gt;    .K_SRQ_1           5.510    0.169   32.645    0.000    5.510    3.854
-#&gt;    .K_SRQ_7           5.493    0.160   34.310    0.000    5.493    4.559
-#&gt;    .K_SRQ_11          5.392    0.176   30.649    0.000    5.392    4.095
-#&gt;    .K_SRQ_18          5.409    0.181   29.892    0.000    5.409    3.828
-#&gt;    .K_SRQ_4           4.411    0.236   18.726    0.000    4.411    2.333
-#&gt;    .K_SRQ_10          5.460    0.183   29.789    0.000    5.460    4.124
-#&gt;    .K_SRQ_15          5.444    0.192   28.353    0.000    5.444    3.556
-#&gt;     fsmi_mate         0.000                               0.000    0.000
-#&gt;     fsmi_stat         0.000                               0.000    0.000
-#&gt;     k_srq_sxl_rltn    0.000                               0.000    0.000
-#&gt;     k_srq_admiratn    0.000                               0.000    0.000
-#&gt;     k_srq_sociblty    0.000                               0.000    0.000
-#&gt; 
-#&gt; Variances:
-#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .fsmi_qs_55        0.988    0.271    3.648    0.000    0.988    0.697
-#&gt;    .fsmi_qs_56        0.916    0.428    2.139    0.032    0.916    0.529
-#&gt;    .fsmi_qs_57        2.372    0.611    3.884    0.000    2.372    0.862
-#&gt;    .fsmi_qs_58        2.587    0.818    3.162    0.002    2.587    0.931
-#&gt;    .fsmi_qs_59        4.245    0.518    8.195    0.000    4.245    0.968
-#&gt;    .fsmi_qs_60        0.148    0.139    1.065    0.287    0.148    0.153
-#&gt;    .fsmi_qs_49        1.001    0.217    4.603    0.000    1.001    0.480
-#&gt;    .fsmi_qs_50        1.452    0.293    4.949    0.000    1.452    0.665
-#&gt;    .fsmi_qs_51        1.231    0.268    4.599    0.000    1.231    0.644
-#&gt;    .fsmi_qs_52        1.263    0.311    4.059    0.000    1.263    0.619
-#&gt;    .fsmi_qs_53        1.722    0.366    4.709    0.000    1.722    0.668
-#&gt;    .fsmi_qs_54        2.378    0.347    6.850    0.000    2.378    0.921
-#&gt;    .K_SRQ_9           1.314    0.380    3.461    0.001    1.314    0.692
-#&gt;    .K_SRQ_13          0.638    0.180    3.535    0.000    0.638    0.506
-#&gt;    .K_SRQ_20          2.500    0.526    4.752    0.000    2.500    0.757
-#&gt;    .K_SRQ_1           0.787    0.203    3.878    0.000    0.787    0.385
-#&gt;    .K_SRQ_7           0.416    0.139    2.997    0.003    0.416    0.287
-#&gt;    .K_SRQ_11          0.379    0.125    3.033    0.002    0.379    0.219
-#&gt;    .K_SRQ_18          0.756    0.279    2.704    0.007    0.756    0.378
-#&gt;    .K_SRQ_4           2.769    0.436    6.355    0.000    2.769    0.775
-#&gt;    .K_SRQ_10          1.061    0.310    3.419    0.001    1.061    0.606
-#&gt;    .K_SRQ_15          1.222    0.427    2.860    0.004    1.222    0.522
-#&gt;     fsmi_mate         0.429    0.150    2.849    0.004    1.000    1.000
-#&gt;     fsmi_stat         1.084    0.361    3.001    0.003    1.000    1.000
-#&gt;     k_srq_sxl_rltn    0.586    0.320    1.830    0.067    1.000    1.000
-#&gt;     k_srq_admiratn    1.257    0.350    3.593    0.000    1.000    1.000
-#&gt;     k_srq_sociblty    0.804    0.367    2.189    0.029    1.000    1.000</code></pre>
+
+<table class="table">
+<caption>
+<span id="tab:unnamed-chunk-10">Table 1: </span>Correlations between FSMI and K-SRQ scales of interest.</caption>
+<thead><tr class="header">
+<th align="left">lhs</th>
+<th align="left">op</th>
+<th align="left">rhs</th>
+<th align="left">est_rep_1</th>
+<th align="left">est_rep_2</th>
+<th align="right">std.all_1</th>
+<th align="right">std.all_2</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">fsmi_mate</td>
+<td align="left">~~</td>
+<td align="left">fsmi_stat</td>
+<td align="left">0.26 [ 0.03, 0.48]</td>
+<td align="left">-0.06 [-0.31, 0.18]</td>
+<td align="right">0.25</td>
+<td align="right">-0.09</td>
+</tr>
+<tr class="even">
+<td align="left">fsmi_mate</td>
+<td align="left">~~</td>
+<td align="left">k_srq_admiration</td>
+<td align="left">0.39 [ 0.18, 0.59]</td>
+<td align="left">-0.20 [-0.54, 0.14]</td>
+<td align="right">0.35</td>
+<td align="right">-0.27</td>
+</tr>
+<tr class="odd">
+<td align="left">fsmi_mate</td>
+<td align="left">~~</td>
+<td align="left">k_srq_passivity</td>
+<td align="left">0.46 [ 0.16, 0.76]</td>
+<td align="left">0.06 [-0.24, 0.36]</td>
+<td align="right">0.33</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="even">
+<td align="left">fsmi_mate</td>
+<td align="left">~~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">0.44 [ 0.16, 0.73]</td>
+<td align="left">-0.19 [-0.54, 0.15]</td>
+<td align="right">0.40</td>
+<td align="right">-0.38</td>
+</tr>
+<tr class="odd">
+<td align="left">fsmi_mate</td>
+<td align="left">~~</td>
+<td align="left">k_srq_sociability</td>
+<td align="left">0.30 [ 0.09, 0.51]</td>
+<td align="left">-0.18 [-0.52, 0.15]</td>
+<td align="right">0.31</td>
+<td align="right">-0.31</td>
+</tr>
+<tr class="even">
+<td align="left">fsmi_stat</td>
+<td align="left">~~</td>
+<td align="left">k_srq_admiration</td>
+<td align="left">0.57 [ 0.28, 0.86]</td>
+<td align="left">0.68 [ 0.24, 1.13]</td>
+<td align="right">0.68</td>
+<td align="right">0.59</td>
+</tr>
+<tr class="odd">
+<td align="left">fsmi_stat</td>
+<td align="left">~~</td>
+<td align="left">k_srq_passivity</td>
+<td align="left">-0.06 [-0.30, 0.17]</td>
+<td align="left">-0.35 [-0.90, 0.20]</td>
+<td align="right">-0.06</td>
+<td align="right">-0.28</td>
+</tr>
+<tr class="even">
+<td align="left">fsmi_stat</td>
+<td align="left">~~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">0.39 [ 0.12, 0.66]</td>
+<td align="left">0.16 [-0.14, 0.47]</td>
+<td align="right">0.47</td>
+<td align="right">0.21</td>
+</tr>
+<tr class="odd">
+<td align="left">fsmi_stat</td>
+<td align="left">~~</td>
+<td align="left">k_srq_sociability</td>
+<td align="left">0.40 [ 0.15, 0.65]</td>
+<td align="left">0.42 [ 0.09, 0.76]</td>
+<td align="right">0.56</td>
+<td align="right">0.47</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_admiration</td>
+<td align="left">~~</td>
+<td align="left">k_srq_passivity</td>
+<td align="left">0.24 [ 0.03, 0.45]</td>
+<td align="left">-0.06 [-0.50, 0.39]</td>
+<td align="right">0.21</td>
+<td align="right">-0.04</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">0.58 [ 0.30, 0.87]</td>
+<td align="left">0.69 [ 0.09, 1.29]</td>
+<td align="right">0.66</td>
+<td align="right">0.80</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_admiration</td>
+<td align="left">~~</td>
+<td align="left">k_srq_sociability</td>
+<td align="left">0.62 [ 0.35, 0.90]</td>
+<td align="left">0.86 [ 0.25, 1.48]</td>
+<td align="right">0.80</td>
+<td align="right">0.87</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_passivity</td>
+<td align="left">~~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">0.09 [-0.11, 0.30]</td>
+<td align="left">0.07 [-0.30, 0.43]</td>
+<td align="right">0.08</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~~</td>
+<td align="left">k_srq_sociability</td>
+<td align="left">0.26 [ 0.05, 0.47]</td>
+<td align="left">0.15 [-0.27, 0.58]</td>
+<td align="right">0.27</td>
+<td align="right">0.14</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~~</td>
+<td align="left">k_srq_sociability</td>
+<td align="left">0.62 [ 0.27, 0.98]</td>
+<td align="left">0.72 [ 0.11, 1.34]</td>
+<td align="right">0.80</td>
+<td align="right">1.06</td>
+</tr>
+</tbody>
+</table>
+<div class="figure">
+<span id="fig:unnamed-chunk-11"></span>
+<img src="fsmi-cfa_files/figure-html/unnamed-chunk-11-1.png" alt="Correlations between FSMI and K-SRQ scales of interest." width="456"><p class="caption">
+Figure 6: Correlations between FSMI and K-SRQ scales of interest.
+</p>
+</div>
 <div id="k-srq-discussion" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-discussion" class="anchor"></a>K-SRQ Discussion</h3>
-<p>A CFA for four of the K-SRQ factors (admiration, passivity, sexual relationships, and sociability) fit fairly well (RMSEA = 0.064, <span class="math inline">\(\hat\gamma\)</span> = 0.964). All factors except passivity were strongly inter-correlated, raising doubts about the discriminant validity of the separate factors. A parallel scree plot analysis suggests a 3 factor structure, with one item from the original sociability factor loading on a factor with the admiration items (weakly), and the other two loading with the sexual relationships items. A CFA using this factor structure (with no cross-loadings) demonstrates similar fit to the <em>a priori</em> model (RMSEA = 0.066, <span class="math inline">\(\hat\gamma\)</span> = 0.96), and with similarly substantial correlations between the former admiration and sexual relationships factors. A 4 factor EFA retains this general structure, while letting the sociability item, which previously loaded with admiration items, to dominate its own factor. The new 3-factor structure improves somewhat on the <em>a priori</em> model, but the sexual relationships factor has not become any more interpretable as representing a mate-seeking motivation, per se. Moreover, the sexual relationship factor, as well as its cousin in the 3-factor model both show nominally higher correlations with FSMI status than FSMI mate-seeking. As would be expected, there is a notable difference in the sign of the correlation in people who report being in a long-term relationship than people how report dating, or being single and not dating. That is, people who are in a long term relationship show a negative (non-significant) correlation between a factor characterized by looking for new partners, and a factor characterized by enjoyment of flirting. For people who are not in long-term relationships, there is a positive, significant, correlation between FSMI mate-seeking and the sexual relationships factor from the 3 factor structure (r = 0.406, Z = 3.746). The relation between FSMI status and this same factor is, however, nominally higher (r = 0.497, Z = 3.060). This same pattern holds if one considers the original K-SRQ sexual relationship factor (FSMI mate-seeking, r = 0.400, Z = 2.928; FSMI status, r = 0.462, Z = 2.787). The K-SRQ sociability factor does not seem to perform any differently for people who are not in a long term relationship (FSMI mate-seeking, r = 0.309, Z = 2.806; FSMI status, r = 0.555, Z = 3.144) or for people who are (FSMI mate-seeking, r = -0.312, Z = -1.062; FSMI status, r = 0.466, Z = 2.502).</p>
-<p>The K-SRQ admiration-derived factor in the 3 factor model (M1) showed reasonably high correlation with FSMI status (r = 0.680), although this was not dissimiler in magnitude from the correlation it shows with the K-SRQ sexual relationship factor (r = 0.662). This, again, does not lead to straigtforward interpretations about what is being measured by the K-SRQ subscales.</p>
-<p>Given how differently the K-SRQ sexual relationships and it’s 3-factor model cousin covary with other relevant contructs and across groups, it is clear that it is measuring something distinctly from what the FSMI mate seeking factor is measuring. The distinction between the seeking new romantic or sexual partners, and enjoyment of engaging in sexual behavior is possibly very important when examining how these motivational factors relat to risk-taking. Past work has shown that sexual activity (age at first sex, specifically), if it is in the context of a romantic relationshuip, is protective with respect to dellinquency <span class="citation">(Harden &amp; Mendle, 2011; Harden, Mendle, Hill, Turkheimer, &amp; Emery, 2007)</span>.</p>
+<p>A CFA for four of the K-SRQ factors (admiration, passivity, sexual relationships, and sociability) fit fairly well (RMSEA = 0.064, <span class="math inline">\(\hat\gamma\)</span> = 0.964).
+All factors except passivity were strongly inter-correlated, raising doubts about the discriminant validity of the separate factors.
+A parallel scree plot analysis suggests a 3 factor structure, with one item from the original sociability factor loading on a factor with the admiration items (weakly), and the other two loading with the sexual relationships items.
+A CFA using this factor structure (with no cross-loadings) demonstrates similar fit to the <em>a priori</em> model (RMSEA = 0.064, <span class="math inline">\(\hat\gamma\)</span> = 0.964), and with similarly substantial correlations between the former admiration and sexual relationships factors.
+A 4 factor EFA retains this general structure, while letting the sociability item, which previously loaded with admiration items, dominate its own factor.
+The new 3-factor structure improves somewhat on the <em>a priori</em> model, but the sexual relationships factor has not become any more interpretable as representing a mate-seeking motivation, per se.
+Moreover, the sexual relationship factor, as well as its cousin in the 3-factor model both show nominally higher correlations with FSMI status than FSMI mate-seeking.
+I use the <em>a priori</em> scale throughout.</p>
+<p>The items on the FSMI mate-seeking scale ask almost exlusively aboout seaching for a <em>new</em> romantic or sexula partner, while the K-SRQ sexual relationship scale asks about enjoyment of socio-sexual interaction (e.g., kissing, flirting).
+One would expect that the FSMI mate-seeking and K-SRQ sexual relationship correlation would be different between those who are in long term relationships and those who are not.
+There is, in fact, a notable difference in the sign of this correlation between people who report being in a long-term relationship than people how report dating, or being single and not dating.
+In a model where factor loadings have been constrained across group <span class="citation">(with minimal difference in fit statistics which is necessary for comparison of factor covariances; <span class="math inline">\(\delta\)</span>RMSEA = -0.00003, <span class="math inline">\(\delta\)</span>MFI = -0.012, <span class="math inline">\(\delta\hat{\gamma}\)</span> = -0.003; <span class="citeproc-not-found" data-reference-id="gregorich2006"><strong>???</strong></span>)</span>, people who are in a long term relationship show a negative correlation between FSMI mate-seeking K-SRQ sexual relationships (Table <a href="#fig:ksqrmatestatcor"><strong>??</strong></a>.
+For people who are not in long-term relationships, there is a positive, significant, correlation between FSMI mate-seeking and the K-SRQ sexual relationships factor.
+The relation between FSMI status and this same factor is, however, nominally higher regardless of long-term relationship status.</p>
+<p>The K-SRQ admiration-derived factor showed reasonably high correlation with FSMI status, although this was not dissimiler in magnitude from the correlation it shows with the K-SRQ sexual relationship factor.</p>
+<p>Generally, the three K-SRQ subscales of interest (but not the passivity subscale) all correlate rather highly among themselves. All four K-SRQ subscales (inlcuding passivity) tend to medium to small correlations with FSMI mate-seeking among people not in long-term relationships, and small or negative correlations among those not in long-term relationships. Across both groups, FSMI status shows medium to large correlations to the K-SRQ subscales except for passivity.</p>
+<p>Given how differently the K-SRQ sexual relationships factor covaries with other relevant contructs and across groups, it is clear that it is measuring something distinctly from what the FSMI mate seeking factor is measuring.
+The distinction between the seeking new romantic or sexual partners, and enjoyment of engaging in socio-sexual behavior may be important when examining how these motivational factors relate to risk-taking.
+Past work has shown that sexual activity (age at first sex, specifically), if it is in the context of a romantic relationshuip, is protective with respect to dellinquency <span class="citation">(Harden &amp; Mendle, 2011; Harden, Mendle, Hill, Turkheimer, &amp; Emery, 2007)</span>.</p>
 </div>
 </div>
+</div>
+<div id="predicting-sexual-behavior" class="section level1">
+<h1 class="hasAnchor">
+<a href="#predicting-sexual-behavior" class="anchor"></a>Predicting sexual behavior</h1>
+<p>The number of partners and frequency of sex is expected to be different between those who are in or not in long-term relationships.</p>
+<p><img src="fsmi-cfa_files/figure-html/sesfsmiplot-1.png" width="768"></p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">lhs</th>
+<th align="left">op</th>
+<th align="left">rhs</th>
+<th align="right">est</th>
+<th align="right">se</th>
+<th align="right">z</th>
+<th align="right">pvalue</th>
+<th align="right">ci.lower</th>
+<th align="right">ci.upper</th>
+<th align="right">std.lv</th>
+<th align="right">std.all</th>
+<th align="right">std.nox</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ordered_num_partner</td>
+<td align="left">~</td>
+<td align="left">fsmi_mate</td>
+<td align="right">0.24</td>
+<td align="right">0.07</td>
+<td align="right">3.30</td>
+<td align="right">0.00</td>
+<td align="right">0.10</td>
+<td align="right">0.38</td>
+<td align="right">0.29</td>
+<td align="right">0.28</td>
+<td align="right">0.28</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_num_partner</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">-0.46</td>
+<td align="right">0.18</td>
+<td align="right">-2.54</td>
+<td align="right">0.01</td>
+<td align="right">-0.82</td>
+<td align="right">-0.11</td>
+<td align="right">-0.46</td>
+<td align="right">-0.21</td>
+<td align="right">-0.45</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead><tr class="header">
+<th align="left">lhs</th>
+<th align="left">op</th>
+<th align="left">rhs</th>
+<th align="right">est</th>
+<th align="right">se</th>
+<th align="right">z</th>
+<th align="right">pvalue</th>
+<th align="right">ci.lower</th>
+<th align="right">ci.upper</th>
+<th align="right">std.lv</th>
+<th align="right">std.all</th>
+<th align="right">std.nox</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ordered_num_partner</td>
+<td align="left">~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="right">0.31</td>
+<td align="right">0.09</td>
+<td align="right">3.61</td>
+<td align="right">0.00</td>
+<td align="right">0.14</td>
+<td align="right">0.49</td>
+<td align="right">0.35</td>
+<td align="right">0.34</td>
+<td align="right">0.34</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_num_partner</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">-0.40</td>
+<td align="right">0.19</td>
+<td align="right">-2.12</td>
+<td align="right">0.03</td>
+<td align="right">-0.77</td>
+<td align="right">-0.03</td>
+<td align="right">-0.40</td>
+<td align="right">-0.18</td>
+<td align="right">-0.39</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead><tr class="header">
+<th align="left">lhs</th>
+<th align="left">op</th>
+<th align="left">rhs</th>
+<th align="right">block</th>
+<th align="right">group</th>
+<th align="right">est</th>
+<th align="right">se</th>
+<th align="right">z</th>
+<th align="right">pvalue</th>
+<th align="right">ci.lower</th>
+<th align="right">ci.upper</th>
+<th align="right">std.lv</th>
+<th align="right">std.all</th>
+<th align="right">std.nox</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">fsmi_mate</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">-0.05</td>
+<td align="right">0.07</td>
+<td align="right">-0.72</td>
+<td align="right">0.47</td>
+<td align="right">-0.18</td>
+<td align="right">0.08</td>
+<td align="right">-0.06</td>
+<td align="right">-0.06</td>
+<td align="right">-0.06</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">-0.42</td>
+<td align="right">0.19</td>
+<td align="right">-2.15</td>
+<td align="right">0.03</td>
+<td align="right">-0.80</td>
+<td align="right">-0.04</td>
+<td align="right">-0.42</td>
+<td align="right">-0.19</td>
+<td align="right">-0.41</td>
+</tr>
+<tr class="odd">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">fsmi_mate</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">-0.09</td>
+<td align="right">0.13</td>
+<td align="right">-0.69</td>
+<td align="right">0.49</td>
+<td align="right">-0.35</td>
+<td align="right">0.17</td>
+<td align="right">-0.10</td>
+<td align="right">-0.10</td>
+<td align="right">-0.10</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0.06</td>
+<td align="right">0.35</td>
+<td align="right">0.16</td>
+<td align="right">0.87</td>
+<td align="right">-0.62</td>
+<td align="right">0.73</td>
+<td align="right">0.06</td>
+<td align="right">0.03</td>
+<td align="right">0.06</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead><tr class="header">
+<th align="left">lhs</th>
+<th align="left">op</th>
+<th align="left">rhs</th>
+<th align="right">block</th>
+<th align="right">group</th>
+<th align="right">est</th>
+<th align="right">se</th>
+<th align="right">z</th>
+<th align="right">pvalue</th>
+<th align="right">ci.lower</th>
+<th align="right">ci.upper</th>
+<th align="right">std.lv</th>
+<th align="right">std.all</th>
+<th align="right">std.nox</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0.24</td>
+<td align="right">0.08</td>
+<td align="right">2.90</td>
+<td align="right">0.00</td>
+<td align="right">0.08</td>
+<td align="right">0.40</td>
+<td align="right">0.27</td>
+<td align="right">0.26</td>
+<td align="right">0.26</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">-0.26</td>
+<td align="right">0.20</td>
+<td align="right">-1.29</td>
+<td align="right">0.20</td>
+<td align="right">-0.66</td>
+<td align="right">0.13</td>
+<td align="right">-0.26</td>
+<td align="right">-0.12</td>
+<td align="right">-0.26</td>
+</tr>
+<tr class="odd">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0.23</td>
+<td align="right">0.19</td>
+<td align="right">1.20</td>
+<td align="right">0.23</td>
+<td align="right">-0.14</td>
+<td align="right">0.59</td>
+<td align="right">0.14</td>
+<td align="right">0.14</td>
+<td align="right">0.14</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0.06</td>
+<td align="right">0.35</td>
+<td align="right">0.17</td>
+<td align="right">0.86</td>
+<td align="right">-0.63</td>
+<td align="right">0.76</td>
+<td align="right">0.06</td>
+<td align="right">0.03</td>
+<td align="right">0.06</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead><tr class="header">
+<th align="left">lhs</th>
+<th align="left">op</th>
+<th align="left">rhs</th>
+<th align="right">est</th>
+<th align="right">se</th>
+<th align="right">z</th>
+<th align="right">pvalue</th>
+<th align="right">ci.lower</th>
+<th align="right">ci.upper</th>
+<th align="right">std.lv</th>
+<th align="right">std.all</th>
+<th align="right">std.nox</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ordered_num_partner</td>
+<td align="left">~</td>
+<td align="left">fsmi_mate</td>
+<td align="right">0.15</td>
+<td align="right">0.08</td>
+<td align="right">1.87</td>
+<td align="right">0.06</td>
+<td align="right">-0.01</td>
+<td align="right">0.30</td>
+<td align="right">0.19</td>
+<td align="right">0.19</td>
+<td align="right">0.19</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_num_partner</td>
+<td align="left">~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="right">0.26</td>
+<td align="right">0.10</td>
+<td align="right">2.56</td>
+<td align="right">0.01</td>
+<td align="right">0.06</td>
+<td align="right">0.45</td>
+<td align="right">0.29</td>
+<td align="right">0.28</td>
+<td align="right">0.28</td>
+</tr>
+<tr class="odd">
+<td align="left">ordered_num_partner</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">-0.38</td>
+<td align="right">0.20</td>
+<td align="right">-1.91</td>
+<td align="right">0.06</td>
+<td align="right">-0.77</td>
+<td align="right">0.01</td>
+<td align="right">-0.38</td>
+<td align="right">-0.17</td>
+<td align="right">-0.37</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead><tr class="header">
+<th align="left">lhs</th>
+<th align="left">op</th>
+<th align="left">rhs</th>
+<th align="right">block</th>
+<th align="right">group</th>
+<th align="right">est</th>
+<th align="right">se</th>
+<th align="right">z</th>
+<th align="right">pvalue</th>
+<th align="right">ci.lower</th>
+<th align="right">ci.upper</th>
+<th align="right">std.lv</th>
+<th align="right">std.all</th>
+<th align="right">std.nox</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">fsmi_mate</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">-0.19</td>
+<td align="right">0.08</td>
+<td align="right">-2.40</td>
+<td align="right">0.02</td>
+<td align="right">-0.35</td>
+<td align="right">-0.03</td>
+<td align="right">-0.24</td>
+<td align="right">-0.24</td>
+<td align="right">-0.24</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">0.33</td>
+<td align="right">0.10</td>
+<td align="right">3.35</td>
+<td align="right">0.00</td>
+<td align="right">0.14</td>
+<td align="right">0.53</td>
+<td align="right">0.39</td>
+<td align="right">0.38</td>
+<td align="right">0.38</td>
+</tr>
+<tr class="odd">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">-0.32</td>
+<td align="right">0.21</td>
+<td align="right">-1.54</td>
+<td align="right">0.12</td>
+<td align="right">-0.74</td>
+<td align="right">0.09</td>
+<td align="right">-0.32</td>
+<td align="right">-0.15</td>
+<td align="right">-0.32</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">fsmi_mate</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">-0.11</td>
+<td align="right">0.18</td>
+<td align="right">-0.59</td>
+<td align="right">0.56</td>
+<td align="right">-0.46</td>
+<td align="right">0.25</td>
+<td align="right">-0.11</td>
+<td align="right">-0.11</td>
+<td align="right">-0.11</td>
+</tr>
+<tr class="odd">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">k_srq_sexual_relationships</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0.19</td>
+<td align="right">0.28</td>
+<td align="right">0.69</td>
+<td align="right">0.49</td>
+<td align="right">-0.35</td>
+<td align="right">0.73</td>
+<td align="right">0.11</td>
+<td align="right">0.11</td>
+<td align="right">0.11</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">0.00</td>
+<td align="right">0.35</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="right">-0.69</td>
+<td align="right">0.69</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+</tr>
+</tbody>
+</table>
+<p>FSMI mate-seeking and KSRQ sexual relationships modified factor show interesting relations to sexual behavior. FSMI mate-seeking relates positively to number of sexual partners (for people not in long-term relationships). KSRQ sexual relationships relates to number of sexual experiences for people not in long-term relationships. <strong>Need to test constraining relation between partnered and non-partnered people. Need to examine KSRQ and mate-seeking in the same model.</strong></p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="hasAnchor">
@@ -2151,7 +1671,6 @@ Figure 5: K-SRQ CFA. Path weights and labels reflect standardized loading streng
 </div>
 <div id="ref-neel2015">
 <p>Neel, R., Kenrick, D. T., White, A. E., &amp; Neuberg, S. L. (2015). Individual Differences in Fundamental Social Motives. <em>Journal of Personality and Social Psychology</em>, No Pagination Specified. doi:<a href="https://doi.org/10.1037/pspp0000068">10.1037/pspp0000068</a></p>
-</div>
 </div>
 </div>
 </div>
@@ -2185,6 +1704,7 @@ Figure 5: K-SRQ CFA. Path weights and labels reflect standardized loading streng
 </li>
       </ul>
 </li>
+      <li><a href="#predicting-sexual-behavior">Predicting sexual behavior</a></li>
       <li><a href="#references">References</a></li>
       </ul>
 </div>
