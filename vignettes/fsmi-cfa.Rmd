@@ -140,6 +140,8 @@ library(psych)
 data("splt_fsmi")
 data("splt_dev_and_demog")
 splt_fsmi <- splt_fsmi[splt_fsmi$SID != 360,]
+splt_fsmi$partnered <- as.numeric(splt_fsmi$fsmi_relstatus == relationship_status['long_term'])
+
 splt_dev_and_demog <- splt_dev_and_demog[splt_dev_and_demog$SID != 360,]
 
 splt_fsmi_devdemog <- dplyr::left_join(splt_fsmi, splt_dev_and_demog, by = 'SID')
@@ -523,8 +525,6 @@ semPlot::semPaths(ksrq_3factor_cfa,
 ```
 
 ```{r ksrq3facfsmimate}
-splt_fsmi$partnered <- as.numeric(splt_fsmi$fsmi_relstatus == relationship_status['long_term'])
-
 ksrq_matestat_model <- paste(fsmi_cfa_matestat_model, ksrq_model, sep = '\n')
 ksrq_matestat_cfa_nogrp <- lavaan::lavaan(
     model = ksrq_matestat_model, data = splt_fsmi[!is.na(splt_fsmi$partnered),],
@@ -920,11 +920,12 @@ fsmi_num_partners_all_sem_pred <- lavaan::lavPredict(fsmi_num_partners_all_sem)
 fsmi_num_partners_all_sem_partners_ <- splt_fsmi_devdemog$ordered_num_partner[grepl('yads', splt_fsmi_devdemog$sample)]
 fsmi_num_partners_all_sem_partners <- fsmi_num_partners_all_sem_partners_[fsmi_num_partners_all_sem@Data@case.idx[[1]]]
 
-ggplot2::qplot(fsmi_num_partners_sem_pred[,'fsmi_mate'],
-               fsmi_num_partners_sem_partners,
-               xlab = 'FSMI Mate-seeking factor',
-               ylab = 'Number of partners',
-               geom = 'jitter')
+plot_lav_factor_pred(lavfit = fsmi_num_partners_sem, 
+                     factor_name = 'fsmi_mate', 
+                     orig_data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                  grepl('yads', splt_fsmi_devdemog$sample),], 
+                     dv_name = 'ordered_num_partner',
+                     geom = 'jitter')
 
 knitr::kable(
     dplyr::filter(parameterestimates(fsmi_num_partners_sem, stan = T), op == '~'),
@@ -933,11 +934,11 @@ knitr::kable(
         'FSMI Predicting number of partners among unpartnered college students; N obs. = ',
         lavaan::nobs(fsmi_num_partners_sem)))
 
-ggplot2::qplot(fsmi_num_partners_all_sem_pred[,'fsmi_mate'],
-               splt_fsmi_devdemog$ordered_num_partner[fsmi_num_partners_all_sem_idx],
-               xlab = 'FSMI Mate-seeking factor',
-               ylab = 'Number of partners',
-               geom = 'jitter')
+plot_lav_factor_pred(lavfit = fsmi_num_partners_all_sem, 
+                     factor_name = 'fsmi_mate', 
+                     orig_data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),], 
+                     dv_name = 'ordered_num_partner',
+                     geom = 'jitter')
 
 knitr::kable(
     dplyr::filter(parameterestimates(fsmi_num_partners_all_sem, stan = T), op == '~'),
@@ -1247,6 +1248,7 @@ knitr::kable(
 ```
 
 #### FSMI and K-SRQ (college)
+
 ```{r}
 splt_fsmi_devdemog$continuous_use_protection <- as.numeric(splt_fsmi_devdemog$ordered_use_protection)
 
