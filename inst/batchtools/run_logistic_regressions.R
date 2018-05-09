@@ -75,7 +75,13 @@ formulae <- list(
     timeXcondition_dev_samprx_m_form = press_opt ~ 1 + condition*trial_index_c0_s*pds_std*gender +
         (1 + condition*trial_index_c0_s | sample:id) +
         (1 + pds_std*gender | sample) +
-        (1 | stim_image)
+        (1 | stim_image),
+
+    timeXcondition_age_vrysmp_m_form = press_opt ~ 1 + condition*trial_index_c0_s*age_std*gender +
+        (1 + condition*trial_index_c0_s | sample:id),
+
+    timeXcondition_dev_vrysmp_m_form = press_opt ~ 1 + condition*trial_index_c0_s*pds_std*gender +
+        (1 + condition*trial_index_c0_s | sample:id)
 )
 
 
