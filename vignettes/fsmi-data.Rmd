@@ -17,10 +17,12 @@ bibliography: "/home/jflournoy/Rlibs/probly/bib/dissertation.bib"
 csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
 ---
 
+Just the code... (unevaluated)
+
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  message = F, error = F,warning = F, echo = F, eval = F,
+  message = F, error = F,warning = F, echo = T, eval = F,
   comment = "#>"
 )
 ```
