@@ -518,7 +518,8 @@ tds_wave2_dev_demo_deid <- dplyr::full_join(
 if(!all(
     dim(filter(tds_wave2_dev_demo_deid, is.na(anon_id), !is.na(s3_date)))[1] == 0,
     dim(filter(tds_wave2_dev_demo_deid, 
-               !is.na(anon_id), is.na(s3_date), anon_sample %in% c('TDS1', 'TDS2')))[1] == 0)) {
+               !is.na(anon_id), is.na(s3_date), is.na(exclude), 
+               anon_sample %in% c('TDS1', 'TDS2')))[1] == 0)) {
     stop("Some participants not accounted for, or not anonymized")
 } else {
     tds_wave2_dev_demo_deid <- dplyr::left_join(
@@ -582,7 +583,7 @@ yads_dev_demo_deid <- dplyr::full_join(
 if(!all(
     dim(filter(yads_dev_demo_deid, is.na(anon_id), !is.na(SID), is.na(exclude)))[1] == 0,
     dim(filter(yads_dev_demo_deid, 
-               !is.na(anon_id), is.na(SID), anon_sample %in% c('yads', 'yads_online')))[1] == 0)) {
+               !is.na(anon_id), is.na(SID), is.na(exclude), anon_sample %in% c('yads', 'yads_online')))[1] == 0)) {
     stop("Some participants not accounted for, or not anonymized")
 } else {
     yads_dev_demo_deid <- dplyr::left_join(
