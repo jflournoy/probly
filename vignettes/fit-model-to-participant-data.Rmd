@@ -41,6 +41,7 @@ if(!dir.exists(save_out_dir)){
 
 data_dir <- '/data/jflournoy/split/probly'
 logistic_saves_dir <- file.path(data_dir,'/logistic/')
+ggplot2::theme_set(ggplot2::theme_minimal())
 ```
 
 ```{r load_data_for_sim}
@@ -219,7 +220,8 @@ ggcorplot <- function(adf, use = 'pairwise.complete.obs', method = 'pearson'){
         ggplot2::coord_cartesian(xlim = c(1, dim(adf_cor)[[2]] + 4)) + 
         ggplot2::theme(axis.text = ggplot2::element_blank(),
                        axis.line = ggplot2::element_blank(),
-                       axis.ticks = ggplot2::element_blank()) + 
+                       axis.ticks = ggplot2::element_blank(),
+                       panel.grid = ggplot2::element_blank()) + 
         ggplot2::labs(x='',y='',fill = 'Correlation')
 }
 ```
@@ -299,8 +301,9 @@ time_cond_m <- readRDS(file.path(logistic_saves_dir,'/timeXcondition_smpstim_lm.
 
 time_cond_pred_df <- distinct(splt, condition, id, sample)
 time_cond_pred_df$trial_index_c0_s <- 0
-time_cond_pred_df$p_opt <- predict(time_cond_m, newdata = time_cond_pred_df, re.form = ~(1 + condition *  
-    trial_index_c0_s | sample:id))
+time_cond_pred_df$p_opt <- predict(time_cond_m, newdata = time_cond_pred_df, 
+                                   re.form = ~(1 + condition * trial_index_c0_s | sample:id),
+                                   type = 'response')
 time_cond_rx <- coef(time_cond_m)$`sample:id`
 time_cond_rx_df <- as.data.frame(time_cond_rx) %>%
     mutate(id = as.numeric(sub('.*:', '', dimnames(time_cond_rx)[[1]]))) %>%
@@ -330,6 +333,70 @@ ggcorplot(lowfi_df[lowfi_df$condition == 'Popular/Unpopular', c(3:dim(lowfi_df)[
 ```
 
 Examining the above plots where corelations r > .90 are colored red (and r = .9 color black), it appears that the most wide ranging correlations are from bins that combine information during the latter half of the run in various ways. If one had to choose such a summary in these data, the average number of optimal presses from bin 5 through 8 (from trial `r (5-1)*16 + 1` through trial 128) seems like a good candidate. It is highly correlated with average optimal responding from bin 6-end and 7-end, combined bins 5 & 6, combined bins 6 & 7, as well as the combined bins from start to finish ("bin_start_to_8"). Using the intercept from a logistic regression with the trial number predictor centered toward the end of the trial also captures a good deal of variance that corresponds to optimal responding on trials toward the end of the run.
+
+Here are a few plots of these parameters agains age.
+
+```{r}
+splt_fsmi_matestat_scored <- as.data.frame(
+    psych::scoreItems(fsmi_key[c('fsmi_mate', 'fsmi_stat')], 
+                      splt_fsmi,
+                      missing = TRUE, impute = 'none')$scores)
+
+splt_fsmi_matestat_scored$SID <- splt_fsmi$SID
+
+lowfi_df_dev <- dplyr::left_join(
+    dplyr::left_join(lowfi_df,
+                     unique(splt_dev_and_demog), by = c('id' = 'SID')),
+    splt_fsmi_matestat_scored, by = c('id' = 'SID')) %>%
+    mutate(PDS_mean_score = as.numeric(PDS_mean_score))
+
+lowfi_df_dev_v_bl <- lowfi_df_dev %>%
+    group_by(id) %>%
+    mutate_at(vars(bin_1:slope),
+              funs(. - .[condition == 'Hungry/Thirsty']))
+
+p_opt_age_plot <- ggplot2::ggplot(dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty'),
+                ggplot2::aes(x = age, y = p_opt, linetype = condition)) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(color = 'black',
+                         method = 'gam', formula = y ~ s(x, fx = T, k = 5),
+                         size = .5, alpha =  .2) + 
+    ggplot2::labs(x = 'Age', y = 'Probability of making optimal choice\nover Hungry/Thirsty baseline')
+    
+p_opt_pds_plot <- ggplot2::ggplot(dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty'),
+                ggplot2::aes(x = PDS_mean_score, y = p_opt, 
+                             linetype = condition)) + 
+    ggplot2::geom_point(position = position_jitter()) + 
+    ggplot2::geom_smooth(color = 'black',
+                         method = 'gam', formula = y ~ s(x, fx = T, k = 3),
+                         size = .5, alpha =  .2) + 
+    ggplot2::labs(x = 'PDS mean score', 
+                  y = 'Probability of making optimal choice\nover Hungry/Thirsty baseline',
+                  linetype = 'Condition') + 
+    ggplot2::facet_grid(~factor(gender, levels = c(0,1), labels = c('male', 'female')),
+                        scales = 'free_x')
+
+p_opt_mate_plot <- ggplot2::ggplot(dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty',
+                              grepl('yads', sample)),
+                ggplot2::aes(x = fsmi_mate, y = p_opt, linetype = condition)) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(color = 'black',
+                         method = 'lm', formula = y ~ x,
+                         size = .5, alpha = .2) + 
+    ggplot2::labs(x = 'FSMI mate-seeking', y = 'Probability of making optimal choice\nover Hungry/Thirsty baseline')
+
+p_opt_stat_plot <- ggplot2::ggplot(dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty',
+                              grepl('yads', sample)),
+                ggplot2::aes(x = fsmi_stat, y = p_opt, linetype = condition)) + 
+    ggplot2::geom_point() + 
+    ggplot2::geom_smooth(color = 'black',
+                         method = 'lm', formula = y ~ x,
+                         size = .5, alpha = .2) + 
+    ggplot2::labs(x = 'FSMI status', y = 'Probability of making optimal choice\nover Hungry/Thirsty baseline')
+
+p_opt_age_plot
+p_opt_pds_plot
+```
 
 # Results from logistic regression
 
@@ -423,13 +490,12 @@ knitr::kable(anova(null_lm,
 # http://mc-stan.org/misc/warnings.html#bfmi-low
 
 # # timeXcondition_dev_m_form: 
-# BM: no warnings
-#
 # LM: Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv,  :
 #   unable to evaluate scaled gradient
 # Warning in checkConv(attr(opt, "derivs"), opt$par, ctrl = control$checkConv,  :
 #   Model failed to converge: degenerate  Hessian with 2 negative eigenvalues
-
+#
+# BM: no warnings
 
 # # condition_smpstim_m_form
 # LM: no warnings
@@ -522,7 +588,9 @@ fsmi_scale_reliability_table <- tables::tabular(
              (`$\\omega_t$` = omega_t)*DropEmpty(empty='-') + 
              (`$\\alpha$` = alpha)), 
     data = fsmi_scale_reliability_df)
+```
 
+```{r results = 'asis'}
 Hmisc::html(fsmi_scale_reliability_table)
 
 save_out_list <- c(save_out_list, 'fsmi_scale_reliability_table')
@@ -541,6 +609,8 @@ In light of this, any correlations of scale responses with other constructs of i
 Of course, the variance due to other latent causes may also be a reason true relations are attentuated.
 
 ```{r fsmiregression}
+p_opt_mate_plot
+p_opt_stat_plot
 ```
 
 
@@ -605,7 +675,7 @@ GGally::ggpairs(as.data.frame(betas_rho_means), title = expression(rho))
 ```{r}
 munames <- grep('mu', names(stanfit_2_level_no_b), value = T)
 stanfitmat <- as.array(stanfit_2_level_no_b)
-ggplot2::theme_set(ggplot2::theme_minimal())
+
 bayesplot::mcmc_combo(stanfitmat, pars = munames[4:6], facet_args = list(scales = 'fixed'),
                       # transformations = pnorm, 
                       combo = c('areas_ridges', 'trace'), 
@@ -630,7 +700,7 @@ save_out_list <- c(save_out_list, 'epsilon_difference_plot')
 ### Size of reward modifier
 
 ```{r}
-bayesplot::mcmc_combo(stanfitmat, pars = munames[10:12], facet_args = list(scales = 'fixed'),
+bayesplot::mcmc_combo(stanfitmat, pars = munames[7:9], facet_args = list(scales = 'fixed'),
                       combo = c('areas_ridges', 'trace'), 
                       prob_outer = 1-.005, prob = .95, widths = c(3,4))
 ```
@@ -673,48 +743,66 @@ splt$condition <- factor(splt$condition, levels = c('HngT', 'DtnL', 'PplU'))
 #   matrices of the individually varying parameter
 #   coefficients
 
-group_index_mm <- get_sample_index(splt, levels = c("TDS1", "TDS2", "yads", "yads_online"))
-N <- dim(group_index_mm)[1]
-M <- length(levels(group_index_mm$m_fac))
-K <- length(unique(splt$condition))
-cue_mat <- get_col_as_trial_matrix(splt, 'cue', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
-Tsubj <- get_max_trials_per_individual(cue_mat)
-condition_mat <- get_col_as_trial_matrix(splt, 'condition', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
-correct_r_mat <- get_col_as_trial_matrix(splt, 'correct_r', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
-reward_possible_mat <- get_col_as_trial_matrix(splt, 'reward_possible', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')
-outcome_arr <- array(reward_possible_mat, dim = c(dim(reward_possible_mat), 2))
+set.seed(9991102)
+
+group_index_mm <- get_sample_index(splt, levels = c('TDS1', 'TDS2', 'yads', 'yads_online'))
+
+N <- 313
+M <- 4
+K <- 3
+Tsubj <- rep(384, N)
+
+outcome_arr <- array(
+    matrix(
+        rep(rep(sample(c(1,5), size = 128, replace = T), 3), N),
+        byrow = T, nrow = N),
+    dim = c(N, 384, 2))
+
+#for each cue, 80% of the correct answer gets rewarded. repeat across condition to ensure comparability
+correct_r_mat <- matrix(
+    rep(
+        rep(
+            c(rbinom(n = 128/2, size = 1, prob = .8),
+              rbinom(n = 128/2, size = 1, prob = .2)),
+            3),
+        N),
+    byrow = T, nrow = N)
+
 outcome_arr[,,1][correct_r_mat == 1] <- 0 #reward if left press, but right is correct = 0
 outcome_arr[,,2][correct_r_mat == 0] <- 0 #reward if right press, but correct is not right = 0
 
 Tsubj_unif <- Tsubj
-Tsubj_unif[] <- Tsubj[1]
-condition_mat_unif <- matrix(rep(condition_mat[1,], dim(condition_mat)[1]), byrow = T, nrow = dim(condition_mat)[1])
-cue_mat_unif <- matrix(rep(cue_mat[1,], dim(cue_mat)[1]), byrow = T, nrow = dim(cue_mat)[1])
+condition_mat_unif <- matrix(rep(rep(1:3, each = 128), N), byrow = T, N)
+cue_mat_unif <- matrix(rep(rep(1:6, each = 128/2), N), byrow = T, nrow = N)
 outcome_arr_unif <- outcome_arr
-for(i in 1:dim(outcome_arr_unif)[1]){
-    outcome_arr_unif[i,,] <- outcome_arr[1,,]
-}
 
 beta_xi_mat <- matrix(
-    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_xi')[[1]], c(2,3), mean), 
+    rep(apply(rstan::extract(stanfit_2_level_no_b, pars = 'mu_delta_xi')[[1]], c(2,3), mean), 
         313), 
     nrow = 313, 
     byrow = T)
 beta_b_mat <- matrix(
-    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_b')[[1]], c(2,3), mean), 
+    rep(c(0,0,0), 
         313), 
     nrow = 313, 
     byrow = T)
 beta_ep_mat <- matrix(
-    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_ep')[[1]], c(2,3), mean), 
+    rep(apply(rstan::extract(stanfit_2_level_no_b, pars = 'mu_delta_ep')[[1]], c(2,3), mean), 
         313), 
     nrow = 313, 
     byrow = T)
 beta_rho_mat <- matrix(
-    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_rho')[[1]], c(2,3), mean), 
+    rep(apply(rstan::extract(stanfit_2_level_no_b, pars = 'mu_delta_rho')[[1]], c(2,3), mean), 
         313), 
     nrow = 313, 
     byrow = T)
+
+shuffle_index <- rep(sample(1:128, size = 128, replace = F), 3) + 
+    rep(c(0*128, 1*128, 2*128), each = 128)
+
+cue_mat_unif <- cue_mat_unif[,shuffle_index]
+outcome_arr_unif[,,1] <- outcome_arr_unif[,shuffle_index,1] 
+outcome_arr_unif[,,2] <- outcome_arr_unif[,shuffle_index,2]
 
 model_predicted_behavior <- probly::generate_responses(N = N, M = M, K = K, mm = group_index_mm, 
                                                Tsubj = Tsubj_unif, cue = cue_mat_unif, 
@@ -726,18 +814,19 @@ model_predicted_behavior <- probly::generate_responses(N = N, M = M, K = K, mm =
 
 adf <- dplyr::mutate(
     dplyr::group_by(
-        data.frame(id = rep(1:313, 381),
-                   condition = factor(as.numeric(condition_mat_unif[,1:381]), 
+        data.frame(id = rep(1:313, 384),
+                   condition = factor(as.numeric(condition_mat_unif[,1:384]), 
                                       levels = 1:3,
                                       labels = c('Hungry/Thirsty', 'Dating/Looking', 'Popular/Unpopular')),
                    p_press_right = abs(as.numeric(model_predicted_behavior$p_press_right) - .5)),
         condition, id),
     trial = 1:n())
 
-ggplot2::ggplot(adf,
-                ggplot2::aes(x = trial, 
-                             y = p_press_right, 
-                             group = interaction(condition, id))) + 
+model_mean_predicted_behavior_plot <- ggplot2::ggplot(
+    adf,
+    ggplot2::aes(x = trial, 
+                 y = p_press_right, 
+                 group = interaction(condition, id))) + 
     ggplot2::geom_hex(ggplot2::aes(group = NULL, alpha = log(..count..)), fill = '#666666') + 
     ggplot2::geom_line(stat = 'smooth', method = 'gam', formula = y ~ s(x, k = 6, fx = T),
                        alpha = .05) + 
@@ -750,6 +839,8 @@ ggplot2::ggplot(adf,
                                     range = c(0, 1),
                                     name = 'log(Num Obs)') +
     ggplot2::labs(x = 'Trial number', y = 'Probability of optimal choice')
+
+model_mean_predicted_behavior_plot
 ```
 
 ## Diagnostics
@@ -831,5 +922,5 @@ bayesplot::mcmc_pairs(
 ```
 
 ```{r echo = F, eval = F}
-save(list = save_out_list, file = file.path(save_out_dir, 'fit-model-to-participant-data.rda'))
+save.image(file = file.path(save_out_dir, 'fit-model-to-participant-data.rda'))
 ```
