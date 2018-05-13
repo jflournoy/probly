@@ -43,6 +43,10 @@ knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'
 knitr::read_chunk(system.file('r_aux', 'test_simulation_2l_nob.R', package = 'probly'))
 knitr::read_chunk(system.file('batchtools', 'run_many_simulations.R', package = 'probly'))
 data_dir <- '/data/jflournoy/split/probly'
+save_out_dir <- '~/code_new/social-motives-rl-writeup/rda/'
+if(!dir.exists(save_out_dir)){
+    dir.create(save_out_dir)
+}
 ```
 
 `r vignette_message`
@@ -157,10 +161,11 @@ nosmooth_multi_plot
 (ref:simdatcoverage) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial, collapsed over simulations. It's possible to see that trial-by-trial probability of choosing the optimal resonses, averaged across all participants, spans the full range of possible behavior (with the extreme exception that no simulation evinces all participants performing perfectly).
 
 ```{r simdatcoverage, fig.width=15, fig.height=12, fig.cap='(ref:simdat)'}
-multi_plot + 
+multiplot_by_sim <- multi_plot + 
     ggplot2::facet_wrap(~sim) + 
     ggplot2::theme(strip.background = element_blank(),
                    strip.text = element_blank())
+multiplot_by_sim
 ```
 
 (ref:priorplots) Priors, with $epsilon$ and $\xi$ on their transformed scales. Notice the very long tails for the individually varying $rho$ parameters (beta_rho). 
@@ -190,16 +195,27 @@ dimnames(true_tau_xi)[[2]] <- c('tau_xi_1', 'tau_xi_2', 'tau_xi_3')
 dimnames(true_tau_rho)[[2]] <- c('tau_rho_1', 'tau_rho_2', 'tau_rho_3')
 dimnames(sample_pR_final)[[3]] <- paste0('cue_',1:6)
 
-bayesplot::mcmc_hist(pnorm(true_mu_ep))
-bayesplot::mcmc_hist(true_beta_ep, adjust = .5) + ggplot2::coord_cartesian(xlim = c(0,1))
-bayesplot::mcmc_hist(true_mu_rho) + ggplot2::coord_cartesian(xlim = c(-5, 5))
-bayesplot::mcmc_hist(log(true_beta_rho), adjust = 2) + ggplot2::coord_cartesian(xlim = c(-15, 15))
-bayesplot::mcmc_hist(pnorm(true_mu_xi))
-bayesplot::mcmc_hist(true_beta_xi, adjust = .05)
-bayesplot::mcmc_hist((true_tau_ep), adjust = .05)
-bayesplot::mcmc_hist((true_tau_xi), adjust = .05)
-bayesplot::mcmc_hist((true_tau_rho), adjust = .05)
-bayesplot::mcmc_hist((sample_pR_final), adjust = .05)
+true_mu_ep_hist <- bayesplot::mcmc_hist(pnorm(true_mu_ep))
+true_beta_ep_hist <- bayesplot::mcmc_hist(true_beta_ep, adjust = .5) + ggplot2::coord_cartesian(xlim = c(0,1))
+true_mu_rho_hist <- bayesplot::mcmc_hist(true_mu_rho) + ggplot2::coord_cartesian(xlim = c(-5, 5))
+true_beta_rho_hist <- bayesplot::mcmc_hist(log(true_beta_rho), adjust = 2) + ggplot2::coord_cartesian(xlim = c(-15, 15))
+true_mu_xi_hist <- bayesplot::mcmc_hist(pnorm(true_mu_xi))
+true_beta_xi_hist <- bayesplot::mcmc_hist(true_beta_xi, adjust = .05)
+true_tau_ep_hist <- bayesplot::mcmc_hist((true_tau_ep), adjust = .05)
+true_tau_xi_hist <- bayesplot::mcmc_hist((true_tau_xi), adjust = .05)
+true_tau_rho_hist <- bayesplot::mcmc_hist((true_tau_rho), adjust = .05)
+sample_pR_final_hist <- bayesplot::mcmc_hist((sample_pR_final), adjust = .05)
+
+true_mu_ep_hist
+true_beta_ep_hist
+true_mu_rho_hist
+true_beta_rho_hist
+true_mu_xi_hist
+true_beta_xi_hist
+true_tau_ep_hist
+true_tau_xi_hist
+true_tau_rho_hist
+sample_pR_final_hist
 ```
 
 ```{r fig.width=12,fig.height=12}
@@ -286,7 +302,7 @@ probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_ep[,,3],
 ```{r showmanyiep, fig.width=8, fig.height=30}
 i_idx <- sample(1:308, size = 40)
 bayesplot::mcmc_hist_by_chain(qnorm(estimated_beta_ep[,i_idx,])) +
-    ggplot2::coord_cartesian(xlim = c(-1,2)) +
+    ggplot2::coord_cartesian(xlim = c(-5,5)) +
     ggplot2::geom_vline(
         aes(xintercept = value), 
         data = data.frame(
@@ -475,3 +491,8 @@ knitr::kable(
 The model is able to recover data generating parameters from simulated data and is safe to use in interpretting the data provided by the study participants.
 
 # References
+
+
+```{r echo = F, eval = T}
+save.image(file = file.path(save_out_dir, 'test-simulated-data.rda'))
+```
