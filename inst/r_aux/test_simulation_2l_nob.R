@@ -14,7 +14,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
 } else {
     data_dir <- '/data/jflournoy/split/probly'
     nsims <- 100
-    nchains <- 4
+    nchains <- 6
     nsimsperchain <- ceiling(nsims/nchains)
     message('Data dir: ', data_dir)
     plan(tweak(multiprocess, gc = T, workers = nchains))
@@ -22,8 +22,9 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
 test_sim_num <- 50
 sim_test_fn <- file.path(data_dir, 'splt_sim2_test_sims.RDS')
 sim_test_pr_fn <- file.path(data_dir, 'splt_sim2_test_sims_pr.RDS')
-sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit.RDS')
+sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit_wide_prior.RDS')
 stan_model_fn <- system.file('stan', 'splt_rl_2_level_no_b_2.stan', package = 'probly')
+stan_model_est_fn <- system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly')
 ####TEST stan_model_fn <- './inst/stan/splt_rl_2_level_no_b_2.stan'
 
 condition_mat[is.na(condition_mat)] <- -1
@@ -118,7 +119,7 @@ if(!file.exists(sim_test_fit_fn)){
     stan_sim_data_to_fit$press_right <- press_right_sim_mat
     stan_sim_data_to_fit$run_estimation <- 1
 
-    rl_2l_nob_cpl <- rstan::stan_model(stan_model_fn)
+    rl_2l_nob_cpl <- rstan::stan_model(stan_model_est_fn)
 
     future::plan(future::multiprocess)
     rl_2l_nob_simfit_f <- future::future(
@@ -127,7 +128,7 @@ if(!file.exists(sim_test_fit_fn)){
                 rl_2l_nob_cpl,
                 data = stan_sim_data_to_fit,
                 chains = nchains, cores = nchains,
-                iter = 1500, warmup = 1000,
+                iter = 1534, warmup = 1200,
                 include = FALSE, pars = 'pright_pred', #no need to save predicted task behavior
                 control = list(max_treedepth = 15, adapt_delta = 0.99))
             message('Saving sim fit to: ', sim_test_fit_fn)
