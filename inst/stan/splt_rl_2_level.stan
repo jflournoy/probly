@@ -56,10 +56,10 @@ transformed parameters {
     matrix<lower=0>[N, K] beta_rho_prm; //per-individual coefficients for rho, for each condition, transformed
 
     for(k in 1:K){
-        tau_xi[k] = .25 * tan(tau_unif_xi[k]);
-        tau_ep[k] = .25 * tan(tau_unif_ep[k]);
-        tau_b[k] = .25 * tan(tau_unif_b[k]);
-        tau_rho[k] = .25 * tan(tau_unif_rho[k]);
+        tau_xi[k] = 2.5 * tan(tau_unif_xi[k]);
+        tau_ep[k] = 2.5 * tan(tau_unif_ep[k]);
+        tau_b[k] = 2.5 * tan(tau_unif_b[k]);
+        tau_rho[k] = 2.5 * tan(tau_unif_rho[k]);
     }
 
     beta_xi_prm = Phi_approx(u * mu_delta_xi + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
@@ -131,42 +131,8 @@ generated quantities {
     vector[N] log_lik;
     int<lower=-1, upper=1> pright_pred[N, T]; //choices "0" = left, "1" = right
 
-    //save mean differences with reference to first condition
-    matrix[N, K-1] beta_xi_diffs;
-    matrix[N, K-1] beta_ep_diffs;
-    matrix[N, K-1] beta_rho_diffs;
-    matrix[N, K-1] beta_b_diffs;
-    matrix[1, K-1] mu_delta_xi_diff;
-    matrix[1, K-1] mu_delta_ep_diff;
-    matrix[1, K-1] mu_delta_rho_diff;
-    matrix[1, K-1] mu_delta_b_diff;
-    matrix[K, K] Sigma_xi;
-    matrix[K, K] Sigma_ep;
-    matrix[K, K] Sigma_rho;
-    matrix[K, K] Sigma_b;
-
-    beta_xi_diffs[,1]  = beta_xi_prm[,2] - beta_xi_prm[,1];
-    beta_xi_diffs[,2]  = beta_xi_prm[,3] - beta_xi_prm[,1];
-    beta_ep_diffs[,1]  = beta_ep_prm[,2] - beta_ep_prm[,1];
-    beta_ep_diffs[,2]  = beta_ep_prm[,3] - beta_ep_prm[,1];
-    beta_rho_diffs[,1] = beta_rho_prm[,2] - beta_rho_prm[,1];
-    beta_rho_diffs[,2] = beta_rho_prm[,3] - beta_rho_prm[,1];
-    beta_b_diffs[,1] = beta_b[,2] - beta_b[,1];
-    beta_b_diffs[,2] = beta_b[,3] - beta_b[,1];
-
-    mu_delta_xi_diff[,1]  = Phi_approx(mu_delta_xi[,2]) - Phi_approx(mu_delta_xi[,1]);
-    mu_delta_xi_diff[,2]  = Phi_approx(mu_delta_xi[,3]) - Phi_approx(mu_delta_xi[,1]);
-    mu_delta_ep_diff[,1]  = Phi_approx(mu_delta_ep[,2]) - Phi_approx(mu_delta_ep[,1]);
-    mu_delta_ep_diff[,2]  = Phi_approx(mu_delta_ep[,3]) - Phi_approx(mu_delta_ep[,1]);
-    mu_delta_rho_diff[,1] = exp(mu_delta_rho[,2]) - exp(mu_delta_rho[,1]);
-    mu_delta_rho_diff[,2] = exp(mu_delta_rho[,3]) - exp(mu_delta_rho[,1]);
-    mu_delta_b_diff[,1] = mu_delta_b[,2] - mu_delta_b[,1];
-    mu_delta_b_diff[,2] = mu_delta_b[,3] - mu_delta_b[,1];
-
-    Sigma_xi = diag_pre_multiply(tau_xi, L_Omega_xi);
-    Sigma_ep = diag_pre_multiply(tau_ep, L_Omega_ep);
-    Sigma_rho = diag_pre_multiply(tau_rho, L_Omega_rho);
-    Sigma_b = diag_pre_multiply(tau_b, L_Omega_b);
+    //save final pR
+    vector[ncue] pR_final[N];
 
     for (i in 1:N) {
         for (t in 1:T) {
@@ -192,6 +158,7 @@ generated quantities {
         qv_l = initV;
 
         log_lik[i] = 0;
+        log_lik_iters = rep_vector(0, T);
 
         for (t in 1:Tsubj[i]) {
             //neater code
@@ -208,7 +175,7 @@ generated quantities {
             pright_pred[i, t] = bernoulli_rng(pR[cue[i, t]]);
 
             if(run_estimation == 1){
-                log_lik[i] += bernoulli_lpmf(press_right[i, t] | pR[cue[i, t]]);
+                log_lik_iters[t] = bernoulli_lpmf(press_right[i, t] | pR[cue[i, t]]);
 
                 // update action values
                 if (press_right[i, t]) { // update go value
@@ -217,7 +184,7 @@ generated quantities {
                     qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_l[cue[i, t]]);
                 }
             } else {
-                log_lik[i] += bernoulli_lpmf(pright_pred[i, t] | pR[cue[i, t]]);
+                log_lik_iters[t] = bernoulli_lpmf(pright_pred[i, t] | pR[cue[i, t]]);
 
                 if (pright_pred[i, t]) { // update go value
                     qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome_r[i, t] - qv_r[cue[i, t]]);
@@ -226,6 +193,8 @@ generated quantities {
                 }
             }
         } // end of t loop
+        log_lik[i] = sum(log_lik_iters);
+        pR_final[i] = pR;
     } // end of i loop
     }
 }
