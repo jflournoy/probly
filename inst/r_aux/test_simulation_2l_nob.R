@@ -6,7 +6,7 @@ library(future)
 library(rstan)
 if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     nsims <- 100
-    nchains <- 4
+    nchains <- 6
     nsimsperchain <- ceiling(nsims/nchains)
     data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
     message('Data dir: ', data_dir)
@@ -14,7 +14,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
 } else {
     data_dir <- '/data/jflournoy/split/probly'
     nsims <- 100
-    nchains <- 6
+    nchains <- 4
     nsimsperchain <- ceiling(nsims/nchains)
     message('Data dir: ', data_dir)
     plan(tweak(multiprocess, gc = T, workers = nchains))
