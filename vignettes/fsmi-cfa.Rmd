@@ -1304,5 +1304,5 @@ This helps establish some validity for these two scales. First, it seems likely 
 # References
 
 ```{r echo = F, eval = F}
-save(list = save_out_list, file = file.path(save_out_dir, 'fsmi-cfa.rda'))
+save.image(file = file.path(save_out_dir, 'fsmi-cfa.rda'))
 ```
