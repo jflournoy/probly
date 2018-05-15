@@ -1,15 +1,30 @@
-## ---- run_many_simulations
+## ---- run_baseline_models
+
 library(future)
 library(future.batchtools)
 library(probly)
 library(listenv)
+library(rstan)
 
-plan(batchtools_slurm,
-     template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
-     resources = list(ncpus = 6, walltime = 60*24*4, memory = '1G',
-                      partitions = 'long,longfat'))
+if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
+    niter <- 2000
+    nchains <- 6
+    niterperchain <- ceiling(niter/nchains)
+    warmup <- 1200
+    data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
+    plan(batchtools_slurm,
+         template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
+         resources = list(ncpus = 6, walltime = 60*24*5, memory = '750M',
+                          partitions = 'long,longfat'))
+} else {
+    data_dir <- '/data/jflournoy/split/probly'
+    niter <- 20
+    nchains <- 2
+    warmup <- 10
+    niterperchain <- ceiling(niter/nchains)
+    plan(tweak(multiprocess, gc = T, workers = 8))
+}
 
-data_dir <- '/home/flournoy/otherhome/data/splt/probly/'
 if(!file.exists(data_dir)){
     stop('Data directory "', data_dir, '" does not exist')
 } else {
@@ -24,6 +39,43 @@ model_filename_list <- list(
     rl_repar_exp_no_b = system.file('stan', 'splt_rl_reparam_exp_no_b.stan', package = 'probly')
 )
 
+data(splt)
+data(splt_dev_and_demog)
+data(splt_fsmi)
+
+college_rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
+ksrq_rubric <- scorequaltrics::get_rubrics(
+    rubric_filenames = dplyr::data_frame(
+        file = file.path(college_rubric_dir, 'K-SRQ_scoring_rubric.csv')),
+    type = 'scoring')
+ksrq_key <- scorequaltrics::create_key_from_rubric(ksrq_rubric)
+
+splt_ksrq_mate_stat <- as.data.frame(psych::scoreItems(
+    ksrq_key[c('k_srq_sexual_relationships', 'k_srq_admiration')],
+    splt_fsmi, missing = TRUE, impute = 'none')$scores)
+splt_ksrq_mate_stat$SID <- splt_fsmi$SID
+
+print(dim(splt))
+splt_no_na <- splt[!is.na(splt$pressed_r), ]
+print(dim(splt_no_na))
+splt_no_na_dev <- dplyr::left_join(
+    splt_no_na,
+    dplyr::distinct(splt_dev_and_demog,
+                    SID, age, PDS_mean_score, gender),
+    by = c('id' = 'SID'))
+print(dim(splt_no_na_dev))
+splt_no_na_dev_matestat <- dplyr::left_join(
+    splt_no_na_dev,
+    splt_ksrq_mate_stat,
+    by = c('id' = 'SID'))
+print(dim(splt_no_na_dev_matestat))
+print(dim(dplyr::distinct(splt_no_na_dev_matestat, id)))
+# print(dim(dplyr::distinct(dplyr::filter(
+#     splt_no_na_dev_matestat,
+#     !is.na(age), !is.na(PDS_mean_score),
+#     !is.na(k_srq_sexual_relationships),
+#     !is.na(k_srq_admiration)), id)))
+
 fit_many_mods_f <- listenv()
 
 for(mod in 1:length(model_filename_list)){
@@ -31,9 +83,8 @@ for(mod in 1:length(model_filename_list)){
     fit_many_mods_f[[mod]] %<-% {
         library(rstan)
         library(probly)
-        data(splt)
-        print(dim(splt))
-        splt_no_na <- splt[!is.na(splt$pressed_r), ]
+        dim(splt_no_na_dev_matestat)
+        splt_no_na <- splt_no_na_dev_matestat
 
         splt_no_na$opt_is_right <- as.numeric(factor(splt_no_na$proportion,
                                                      levels = c('80_20', '20_80'))) - 1
@@ -59,6 +110,9 @@ for(mod in 1:length(model_filename_list)){
             sample_col = 'sample', trial_col = 'trial_index')
 
         outcome[is.na(outcome)] <- -1
+        outcome_r <- outcome_l <- outcome
+        outcome_r[] <- outcome_l[] <- -1
+
         press_right[is.na(press_right)] <- -1
         press_opt[is.na(press_opt)] <- -1
 
@@ -73,7 +127,10 @@ for(mod in 1:length(model_filename_list)){
             condition = task_structure$condition,
             cue = task_structure$cue,
             press_right = press_right,
-            outcome = outcome
+            outcome = outcome,
+            outcome_r = outcome_r,
+            outcome_l = outcome_l,
+            run_estimation = 1
         )
 
         if(names(model_filename_list)[mod] == 'intercept_only'){
@@ -83,14 +140,17 @@ for(mod in 1:length(model_filename_list)){
 
         stanFit <- rstan::stan(file = model_filename_list[[mod]],
                                data = stan_data,
-                               chains = 6, cores = 6,
-                               iter = 1750, warmup = 1000,
+                               chains = nchains, cores = nchains,
+                               iter = warmup + niterperchain, warmup = warmup,
                                control = list(max_treedepth = 15, adapt_delta = 0.99))
 
         saveRDS(stanFit,
                 file.path(data_dir,
-                          paste0('splt-tght-', names(model_filename_list)[mod],
+                          paste0('splt-looser-', names(model_filename_list)[mod],
                                  '-', round(as.numeric(Sys.time())/1000,0),'.RDS')))
     }
 }
 
+saveRDS(splt_no_na_dev_matestat,
+        file.path(data_dir, paste0('splt-looser-data-',
+                                   round(as.numeric(Sys.time())/1000,0),'.RDS')))

@@ -151,6 +151,7 @@ generated quantities {
         real beta_ep_it;
         real beta_rho_it;
         real beta_b_it;
+        vector[T] log_lik_iters;
 
         wv_r  = initV;
         wv_l = initV;
