@@ -99,7 +99,7 @@ fit_many_mods_f <- listenv()
 
 for(mod in 1:length(model_filename_list)){
     print(paste0('Sampling from model: ', names(model_filename_list)[mod]))
-    fit_many_mods_f[[mod]]  <- {
+    fit_many_mods_f[[mod]]  %<-% {
         library(rstan)
         library(probly)
         dim(splt_no_na_dev_matestat)
