@@ -1,5 +1,10 @@
 ## ---- run_baseline_models
 
+library(future)
+library(future.batchtools)
+library(listenv)
+library(rstan)
+
 if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     niter <- 2000
     nchains <- 6
@@ -36,11 +41,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     AWS = F
 }
 
-library(future)
-library(future.batchtools)
 library(probly)
-library(listenv)
-library(rstan)
 
 if(!file.exists(data_dir)){
     stop('Data directory "', data_dir, '" does not exist')
