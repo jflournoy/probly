@@ -26,11 +26,6 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     if(!any(grepl('WHICH_MOD', ls()))) stop("var WHICH_MOD must be set on AWS")
     AWS = T
     devtools::install_github('jflournoy/probly')
-
-    con <- file(file.path(data_dir, paste0('run_baseline_model-', append_to_data_fn, '-',
-                                           round(as.numeric(Sys.time())/1000,0),'.log')))
-    sink(con, append=TRUE)
-    sink(con, append=TRUE, type="message")
 } else {
     data_dir <- '/data/jflournoy/split/probly'
     niter <- 20
