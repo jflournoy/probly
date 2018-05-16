@@ -16,6 +16,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
          template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
          resources = list(ncpus = 6, walltime = 60*24*5, memory = '750M',
                           partitions = 'long,longfat'))
+    AWS = F
 } else if(grepl('^ip-', system('hostname', intern = T))) { #AWS
     niter <- 2000
     nchains <- 4
@@ -23,6 +24,8 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     warmup <- 1250
     data_dir <- '/home/ubuntu/data'
     plan(tweak(multiprocess, gc = T, workers = 4))
+    if(!any(grepl('WHICH_MOD', ls()))) stop("var WHICH_MOD must be set on AWS")
+    AWS = T
 } {
     data_dir <- '/data/jflournoy/split/probly'
     niter <- 20
@@ -30,6 +33,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     warmup <- 10
     niterperchain <- ceiling(niter/nchains)
     plan(tweak(multiprocess, gc = T, workers = 8))
+    AWS = F
 }
 
 if(!file.exists(data_dir)){
@@ -45,6 +49,13 @@ model_filename_list <- list(
     rl_repar_exp = system.file('stan', 'splt_rl_reparam_exp.stan', package = 'probly'),
     rl_repar_exp_no_b = system.file('stan', 'splt_rl_reparam_exp_no_b.stan', package = 'probly')
 )
+
+if(AWS){
+    model_filename_list <- model_filename_list[WHICH_MOD] #one mod per instance here.
+    append_to_data_fn <- names(model_filename_list)[[WHICH_MOD]]
+} else {
+    append_to_data_fn <- ''
+}
 
 data(splt)
 data(splt_dev_and_demog)
@@ -159,5 +170,5 @@ for(mod in 1:length(model_filename_list)){
 }
 
 saveRDS(splt_no_na_dev_matestat,
-        file.path(data_dir, paste0('splt-looser-data-',
+        file.path(data_dir, paste0('splt-looser-data-', append_to_data_fn, '-',
                                    round(as.numeric(Sys.time())/1000,0),'.RDS')))
