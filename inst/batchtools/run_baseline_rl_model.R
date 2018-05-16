@@ -16,7 +16,14 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
          template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
          resources = list(ncpus = 6, walltime = 60*24*5, memory = '750M',
                           partitions = 'long,longfat'))
-} else {
+} else if(grepl('^ip-', system('hostname', intern = T))) { #AWS
+    niter <- 2000
+    nchains <- 4
+    niterperchain <- ceiling(niter/nchains)
+    warmup <- 1250
+    data_dir <- '/home/ubuntu/data'
+    plan(tweak(multiprocess, gc = T, workers = 4))
+} {
     data_dir <- '/data/jflournoy/split/probly'
     niter <- 20
     nchains <- 2
