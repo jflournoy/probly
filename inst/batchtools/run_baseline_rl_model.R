@@ -22,7 +22,6 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     niterperchain <- ceiling(niter/nchains)
     warmup <- 1250
     data_dir <- '/home/ubuntu/data'
-    plan(sequential)
     if(!any(grepl('WHICH_MOD', ls()))) stop("var WHICH_MOD must be set on AWS")
     AWS = T
     devtools::install_github('jflournoy/probly')
@@ -100,7 +99,7 @@ fit_many_mods_f <- listenv()
 
 for(mod in 1:length(model_filename_list)){
     print(paste0('Sampling from model: ', names(model_filename_list)[mod]))
-    fit_many_mods_f[[mod]] %<-% {
+    fit_many_mods_f[[mod]]  <- {
         library(rstan)
         library(probly)
         dim(splt_no_na_dev_matestat)
