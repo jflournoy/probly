@@ -1,11 +1,5 @@
 ## ---- run_baseline_models
 
-library(future)
-library(future.batchtools)
-library(probly)
-library(listenv)
-library(rstan)
-
 if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     niter <- 2000
     nchains <- 6
@@ -26,6 +20,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     plan(tweak(multiprocess, gc = T, workers = 4))
     if(!any(grepl('WHICH_MOD', ls()))) stop("var WHICH_MOD must be set on AWS")
     AWS = T
+    devtools::install_github('jflournoy/probly')
 } {
     data_dir <- '/data/jflournoy/split/probly'
     niter <- 20
@@ -35,6 +30,12 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     plan(tweak(multiprocess, gc = T, workers = 8))
     AWS = F
 }
+
+library(future)
+library(future.batchtools)
+library(probly)
+library(listenv)
+library(rstan)
 
 if(!file.exists(data_dir)){
     stop('Data directory "', data_dir, '" does not exist')
