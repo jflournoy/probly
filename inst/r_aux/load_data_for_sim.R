@@ -76,6 +76,7 @@ splt$gender <- factor(splt$gender, levels = c(0, 1), labels = c('Male', 'Female'
 splt_confidence$sample <- factor(splt_confidence$sample, levels = names(sample_labels), labels = sample_labels)
 
 splt <- splt[!is.na(splt$pressed_r), ]
+splt_orig <- splt
 splt <- splt[!is.na(splt$age) & !is.na(splt$gender) & splt$age < 30, ]
 
 splt$opt_is_right <- as.numeric(factor(splt$proportion,
