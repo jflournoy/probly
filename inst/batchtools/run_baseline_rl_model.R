@@ -26,7 +26,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     if(!any(grepl('WHICH_MOD', ls()))) stop("var WHICH_MOD must be set on AWS")
     AWS = T
     devtools::install_github('jflournoy/probly')
-} {
+} else {
     data_dir <- '/data/jflournoy/split/probly'
     niter <- 20
     nchains <- 2
