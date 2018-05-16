@@ -53,8 +53,8 @@ model_filename_list <- list(
 )
 
 if(AWS){
-    model_filename_list <- model_filename_list[WHICH_MOD] #one mod per instance here.
     append_to_data_fn <- names(model_filename_list)[[WHICH_MOD]]
+    model_filename_list <- model_filename_list[WHICH_MOD] #one mod per instance here.
 } else {
     append_to_data_fn <- ''
 }
