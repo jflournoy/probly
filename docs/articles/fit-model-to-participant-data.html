@@ -96,7 +96,7 @@
       <h1>Fit model to participant data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-05-11</h4>
+            <h4 class="date">2018-05-18</h4>
       
       
       <div class="hidden name"><code>fit-model-to-participant-data.Rmd</code></div>
@@ -145,13 +145,18 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 <p>What’s the least sophisticated way I could possibly examine these data? Probably by taking the mean of some subset of the trials in each condition. So let’s do that and see how much stability there is across bins. since there are 128 trials per condition, I split this into bins of 16 trials each, for 8 bins total. I will also create overlapping double bins (e.g., bins 1 and 2, bins 2 and 3) increaslingly large bins starting from the beginning (e.g., combine bins 1 and 2, then bins 1-3), as well as starting from the end (bins 7 and 8, then bins 6-8). In this way, I hope to build up a picture for how much a summary of one subset of bins captures about the rest of the bins. I suspect that bins toward the end of the run will capture more information about the rest of the run than bins at the beginning of the run, as would be consistent with learning throughout the task.</p>
 <p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-3-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-3-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-3-3.png" width="672"></p>
 <p>Examining the above plots where corelations r &gt; .90 are colored red (and r = .9 color black), it appears that the most wide ranging correlations are from bins that combine information during the latter half of the run in various ways. If one had to choose such a summary in these data, the average number of optimal presses from bin 5 through 8 (from trial 65 through trial 128) seems like a good candidate. It is highly correlated with average optimal responding from bin 6-end and 7-end, combined bins 5 &amp; 6, combined bins 6 &amp; 7, as well as the combined bins from start to finish (“bin_start_to_8”). Using the intercept from a logistic regression with the trial number predictor centered toward the end of the trial also captures a good deal of variance that corresponds to optimal responding on trials toward the end of the run.</p>
-<p>Here are a few plots of these parameters agains age.</p>
+<div id="age-and-dev" class="section level2">
+<h2 class="hasAnchor">
+<a href="#age-and-dev" class="anchor"></a>Age and dev</h2>
+<p>Here are a few plots of these parameters against age.</p>
 <p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-4-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-4-2.png" width="672"></p>
+</div>
 </div>
 <div id="results-from-logistic-regression" class="section level1">
 <h1 class="hasAnchor">
 <a href="#results-from-logistic-regression" class="anchor"></a>Results from logistic regression</h1>
-<pre><code>#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace
+<pre><code>#&gt; [1] FALSE
+#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace
 #&gt;   Approximation) [glmerMod]
 #&gt;  Family: binomial  ( logit )
 #&gt; Formula: press_opt ~ 1 + (1 | id)
@@ -357,6 +362,334 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 </tr>
 </tbody>
 </table>
+<pre><code>#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace
+#&gt;   Approximation) [glmerMod]
+#&gt;  Family: binomial  ( logit )
+#&gt; Formula: 
+#&gt; press_opt ~ 1 + condition * trial_index_c0_s * age_std * gender +  
+#&gt;     (1 + condition * trial_index_c0_s | sample:id)
+#&gt;    Data: splt
+#&gt; Control: lme4_control_options
+#&gt; 
+#&gt;      AIC      BIC   logLik deviance df.resid 
+#&gt; 137130.5 137565.6 -68520.3 137040.5   116661 
+#&gt; 
+#&gt; Scaled residuals: 
+#&gt;     Min      1Q  Median      3Q     Max 
+#&gt; -7.2937 -1.0555  0.4768  0.7451  1.6287 
+#&gt; 
+#&gt; Random effects:
+#&gt;  Groups    Name                                        Variance Std.Dev.
+#&gt;  sample:id (Intercept)                                 1.39053  1.1792  
+#&gt;            conditionDating/Looking                     0.75153  0.8669  
+#&gt;            conditionPopular/Unpopular                  0.52033  0.7213  
+#&gt;            trial_index_c0_s                            0.09669  0.3110  
+#&gt;            conditionDating/Looking:trial_index_c0_s    0.07520  0.2742  
+#&gt;            conditionPopular/Unpopular:trial_index_c0_s 0.05383  0.2320  
+#&gt;  Corr                         
+#&gt;                               
+#&gt;  -0.25                        
+#&gt;  -0.18  0.45                  
+#&gt;   0.96 -0.16  0.10            
+#&gt;  -0.10  0.79  0.24 -0.06      
+#&gt;  -0.06  0.36  0.64  0.13  0.41
+#&gt; Number of obs: 116706, groups:  sample:id, 308
+#&gt; 
+#&gt; Fixed effects:
+#&gt;                                                                    Estimate
+#&gt; (Intercept)                                                       1.0226875
+#&gt; conditionDating/Looking                                           0.1414945
+#&gt; conditionPopular/Unpopular                                        0.2189603
+#&gt; trial_index_c0_s                                                  0.2303013
+#&gt; age_std                                                           0.0762011
+#&gt; genderFemale                                                      0.3248039
+#&gt; conditionDating/Looking:trial_index_c0_s                         -0.0028288
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                       0.0059656
+#&gt; conditionDating/Looking:age_std                                  -0.0135116
+#&gt; conditionPopular/Unpopular:age_std                               -0.0052754
+#&gt; trial_index_c0_s:age_std                                          0.0130405
+#&gt; conditionDating/Looking:genderFemale                             -0.0149832
+#&gt; conditionPopular/Unpopular:genderFemale                          -0.0308998
+#&gt; trial_index_c0_s:genderFemale                                     0.0568792
+#&gt; age_std:genderFemale                                              0.0238716
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std                 -0.0192557
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std              -0.0115440
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale             0.0075287
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale          0.0135768
+#&gt; conditionDating/Looking:age_std:genderFemale                     -0.1243677
+#&gt; conditionPopular/Unpopular:age_std:genderFemale                   0.0321801
+#&gt; trial_index_c0_s:age_std:genderFemale                             0.0000271
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std:genderFemale    -0.0260058
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std:genderFemale  0.0398148
+#&gt;                                                                  Std. Error
+#&gt; (Intercept)                                                       0.1220392
+#&gt; conditionDating/Looking                                           0.1033806
+#&gt; conditionPopular/Unpopular                                        0.0918774
+#&gt; trial_index_c0_s                                                  0.0359863
+#&gt; age_std                                                           0.1030089
+#&gt; genderFemale                                                      0.1506542
+#&gt; conditionDating/Looking:trial_index_c0_s                          0.0388166
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                       0.0360532
+#&gt; conditionDating/Looking:age_std                                   0.0863625
+#&gt; conditionPopular/Unpopular:age_std                                0.0762590
+#&gt; trial_index_c0_s:age_std                                          0.0303211
+#&gt; conditionDating/Looking:genderFemale                              0.1277171
+#&gt; conditionPopular/Unpopular:genderFemale                           0.1131608
+#&gt; trial_index_c0_s:genderFemale                                     0.0444625
+#&gt; age_std:genderFemale                                              0.1429447
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std                  0.0324309
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std               0.0299334
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale             0.0479496
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale          0.0444028
+#&gt; conditionDating/Looking:age_std:genderFemale                      0.1210167
+#&gt; conditionPopular/Unpopular:age_std:genderFemale                   0.1066808
+#&gt; trial_index_c0_s:age_std:genderFemale                             0.0421695
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std:genderFemale     0.0454347
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std:genderFemale  0.0418571
+#&gt;                                                                  z value
+#&gt; (Intercept)                                                        8.380
+#&gt; conditionDating/Looking                                            1.369
+#&gt; conditionPopular/Unpopular                                         2.383
+#&gt; trial_index_c0_s                                                   6.400
+#&gt; age_std                                                            0.740
+#&gt; genderFemale                                                       2.156
+#&gt; conditionDating/Looking:trial_index_c0_s                          -0.073
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                        0.165
+#&gt; conditionDating/Looking:age_std                                   -0.156
+#&gt; conditionPopular/Unpopular:age_std                                -0.069
+#&gt; trial_index_c0_s:age_std                                           0.430
+#&gt; conditionDating/Looking:genderFemale                              -0.117
+#&gt; conditionPopular/Unpopular:genderFemale                           -0.273
+#&gt; trial_index_c0_s:genderFemale                                      1.279
+#&gt; age_std:genderFemale                                               0.167
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std                  -0.594
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std               -0.386
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale              0.157
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale           0.306
+#&gt; conditionDating/Looking:age_std:genderFemale                      -1.028
+#&gt; conditionPopular/Unpopular:age_std:genderFemale                    0.302
+#&gt; trial_index_c0_s:age_std:genderFemale                              0.001
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std:genderFemale     -0.572
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std:genderFemale   0.951
+#&gt;                                                                  Pr(&gt;|z|)
+#&gt; (Intercept)                                                       &lt; 2e-16
+#&gt; conditionDating/Looking                                            0.1711
+#&gt; conditionPopular/Unpopular                                         0.0172
+#&gt; trial_index_c0_s                                                 1.56e-10
+#&gt; age_std                                                            0.4595
+#&gt; genderFemale                                                       0.0311
+#&gt; conditionDating/Looking:trial_index_c0_s                           0.9419
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                        0.8686
+#&gt; conditionDating/Looking:age_std                                    0.8757
+#&gt; conditionPopular/Unpopular:age_std                                 0.9448
+#&gt; trial_index_c0_s:age_std                                           0.6671
+#&gt; conditionDating/Looking:genderFemale                               0.9066
+#&gt; conditionPopular/Unpopular:genderFemale                            0.7848
+#&gt; trial_index_c0_s:genderFemale                                      0.2008
+#&gt; age_std:genderFemale                                               0.8674
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std                   0.5527
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std                0.6998
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale              0.8752
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale           0.7598
+#&gt; conditionDating/Looking:age_std:genderFemale                       0.3041
+#&gt; conditionPopular/Unpopular:age_std:genderFemale                    0.7629
+#&gt; trial_index_c0_s:age_std:genderFemale                              0.9995
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std:genderFemale      0.5671
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std:genderFemale   0.3415
+#&gt;                                                                     
+#&gt; (Intercept)                                                      ***
+#&gt; conditionDating/Looking                                             
+#&gt; conditionPopular/Unpopular                                       *  
+#&gt; trial_index_c0_s                                                 ***
+#&gt; age_std                                                             
+#&gt; genderFemale                                                     *  
+#&gt; conditionDating/Looking:trial_index_c0_s                            
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                         
+#&gt; conditionDating/Looking:age_std                                     
+#&gt; conditionPopular/Unpopular:age_std                                  
+#&gt; trial_index_c0_s:age_std                                            
+#&gt; conditionDating/Looking:genderFemale                                
+#&gt; conditionPopular/Unpopular:genderFemale                             
+#&gt; trial_index_c0_s:genderFemale                                       
+#&gt; age_std:genderFemale                                                
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std                    
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std                 
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale               
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale            
+#&gt; conditionDating/Looking:age_std:genderFemale                        
+#&gt; conditionPopular/Unpopular:age_std:genderFemale                     
+#&gt; trial_index_c0_s:age_std:genderFemale                               
+#&gt; conditionDating/Looking:trial_index_c0_s:age_std:genderFemale       
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:age_std:genderFemale    
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; convergence code: 0
+#&gt; unable to evaluate scaled gradient
+#&gt; Model failed to converge: degenerate  Hessian with 1 negative eigenvalues
+#&gt; Generalized linear mixed model fit by maximum likelihood (Laplace
+#&gt;   Approximation) [glmerMod]
+#&gt;  Family: binomial  ( logit )
+#&gt; Formula: 
+#&gt; press_opt ~ 1 + condition * trial_index_c0_s * pds_std * gender +  
+#&gt;     (1 + condition * trial_index_c0_s | sample:id)
+#&gt;    Data: splt
+#&gt; Control: lme4_control_options
+#&gt; 
+#&gt;      AIC      BIC   logLik deviance df.resid 
+#&gt; 134325.1 134759.1 -67117.6 134235.1   114009 
+#&gt; 
+#&gt; Scaled residuals: 
+#&gt;     Min      1Q  Median      3Q     Max 
+#&gt; -7.0046 -1.0562  0.4788  0.7490  1.6757 
+#&gt; 
+#&gt; Random effects:
+#&gt;  Groups    Name                                        Variance Std.Dev.
+#&gt;  sample:id (Intercept)                                 1.32345  1.1504  
+#&gt;            conditionDating/Looking                     0.66107  0.8131  
+#&gt;            conditionPopular/Unpopular                  0.55681  0.7462  
+#&gt;            trial_index_c0_s                            0.08921  0.2987  
+#&gt;            conditionDating/Looking:trial_index_c0_s    0.06670  0.2583  
+#&gt;            conditionPopular/Unpopular:trial_index_c0_s 0.05590  0.2364  
+#&gt;  Corr                         
+#&gt;                               
+#&gt;  -0.18                        
+#&gt;  -0.16  0.37                  
+#&gt;   0.96 -0.02  0.12            
+#&gt;  -0.03  0.74  0.18  0.07      
+#&gt;  -0.02  0.21  0.67  0.17  0.30
+#&gt; Number of obs: 114054, groups:  sample:id, 301
+#&gt; 
+#&gt; Fixed effects:
+#&gt;                                                                   Estimate
+#&gt; (Intercept)                                                       1.104414
+#&gt; conditionDating/Looking                                           0.097405
+#&gt; conditionPopular/Unpopular                                        0.187511
+#&gt; trial_index_c0_s                                                  0.253568
+#&gt; pds_std                                                           0.136736
+#&gt; genderFemale                                                      0.155509
+#&gt; conditionDating/Looking:trial_index_c0_s                         -0.029583
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                      -0.022551
+#&gt; conditionDating/Looking:pds_std                                  -0.072509
+#&gt; conditionPopular/Unpopular:pds_std                               -0.039470
+#&gt; trial_index_c0_s:pds_std                                          0.037576
+#&gt; conditionDating/Looking:genderFemale                              0.097438
+#&gt; conditionPopular/Unpopular:genderFemale                          -0.009530
+#&gt; trial_index_c0_s:genderFemale                                     0.006425
+#&gt; pds_std:genderFemale                                              0.021213
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std                 -0.045289
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std              -0.042435
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale             0.048857
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale          0.046768
+#&gt; conditionDating/Looking:pds_std:genderFemale                     -0.022967
+#&gt; conditionPopular/Unpopular:pds_std:genderFemale                   0.157159
+#&gt; trial_index_c0_s:pds_std:genderFemale                             0.013477
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std:genderFemale     0.038699
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std:genderFemale  0.067117
+#&gt;                                                                  Std. Error
+#&gt; (Intercept)                                                        0.132499
+#&gt; conditionDating/Looking                                            0.109697
+#&gt; conditionPopular/Unpopular                                         0.104208
+#&gt; trial_index_c0_s                                                   0.038823
+#&gt; pds_std                                                            0.097320
+#&gt; genderFemale                                                       0.163291
+#&gt; conditionDating/Looking:trial_index_c0_s                           0.041826
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                        0.040411
+#&gt; conditionDating/Looking:pds_std                                    0.079442
+#&gt; conditionPopular/Unpopular:pds_std                                 0.075042
+#&gt; trial_index_c0_s:pds_std                                           0.028378
+#&gt; conditionDating/Looking:genderFemale                               0.135365
+#&gt; conditionPopular/Unpopular:genderFemale                            0.127750
+#&gt; trial_index_c0_s:genderFemale                                      0.047843
+#&gt; pds_std:genderFemale                                               0.160721
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std                   0.030220
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std                0.029034
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale              0.051600
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale           0.049523
+#&gt; conditionDating/Looking:pds_std:genderFemale                       0.132350
+#&gt; conditionPopular/Unpopular:pds_std:genderFemale                    0.124484
+#&gt; trial_index_c0_s:pds_std:genderFemale                              0.046920
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std:genderFemale      0.050356
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std:genderFemale   0.048122
+#&gt;                                                                  z value
+#&gt; (Intercept)                                                        8.335
+#&gt; conditionDating/Looking                                            0.888
+#&gt; conditionPopular/Unpopular                                         1.799
+#&gt; trial_index_c0_s                                                   6.531
+#&gt; pds_std                                                            1.405
+#&gt; genderFemale                                                       0.952
+#&gt; conditionDating/Looking:trial_index_c0_s                          -0.707
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                       -0.558
+#&gt; conditionDating/Looking:pds_std                                   -0.913
+#&gt; conditionPopular/Unpopular:pds_std                                -0.526
+#&gt; trial_index_c0_s:pds_std                                           1.324
+#&gt; conditionDating/Looking:genderFemale                               0.720
+#&gt; conditionPopular/Unpopular:genderFemale                           -0.075
+#&gt; trial_index_c0_s:genderFemale                                      0.134
+#&gt; pds_std:genderFemale                                               0.132
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std                  -1.499
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std               -1.462
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale              0.947
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale           0.944
+#&gt; conditionDating/Looking:pds_std:genderFemale                      -0.174
+#&gt; conditionPopular/Unpopular:pds_std:genderFemale                    1.262
+#&gt; trial_index_c0_s:pds_std:genderFemale                              0.287
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std:genderFemale      0.769
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std:genderFemale   1.395
+#&gt;                                                                  Pr(&gt;|z|)
+#&gt; (Intercept)                                                       &lt; 2e-16
+#&gt; conditionDating/Looking                                             0.375
+#&gt; conditionPopular/Unpopular                                          0.072
+#&gt; trial_index_c0_s                                                 6.52e-11
+#&gt; pds_std                                                             0.160
+#&gt; genderFemale                                                        0.341
+#&gt; conditionDating/Looking:trial_index_c0_s                            0.479
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                         0.577
+#&gt; conditionDating/Looking:pds_std                                     0.361
+#&gt; conditionPopular/Unpopular:pds_std                                  0.599
+#&gt; trial_index_c0_s:pds_std                                            0.185
+#&gt; conditionDating/Looking:genderFemale                                0.472
+#&gt; conditionPopular/Unpopular:genderFemale                             0.941
+#&gt; trial_index_c0_s:genderFemale                                       0.893
+#&gt; pds_std:genderFemale                                                0.895
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std                    0.134
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std                 0.144
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale               0.344
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale            0.345
+#&gt; conditionDating/Looking:pds_std:genderFemale                        0.862
+#&gt; conditionPopular/Unpopular:pds_std:genderFemale                     0.207
+#&gt; trial_index_c0_s:pds_std:genderFemale                               0.774
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std:genderFemale       0.442
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std:genderFemale    0.163
+#&gt;                                                                     
+#&gt; (Intercept)                                                      ***
+#&gt; conditionDating/Looking                                             
+#&gt; conditionPopular/Unpopular                                       .  
+#&gt; trial_index_c0_s                                                 ***
+#&gt; pds_std                                                             
+#&gt; genderFemale                                                        
+#&gt; conditionDating/Looking:trial_index_c0_s                            
+#&gt; conditionPopular/Unpopular:trial_index_c0_s                         
+#&gt; conditionDating/Looking:pds_std                                     
+#&gt; conditionPopular/Unpopular:pds_std                                  
+#&gt; trial_index_c0_s:pds_std                                            
+#&gt; conditionDating/Looking:genderFemale                                
+#&gt; conditionPopular/Unpopular:genderFemale                             
+#&gt; trial_index_c0_s:genderFemale                                       
+#&gt; pds_std:genderFemale                                                
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std                    
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std                 
+#&gt; conditionDating/Looking:trial_index_c0_s:genderFemale               
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:genderFemale            
+#&gt; conditionDating/Looking:pds_std:genderFemale                        
+#&gt; conditionPopular/Unpopular:pds_std:genderFemale                     
+#&gt; trial_index_c0_s:pds_std:genderFemale                               
+#&gt; conditionDating/Looking:trial_index_c0_s:pds_std:genderFemale       
+#&gt; conditionPopular/Unpopular:trial_index_c0_s:pds_std:genderFemale    
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; convergence code: 0
+#&gt; unable to evaluate scaled gradient
+#&gt; Model failed to converge: degenerate  Hessian with 1 negative eigenvalues</code></pre>
 <div id="relation-to-fsmi-subscales" class="section level2">
 <h2 class="hasAnchor">
 <a href="#relation-to-fsmi-subscales" class="anchor"></a>Relation to FSMI subscales</h2>
@@ -520,24 +853,234 @@ Of course, the variance due to other latent causes may also be a reason true rel
 <div id="results-from-bayesian-learning-models" class="section level1">
 <h1 class="hasAnchor">
 <a href="#results-from-bayesian-learning-models" class="anchor"></a>Results from Bayesian learning models</h1>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-3.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-4.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
+<div id="relation-of-learning-model-to-low-fi" class="section level2">
+<h2 class="hasAnchor">
+<a href="#relation-of-learning-model-to-low-fi" class="anchor"></a>Relation of learning model to low-fi</h2>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-4.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-5.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-6.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-7.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-8.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-9.png" width="672"></p>
+<pre><code>#&gt;        z 
+#&gt; -2.33789
+#&gt; [1] 0.01939297
+#&gt;      r.tau 
+#&gt; -0.1681599
+#&gt;    d.r.tau 
+#&gt; -0.3411783
+#&gt;          z 
+#&gt; -0.4333172
+#&gt; [1] 0.6647843
+#&gt;       r.tau 
+#&gt; -0.03157224
+#&gt;     d.r.tau 
+#&gt; -0.06317597</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-10.png" width="672"></p>
+<pre><code>#&gt; Call:psych::corr.test(x = select(ungroup(lowfi_learning_pdiffs_df_w), 
+#&gt;     -id), method = "spearman")
+#&gt; Correlation matrix 
+#&gt;                            fsmi_mate fsmi_stat ep_mean_Dating/Looking
+#&gt; fsmi_mate                       1.00      0.07                  -0.15
+#&gt; fsmi_stat                       0.07      1.00                  -0.04
+#&gt; ep_mean_Dating/Looking         -0.15     -0.04                   1.00
+#&gt; ep_mean_Popular/Unpopular      -0.09     -0.03                   0.70
+#&gt; rho_mean_Dating/Looking         0.04      0.05                  -0.08
+#&gt; rho_mean_Popular/Unpopular      0.03     -0.03                  -0.08
+#&gt; xi_mean_Dating/Looking          0.01     -0.06                   0.01
+#&gt; xi_mean_Popular/Unpopular       0.04     -0.02                   0.03
+#&gt;                            ep_mean_Popular/Unpopular
+#&gt; fsmi_mate                                      -0.09
+#&gt; fsmi_stat                                      -0.03
+#&gt; ep_mean_Dating/Looking                          0.70
+#&gt; ep_mean_Popular/Unpopular                       1.00
+#&gt; rho_mean_Dating/Looking                        -0.06
+#&gt; rho_mean_Popular/Unpopular                      0.02
+#&gt; xi_mean_Dating/Looking                          0.03
+#&gt; xi_mean_Popular/Unpopular                       0.01
+#&gt;                            rho_mean_Dating/Looking
+#&gt; fsmi_mate                                     0.04
+#&gt; fsmi_stat                                     0.05
+#&gt; ep_mean_Dating/Looking                       -0.08
+#&gt; ep_mean_Popular/Unpopular                    -0.06
+#&gt; rho_mean_Dating/Looking                       1.00
+#&gt; rho_mean_Popular/Unpopular                    0.70
+#&gt; xi_mean_Dating/Looking                       -0.45
+#&gt; xi_mean_Popular/Unpopular                    -0.42
+#&gt;                            rho_mean_Popular/Unpopular
+#&gt; fsmi_mate                                        0.03
+#&gt; fsmi_stat                                       -0.03
+#&gt; ep_mean_Dating/Looking                          -0.08
+#&gt; ep_mean_Popular/Unpopular                        0.02
+#&gt; rho_mean_Dating/Looking                          0.70
+#&gt; rho_mean_Popular/Unpopular                       1.00
+#&gt; xi_mean_Dating/Looking                          -0.36
+#&gt; xi_mean_Popular/Unpopular                       -0.40
+#&gt;                            xi_mean_Dating/Looking
+#&gt; fsmi_mate                                    0.01
+#&gt; fsmi_stat                                   -0.06
+#&gt; ep_mean_Dating/Looking                       0.01
+#&gt; ep_mean_Popular/Unpopular                    0.03
+#&gt; rho_mean_Dating/Looking                     -0.45
+#&gt; rho_mean_Popular/Unpopular                  -0.36
+#&gt; xi_mean_Dating/Looking                       1.00
+#&gt; xi_mean_Popular/Unpopular                    0.98
+#&gt;                            xi_mean_Popular/Unpopular
+#&gt; fsmi_mate                                       0.04
+#&gt; fsmi_stat                                      -0.02
+#&gt; ep_mean_Dating/Looking                          0.03
+#&gt; ep_mean_Popular/Unpopular                       0.01
+#&gt; rho_mean_Dating/Looking                        -0.42
+#&gt; rho_mean_Popular/Unpopular                     -0.40
+#&gt; xi_mean_Dating/Looking                          0.98
+#&gt; xi_mean_Popular/Unpopular                       1.00
+#&gt; Sample Size 
+#&gt;                            fsmi_mate fsmi_stat ep_mean_Dating/Looking
+#&gt; fsmi_mate                        220       220                    220
+#&gt; fsmi_stat                        220       220                    220
+#&gt; ep_mean_Dating/Looking           220       220                    308
+#&gt; ep_mean_Popular/Unpopular        220       220                    308
+#&gt; rho_mean_Dating/Looking          220       220                    308
+#&gt; rho_mean_Popular/Unpopular       220       220                    308
+#&gt; xi_mean_Dating/Looking           220       220                    308
+#&gt; xi_mean_Popular/Unpopular        220       220                    308
+#&gt;                            ep_mean_Popular/Unpopular
+#&gt; fsmi_mate                                        220
+#&gt; fsmi_stat                                        220
+#&gt; ep_mean_Dating/Looking                           308
+#&gt; ep_mean_Popular/Unpopular                        308
+#&gt; rho_mean_Dating/Looking                          308
+#&gt; rho_mean_Popular/Unpopular                       308
+#&gt; xi_mean_Dating/Looking                           308
+#&gt; xi_mean_Popular/Unpopular                        308
+#&gt;                            rho_mean_Dating/Looking
+#&gt; fsmi_mate                                      220
+#&gt; fsmi_stat                                      220
+#&gt; ep_mean_Dating/Looking                         308
+#&gt; ep_mean_Popular/Unpopular                      308
+#&gt; rho_mean_Dating/Looking                        308
+#&gt; rho_mean_Popular/Unpopular                     308
+#&gt; xi_mean_Dating/Looking                         308
+#&gt; xi_mean_Popular/Unpopular                      308
+#&gt;                            rho_mean_Popular/Unpopular
+#&gt; fsmi_mate                                         220
+#&gt; fsmi_stat                                         220
+#&gt; ep_mean_Dating/Looking                            308
+#&gt; ep_mean_Popular/Unpopular                         308
+#&gt; rho_mean_Dating/Looking                           308
+#&gt; rho_mean_Popular/Unpopular                        308
+#&gt; xi_mean_Dating/Looking                            308
+#&gt; xi_mean_Popular/Unpopular                         308
+#&gt;                            xi_mean_Dating/Looking
+#&gt; fsmi_mate                                     220
+#&gt; fsmi_stat                                     220
+#&gt; ep_mean_Dating/Looking                        308
+#&gt; ep_mean_Popular/Unpopular                     308
+#&gt; rho_mean_Dating/Looking                       308
+#&gt; rho_mean_Popular/Unpopular                    308
+#&gt; xi_mean_Dating/Looking                        308
+#&gt; xi_mean_Popular/Unpopular                     308
+#&gt;                            xi_mean_Popular/Unpopular
+#&gt; fsmi_mate                                        220
+#&gt; fsmi_stat                                        220
+#&gt; ep_mean_Dating/Looking                           308
+#&gt; ep_mean_Popular/Unpopular                        308
+#&gt; rho_mean_Dating/Looking                          308
+#&gt; rho_mean_Popular/Unpopular                       308
+#&gt; xi_mean_Dating/Looking                           308
+#&gt; xi_mean_Popular/Unpopular                        308
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;                            fsmi_mate fsmi_stat ep_mean_Dating/Looking
+#&gt; fsmi_mate                       0.00      1.00                   0.45
+#&gt; fsmi_stat                       0.34      0.00                   1.00
+#&gt; ep_mean_Dating/Looking          0.02      0.55                   0.00
+#&gt; ep_mean_Popular/Unpopular       0.19      0.64                   0.00
+#&gt; rho_mean_Dating/Looking         0.53      0.43                   0.18
+#&gt; rho_mean_Popular/Unpopular      0.70      0.63                   0.14
+#&gt; xi_mean_Dating/Looking          0.91      0.40                   0.80
+#&gt; xi_mean_Popular/Unpopular       0.55      0.79                   0.64
+#&gt;                            ep_mean_Popular/Unpopular
+#&gt; fsmi_mate                                       1.00
+#&gt; fsmi_stat                                       1.00
+#&gt; ep_mean_Dating/Looking                          0.00
+#&gt; ep_mean_Popular/Unpopular                       0.00
+#&gt; rho_mean_Dating/Looking                         0.27
+#&gt; rho_mean_Popular/Unpopular                      0.77
+#&gt; xi_mean_Dating/Looking                          0.61
+#&gt; xi_mean_Popular/Unpopular                       0.80
+#&gt;                            rho_mean_Dating/Looking
+#&gt; fsmi_mate                                        1
+#&gt; fsmi_stat                                        1
+#&gt; ep_mean_Dating/Looking                           1
+#&gt; ep_mean_Popular/Unpopular                        1
+#&gt; rho_mean_Dating/Looking                          0
+#&gt; rho_mean_Popular/Unpopular                       0
+#&gt; xi_mean_Dating/Looking                           0
+#&gt; xi_mean_Popular/Unpopular                        0
+#&gt;                            rho_mean_Popular/Unpopular
+#&gt; fsmi_mate                                           1
+#&gt; fsmi_stat                                           1
+#&gt; ep_mean_Dating/Looking                              1
+#&gt; ep_mean_Popular/Unpopular                           1
+#&gt; rho_mean_Dating/Looking                             0
+#&gt; rho_mean_Popular/Unpopular                          0
+#&gt; xi_mean_Dating/Looking                              0
+#&gt; xi_mean_Popular/Unpopular                           0
+#&gt;                            xi_mean_Dating/Looking
+#&gt; fsmi_mate                                       1
+#&gt; fsmi_stat                                       1
+#&gt; ep_mean_Dating/Looking                          1
+#&gt; ep_mean_Popular/Unpopular                       1
+#&gt; rho_mean_Dating/Looking                         0
+#&gt; rho_mean_Popular/Unpopular                      0
+#&gt; xi_mean_Dating/Looking                          0
+#&gt; xi_mean_Popular/Unpopular                       0
+#&gt;                            xi_mean_Popular/Unpopular
+#&gt; fsmi_mate                                          1
+#&gt; fsmi_stat                                          1
+#&gt; ep_mean_Dating/Looking                             1
+#&gt; ep_mean_Popular/Unpopular                          1
+#&gt; rho_mean_Dating/Looking                            0
+#&gt; rho_mean_Popular/Unpopular                         0
+#&gt; xi_mean_Dating/Looking                             0
+#&gt; xi_mean_Popular/Unpopular                          0
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<pre><code>#&gt; 
+#&gt;  Kendall's rank correlation tau
+#&gt; 
+#&gt; data:  lowfi_learning_df$ep_mean[lowfi_learning_df$condition == "Dating/Looking"] and lowfi_learning_df$fsmi_mate[lowfi_learning_df$condition == "Dating/Looking"]
+#&gt; z = -2.3379, p-value = 0.01939
+#&gt; alternative hypothesis: true tau is not equal to 0
+#&gt; sample estimates:
+#&gt;       tau 
+#&gt; -0.107565</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-2.png" width="672"></p>
+<pre><code>#&gt; 
+#&gt;  Kendall's rank correlation tau
+#&gt; 
+#&gt; data:  lowfi_learning_df$ep_mean[lowfi_learning_df$condition == "Popular/Unpopular"] and lowfi_learning_df$fsmi_stat[lowfi_learning_df$condition == "Popular/Unpopular"]
+#&gt; z = -0.43332, p-value = 0.6648
+#&gt; alternative hypothesis: true tau is not equal to 0
+#&gt; sample estimates:
+#&gt;         tau 
+#&gt; -0.02010285</code></pre>
+</div>
 <div id="mean-parameter-estimates" class="section level2">
 <h2 class="hasAnchor">
 <a href="#mean-parameter-estimates" class="anchor"></a>Mean parameter estimates</h2>
 <div id="learning-rate" class="section level3">
 <h3 class="hasAnchor">
 <a href="#learning-rate" class="anchor"></a>Learning rate</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-2.png" width="672"></p>
 </div>
 <div id="size-of-reward-modifier" class="section level3">
 <h3 class="hasAnchor">
 <a href="#size-of-reward-modifier" class="anchor"></a>Size of reward modifier</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-2.png" width="672"></p>
 </div>
 <div id="irriducible-noise-e-g--what-the-whaaa" class="section level3">
 <h3 class="hasAnchor">
 <a href="#irriducible-noise-e-g--what-the-whaaa" class="anchor"></a>Irriducible noise (e.g., “what the whaaa?”)</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-2.png" width="672"></p>
 </div>
 </div>
 <div id="model-predicted-behavior" class="section level2">
@@ -565,7 +1108,11 @@ Of course, the variance due to other latent causes may also be a reason true rel
 <li><a href="#descriptive-plots">Descriptive plots</a></li>
       </ul>
 </li>
-      <li><a href="#low-fi">Low-Fi</a></li>
+      <li>
+<a href="#low-fi">Low-Fi</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#age-and-dev">Age and dev</a></li>
+      </ul>
+</li>
       <li>
 <a href="#results-from-logistic-regression">Results from logistic regression</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#relation-to-fsmi-subscales">Relation to FSMI subscales</a></li>
@@ -573,7 +1120,8 @@ Of course, the variance due to other latent causes may also be a reason true rel
 </li>
       <li>
 <a href="#results-from-bayesian-learning-models">Results from Bayesian learning models</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#mean-parameter-estimates">Mean parameter estimates</a></li>
+<li><a href="#relation-of-learning-model-to-low-fi">Relation of learning model to low-fi</a></li>
+      <li><a href="#mean-parameter-estimates">Mean parameter estimates</a></li>
       <li><a href="#model-predicted-behavior">Model predicted behavior</a></li>
       <li><a href="#diagnostics">Diagnostics</a></li>
       </ul>
