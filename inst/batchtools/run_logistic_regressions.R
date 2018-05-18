@@ -82,6 +82,9 @@ formulae <- list(
 
     timeXcondition_dev_vrysmp_m_form = press_opt ~ 1 + condition*trial_index_c0_s*pds_std*gender +
         (1 + condition*trial_index_c0_s | sample:id)
+
+    timeXcondition_vrysmp_m_form = press_opt ~ 1 + condition*trial_index_c0_s +
+        (1 + condition*trial_index_c0_s | sample:id)
 )
 
 
