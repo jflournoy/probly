@@ -148,7 +148,7 @@ splt_fsmi_devdemog <- dplyr::left_join(splt_fsmi, splt_dev_and_demog, by = 'SID'
 splt_fsmi_devdemog <- dplyr::mutate_at(splt_fsmi_devdemog,
                                        vars(contains('SES')), funs(ifelse(. == -99, NA, .)))
 
-laste_30_repsponse_labels <- list(
+last_30_response_labels <- list(
     levels = c(0,1,2,3,4,5,6),
     labels = c('0', '1-2', '3-5', '6-9', '10-19', '20-29', 'All 30'))
 
@@ -159,12 +159,12 @@ splt_fsmi_devdemog$sex_ever <- factor(splt_fsmi_devdemog$YRBS_31, levels = c(0,1
 splt_fsmi_devdemog$alcohol_ever <- factor(splt_fsmi_devdemog$YRBS_12, levels = c(0,1), labels = c('No', 'Yes'))
 splt_fsmi_devdemog$alcohol_days_of_lst30 <- ordered(
     splt_fsmi_devdemog$YRBS_14,
-    levels = laste_30_repsponse_labels$levels,
-    labels = laste_30_repsponse_labels$labels)
+    levels = last_30_response_labels$levels,
+    labels = last_30_response_labels$labels)
 splt_fsmi_devdemog$alcohol_5drnks_lst30 <- ordered(
     splt_fsmi_devdemog$YRBS_15,
-    levels = laste_30_repsponse_labels$levels,
-    labels = laste_30_repsponse_labels$labels)
+    levels = last_30_response_labels$levels,
+    labels = last_30_response_labels$labels)
 splt_fsmi_devdemog$substance_pre_sex <- factor(splt_fsmi_devdemog$YRBS_35, 
                                                levels = c(0,1), labels = c('No', 'Yes'))
 

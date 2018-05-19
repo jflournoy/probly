@@ -147,7 +147,7 @@ The [`probly`](http://github.com/jflournoy/probly) package contains functions th
 One early indication that a model may not be well suited to a problem is that when generating from the prior distribution, datasets are produced that either do not adequately cover the range of reasonable values, or that cover ranges that are implausible [@gabry2017]. 
 The simulated data do generally cover the range of the actual data when we look just at the proportion of optimal presses over time (Figure \@ref(fig:simdata), and importantly do not show implausible behavior (all mass around extreme values like 0, 1, or .5).
 
-(ref:simdat) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model smooth and is only intended to give a rough sense of trends over trials. Each panel is one from 400 simulated data sets. The red line indicates random responding.
+(ref:simdata) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model smooth and is only intended to give a rough sense of trends over trials. Each panel is one from 400 simulated data sets. The red line indicates random responding.
 
 ```{r simdata, fig.width=8, fig.height=5, fig.cap='(ref:simdatcoverage)'}
 multi_plot <- probly::plot_splt_sim_behavior(

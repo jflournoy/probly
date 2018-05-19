@@ -186,8 +186,12 @@ Most participants in the college smaples have PDS scores indicating puberty is c
 
 (ref:pdsplot) Pubertal development by sample and age
 
-```{r pdsplot, fig.width=8, fig.height=5, fig.cap='(ref:pdsplot)'}
+```{r pdsplot, fig.width=6, fig.height=3.5, fig.cap='(ref:pdsplot)'}
 pds_plot_1 <- splt_dev_and_demog_task_sum %>%
+    dplyr::mutate(sample = factor(
+      sample, 
+      levels = levels(splt_dev_and_demog_task_sum$sample),
+      labels = sub('involved', 'involved\n', levels(splt_dev_and_demog_task_sum$sample)))) %>%
     dplyr::mutate_at(vars(PDS_mean_score, age), funs(as.numeric)) %>%
     ggplot2::ggplot(aes(x = PDS_mean_score, fill = gender)) + 
     ggplot2::geom_density(alpha = .5, adjust = 1.7) + 
@@ -205,7 +209,7 @@ pds_plot_1 <- splt_dev_and_demog_task_sum %>%
 pds_plot_2 <- splt_dev_and_demog_task_sum %>%
     dplyr::mutate_at(vars(PDS_mean_score, age), funs(as.numeric)) %>%
     ggplot2::ggplot(aes(x = age, y = PDS_mean_score, color = gender)) + 
-    ggplot2::geom_point(alpha = .5, position = position_jitter(w=.1, h=.1)) + 
+    ggplot2::geom_point(alpha = .3, position = position_jitter(w=.1, h=.1)) + 
     ggplot2::scale_color_manual(values = c('#1f78b4', '#33a02c'), 
                                 breaks = c('Male', 'Female'),
                                 labels = c('Male', 'Female'), 
@@ -221,7 +225,7 @@ pds_plot_2 <- splt_dev_and_demog_task_sum %>%
                   y = 'Pubertal development scale, mean',
                   x = 'Age (years)') + 
     ggplot2::coord_cartesian(xlim = c(12, 25), ylim = c(1, 4))
-pds_plot_12 <- gridExtra::grid.arrange(pds_plot_1, pds_plot_2,nrow=1)
+pds_plot_12 <- gridExtra::grid.arrange(pds_plot_1, pds_plot_2,nrow=1, widths = c(5.5, 3))
 
 save_out_list <- c(save_out_list, 'pds_plot_12')
 ```

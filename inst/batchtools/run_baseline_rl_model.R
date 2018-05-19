@@ -13,7 +13,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
     plan(batchtools_slurm,
          template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
-         resources = list(ncpus = 6, walltime = 60*24*5, memory = '750M',
+         resources = list(ncpus = 6, walltime = 60*24*5, memory = '2G',
                           partitions = 'long,longfat'))
     AWS = F
 } else if(grepl('^ip-', system('hostname', intern = T))) { #AWS

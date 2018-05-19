@@ -803,7 +803,7 @@ qplot(lowfi_learning_df$rho_mean, qnorm(lowfi_learning_df$p_opt), geom = c('poin
 qplot(lowfi_learning_df$eprho, qnorm(lowfi_learning_df$p_opt), geom = c('point', 'smooth'),
       method = 'gam', formula = y ~ s(x, fx = T, k = 6))
 
-ggplot2::ggplot(lowfi_learning_df,
+allparameter_plot <- ggplot2::ggplot(lowfi_learning_df,
                 ggplot2::aes(x = ep_mean,
                              y = qnorm(p_opt),
                              group = xi_mean_bin,
@@ -825,6 +825,7 @@ ggplot2::ggplot(lowfi_learning_df,
                   caption = expression(paste('Facet labels are ranges for median posterior ', beta[rho])),
                   color = expression(paste('Median ', beta[xi])),
                   linetype = expression(paste('Median ', beta[xi], ' range')))
+allparameter_plot
 
 lowfi_learning_pdiffs_df <- group_by(lowfi_learning_df, id) %>% 
     mutate(rho_mean_contrast = exp(rho_mean) - exp(rho_mean[condition == 'Hungry/Thirsty']),
