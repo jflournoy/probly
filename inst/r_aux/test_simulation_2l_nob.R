@@ -108,6 +108,11 @@ list_of_pright_pred_mats <- lapply(1:dim(pright_pred_samps)[1], function(i) prig
 # rm(rl_2l_nob_sim)
 nada <- gc(verbose = F)
 
+pop_parlist <- c('mu_delta_ep', 'mu_delta_rho', 'mu_delta_xi',
+                 'tau_ep', 'tau_rho', 'tau_xi',
+                 'L_Omega_xi', 'L_Omega_ep', 'L_Omega_rho')
+indiv_parlist <- c('beta_ep_prm', 'beta_rho_prm', 'beta_xi_prm', 'pR_final', 'log_lik')
+
 if(!file.exists(sim_test_fit_fn)){
     message('Fitting simulated data')
     press_right_sim_mat <- list_of_pright_pred_mats[[test_sim_num]]
@@ -130,7 +135,7 @@ if(!file.exists(sim_test_fit_fn)){
                 data = stan_sim_data_to_fit,
                 chains = nchains, cores = nchains,
                 iter = 1534, warmup = 1200,
-                include = FALSE, pars = 'pright_pred', #no need to save predicted task behavior
+                include = TRUE, pars = c(pop_parlist, indiv_parlist),
                 control = list(max_treedepth = 15, adapt_delta = 0.99))
             message('Saving sim fit to: ', sim_test_fit_fn)
             saveRDS(afit, sim_test_fit_fn)
