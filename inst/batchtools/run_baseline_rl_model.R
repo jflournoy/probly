@@ -51,6 +51,23 @@ model_filename_list <- list(
     rl_repar_exp_no_b = system.file('stan', 'splt_rl_reparam_exp_no_b.stan', package = 'probly')
 )
 
+pop_parlist <- c('mu_delta_ep', 'mu_delta_rho', 'mu_delta_xi',
+                 'tau_ep', 'tau_rho', 'tau_xi',
+                 'L_Omega_xi', 'L_Omega_ep', 'L_Omega_rho')
+indiv_parlist <- c('beta_ep_prm', 'beta_rho_prm', 'beta_xi_prm', 'pR_final', 'log_lik')
+pop_parlist_b <- c('mu_delta_b', 'tau_b', 'L_Omega_b')
+indiv_parlist_b <- c('beta_b')
+pop_parlist_3l <- c('delta_xi', 'delta_ep', 'delta_rho',
+                    'sigma_delta_xi', 'sigma_delta_ep', 'sigma_delta_rho')
+pop_parlist_3l_b <- c('delta_b', 'sigma_delta_b')
+
+save_pars_list <- list(
+    rl_2_level = c(pop_parlist, indiv_parlist, pop_parlist_b, indiv_parlist_b),
+    rl_2_level_no_b = c(pop_parlist, indiv_parlist),
+    rl_repar_exp = c(pop_parlist, indiv_parlist, pop_parlist_b, indiv_parlist_b, pop_parlist_3l, pop_parlist_3l_b),
+    rl_repar_exp_no_b = c(pop_parlist, indiv_parlist, pop_parlist_3l)
+)
+
 if(AWS){
     append_to_data_fn <- names(model_filename_list)[[WHICH_MOD]]
     model_filename_list <- model_filename_list[WHICH_MOD] #one mod per instance here.
@@ -96,13 +113,7 @@ print(dim(dplyr::distinct(splt_no_na_dev_matestat, id)))
 #     !is.na(k_srq_admiration)), id)))
 
 
-pop_parlist <- c('mu_delta_ep', 'mu_delta_rho', 'mu_delta_xi',
-                    'tau_ep', 'tau_rho', 'tau_xi',
-                    'L_Omega_xi', 'L_Omega_ep', 'L_Omega_rho')
-indiv_parlist <- c('beta_ep_prm', 'beta_rho_prm', 'beta_xi_prm', 'pR_final', 'log_lik')
 
-pop_parlist_b <- c(pop_parlist, 'mu_delta_b', 'tau_b', 'L_Omega_b')
-indiv_parlist_b <- c(indiv_parlist, 'beta_b')
 
 fit_many_mods_f <- listenv()
 
@@ -167,11 +178,7 @@ for(mod in 1:length(model_filename_list)){
             stan_data$press_opt <- press_opt
         }
 
-        if(grepl('no_b$', names(model_filename_list)[[mod]])) {
-            save_pars <- c(pop_parlist, indiv_parlist)
-        } else {
-            save_pars <- c(pop_parlist_b, indiv_parlist_b)
-        }
+        save_pars <- save_pars_list[[mod]]
 
         message('Model: ', names(model_filename_list)[[mod]])
         message('Save pars: ', save_pars)
