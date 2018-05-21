@@ -173,6 +173,9 @@ for(mod in 1:length(model_filename_list)){
             save_pars <- c(pop_parlist_b, indiv_parlist_b)
         }
 
+        message('Model: ', names(model_filename_list)[[mod]])
+        message('Save pars: ', save_pars)
+
         stanFit <- rstan::stan(file = model_filename_list[[mod]],
                                data = stan_data,
                                chains = nchains, cores = nchains,
