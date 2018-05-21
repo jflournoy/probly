@@ -36,6 +36,7 @@ ksqr_key <- scorequaltrics::create_key_from_rubric(ksqr_rubric)
 ksrq_EFA_key <- list(m1 = c('K_SRQ_11', 'K_SRQ_18', 'K_SRQ_1', 'K_SRQ_7'),
                      m2 = c('K_SRQ_4', 'K_SRQ_20', 'K_SRQ_13', 'K_SRQ_9'))
 upps_key <- scorequaltrics::create_key_from_rubric(upps_rubric)
+ksrq_key <- ksqr_key
 
 self_report_motive_keys <- c(fsmi_key, dnp_key,
                              ksqr_key, ksrq_EFA_key,

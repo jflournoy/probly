@@ -95,6 +95,15 @@ print(dim(dplyr::distinct(splt_no_na_dev_matestat, id)))
 #     !is.na(k_srq_sexual_relationships),
 #     !is.na(k_srq_admiration)), id)))
 
+
+pop_parlist <- c('mu_delta_ep', 'mu_delta_rho', 'mu_delta_xi',
+                    'tau_ep', 'tau_rho', 'tau_xi',
+                    'L_Omega_xi', 'L_Omega_ep', 'L_Omega_rho')
+indiv_parlist <- c('beta_ep_prm', 'beta_rho_prm', 'beta_xi_prm', 'pR_final', 'log_lik')
+
+pop_parlist_b <- c(pop_parlist, 'mu_delta_b', 'tau_b', 'L_Omega_b')
+indiv_parlist_b <- c(indiv_parlist, 'beta_b')
+
 fit_many_mods_f <- listenv()
 
 for(mod in 1:length(model_filename_list)){
@@ -102,6 +111,7 @@ for(mod in 1:length(model_filename_list)){
     fit_many_mods_f[[mod]]  %<-% {
         library(rstan)
         library(probly)
+
         dim(splt_no_na_dev_matestat)
         splt_no_na <- splt_no_na_dev_matestat
 
@@ -157,16 +167,28 @@ for(mod in 1:length(model_filename_list)){
             stan_data$press_opt <- press_opt
         }
 
+        if(grepl('no_b$', names(model_filename_list)[[mod]])) {
+            save_pars <- c(pop_parlist, indiv_parlist)
+        } else {
+            save_pars <- c(pop_parlist_b, indiv_parlist_b)
+        }
+
         stanFit <- rstan::stan(file = model_filename_list[[mod]],
                                data = stan_data,
                                chains = nchains, cores = nchains,
                                iter = warmup + niterperchain, warmup = warmup,
+                               pars = save_pars, include = TRUE,
                                control = list(max_treedepth = 15, adapt_delta = 0.99))
 
-        saveRDS(stanFit,
-                file.path(data_dir,
-                          paste0('splt-looser-', names(model_filename_list)[mod],
-                                 '-', round(as.numeric(Sys.time())/1000,0),'.RDS')))
+        savepath <- file.path(data_dir,
+                              paste0('splt-looser-', names(model_filename_list)[mod],
+                                     '-', round(as.numeric(Sys.time())/1000,0),'.RDS'))
+
+        message('Saving fit to ', savepath)
+        message('Size: ', format(object.size(stanFit), units = 'GB'))
+
+        saveRDS(stanFit, savepath)
+        list(complete = TRUE)
     }
 }
 
