@@ -134,8 +134,10 @@ if(!file.exists(sim_test_fit_fn)){
     rl_2l_nob_simfit_f <- listenv()
     for(chain in 1:nchains){
         sim_test_fit_fn <- paste0(sim_test_fit_fn_pre, '-chain_', chain, '.RDS')
+        message('Deploying chain ', chain)
         rl_2l_nob_simfit_f[[chain]] <- future::future(
             {
+                library(rstan)
                 message('This is chain ', chain)
                 message('Will save sim fit to: ', sim_test_fit_fn)
                 afit <- rstan::stan(
