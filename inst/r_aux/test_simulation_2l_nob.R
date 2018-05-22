@@ -17,6 +17,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
          resources = list(ncpus = 1, walltime = 60*24*5, memory = '5G',
                           partitions = 'long,longfat'))
     sim_test_fit_fn_pre <- file.path(data_dir, 'splt_sim2_test_fit_wide_prior')
+    sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit_wide_prior.RDS')
 } else {
     data_dir <- '/data/jflournoy/split/probly'
     nsims <- 100
