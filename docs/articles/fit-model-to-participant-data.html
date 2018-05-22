@@ -96,7 +96,7 @@
       <h1>Fit model to participant data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-05-18</h4>
+            <h4 class="date">2018-05-21</h4>
       
       
       <div class="hidden name"><code>fit-model-to-participant-data.Rmd</code></div>
@@ -149,7 +149,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 <h2 class="hasAnchor">
 <a href="#age-and-dev" class="anchor"></a>Age and dev</h2>
 <p>Here are a few plots of these parameters against age.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-4-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-4-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-1.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-2.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-3.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-4.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-5.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-6.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-7.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-8.png" width="564"></p>
 </div>
 </div>
 <div id="results-from-logistic-regression" class="section level1">
@@ -236,7 +236,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 #&gt;    0.687019</code></pre>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-5">Table 1: </span>Check if adding sample and stimulus random effects makes a difference</caption>
+<span id="tab:unnamed-chunk-6">Table 1: </span>Check if adding sample and stimulus random effects makes a difference</caption>
 <thead><tr class="header">
 <th></th>
 <th align="right">Df</th>
@@ -286,7 +286,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-5">Table 1: </span>Compare trial model to null</caption>
+<span id="tab:unnamed-chunk-6">Table 1: </span>Compare trial model to null</caption>
 <thead><tr class="header">
 <th></th>
 <th align="right">Df</th>
@@ -325,7 +325,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-5">Table 1: </span>Compare condition model to null</caption>
+<span id="tab:unnamed-chunk-6">Table 1: </span>Compare condition model to null</caption>
 <thead><tr class="header">
 <th></th>
 <th align="right">Df</th>
@@ -838,27 +838,27 @@ Sensation seeking
 </tbody>
 </table>
 <p>In addition to confirmatory factor analyses, scale reliability and general-factor validity were assessed via the <span class="math inline">\(\omega_{h}\)</span> and <span class="math inline">\(\omega_t\)</span> statistics.
-These statistics account for the possibility that variance on items is due to both a general latent factor common to all items, and several group fators that account for variance in subsets of items <span class="citation">[@zinbarg2006]</span>.
+These statistics account for the possibility that variance on items is due to both a general latent factor common to all items, and several group fators that account for variance in subsets of items <span class="citation">(<span class="citeproc-not-found" data-reference-id="zinbarg2006"><strong>???</strong></span>)</span>.
 The <span class="math inline">\(\omega_{h}\)</span> statistic captures the proportion of variance due to a general factor, and so is proportional to the degree of expected correspondence between the scale and another measure of the construct (on a different scale, or at retest), and also indexes the validity of the scale as a measure of the ostensible latent construct.
 The reliability of the whole scale is indexed by <span class="math inline">\(\omega_t\)</span>, which includes variance due to both group and general factors.
 Cronebach’s <span class="math inline">\(\alpha\)</span> is also reported because it is the default practice, and it may be helpful to demonstrate the differences between the two approaches.
-All three statistics were calculated using the <code>omega</code> function in the <code>psych</code> package for R <span class="citation">[@revelle2017]</span>.</p>
+All three statistics were calculated using the <code>omega</code> function in the <code>psych</code> package for R <span class="citation">(<span class="citeproc-not-found" data-reference-id="revelle2017"><strong>???</strong></span>)</span>.</p>
 <p>The mate-seeking and status motive scales from the FSMI showed adequate reliability, with <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\omega_t\)</span> in the acceptable to excellent range according to some rules of thumb (Table ref(tab:fsmi_reliability).
 However, <span class="math inline">\(\omega_h\)</span> indicates that only about 68% of the variance in FSMI Status and 80% of the variance in FSMI mate-seeking are due to the general factor.
 In light of this, any correlations of scale responses with other constructs of interest should be interpretted in light of the possibility that they are due, in part, to associations between variance <em>not</em> due to the general factor (and thus <em>note</em> due to the construct of interest).
 Of course, the variance due to other latent causes may also be a reason true relations are attentuated.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-4.png" width="672"></p>
 </div>
 </div>
 <div id="results-from-bayesian-learning-models" class="section level1">
 <h1 class="hasAnchor">
 <a href="#results-from-bayesian-learning-models" class="anchor"></a>Results from Bayesian learning models</h1>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-4.png" width="672"></p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-4.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
 <div id="relation-of-learning-model-to-low-fi" class="section level2">
 <h2 class="hasAnchor">
 <a href="#relation-of-learning-model-to-low-fi" class="anchor"></a>Relation of learning model to low-fi</h2>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-4.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-5.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-6.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-7.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-8.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-9.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-4.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-5.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-6.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-7.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-8.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-9.png" width="672"></p>
 <pre><code>#&gt;        z 
 #&gt; -2.33789
 #&gt; [1] 0.01939297
@@ -873,7 +873,7 @@ Of course, the variance due to other latent causes may also be a reason true rel
 #&gt; -0.03157224
 #&gt;     d.r.tau 
 #&gt; -0.06317597</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-10.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-10.png" width="672"></p>
 <pre><code>#&gt; Call:psych::corr.test(x = select(ungroup(lowfi_learning_pdiffs_df_w), 
 #&gt;     -id), method = "spearman")
 #&gt; Correlation matrix 
@@ -1043,7 +1043,7 @@ Of course, the variance due to other latent causes may also be a reason true rel
 #&gt; xi_mean_Popular/Unpopular                          0
 #&gt; 
 #&gt;  To see confidence intervals of the correlations, print with the short=FALSE option</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
 <pre><code>#&gt; 
 #&gt;  Kendall's rank correlation tau
 #&gt; 
@@ -1053,7 +1053,7 @@ Of course, the variance due to other latent causes may also be a reason true rel
 #&gt; sample estimates:
 #&gt;       tau 
 #&gt; -0.107565</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-2.png" width="672"></p>
 <pre><code>#&gt; 
 #&gt;  Kendall's rank correlation tau
 #&gt; 
@@ -1070,17 +1070,17 @@ Of course, the variance due to other latent causes may also be a reason true rel
 <div id="learning-rate" class="section level3">
 <h3 class="hasAnchor">
 <a href="#learning-rate" class="anchor"></a>Learning rate</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-2.png" width="672"></p>
 </div>
 <div id="size-of-reward-modifier" class="section level3">
 <h3 class="hasAnchor">
 <a href="#size-of-reward-modifier" class="anchor"></a>Size of reward modifier</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-2.png" width="672"></p>
 </div>
 <div id="irriducible-noise-e-g--what-the-whaaa" class="section level3">
 <h3 class="hasAnchor">
 <a href="#irriducible-noise-e-g--what-the-whaaa" class="anchor"></a>Irriducible noise (e.g., “what the whaaa?”)</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-15-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-15-2.png" width="672"></p>
 </div>
 </div>
 <div id="model-predicted-behavior" class="section level2">
