@@ -3,6 +3,8 @@
 #assumes `load_data_for_sim.R` has been run
 
 library(future)
+library(future.batchtools)
+library(listenv)
 library(rstan)
 if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     nsims <- 100
@@ -10,8 +12,11 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     nsimsperchain <- ceiling(nsims/nchains)
     data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
     message('Data dir: ', data_dir)
-    plan(tweak(multiprocess, gc = T, workers = nchains))
-    sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit_wide_prior.RDS')
+    plan(batchtools_slurm,
+         template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
+         resources = list(ncpus = 1, walltime = 60*24*5, memory = '5G',
+                          partitions = 'long,longfat'))
+    sim_test_fit_fn_pre <- file.path(data_dir, 'splt_sim2_test_fit_wide_prior')
 } else {
     data_dir <- '/data/jflournoy/split/probly'
     nsims <- 100
@@ -22,9 +27,9 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit.RDS')
 }
 test_sim_num <- 50
-sim_test_fn <- file.path(data_dir, 'splt_sim2_test_sims.RDS')
-sim_test_pr_fn <- file.path(data_dir, 'splt_sim2_test_sims_pr.RDS')
-stan_model_fn <- system.file('stan', 'splt_rl_2_level_no_b_2.stan', package = 'probly')
+sim_test_fn <- file.path(data_dir, 'splt_sim2_test_sims_wider.RDS')
+sim_test_pr_fn <- file.path(data_dir, 'splt_sim2_test_sims_wider_pr.RDS')
+stan_model_fn <- system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly')
 stan_model_est_fn <- system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly')
 ####TEST stan_model_fn <- './inst/stan/splt_rl_2_level_no_b_2.stan'
 
@@ -125,26 +130,25 @@ if(!file.exists(sim_test_fit_fn)){
     stan_sim_data_to_fit$press_right <- press_right_sim_mat
     stan_sim_data_to_fit$run_estimation <- 1
 
-    rl_2l_nob_cpl <- rstan::stan_model(stan_model_est_fn)
-
-    future::plan(future::multiprocess)
-    rl_2l_nob_simfit_f <- future::future(
-        {
-            afit <- rstan::sampling(
-                rl_2l_nob_cpl,
-                data = stan_sim_data_to_fit,
-                chains = nchains, cores = nchains,
-                iter = 1534, warmup = 1200,
-                include = TRUE, pars = c(pop_parlist, indiv_parlist),
-                control = list(max_treedepth = 15, adapt_delta = 0.99))
-            message('Saving sim fit to: ', sim_test_fit_fn)
-            saveRDS(afit, sim_test_fit_fn)
-            gc()
-            afit
-        })
-    future::resolved(rl_2l_nob_simfit_f)
-    rl_2l_nob_simfit <- future::value(rl_2l_nob_simfit_f)
-    gc()
+    rl_2l_nob_simfit_f <- listenv()
+    for(chain in 1:nchains){
+        sim_test_fit_fn <- paste0(sim_test_fit_fn_pre, '-chain_', chain, '.RDS')
+        rl_2l_nob_simfit_f[[chain]] <- future::future(
+            {
+                message('This is chain ', chain)
+                message('Will save sim fit to: ', sim_test_fit_fn)
+                afit <- rstan::stan(
+                    stan_model_est_fn,
+                    data = stan_sim_data_to_fit,
+                    chains = 1, cores = 1,
+                    iter = 1534, warmup = 1200,
+                    include = TRUE, pars = c(pop_parlist, indiv_parlist),
+                    control = list(max_treedepth = 15, adapt_delta = 0.99))
+                message('Saving sim fit to: ', sim_test_fit_fn)
+                saveRDS(afit, sim_test_fit_fn)
+                list(completed = TRUE)
+            })
+    }
 } else {
     message('Loading fit of simulated data')
     rl_2l_nob_simfit <- readRDS(sim_test_fit_fn)
