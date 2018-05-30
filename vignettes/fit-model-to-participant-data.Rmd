@@ -1133,7 +1133,7 @@ stanfit_2_level_no_b_betas_df$contrasted <- rep(c(F,T), each = dim(stanfit_2_lev
 
 splt_rl_betas <- stanfit_2_level_no_b_betas_df %>%
     tidyr::extract(par, c('parameter', 'idx', 'condnum'), 'beta_(.*)_prm\\[(\\d+),([1-3])\\]') %>%
-    dplyr::left_join(mutate(distinct(splt_orig, id), idx = as.character(1:n()))) %>%
+    dplyr::left_join(mutate(distinct(splt_orig, id, sample), idx = as.character(1:n()))) %>%
     dplyr::mutate(condition = condition_labels[as.numeric(condnum)],
                   condition = ifelse(contrasted, 
                                      paste0(condition, ' - ', condition_labels[[1]]),
