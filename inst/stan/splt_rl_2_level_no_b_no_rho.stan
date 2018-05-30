@@ -25,29 +25,23 @@ transformed data {
 parameters {
     matrix[K, N] z_xi; //deviations from separate intercept for each condition, k in 1:K
     matrix[K, N] z_ep;
-    matrix[K, N] z_rho;
 
     cholesky_factor_corr[K] L_Omega_xi; //for the correlation among intercepts across conditions
     cholesky_factor_corr[K] L_Omega_ep;
-    cholesky_factor_corr[K] L_Omega_rho;
 
     vector<lower=0>[K] tau_xi; //scaling of the correlations
     vector<lower=0>[K] tau_ep;
-    vector<lower=0>[K] tau_rho;
 
     matrix[1,K] mu_delta_xi; //overall mean for each condition
     matrix[1,K] mu_delta_ep;
-    matrix[1,K] mu_delta_rho;
 }
 
 transformed parameters {
     matrix<lower=0, upper=1>[N, K] beta_xi_prm; //per-individual coefficients for xi, for each condition, transformed
     matrix<lower=0, upper=1>[N, K] beta_ep_prm; //per-individual coefficients for ep, for each condition, transformed
-    matrix<lower=0>[N, K] beta_rho_prm; //per-individual coefficients for rho, for each condition, transformed
 
     beta_xi_prm  = Phi_approx(u * mu_delta_xi + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
     beta_ep_prm  = Phi_approx(u * mu_delta_ep + (diag_pre_multiply(tau_ep, L_Omega_ep) * z_ep)');
-    beta_rho_prm = exp(u * mu_delta_rho + (diag_pre_multiply(tau_rho, L_Omega_rho) * z_rho)');
 }
 
 model {
@@ -55,19 +49,14 @@ model {
     // hyper parameters
     to_vector(mu_delta_xi)  ~ normal(0, 1);
     to_vector(mu_delta_ep)  ~ normal(0, 1);
-    to_vector(mu_delta_rho) ~ normal(0, 1);
 
     //Sigma_param for individual level coefficients
     to_vector(z_xi)  ~ normal(0, 1);
     to_vector(z_ep)  ~ normal(0, 1);
-    to_vector(z_rho) ~ normal(0, 1);
     tau_xi ~ exponential(1);
     tau_ep ~ exponential(1);
-    tau_rho ~ exponential(1);
     L_Omega_xi  ~ lkj_corr_cholesky(2);
     L_Omega_ep  ~ lkj_corr_cholesky(2);
-    L_Omega_rho ~ lkj_corr_cholesky(2);
-
 
     if(run_estimation == 1){
         for (i in 1:N) {
@@ -78,7 +67,6 @@ model {
             vector[ncue] pR;   // prob of go (press)
             real beta_xi_it;
             real beta_ep_it;
-            real beta_rho_it;
 
             wv_r = initV;
             wv_l = initV;
@@ -90,7 +78,6 @@ model {
                 //neater code
                 beta_xi_it = beta_xi_prm[i, condition[i, t]];
                 beta_ep_it = beta_ep_prm[i, condition[i, t]];
-                beta_rho_it = beta_rho_prm[i, condition[i, t]];
 
                 wv_r[cue[i, t]] = qv_r[cue[i, t]];
                 wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
@@ -100,9 +87,9 @@ model {
 
                 // update action values
                 if (press_right[i, t]) { // update go value
-                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_r[cue[i, t]]);
+                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (outcome[i, t] - qv_r[cue[i, t]]);
                 } else { // update no-go value
-                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_l[cue[i, t]]);
+                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (outcome[i, t] - qv_l[cue[i, t]]);
                 }
             } // end of t loop
         } // end of i loop
@@ -130,7 +117,6 @@ generated quantities {
         vector[ncue] pR;   // prob of go (press)
         real beta_xi_it;
         real beta_ep_it;
-        real beta_rho_it;
         vector[T] log_lik_iters;
 
         wv_r  = initV;
@@ -145,7 +131,6 @@ generated quantities {
             //neater code
             beta_xi_it = beta_xi_prm[i, condition[i, t]];
             beta_ep_it = beta_ep_prm[i, condition[i, t]];
-            beta_rho_it = beta_rho_prm[i, condition[i, t]];
 
             wv_r[cue[i, t]]  = qv_r[cue[i, t]];
             wv_l[cue[i, t]] = qv_l[cue[i, t]];  // qv_l is always equal to wv_l (regardless of action)
@@ -159,17 +144,17 @@ generated quantities {
 
                 // update action values
                 if (press_right[i, t]) { // update go value
-                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_r[cue[i, t]]);
+                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (outcome[i, t] - qv_r[cue[i, t]]);
                 } else { // update no-go value
-                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome[i, t] - qv_l[cue[i, t]]);
+                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (outcome[i, t] - qv_l[cue[i, t]]);
                 }
             } else {
                 log_lik_iters[t] = bernoulli_lpmf(pright_pred[i, t] | pR[cue[i, t]]);
 
                 if (pright_pred[i, t]) { // update go value
-                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome_r[i, t] - qv_r[cue[i, t]]);
+                    qv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_ep_it * (outcome_r[i, t] - qv_r[cue[i, t]]);
                 } else { // update no-go value
-                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (beta_rho_it * outcome_l[i, t] - qv_l[cue[i, t]]);
+                    qv_l[cue[i, t]] = qv_l[cue[i, t]] + beta_ep_it * (outcome_l[i, t] - qv_l[cue[i, t]]);
                 }
             }
         } // end of t loop

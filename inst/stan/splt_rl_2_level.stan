@@ -33,10 +33,10 @@ parameters {
     cholesky_factor_corr[K] L_Omega_b;
     cholesky_factor_corr[K] L_Omega_rho;
 
-    vector<lower=0,upper=pi()/2>[K] tau_unif_xi; //scaling of the correlations
-    vector<lower=0,upper=pi()/2>[K] tau_unif_ep;
-    vector<lower=0,upper=pi()/2>[K] tau_unif_b;
-    vector<lower=0,upper=pi()/2>[K] tau_unif_rho;
+    vector<lower=0>[K] tau_xi; //scaling of the correlations
+    vector<lower=0>[K] tau_ep;
+    vector<lower=0>[K] tau_b;
+    vector<lower=0>[K] tau_rho;
 
     matrix[1,K] mu_delta_xi; //overall mean for each condition
     matrix[1,K] mu_delta_ep;
@@ -45,22 +45,10 @@ parameters {
 }
 
 transformed parameters {
-    vector<lower=0>[K] tau_xi; // prior scale
-    vector<lower=0>[K] tau_ep; // prior scale
-    vector<lower=0>[K] tau_b; // prior scale
-    vector<lower=0>[K] tau_rho; // prior scale
-
     matrix<lower=0, upper=1>[N, K] beta_xi_prm; //per-individual coefficients for xi, for each condition, transformed
     matrix<lower=0, upper=1>[N, K] beta_ep_prm; //per-individual coefficients for ep, for each condition, transformed
     matrix[N, K] beta_b; //per-individual coefficients for b, for each condition
     matrix<lower=0>[N, K] beta_rho_prm; //per-individual coefficients for rho, for each condition, transformed
-
-    for(k in 1:K){
-        tau_xi[k] = 2.5 * tan(tau_unif_xi[k]);
-        tau_ep[k] = 2.5 * tan(tau_unif_ep[k]);
-        tau_b[k] = 2.5 * tan(tau_unif_b[k]);
-        tau_rho[k] = 2.5 * tan(tau_unif_rho[k]);
-    }
 
     beta_xi_prm = Phi_approx(u * mu_delta_xi + (diag_pre_multiply(tau_xi, L_Omega_xi) * z_xi)');
     beta_ep_prm = Phi_approx(u * mu_delta_ep + (diag_pre_multiply(tau_ep, L_Omega_ep) * z_ep)');
@@ -81,6 +69,10 @@ model {
     to_vector(z_ep) ~ normal(0, 1);
     to_vector(z_b) ~ normal(0, 1);
     to_vector(z_rho) ~ normal(0, 1);
+    tau_xi ~ exponential(1);
+    tau_ep ~ exponential(1);
+    tau_rho ~ exponential(1);
+    tau_b ~  exponential(1);
     L_Omega_xi ~ lkj_corr_cholesky(2);
     L_Omega_ep ~ lkj_corr_cholesky(2);
     L_Omega_b ~ lkj_corr_cholesky(2);
