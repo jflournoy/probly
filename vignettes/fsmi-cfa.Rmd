@@ -143,8 +143,10 @@ splt_fsmi <- splt_fsmi[splt_fsmi$SID != 360,]
 splt_fsmi$partnered <- as.numeric(splt_fsmi$fsmi_relstatus == relationship_status['long_term'])
 
 splt_dev_and_demog <- splt_dev_and_demog[splt_dev_and_demog$SID != 360,]
+splt_dev_and_demog$ethnicity[splt_dev_and_demog$SID == 203] <- 'Other'
 
-splt_fsmi_devdemog <- dplyr::left_join(splt_fsmi, splt_dev_and_demog, by = 'SID')
+splt_fsmi_devdemog <- dplyr::left_join(splt_fsmi, distinct(splt_dev_and_demog), by = 'SID')
+
 splt_fsmi_devdemog <- dplyr::mutate_at(splt_fsmi_devdemog,
                                        vars(contains('SES')), funs(ifelse(. == -99, NA, .)))
 
@@ -709,6 +711,55 @@ save_out_list <- c(save_out_list, 'fsmi_ksrq_plot')
 
 ### K-SRQ and age
 
+#### Measurement invariance
+
+```{r}
+splt_fsmi_devdemog$samplegroup <- ifelse(grepl('yads',splt_fsmi_devdemog$sample),
+                                         'college',
+                                         'adolescent')
+
+ksrq_mi_model <- 'k_srq_admiration =~ K_SRQ_1 + K_SRQ_7 + K_SRQ_11 + K_SRQ_18
+k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20'
+
+ksrq_mi_unconstrained <- lavaan::lavaan(
+    model = ksrq_mi_model, 
+    data = splt_fsmi_devdemog,
+    missing = 'fiml', estimator = 'MLR',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = T, std.lv = F, 
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'samplegroup')
+
+ksrq_mi_metric <- lavaan::lavaan(
+    model = ksrq_mi_model, 
+    data = splt_fsmi_devdemog,
+    missing = 'fiml', estimator = 'MLR',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = T, std.lv = F, 
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'samplegroup', group.equal = c('loadings', 'intercepts'))
+
+ksrq_mi_fitmeasures <- unlist(lapply(
+    list(ksrq_mi_unconstrained = ksrq_mi_unconstrained,
+         ksrq_mi_metric = ksrq_mi_metric),
+    lavaan::fitmeasures, fit.measures = 'mfi'))
+diff(ksrq_mi_fitmeasures)
+
+ksrq_mi_extfitmeasures <- unlist(lapply(
+    list(ksrq_mi_unconstrained = ksrq_mi_unconstrained,
+         ksrq_mi_metric = ksrq_mi_metric),
+    semTools::moreFitIndices, fit.measures = c('gammaHat', 'adjGammaHat')))
+ksrq_mi_extfitmeasures[3:4]-ksrq_mi_extfitmeasures[1:2]
+```
+
+This small difference in the MFI Indicates that we do not need to reject the null hypothesis of measurement invariance. However, scalar/strong invariance is rejected so comparing means or variances of computed scores is possibly problematic.
+
+#### Substantively
+
 ```{r}
 splt_fsmi_devdemog$age_c2 <- splt_fsmi_devdemog$age_c^2
 
@@ -924,6 +975,155 @@ Generally, the three K-SRQ subscales of interest (but not the passivity subscale
 Given how differently the K-SRQ sexual relationships factor covaries with other relevant contructs and across groups, it is clear that it is measuring something distinctly from what the FSMI mate seeking factor is measuring.
 The distinction between the seeking new romantic or sexual partners, and enjoyment of engaging in socio-sexual behavior may be important when examining how these motivational factors relate to risk-taking.
 Past work has shown that sexual activity (age at first sex, specifically), if it is in the context of a romantic relationshuip, is protective with respect to dellinquency [@harden2007;@harden2011a].
+
+## Urgency, premeditation, perseverence, sensation seeking
+
+### Measurement invariance
+
+```{r uppsfullcfa}
+uppsp_cfa_model <- milav::create_cfa_from_keylist(
+    upps_key)
+
+uppsp_cfa <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
+                            missing = 'fiml', estimator = 'MLR',
+                            int.ov.free = TRUE, int.lv.free = FALSE, 
+                            auto.fix.first = FALSE, std.lv = TRUE, 
+                            auto.fix.single = TRUE, auto.var = TRUE, 
+                            auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                            auto.delta = TRUE, auto.cov.y = TRUE)
+
+uppsp_cfa_mi_unconstrained <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
+                            missing = 'fiml', estimator = 'MLR',
+                            int.ov.free = TRUE, int.lv.free = FALSE, 
+                            auto.fix.first = FALSE, std.lv = TRUE, 
+                            auto.fix.single = TRUE, auto.var = TRUE, 
+                            auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                            auto.delta = TRUE, auto.cov.y = TRUE,
+                            group = 'samplegroup')
+
+uppsp_cfa_mi_metric <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
+                            missing = 'fiml', estimator = 'MLR',
+                            int.ov.free = TRUE, int.lv.free = FALSE, 
+                            auto.fix.first = FALSE, std.lv = TRUE, 
+                            auto.fix.single = TRUE, auto.var = TRUE, 
+                            auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                            auto.delta = TRUE, auto.cov.y = TRUE,
+                            group = 'samplegroup', group.equal = c('loadings'))
+
+
+(uppspfit <- lavaan::fitmeasures(uppsp_cfa, fit.measures = c('cfi', 'rmsea', 'mfi')))
+
+uppsp_mi_fitmeasures <- unlist(lapply(
+    list(uppsp_cfa_mi_unconstrained = uppsp_cfa_mi_unconstrained,
+         uppsp_cfa_mi_metric = uppsp_cfa_mi_metric),
+    lavaan::fitmeasures, fit.measures = 'mfi'))
+diff(uppsp_mi_fitmeasures)
+
+uppsp_mi_extfitmeasures <- unlist(lapply(
+    list(uppsp_cfa_mi_unconstrained = uppsp_cfa_mi_unconstrained,
+         uppsp_cfa_mi_metric = uppsp_cfa_mi_metric),
+    semTools::moreFitIndices, fit.measures = c('gammaHat', 'adjGammaHat')))
+uppsp_mi_extfitmeasures[3:4]-uppsp_mi_extfitmeasures[1:2]
+```
+
+The UPPS-P scale shows metric invariance, so we can look at covariance from latent factors.
+
+### UPPS-P and age
+
+```{r}
+uppsp_age_model <- paste(
+    upps_cfa_model,
+    paste0(paste(names(upps_key), collapse = ' + '), ' ~ age_c + age_c2 + gender_c + age_c:gender_c + age_c2:gender_c'),
+    sep = '\n')
+
+uppsp_scored <- as.data.frame(
+    psych::scoreItems(upps_key,
+                      items = splt_fsmi_devdemog,
+                      missing = TRUE,
+                      impute = 'none',
+                      min = 1, max = 4)$score)
+uppsp_scored$age <- splt_fsmi_devdemog$age
+uppsp_scored$gender_c <- splt_fsmi_devdemog$gender_c
+
+ggplot2::theme_set(ggplot2::theme_minimal())
+ggplot2::ggplot(
+    tidyr::gather(uppsp_scored, scale, value, -age, -gender_c),
+    ggplot2::aes(x = age, y = value, color = factor(gender_c), group = gender_c)
+) + 
+    ggplot2::geom_point(alpha = .5) + 
+    ggplot2::geom_smooth(method = 'glm', formula = y ~ poly(x,2)) + 
+    ggplot2::facet_wrap(~scale)
+```
+
+```{r}
+uppsp_age_sem <- lavaan::lavaan(
+    model = uppsp_age_model, 
+    data = splt_fsmi_devdemog,
+    missing = 'fiml', estimator = 'MLR',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = T, std.lv = F, 
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE)
+
+uppsp_age_ints <- inspect(uppsp_age_sem, 'mean.lv')
+uppsp_age_betas <- inspect(uppsp_age_sem, 'coef')$beta[1:5, c(5,7,6,8,9)]
+
+age_gender_pred_df <- as.data.frame(expand.grid(age = 11:25, gender_c = c(-.5, .5)))
+age_gender_pred_df$age_c <- age_gender_pred_df$age - 18
+age_gender_pred_df$age_c2 <- age_gender_pred_df$age_c^2
+age_gender_pred_mat <- model.matrix(~age_c*gender_c+age_c2*gender_c, data = age_gender_pred_df)
+
+uppsp_pred_factor_scores <- do.call(cbind, lapply(seq_along(uppsp_age_ints), function(i){
+    y <- age_gender_pred_mat %*% as.vector(c(uppsp_age_ints[[i]], uppsp_age_betas[i,]))
+    dimnames(y)[2] <- names(uppsp_age_ints)[[i]]
+    y
+}))
+
+uppsp_participant_measurements <- lavaan::lavPredict(uppsp_age_sem)
+uppsp_age_model_data <- as.data.frame(lavaan::inspect(uppsp_age_sem, 'data'))
+names(uppsp_age_model_data) <- lavaan::lavNames(uppsp_age_sem)
+uppsp_age_model_data <- cbind(uppsp_age_model_data, uppsp_participant_measurements)
+uppsp_age_model_data_l <- tidyr::gather(
+    dplyr::select(uppsp_age_model_data, age_c:gender_c, neg_urgency:pos_urgency),
+    factor,
+    value,
+    -gender_c, -age_c, -age_c2)
+uppsp_age_model_data_l$age <- uppsp_age_model_data_l$age_c + 18
+uppsp_age_model_data_l <- dplyr::filter(
+    uppsp_age_model_data_l,
+    !is.na(gender_c),
+    !is.na(age))
+
+uppsp_age_gender_pred_df <- tidyr::gather(
+    cbind(age_gender_pred_df, uppsp_pred_factor_scores),
+    factor,
+    value,
+    -age, -gender_c, -age_c, -age_c2)
+
+uppsp_age_pred_plot <- ggplot2::ggplot(
+    uppsp_age_gender_pred_df,
+    ggplot2::aes(x = age, y = value, group = gender_c, color = factor(gender_c))) + 
+    ggplot2::geom_point(data = uppsp_age_model_data_l,
+                        alpha = .5) +
+    ggplot2::geom_line(data = uppsp_age_model_data_l, 
+                       stat = 'smooth') +
+    ggplot2::geom_line() + 
+    ggplot2::facet_wrap(~factor) + 
+    ggplot2::coord_cartesian(xlim = c(min(uppsp_age_model_data_l$age, na.rm = T), 
+                                      max(uppsp_age_model_data_l$age, na.rm = T)),
+                             ylim = c(-2, 1.1))
+
+
+uppsp_age_table <- knitr::kable(
+    dplyr::filter(parameterestimates(uppsp_age_sem, stan = T), op == '~'),
+    digits = 2,
+    caption = paste0('K-SRQ and age; N obs. = ',
+                     lavaan::nobs(uppsp_age_sem)))
+uppsp_age_table
+uppsp_age_pred_plot
+```
+
 
 # Predicting sexual behavior
 

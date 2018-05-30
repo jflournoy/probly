@@ -96,7 +96,7 @@
       <h1>Descriptive Statistics for SPLT data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-05-02</h4>
+            <h4 class="date">2018-05-23</h4>
       
       
       <div class="hidden name"><code>descriptive-statistics.Rmd</code></div>
@@ -132,14 +132,14 @@ The first two samples comprise foster-care-involved and community adolescents wh
 The third and forth samples consisted of college students who completed the study for course credit either in person, or online.
 Some participants in each sample did not provide data on all focal measures (see Table <a href="#tab:missingstats">1</a>), and so sample sizes for each analysis will differ to some extent.
 Examining the table, it is clear that the proportion of missing data is small.</p>
-<p>The full sample consists of 341 participants (117 male) with ages between 12.5 and 42 years (see Table <a href="#tab:samplestats">2</a> for full details).
+<p>The full sample consists of 334 participants (118 male) with ages between 12.5 and 42 years (see Table <a href="#tab:samplestats">2</a> for full details).
 The majority of participants in all samples identified as white, though in the both college samples this majority did not exceed 60% (Table <a href="#tab:ethnicitytable">3</a>).</p>
 
 
 
 <table class="table">
 <caption>
-<span id="tab:missingstats">Table 1: </span> Missing data from each sample for age, PDSS, and gender
+<span id="tab:missingstats">Table 1: </span> Missing data from each sample for age, PDS, and gender
 </caption>
 <thead>
 <tr class="left">
@@ -153,7 +153,7 @@ The majority of participants in all samples identified as white, though in the b
 Age
 </th>
 <th colspan="2">
-PDSS
+PDS
 </th>
 <th colspan="2">
 Gender
@@ -201,7 +201,7 @@ N<sub>miss</sub>
 Foster-care involved adolescents
 </th>
 <td>
-33
+39
 </td>
 <td>
 -
@@ -210,7 +210,10 @@ Foster-care involved adolescents
 -
 </td>
 <td>
--
+1
+</td>
+<td>
+0.3
 </td>
 <td>
 -
@@ -219,13 +222,10 @@ Foster-care involved adolescents
 -
 </td>
 <td>
--
+13
 </td>
 <td>
-7
-</td>
-<td>
-2.1
+3.9
 </td>
 </tr>
 <tr class="left">
@@ -297,7 +297,7 @@ College students
 College students - online
 </th>
 <td>
-158
+145
 </td>
 <td>
 -
@@ -306,16 +306,16 @@ College students - online
 -
 </td>
 <td>
-10
+5
 </td>
 <td>
-2.9
+1.5
 </td>
 <td>
-8
+4
 </td>
 <td>
-2.3
+1.2
 </td>
 <td>
 1
@@ -329,7 +329,7 @@ College students - online
 All
 </th>
 <td>
-341
+334
 </td>
 <td>
 -
@@ -338,29 +338,29 @@ All
 -
 </td>
 <td>
-17
+13
 </td>
 <td>
-5.0
+3.9
 </td>
 <td>
-8
+4
 </td>
 <td>
-2.3
+1.2
 </td>
 <td>
-15
+21
 </td>
 <td>
-4.4
+6.3
 </td>
 </tr>
 </tbody>
 </table>
 <table class="table">
 <caption>
-<span id="tab:samplestats">Table 2: </span> Descriptive statistics on age, and PDSS for each sample
+<span id="tab:samplestats">Table 2: </span> Descriptive statistics on age, and PDS for each sample
 </caption>
 <thead>
 <tr class="left">
@@ -377,7 +377,7 @@ All
 Age
 </th>
 <th colspan="4">
-PDSS
+PDS
 </th>
 <th colspan="4">
 N<sub>trials</sub>
@@ -463,34 +463,34 @@ SD
 Foster-care involved adolescents
 </th>
 <td>
-18
+19
 </td>
 <td>
-15
+20
 </td>
 <td>
-15.5
+15.6
 </td>
 <td>
 1.5
 </td>
 <td>
-16.9
+17.0
 </td>
 <td>
-1.8
+1.7
 </td>
 <td>
-3.9
+2.9
 </td>
 <td>
-1.0
+0.6
 </td>
 <td>
-4.9
+3.8
 </td>
 <td>
-0.3
+0.2
 </td>
 <td>
 378
@@ -525,19 +525,19 @@ Community adolescents
 15.6
 </td>
 <td>
-1.6
+1.7
 </td>
 <td>
-3.8
+2.9
 </td>
 <td>
-0.8
+0.6
 </td>
 <td>
-4.7
+3.5
 </td>
 <td>
-0.5
+0.4
 </td>
 <td>
 379
@@ -575,16 +575,16 @@ College students
 1.3
 </td>
 <td>
-4.6
-</td>
-<td>
-0.4
-</td>
-<td>
-4.9
+3.6
 </td>
 <td>
 0.3
+</td>
+<td>
+3.8
+</td>
+<td>
+0.2
 </td>
 <td>
 379
@@ -607,7 +607,7 @@ College students - online
 37
 </td>
 <td>
-113
+104
 </td>
 <td>
 19.8
@@ -616,22 +616,22 @@ College students - online
 1.4
 </td>
 <td>
-19.4
+19.3
 </td>
 <td>
 1.2
 </td>
 <td>
-4.6
+3.5
 </td>
 <td>
-0.6
+0.5
 </td>
 <td>
-4.9
+3.8
 </td>
 <td>
-0.4
+0.3
 </td>
 <td>
 381
@@ -690,7 +690,7 @@ AmIndn
 0.0
 </td>
 <td>
-0.6
+0.7
 </td>
 </tr>
 <tr class="right">
@@ -698,7 +698,7 @@ AmIndn
 Asian
 </th>
 <td>
-10.9
+10.5
 </td>
 <td>
 0.0
@@ -710,7 +710,7 @@ Asian
 12.9
 </td>
 <td>
-16.5
+16.6
 </td>
 </tr>
 <tr class="right">
@@ -718,10 +718,10 @@ Asian
 Black/AA
 </th>
 <td>
-2.3
+2.4
 </td>
 <td>
-6.1
+5.1
 </td>
 <td>
 0.0
@@ -730,7 +730,7 @@ Black/AA
 3.5
 </td>
 <td>
-1.9
+2.1
 </td>
 </tr>
 <tr class="right">
@@ -738,7 +738,7 @@ Black/AA
 Latinx/Hsp
 </th>
 <td>
-7.0
+7.2
 </td>
 <td>
 0.0
@@ -750,7 +750,7 @@ Latinx/Hsp
 11.8
 </td>
 <td>
-6.3
+6.9
 </td>
 </tr>
 <tr class="right">
@@ -770,7 +770,7 @@ Pcfc Islnd
 1.2
 </td>
 <td>
-3.2
+3.4
 </td>
 </tr>
 <tr class="right">
@@ -778,10 +778,10 @@ Pcfc Islnd
 Other
 </th>
 <td>
-6.7
+6.9
 </td>
 <td>
-18.2
+15.4
 </td>
 <td>
 13.8
@@ -790,7 +790,7 @@ Other
 2.4
 </td>
 <td>
-3.8
+4.1
 </td>
 </tr>
 <tr class="right">
@@ -798,10 +798,10 @@ Other
 White
 </th>
 <td>
-67.2
+68.0
 </td>
 <td>
-75.8
+74.4
 </td>
 <td>
 76.9
@@ -810,7 +810,7 @@ White
 68.2
 </td>
 <td>
-60.8
+62.1
 </td>
 </tr>
 <tr class="right">
@@ -830,7 +830,7 @@ Wht/Hsp
 0.0
 </td>
 <td>
-0.6
+0.7
 </td>
 </tr>
 </tbody>
@@ -846,7 +846,7 @@ Most participants in the college smaples have PDS scores indicating puberty is c
 
 <div class="figure">
 <span id="fig:pdsplot"></span>
-<img src="descriptive-statistics_files/figure-html/pdsplot-1.png" alt="Pubertal development by sample and age" width="768"><p class="caption">
+<img src="descriptive-statistics_files/figure-html/pdsplot-1.png" alt="Pubertal development by sample and age" width="576"><p class="caption">
 Figure 1: Pubertal development by sample and age
 </p>
 </div>

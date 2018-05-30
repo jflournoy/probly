@@ -345,7 +345,7 @@ splt_fsmi$partnered <- as.numeric(splt_fsmi$fsmi_relstatus == relationship_statu
 
 splt_fsmi_matestat_scored <- as.data.frame(
     psych::scoreItems(fsmi_key[c('fsmi_mate', 'fsmi_stat')], 
-                      splt_fsmi,
+                      splt_fsmi, min = 1, max = 7,
                       missing = TRUE, impute = 'none')$scores)
 
 splt_fsmi_matestat_scored$SID <- splt_fsmi$SID
@@ -354,16 +354,24 @@ splt_fsmi_matestat_scored$partnered <- splt_fsmi$partnered
 splt_fsmi_ksrq_scored <- as.data.frame(
     psych::scoreItems(ksrq_key[c('k_srq_admiration', 'k_srq_passivity', 
                                  'k_srq_sexual_relationships', 'k_srq_sociability')], 
-                      splt_fsmi,
+                      splt_fsmi, min = 1, max = 7,
                       missing = TRUE, impute = 'none')$scores)
 
 splt_fsmi_ksrq_scored$SID <- splt_fsmi$SID
+
+splt_fsmi_upps_scored <- as.data.frame(
+    psych::scoreItems(upps_key[c('sensation_seeking','premeditation')], 
+                      splt_fsmi, min = 1, max = 4,
+                      missing = TRUE, impute = 'none')$scores)
+
+splt_fsmi_upps_scored$SID <- splt_fsmi$SID
 
 lowfi_df_dev <- dplyr::left_join(
     dplyr::left_join(lowfi_df,
                      unique(splt_dev_and_demog), by = c('id' = 'SID')),
     dplyr::left_join(splt_fsmi_matestat_scored, 
-                     splt_fsmi_ksrq_scored),
+                     dplyr::left_join(splt_fsmi_ksrq_scored,
+                                      splt_fsmi_upps_scored)),
     by = c('id' = 'SID')) %>%
     mutate(PDS_mean_score = as.numeric(PDS_mean_score)) %>%
     select(-hispanic_yn, -ethnicity)
@@ -371,9 +379,9 @@ lowfi_df_dev <- dplyr::left_join(
 lowfi_df_dev_qstnr_l <- dplyr::select(
     lowfi_df_dev,
     id, condition, sample, partnered,
-    bin_5_to_end, dplyr::contains('fsmi'), dplyr::contains('k_srq')) %>%
+    bin_5_to_end, dplyr::contains('fsmi'), dplyr::contains('k_srq'), sensation_seeking, premeditation) %>%
     tidyr::gather(scalename, value, 
-                  dplyr::contains('fsmi'), dplyr::contains('k_srq'))
+                  dplyr::contains('fsmi'), dplyr::contains('k_srq'), sensation_seeking, premeditation)
 
 lowfi_df_dev_v_bl <- lowfi_df_dev %>%
     group_by(id) %>%
@@ -383,9 +391,9 @@ lowfi_df_dev_v_bl <- lowfi_df_dev %>%
 lowfi_df_dev_v_bl_qstnr_l <- dplyr::select(
     lowfi_df_dev_v_bl,
     id, condition, sample, partnered,
-    bin_5_to_end, dplyr::contains('fsmi'), dplyr::contains('k_srq')) %>%
+    bin_5_to_end, dplyr::contains('fsmi'), dplyr::contains('k_srq'), sensation_seeking, premeditation) %>%
     tidyr::gather(scalename, value, 
-                  dplyr::contains('fsmi'), dplyr::contains('k_srq'))
+                  dplyr::contains('fsmi'), dplyr::contains('k_srq'), sensation_seeking, premeditation)
 
 apal <- c("#b71c00",
           "#e44afc",
@@ -527,6 +535,23 @@ p_opt_ksrq_scales <- ggplot2::ggplot(
     ggplot2::scale_x_continuous(breaks = c(1, 4, 7)) + 
     ggplot2::theme(legend.key.width = unit(legend_width, units = 'cm'))
 
+p_opt_upps_scales <- ggplot2::ggplot(
+    dplyr::filter(lowfi_df_dev_qstnr_l,
+                  grepl('(sensation_seeking|premeditation)', scalename)),
+    ggplot2::aes(x = value, y = bin_5_to_end, linetype = condition)) + 
+    ggplot2::geom_point(alpha = .075, position = position_jitter(w=.2, h=.01)) + 
+    ggplot2::geom_smooth(color = 'black',
+                         method = 'lm', formula = y ~ x,
+                         size = .5, alpha = .2) + 
+    ggplot2::labs(x = 'K-SRQ scale score', y = 'Probability of making optimal choice',
+                  linetype = 'Condition') + 
+    linetype_scale +
+    ggplot2::facet_wrap(~scalename,
+                        labeller = labeller(scalename = c('sensation_seeking' = 'Sensation Seeking',
+                                                          'premeditation' = 'Premeditation'))) + 
+    ggplot2::scale_x_continuous(breaks = c(1, 4, 7)) + 
+    ggplot2::theme(legend.key.width = unit(legend_width, units = 'cm'))
+
 p_opt_diff_fsmi_scales <- ggplot2::ggplot(
     dplyr::filter(lowfi_df_dev_v_bl_qstnr_l, grepl('yads', sample), 
                   condition != 'Hungry/Thirsty',
@@ -565,6 +590,24 @@ p_opt_diff_ksrq_scales <- ggplot2::ggplot(
                                                           'k_srq_sociability' = 'Sociability'))) + 
     ggplot2::scale_x_continuous(breaks = c(1, 4, 7)) + 
     ggplot2::theme(legend.key.width = unit(legend_width, units = 'cm'))
+
+p_opt_diff_upps_scales <- ggplot2::ggplot(
+    dplyr::filter(lowfi_df_dev_v_bl_qstnr_l,
+                  condition != 'Hungry/Thirsty',
+                  grepl('(sensation_seeking|premeditation)', scalename)),
+    ggplot2::aes(x = value, y = bin_5_to_end, linetype = condition)) + 
+    ggplot2::geom_point(alpha = .075, position = position_jitter(w=.2, h=.01)) + 
+    ggplot2::geom_smooth(color = 'black',
+                         method = 'lm', formula = y ~ x,
+                         size = .5, alpha = .2) + 
+    ggplot2::labs(x = 'K-SRQ scale score', y = 'Probability of making optimal choice',
+                  linetype = 'Condition') + 
+    linetype_scale +
+    ggplot2::facet_wrap(~scalename,
+                        labeller = labeller(scalename = c('sensation_seeking' = 'Sensation Seeking',
+                                                          'premeditation' = 'Premeditation'))) + 
+    ggplot2::scale_x_continuous(breaks = c(1, 4, 7)) + 
+    ggplot2::theme(legend.key.width = unit(legend_width, units = 'cm'))
 ```
 
 ```{r fig.width=5.875, fig.height=4}
@@ -574,9 +617,187 @@ p_opt_diff_age_plot
 p_opt_diff_pds_plot
 p_opt_fsmi_scales
 p_opt_ksrq_scales
+p_opt_upps_scales
 p_opt_diff_fsmi_scales
 p_opt_diff_ksrq_scales
+p_opt_diff_upps_scales
 ```
+
+### Dating/Looking
+
+#### Diff
+
+```{r}
+ggcorplot(
+    dplyr::select(
+        dplyr::ungroup(
+            dplyr::filter(lowfi_df_dev_v_bl,
+                          condition == 'Dating/Looking')), 
+            bin_5_to_end, age:premeditation), method = 'kendall') +
+    ggplot2::scale_fill_gradient2(limits = c(-1,1), na.value = 'white')
+
+nada <- lapply(psych::corr.test(dplyr::select(
+        dplyr::ungroup(
+            dplyr::filter(lowfi_df_dev_v_bl,
+                          condition == 'Dating/Looking')), 
+            bin_5_to_end, age:premeditation),
+    use = 'pairwise.complete.obs', method = 'kendall')[c('r','p')], 
+    function(x) print(knitr::kable(x, digits = 3)))
+```
+
+#### Raw
+
+```{r}
+ggcorplot(
+    dplyr::select(
+        dplyr::ungroup(
+            dplyr::filter(lowfi_df_dev,
+                          condition == 'Dating/Looking')), 
+            bin_5_to_end, age:premeditation), method = 'kendall') +
+    ggplot2::scale_fill_gradient2(limits = c(-1,1), na.value = 'white')
+
+nada <- lapply(psych::corr.test(dplyr::select(
+        dplyr::ungroup(
+            dplyr::filter(lowfi_df_dev,
+                          condition == 'Dating/Looking')), 
+            bin_5_to_end, age:premeditation),
+    use = 'pairwise.complete.obs', method = 'kendall')[c('r','p')], 
+    function(x) print(knitr::kable(x, digits = 3)))
+```
+
+### Popular/Unpopular
+
+```{r}
+ggcorplot(
+    dplyr::select(
+        dplyr::ungroup(
+            dplyr::filter(lowfi_df_dev_v_bl,
+                          condition == 'Popular/Unpopular')), 
+            bin_5_to_end, age:premeditation), method = 'kendall') +
+    ggplot2::scale_fill_gradient2(limits = c(-1,1), na.value = 'white')
+
+nada <- lapply(psych::corr.test(dplyr::select(
+        dplyr::ungroup(
+            dplyr::filter(lowfi_df_dev_v_bl,
+                          condition == 'Dating/Looking')), 
+            bin_5_to_end, age:premeditation),
+    use = 'pairwise.complete.obs', method = 'kendall')[c('r','p')], 
+    function(x) print(knitr::kable(x, digits = 3)))
+```
+
+#### Raw
+
+```{r}
+ggcorplot(
+    dplyr::select(
+        dplyr::ungroup(
+            dplyr::filter(lowfi_df_dev,
+                          condition == 'Popular/Unpopular')), 
+            bin_5_to_end, age:premeditation), method = 'kendall') +
+    ggplot2::scale_fill_gradient2(limits = c(-1,1), na.value = 'white')
+
+nada <- lapply(psych::corr.test(dplyr::select(
+        dplyr::ungroup(
+            dplyr::filter(lowfi_df_dev,
+                          condition == 'Dating/Looking')), 
+            bin_5_to_end, age:premeditation),
+    use = 'pairwise.complete.obs', method = 'kendall')[c('r','p')], 
+    function(x) print(knitr::kable(x, digits = 3)))
+```
+
+## Bayesian H0 test
+
+```{r}
+library(brms)
+
+lowfi_df_dev$condition <- factor(lowfi_df_dev$condition, levels = condition_labels)
+lowfi_df_dev$bin_5_to_end_suc <- round(lowfi_df_dev$bin_5_to_end * 64, 0)
+lowfi_df_dev$k <- 64
+
+lowfi_df_dev$age_c <- lowfi_df_dev$age - 18
+
+get_prior(bin_5_to_end_suc | trials(k) ~ 1 + condition + s(age, k = 3, by = condition) + (1 | id), 
+          data = lowfi_df_dev, family = binomial(link = 'logit'))
+b_priors <- set_prior('normal(0, 2)', class = 'b')
+
+age_model <- probly::CachedFit(
+    {
+        brm(bin_5_to_end_suc | trials(k) ~ 1 + condition + s(age_c, k = 4, by = condition) + (1 | id), 
+                    data = lowfi_df_dev, family = binomial(link = 'logit'),
+                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
+                    prior = b_priors, sample_prior = 'yes')
+    }, 
+    rds_filename = file.path(data_dir, 'brm_avg_opt_age_model.RDS'))
+
+age_model_bf <- probly::CachedFit(
+    {
+        brm(bin_5_to_end_suc | trials(k) ~ 1 + poly(age_c,2)*condition + (1 | id), 
+                    data = lowfi_df_dev, family = binomial(link = 'logit'),
+                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
+                    prior = b_priors, sample_prior = 'no',
+                    save_all_pars = TRUE)
+    }, 
+    rds_filename = file.path(data_dir, 'brm_avg_opt_age_model_bf.RDS'))
+
+fsmi_model_bf <- probly::CachedFit(
+    {
+        brm(bin_5_to_end_suc | trials(k) ~ 1 + fsmi_mate*condition + fsmi_stat*condition + (1 | id), 
+                    data = lowfi_df_dev, family = binomial(link = 'logit'),
+                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
+                    prior = b_priors, sample_prior = 'no',
+                    save_all_pars = TRUE)
+    }, 
+    rds_filename = file.path(data_dir, 'brm_avg_opt_fsmi_model_bf.RDS'))
+
+ksrq_adm_model_bf <- probly::CachedFit(
+    {
+        brm(bin_5_to_end_suc | trials(k) ~ 1 + 
+                        k_srq_admiration*condition + (1 | id), 
+                    data = lowfi_df_dev, family = binomial(link = 'logit'),
+                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
+                    prior = b_priors, sample_prior = 'no',
+                    save_all_pars = TRUE)
+    }, 
+    rds_filename = file.path(data_dir, 'brm_avg_opt_ksrq_adm_model_bf.RDS'))
+
+ksrq_sr_model_bf <- probly::CachedFit(
+    {
+        brm(bin_5_to_end_suc | trials(k) ~ 1 + 
+                        k_srq_sexual_relationships*condition + (1 | id), 
+                    data = lowfi_df_dev, family = binomial(link = 'logit'),
+                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
+                    prior = b_priors, sample_prior = 'no',
+                    save_all_pars = TRUE)
+    }, 
+    rds_filename = file.path(data_dir, 'brm_avg_opt_ksrq_sr_model_bf.RDS'))
+
+
+null_model_bf <- probly::CachedFit(
+    {
+        brm(bin_5_to_end_suc | trials(k) ~ 1 + condition + (1 | id), 
+                    data = lowfi_df_dev, family = binomial(link = 'logit'),
+                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
+                    prior = b_priors, sample_prior = 'no',
+                    save_all_pars = TRUE)
+    }, 
+    rds_filename = file.path(data_dir, 'brm_avg_opt_null_model_bf.RDS'))
+
+summary(age_model)
+summary(age_model_bf)
+
+plot(marginal_effects(age_model), ask = F)
+plot(marginal_smooths(age_model), ask = F)
+
+plot(marginal_effects(fsmi_model_bf), ask = F)
+
+plot(marginal_effects(age_model_bf), ask = F)
+```
+
+```{r}
+brms::pp_check(null_model_bf, nsamples = 50)
+```
+
+One thing that is obvious from the posterior predictive check of this model is that there is more going on than a simple bernoulli process. The distribution of y values is lumpy and bi-modal in a way that suggests a mixture of probabilities of success in the latter trials. Conditioning on word-pairs, age, and self report questionnairs does not help explain these differences.
 
 # Results from logistic regression
 
@@ -1165,6 +1386,86 @@ xi_difference_plot <- bayesplot::mcmc_areas(
 xi_difference_plot
 ```
 
+## Variance
+
+```{r}
+groupvar <- unlist(lapply(lme4::VarCorr(check_stim_rx_null_stim_rx_m), 
+                   function(x) x['(Intercept)','(Intercept)']))
+resvar <- pi^2 /3
+(icc_cond <- groupvar/(resvar + sum(groupvar)))
+```
+
+
+In a simple logistic regression, grouping responses by participant, nested in sample, and by stimulus image, it turns out that only `r 100*round(icc_cond['id:sample'],2)`% of the variance is due to differences in participants. 
+Note, that this is for the average probability of choosing an optimal response. 
+Another `r 100*round(icc_cond['sample'],2)`% and `r 100*round(icc_cond['stim_image'],2)`% of the variance is accounted for by sample and stimulus image, respectively. 
+
+In the context of the learning model, it's more difficult to estimate the proportion of total variance accounted for by individually-varying parameters, but there are a couple of ways to get a sense for how much variation in the individual parameters relative to the precision of those estimates.
+First, one can examine the proportion of variance accounted for by individual level parameters across each parameter and condition.
+
+```{r}
+covsamps_ep <- probly::extract_cor_cov_samps(stanfit_2_level_no_b, par_subscript = 'ep')
+covsamps_xi <- probly::extract_cor_cov_samps(stanfit_2_level_no_b, par_subscript = 'xi')
+covsamps_rho <- probly::extract_cor_cov_samps(stanfit_2_level_no_b, par_subscript = 'rho')
+
+prop_var <- function(covmat) diag(covmat) / sum(diag(covmat))
+
+var_prop_ep <- apply(apply(covsamps_ep$Sigma, c(3), prop_var), 1, quantile, probs = c(.025, .5, .975))
+var_prop_xi <- apply(apply(covsamps_xi$Sigma, c(3), prop_var), 1, quantile, probs = c(.025, .5, .975))
+var_prop_rho <- apply(apply(covsamps_rho$Sigma, c(3), prop_var), 1, quantile, probs = c(.025, .5, .975))
+```
+
+```{r}
+varprop_df <- as.data.frame(rbind(var_prop_ep, var_prop_xi, var_prop_rho))
+names(varprop_df) <- c('ht', 'dl', 'pu')
+varprop_df$tile <- rownames(varprop_df)
+varprop_df$par <- rep(c('epsilon', 'xi', 'rho'), each = 3)
+varprop_df_l <- tidyr::spread(tidyr::gather(varprop_df, condition, value, -tile, -par), tile, value)
+varprop_df_l$condition <- factor(varprop_df_l$condition, 
+                                 levels = c('ht', 'dl', 'pu'),
+                                 labels = condition_labels)
+
+propvar_plot <- ggplot2::ggplot(varprop_df_l,
+                                ggplot2::aes(x = condition, y = `50%`)) + 
+    ggplot2::geom_errorbar(ggplot2::aes(ymin = `2.5%`, ymax = `97.5%`), width = 0) + 
+    ggplot2::geom_point() + 
+    ggplot2::facet_wrap(~par, labeller = label_parsed) + 
+    ggplot2::scale_y_continuous(breaks = c(.25, .5, .75), labels = c('25%', '50%', '75%')) + 
+    ggplot2::coord_cartesian(ylim = c(0,.75)) + 
+    ggplot2::theme(axis.text.x = element_text(angle = 360-45, hjust = .5, vjust = 1)) + 
+    ggplot2::labs(x = 'Condition, facetted by ', y = 'Proportion variance in\nindividual-level parameters')
+propvar_plot
+```
+
+One might also examine the variance of posterior means versus the total variance across iterations.
+
+```{r}
+par_regex_list <- unlist(lapply(c('ep', 'xi', 'rho'), paste0, '_prm\\[\\d+,', 1:3, '\\]'))
+
+apply(covsamps_ep$Sigma, c(1,2), mean)
+apply(covsamps_xi$Sigma, c(1,2), mean)
+apply(covsamps_rho$Sigma, c(1,2), mean)
+
+var_stuff <- lapply(par_regex_list, function(par_regex){
+    if(grepl('(xi|ep)', par_regex)){
+        par_samples_trans <-  qnorm(stanfit_2_level_no_b_betas[,grepl(par_regex,
+                                                                      dimnames(stanfit_2_level_no_b_betas)[[2]])])
+    } else if(grepl('rho', par_regex)){
+        par_samples_trans <-  log(stanfit_2_level_no_b_betas[,grepl(par_regex,
+                                                                    dimnames(stanfit_2_level_no_b_betas)[[2]])])
+    }
+    par_means <- apply(par_samples_trans, 2, mean)
+    var_means <- var(par_means)
+    var_tot <- var(as.numeric(par_samples_trans))
+    alist <- list(c(var_means = var_means, var_tot = var_tot, prop_var = var_means/var_tot))
+    names(alist) <- sub('(ep|xi|rho).*([1-3]).*', '\\1_\\2', par_regex)
+    alist
+})
+knitr::kable(t(as.data.frame(var_stuff)), row.names = TRUE, digits = 2)
+```
+
+So the proportion of variance due to the means of individual-level parameter posteriors tends to be highest for $\xi$ and lowest for $\rho$.
+
 ## Model predicted behavior
 
 Below is a plot of 313 model predicted runs, all using the exact same task structure (arbitrarily, the first run of the task). Behavior is guided by the mean parameter estimates, so any variabilility in behavior is due to the probabilistic nature of selecting either the right or left option based on the model's current knowledge at some point during the task. Another way of framing this is that it is the behavior of the averge actor, in 313 identical, hypothetical runs.
@@ -1422,6 +1723,6 @@ bayesplot::mcmc_pairs(
     off_diag_fun = 'hex')
 ```
 
-```{r echo = F, eval = F}
+```{r echo = F, eval = T}
 save.image(file = file.path(save_out_dir, 'fit-model-to-participant-data.rda'))
 ```

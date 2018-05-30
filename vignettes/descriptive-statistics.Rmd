@@ -95,6 +95,8 @@ splt_dev_and_demog_task_sum <- dplyr::full_join(
 )
 
 splt_dev_and_demog_task_sum$gender_num <- as.numeric(splt_dev_and_demog_task_sum$gender)
+splt_dev_and_demog_task_sum$ethnicity[splt_dev_and_demog_task_sum$SID == 203] <- 'Other'
+splt_dev_and_demog_task_sum <- distinct(splt_dev_and_demog_task_sum)
 
 splt_by_cond_samp <- dplyr::group_by(splt, condition, sample)
 splt_summary_optimal_feedback <- dplyr::summarize(

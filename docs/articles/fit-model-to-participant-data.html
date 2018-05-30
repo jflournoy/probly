@@ -96,7 +96,7 @@
       <h1>Fit model to participant data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-05-21</h4>
+            <h4 class="date">2018-05-23</h4>
       
       
       <div class="hidden name"><code>fit-model-to-participant-data.Rmd</code></div>
@@ -149,7 +149,262 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 <h2 class="hasAnchor">
 <a href="#age-and-dev" class="anchor"></a>Age and dev</h2>
 <p>Here are a few plots of these parameters against age.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-1.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-2.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-3.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-4.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-5.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-6.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-7.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-8.png" width="564"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-1.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-2.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-3.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-4.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-5.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-6.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-7.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-8.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-9.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-10.png" width="564"></p>
+<div id="datinglooking" class="section level3">
+<h3 class="hasAnchor">
+<a href="#datinglooking" class="anchor"></a>Dating/Looking</h3>
+<div id="diff" class="section level4">
+<h4 class="hasAnchor">
+<a href="#diff" class="anchor"></a>Diff</h4>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<pre><code>#&gt; 
+#&gt; 
+#&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
+#&gt; ---------------------------  -------------  -------  ----------  ----------  ----------  -----------------  ----------------  ---------------------------  ------------------  ------------------  --------------
+#&gt; bin_5_to_end                         1.000   -0.018       0.005       0.007       0.042              0.046            -0.103                       -0.072              -0.019               0.021          -0.016
+#&gt; age                                 -0.018    1.000      -0.137      -0.002       0.145             -0.127             0.046                        0.058               0.018               0.008          -0.061
+#&gt; fsmi_mate                            0.005   -0.137       1.000       0.045      -0.515              0.095             0.121                        0.151               0.147               0.124           0.102
+#&gt; fsmi_stat                            0.007   -0.002       0.045       1.000       0.029              0.388            -0.010                        0.203               0.238               0.155          -0.093
+#&gt; partnered                            0.042    0.145      -0.515       0.029       1.000              0.047            -0.006                       -0.021              -0.113              -0.028          -0.098
+#&gt; k_srq_admiration                     0.046   -0.127       0.095       0.388       0.047              1.000             0.012                        0.370               0.326               0.117          -0.066
+#&gt; k_srq_passivity                     -0.103    0.046       0.121      -0.010      -0.006              0.012             1.000                        0.048               0.084              -0.065          -0.001
+#&gt; k_srq_sexual_relationships          -0.072    0.058       0.151       0.203      -0.021              0.370             0.048                        1.000               0.446               0.227           0.037
+#&gt; k_srq_sociability                   -0.019    0.018       0.147       0.238      -0.113              0.326             0.084                        0.446               1.000               0.180           0.030
+#&gt; sensation_seeking                    0.021    0.008       0.124       0.155      -0.028              0.117            -0.065                        0.227               0.180               1.000           0.172
+#&gt; premeditation                       -0.016   -0.061       0.102      -0.093      -0.098             -0.066            -0.001                        0.037               0.030               0.172           1.000
+#&gt; 
+#&gt; 
+#&gt;                               bin_5_to_end     age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
+#&gt; ---------------------------  -------------  ------  ----------  ----------  ----------  -----------------  ----------------  ---------------------------  ------------------  ------------------  --------------
+#&gt; bin_5_to_end                         0.000   1.000       1.000       1.000       1.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; age                                  0.751   0.000       1.000       1.000       1.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; fsmi_mate                            0.944   0.042       0.000       1.000       0.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; fsmi_stat                            0.920   0.982       0.511       0.000       1.000              0.000             1.000                        0.125               0.020               1.000           1.000
+#&gt; partnered                            0.535   0.032       0.000       0.666       0.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; k_srq_admiration                     0.423   0.027       0.161       0.000       0.495              0.000             1.000                        0.000               0.000               1.000           1.000
+#&gt; k_srq_passivity                      0.074   0.423       0.076       0.887       0.927              0.834             0.000                        1.000               1.000               1.000           1.000
+#&gt; k_srq_sexual_relationships           0.212   0.312       0.026       0.003       0.754              0.000             0.407                        0.000               0.000               0.007           1.000
+#&gt; k_srq_sociability                    0.738   0.751       0.031       0.000       0.097              0.000             0.143                        0.000               0.000               0.127           1.000
+#&gt; sensation_seeking                    0.727   0.892       0.086       0.031       0.701              0.052             0.285                        0.000               0.003               0.000           0.181
+#&gt; premeditation                        0.794   0.312       0.157       0.200       0.177              0.276             0.991                        0.538               0.615               0.004           0.000</code></pre>
+</div>
+<div id="raw" class="section level4">
+<h4 class="hasAnchor">
+<a href="#raw" class="anchor"></a>Raw</h4>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
+<pre><code>#&gt; 
+#&gt; 
+#&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
+#&gt; ---------------------------  -------------  -------  ----------  ----------  ----------  -----------------  ----------------  ---------------------------  ------------------  ------------------  --------------
+#&gt; bin_5_to_end                         1.000    0.019      -0.022       0.048      -0.001              0.073            -0.066                       -0.012               0.061               0.016          -0.058
+#&gt; age                                  0.019    1.000      -0.137      -0.002       0.145             -0.127             0.046                        0.058               0.018               0.008          -0.061
+#&gt; fsmi_mate                           -0.022   -0.137       1.000       0.045      -0.515              0.095             0.121                        0.151               0.147               0.124           0.102
+#&gt; fsmi_stat                            0.048   -0.002       0.045       1.000       0.029              0.388            -0.010                        0.203               0.238               0.155          -0.093
+#&gt; partnered                           -0.001    0.145      -0.515       0.029       1.000              0.047            -0.006                       -0.021              -0.113              -0.028          -0.098
+#&gt; k_srq_admiration                     0.073   -0.127       0.095       0.388       0.047              1.000             0.012                        0.370               0.326               0.117          -0.066
+#&gt; k_srq_passivity                     -0.066    0.046       0.121      -0.010      -0.006              0.012             1.000                        0.048               0.084              -0.065          -0.001
+#&gt; k_srq_sexual_relationships          -0.012    0.058       0.151       0.203      -0.021              0.370             0.048                        1.000               0.446               0.227           0.037
+#&gt; k_srq_sociability                    0.061    0.018       0.147       0.238      -0.113              0.326             0.084                        0.446               1.000               0.180           0.030
+#&gt; sensation_seeking                    0.016    0.008       0.124       0.155      -0.028              0.117            -0.065                        0.227               0.180               1.000           0.172
+#&gt; premeditation                       -0.058   -0.061       0.102      -0.093      -0.098             -0.066            -0.001                        0.037               0.030               0.172           1.000
+#&gt; 
+#&gt; 
+#&gt;                               bin_5_to_end     age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
+#&gt; ---------------------------  -------------  ------  ----------  ----------  ----------  -----------------  ----------------  ---------------------------  ------------------  ------------------  --------------
+#&gt; bin_5_to_end                         0.000   1.000       1.000       1.000       1.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; age                                  0.734   0.000       1.000       1.000       1.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; fsmi_mate                            0.750   0.042       0.000       1.000       0.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; fsmi_stat                            0.482   0.982       0.511       0.000       1.000              0.000             1.000                        0.125               0.020               1.000           1.000
+#&gt; partnered                            0.983   0.032       0.000       0.666       0.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; k_srq_admiration                     0.207   0.027       0.161       0.000       0.495              0.000             1.000                        0.000               0.000               1.000           1.000
+#&gt; k_srq_passivity                      0.250   0.423       0.076       0.887       0.927              0.834             0.000                        1.000               1.000               1.000           1.000
+#&gt; k_srq_sexual_relationships           0.831   0.312       0.026       0.003       0.754              0.000             0.407                        0.000               0.000               0.007           1.000
+#&gt; k_srq_sociability                    0.286   0.751       0.031       0.000       0.097              0.000             0.143                        0.000               0.000               0.127           1.000
+#&gt; sensation_seeking                    0.791   0.892       0.086       0.031       0.701              0.052             0.285                        0.000               0.003               0.000           0.181
+#&gt; premeditation                        0.337   0.312       0.157       0.200       0.177              0.276             0.991                        0.538               0.615               0.004           0.000</code></pre>
+</div>
+</div>
+<div id="popularunpopular" class="section level3">
+<h3 class="hasAnchor">
+<a href="#popularunpopular" class="anchor"></a>Popular/Unpopular</h3>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
+<pre><code>#&gt; 
+#&gt; 
+#&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
+#&gt; ---------------------------  -------------  -------  ----------  ----------  ----------  -----------------  ----------------  ---------------------------  ------------------  ------------------  --------------
+#&gt; bin_5_to_end                         1.000   -0.018       0.005       0.007       0.042              0.046            -0.103                       -0.072              -0.019               0.021          -0.016
+#&gt; age                                 -0.018    1.000      -0.137      -0.002       0.145             -0.127             0.046                        0.058               0.018               0.008          -0.061
+#&gt; fsmi_mate                            0.005   -0.137       1.000       0.045      -0.515              0.095             0.121                        0.151               0.147               0.124           0.102
+#&gt; fsmi_stat                            0.007   -0.002       0.045       1.000       0.029              0.388            -0.010                        0.203               0.238               0.155          -0.093
+#&gt; partnered                            0.042    0.145      -0.515       0.029       1.000              0.047            -0.006                       -0.021              -0.113              -0.028          -0.098
+#&gt; k_srq_admiration                     0.046   -0.127       0.095       0.388       0.047              1.000             0.012                        0.370               0.326               0.117          -0.066
+#&gt; k_srq_passivity                     -0.103    0.046       0.121      -0.010      -0.006              0.012             1.000                        0.048               0.084              -0.065          -0.001
+#&gt; k_srq_sexual_relationships          -0.072    0.058       0.151       0.203      -0.021              0.370             0.048                        1.000               0.446               0.227           0.037
+#&gt; k_srq_sociability                   -0.019    0.018       0.147       0.238      -0.113              0.326             0.084                        0.446               1.000               0.180           0.030
+#&gt; sensation_seeking                    0.021    0.008       0.124       0.155      -0.028              0.117            -0.065                        0.227               0.180               1.000           0.172
+#&gt; premeditation                       -0.016   -0.061       0.102      -0.093      -0.098             -0.066            -0.001                        0.037               0.030               0.172           1.000
+#&gt; 
+#&gt; 
+#&gt;                               bin_5_to_end     age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
+#&gt; ---------------------------  -------------  ------  ----------  ----------  ----------  -----------------  ----------------  ---------------------------  ------------------  ------------------  --------------
+#&gt; bin_5_to_end                         0.000   1.000       1.000       1.000       1.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; age                                  0.751   0.000       1.000       1.000       1.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; fsmi_mate                            0.944   0.042       0.000       1.000       0.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; fsmi_stat                            0.920   0.982       0.511       0.000       1.000              0.000             1.000                        0.125               0.020               1.000           1.000
+#&gt; partnered                            0.535   0.032       0.000       0.666       0.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; k_srq_admiration                     0.423   0.027       0.161       0.000       0.495              0.000             1.000                        0.000               0.000               1.000           1.000
+#&gt; k_srq_passivity                      0.074   0.423       0.076       0.887       0.927              0.834             0.000                        1.000               1.000               1.000           1.000
+#&gt; k_srq_sexual_relationships           0.212   0.312       0.026       0.003       0.754              0.000             0.407                        0.000               0.000               0.007           1.000
+#&gt; k_srq_sociability                    0.738   0.751       0.031       0.000       0.097              0.000             0.143                        0.000               0.000               0.127           1.000
+#&gt; sensation_seeking                    0.727   0.892       0.086       0.031       0.701              0.052             0.285                        0.000               0.003               0.000           0.181
+#&gt; premeditation                        0.794   0.312       0.157       0.200       0.177              0.276             0.991                        0.538               0.615               0.004           0.000</code></pre>
+<div id="raw-1" class="section level4">
+<h4 class="hasAnchor">
+<a href="#raw-1" class="anchor"></a>Raw</h4>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<pre><code>#&gt; 
+#&gt; 
+#&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
+#&gt; ---------------------------  -------------  -------  ----------  ----------  ----------  -----------------  ----------------  ---------------------------  ------------------  ------------------  --------------
+#&gt; bin_5_to_end                         1.000    0.019      -0.022       0.048      -0.001              0.073            -0.066                       -0.012               0.061               0.016          -0.058
+#&gt; age                                  0.019    1.000      -0.137      -0.002       0.145             -0.127             0.046                        0.058               0.018               0.008          -0.061
+#&gt; fsmi_mate                           -0.022   -0.137       1.000       0.045      -0.515              0.095             0.121                        0.151               0.147               0.124           0.102
+#&gt; fsmi_stat                            0.048   -0.002       0.045       1.000       0.029              0.388            -0.010                        0.203               0.238               0.155          -0.093
+#&gt; partnered                           -0.001    0.145      -0.515       0.029       1.000              0.047            -0.006                       -0.021              -0.113              -0.028          -0.098
+#&gt; k_srq_admiration                     0.073   -0.127       0.095       0.388       0.047              1.000             0.012                        0.370               0.326               0.117          -0.066
+#&gt; k_srq_passivity                     -0.066    0.046       0.121      -0.010      -0.006              0.012             1.000                        0.048               0.084              -0.065          -0.001
+#&gt; k_srq_sexual_relationships          -0.012    0.058       0.151       0.203      -0.021              0.370             0.048                        1.000               0.446               0.227           0.037
+#&gt; k_srq_sociability                    0.061    0.018       0.147       0.238      -0.113              0.326             0.084                        0.446               1.000               0.180           0.030
+#&gt; sensation_seeking                    0.016    0.008       0.124       0.155      -0.028              0.117            -0.065                        0.227               0.180               1.000           0.172
+#&gt; premeditation                       -0.058   -0.061       0.102      -0.093      -0.098             -0.066            -0.001                        0.037               0.030               0.172           1.000
+#&gt; 
+#&gt; 
+#&gt;                               bin_5_to_end     age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
+#&gt; ---------------------------  -------------  ------  ----------  ----------  ----------  -----------------  ----------------  ---------------------------  ------------------  ------------------  --------------
+#&gt; bin_5_to_end                         0.000   1.000       1.000       1.000       1.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; age                                  0.734   0.000       1.000       1.000       1.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; fsmi_mate                            0.750   0.042       0.000       1.000       0.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; fsmi_stat                            0.482   0.982       0.511       0.000       1.000              0.000             1.000                        0.125               0.020               1.000           1.000
+#&gt; partnered                            0.983   0.032       0.000       0.666       0.000              1.000             1.000                        1.000               1.000               1.000           1.000
+#&gt; k_srq_admiration                     0.207   0.027       0.161       0.000       0.495              0.000             1.000                        0.000               0.000               1.000           1.000
+#&gt; k_srq_passivity                      0.250   0.423       0.076       0.887       0.927              0.834             0.000                        1.000               1.000               1.000           1.000
+#&gt; k_srq_sexual_relationships           0.831   0.312       0.026       0.003       0.754              0.000             0.407                        0.000               0.000               0.007           1.000
+#&gt; k_srq_sociability                    0.286   0.751       0.031       0.000       0.097              0.000             0.143                        0.000               0.000               0.127           1.000
+#&gt; sensation_seeking                    0.791   0.892       0.086       0.031       0.701              0.052             0.285                        0.000               0.003               0.000           0.181
+#&gt; premeditation                        0.337   0.312       0.157       0.200       0.177              0.276             0.991                        0.538               0.615               0.004           0.000</code></pre>
+</div>
+</div>
+</div>
+<div id="bayesian-h0-test" class="section level2">
+<h2 class="hasAnchor">
+<a href="#bayesian-h0-test" class="anchor"></a>Bayesian H0 test</h2>
+<pre><code>#&gt;                  prior     class                              coef group
+#&gt; 1                              b                                        
+#&gt; 2                              b           conditionDatingDLooking      
+#&gt; 3                              b        conditionPopularDUnpopular      
+#&gt; 4                              b    sage:conditionDatingDLooking_1      
+#&gt; 5                              b    sage:conditionHungryDThirsty_1      
+#&gt; 6                              b sage:conditionPopularDUnpopular_1      
+#&gt; 7  student_t(3, 0, 10) Intercept                                        
+#&gt; 8  student_t(3, 0, 10)        sd                                        
+#&gt; 9                             sd                                      id
+#&gt; 10                            sd                         Intercept    id
+#&gt; 11 student_t(3, 0, 10)       sds                                        
+#&gt; 12                           sds           s(age,k=3,by=condition)      
+#&gt;    resp dpar nlpar bound
+#&gt; 1                       
+#&gt; 2                       
+#&gt; 3                       
+#&gt; 4                       
+#&gt; 5                       
+#&gt; 6                       
+#&gt; 7                       
+#&gt; 8                       
+#&gt; 9                       
+#&gt; 10                      
+#&gt; 11                      
+#&gt; 12
+#&gt;  Family: binomial 
+#&gt;   Links: mu = logit 
+#&gt; Formula: bin_5_to_end_suc | trials(k) ~ 1 + condition + s(age_c, k = 4, by = condition) + (1 | id) 
+#&gt;    Data: lowfi_df_dev (Number of observations: 927) 
+#&gt; Samples: 4 chains, each with iter = 3000; warmup = 2000; thin = 1;
+#&gt;          total post-warmup samples = 4000
+#&gt; 
+#&gt; Smooth Terms: 
+#&gt;                                         Estimate Est.Error l-95% CI
+#&gt; sds(sage_cconditionHungry/Thirsty_1)        1.12      1.59     0.03
+#&gt; sds(sage_cconditionDating/Looking_1)        1.25      1.36     0.03
+#&gt; sds(sage_cconditionPopular/Unpopular_1)     6.20      7.38     0.27
+#&gt;                                         u-95% CI Eff.Sample Rhat
+#&gt; sds(sage_cconditionHungry/Thirsty_1)        6.54         15 1.08
+#&gt; sds(sage_cconditionDating/Looking_1)        5.35        352 1.01
+#&gt; sds(sage_cconditionPopular/Unpopular_1)    23.10          3 2.35
+#&gt; 
+#&gt; Group-Level Effects: 
+#&gt; ~id (Number of levels: 308) 
+#&gt;               Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+#&gt; sd(Intercept)     0.81      0.03     0.75     0.88        204 1.04
+#&gt; 
+#&gt; Population-Level Effects: 
+#&gt;                                     Estimate Est.Error l-95% CI u-95% CI
+#&gt; Intercept                               0.96      0.04     0.86     1.05
+#&gt; conditionDatingDLooking                 0.10      0.02     0.06     0.14
+#&gt; conditionPopularDUnpopular              0.17      0.02     0.13     0.21
+#&gt; sage_c:conditionHungryDThirsty_1        0.07      0.08    -0.11     0.25
+#&gt; sage_c:conditionDatingDLooking_1        0.06      0.08    -0.09     0.26
+#&gt; sage_c:conditionPopularDUnpopular_1     0.11      0.10    -0.09     0.30
+#&gt;                                     Eff.Sample Rhat
+#&gt; Intercept                                   52 1.07
+#&gt; conditionDatingDLooking                     15 1.08
+#&gt; conditionPopularDUnpopular                1202 1.01
+#&gt; sage_c:conditionHungryDThirsty_1           369 1.01
+#&gt; sage_c:conditionDatingDLooking_1           358 1.02
+#&gt; sage_c:conditionPopularDUnpopular_1         41 1.05
+#&gt; 
+#&gt; Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+#&gt; is a crude measure of effective sample size, and Rhat is the potential 
+#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).
+#&gt;  Family: binomial 
+#&gt;   Links: mu = logit 
+#&gt; Formula: bin_5_to_end_suc | trials(k) ~ 1 + poly(age_c, 2) * condition + (1 | id) 
+#&gt;    Data: lowfi_df_dev (Number of observations: 927) 
+#&gt; Samples: 4 chains, each with iter = 3000; warmup = 2000; thin = 1;
+#&gt;          total post-warmup samples = 4000
+#&gt; 
+#&gt; Group-Level Effects: 
+#&gt; ~id (Number of levels: 308) 
+#&gt;               Estimate Est.Error l-95% CI u-95% CI Eff.Sample Rhat
+#&gt; sd(Intercept)     0.81      0.04     0.75     0.89        443 1.01
+#&gt; 
+#&gt; Population-Level Effects: 
+#&gt;                                        Estimate Est.Error l-95% CI
+#&gt; Intercept                                  0.95      0.05     0.85
+#&gt; polyage_c21                                1.44      1.16    -0.79
+#&gt; polyage_c22                               -1.14      1.17    -3.37
+#&gt; conditionDatingDLooking                    0.10      0.02     0.05
+#&gt; conditionPopularDUnpopular                 0.17      0.02     0.12
+#&gt; polyage_c21:conditionDatingDLooking       -0.97      0.65    -2.22
+#&gt; polyage_c22:conditionDatingDLooking       -0.07      0.64    -1.30
+#&gt; polyage_c21:conditionPopularDUnpopular    -0.24      0.64    -1.53
+#&gt; polyage_c22:conditionPopularDUnpopular    -1.49      0.64    -2.73
+#&gt;                                        u-95% CI Eff.Sample Rhat
+#&gt; Intercept                                  1.05        327 1.02
+#&gt; polyage_c21                                3.73        646 1.01
+#&gt; polyage_c22                                1.09       1038 1.00
+#&gt; conditionDatingDLooking                    0.14       4000 1.00
+#&gt; conditionPopularDUnpopular                 0.21       4000 1.00
+#&gt; polyage_c21:conditionDatingDLooking        0.30       4000 1.00
+#&gt; polyage_c22:conditionDatingDLooking        1.20       4000 1.00
+#&gt; polyage_c21:conditionPopularDUnpopular     1.01       4000 1.00
+#&gt; polyage_c22:conditionPopularDUnpopular    -0.24       4000 1.00
+#&gt; 
+#&gt; Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
+#&gt; is a crude measure of effective sample size, and Rhat is the potential 
+#&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-4.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-5.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-6.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-7.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-8.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-9.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-10.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-11.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-12.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<p>One thing that is obvious from the posterior predictive check of this model is that there is more going on than a simple bernoulli process. The distribution of y values is lumpy and bi-modal in a way that suggests a mixture of probabilities of success in the latter trials. Conditioning on word-pairs, age, and self report questionnairs does not help explain these differences.</p>
 </div>
 </div>
 <div id="results-from-logistic-regression" class="section level1">
@@ -236,7 +491,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 #&gt;    0.687019</code></pre>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-6">Table 1: </span>Check if adding sample and stimulus random effects makes a difference</caption>
+<span id="tab:unnamed-chunk-12">Table 1: </span>Check if adding sample and stimulus random effects makes a difference</caption>
 <thead><tr class="header">
 <th></th>
 <th align="right">Df</th>
@@ -286,7 +541,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-6">Table 1: </span>Compare trial model to null</caption>
+<span id="tab:unnamed-chunk-12">Table 1: </span>Compare trial model to null</caption>
 <thead><tr class="header">
 <th></th>
 <th align="right">Df</th>
@@ -325,7 +580,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-6">Table 1: </span>Compare condition model to null</caption>
+<span id="tab:unnamed-chunk-12">Table 1: </span>Compare condition model to null</caption>
 <thead><tr class="header">
 <th></th>
 <th align="right">Df</th>
@@ -853,12 +1108,12 @@ Of course, the variance due to other latent causes may also be a reason true rel
 <div id="results-from-bayesian-learning-models" class="section level1">
 <h1 class="hasAnchor">
 <a href="#results-from-bayesian-learning-models" class="anchor"></a>Results from Bayesian learning models</h1>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-4.png" width="672"></p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-4.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
 <div id="relation-of-learning-model-to-low-fi" class="section level2">
 <h2 class="hasAnchor">
 <a href="#relation-of-learning-model-to-low-fi" class="anchor"></a>Relation of learning model to low-fi</h2>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-4.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-5.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-6.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-7.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-8.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-9.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-4.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-5.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-6.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-7.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-8.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-9.png" width="672"></p>
 <pre><code>#&gt;        z 
 #&gt; -2.33789
 #&gt; [1] 0.01939297
@@ -873,7 +1128,7 @@ Of course, the variance due to other latent causes may also be a reason true rel
 #&gt; -0.03157224
 #&gt;     d.r.tau 
 #&gt; -0.06317597</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-10.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-10.png" width="672"></p>
 <pre><code>#&gt; Call:psych::corr.test(x = select(ungroup(lowfi_learning_pdiffs_df_w), 
 #&gt;     -id), method = "spearman")
 #&gt; Correlation matrix 
@@ -1043,7 +1298,7 @@ Of course, the variance due to other latent causes may also be a reason true rel
 #&gt; xi_mean_Popular/Unpopular                          0
 #&gt; 
 #&gt;  To see confidence intervals of the correlations, print with the short=FALSE option</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
 <pre><code>#&gt; 
 #&gt;  Kendall's rank correlation tau
 #&gt; 
@@ -1053,7 +1308,7 @@ Of course, the variance due to other latent causes may also be a reason true rel
 #&gt; sample estimates:
 #&gt;       tau 
 #&gt; -0.107565</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-18-2.png" width="672"></p>
 <pre><code>#&gt; 
 #&gt;  Kendall's rank correlation tau
 #&gt; 
@@ -1070,24 +1325,146 @@ Of course, the variance due to other latent causes may also be a reason true rel
 <div id="learning-rate" class="section level3">
 <h3 class="hasAnchor">
 <a href="#learning-rate" class="anchor"></a>Learning rate</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-19-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-19-2.png" width="672"></p>
 </div>
 <div id="size-of-reward-modifier" class="section level3">
 <h3 class="hasAnchor">
 <a href="#size-of-reward-modifier" class="anchor"></a>Size of reward modifier</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-20-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-20-2.png" width="672"></p>
 </div>
 <div id="irriducible-noise-e-g--what-the-whaaa" class="section level3">
 <h3 class="hasAnchor">
 <a href="#irriducible-noise-e-g--what-the-whaaa" class="anchor"></a>Irriducible noise (e.g., “what the whaaa?”)</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-15-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-15-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-2.png" width="672"></p>
 </div>
+</div>
+<div id="variance" class="section level2">
+<h2 class="hasAnchor">
+<a href="#variance" class="anchor"></a>Variance</h2>
+<pre><code>#&gt;   id:sample  stim_image      sample 
+#&gt; 0.076362025 0.006069852 0.007163039</code></pre>
+<p>In a simple logistic regression, grouping responses by participant, nested in sample, and by stimulus image, it turns out that only 8% of the variance is due to differences in participants.
+Note, that this is for the average probability of choosing an optimal response.
+Another 1% and 1% of the variance is accounted for by sample and stimulus image, respectively.</p>
+<p>In the context of the learning model, it’s more difficult to estimate the proportion of total variance accounted for by individually-varying parameters, but there are a couple of ways to get a sense for how much variation in the individual parameters relative to the precision of those estimates.
+First, one can examine the proportion of variance accounted for by individual level parameters across each parameter and condition.</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-1.png" width="672"></p>
+<p>One might also examine the variance of posterior means versus the total variance across iterations.</p>
+<pre><code>#&gt;           [,1]      [,2]      [,3]
+#&gt; [1,] 0.2264696 0.1592426 0.1921352
+#&gt; [2,] 0.1592426 0.3821786 0.2386947
+#&gt; [3,] 0.1921352 0.2386947 0.3905422
+#&gt;          [,1]     [,2]     [,3]
+#&gt; [1,] 1.700298 1.754443 1.606736
+#&gt; [2,] 1.754443 2.192224 1.909932
+#&gt; [3,] 1.606736 1.909932 2.013367
+#&gt;           [,1]      [,2]      [,3]
+#&gt; [1,] 0.5190370 0.2237558 0.2018602
+#&gt; [2,] 0.2237558 0.1900061 0.1149849
+#&gt; [3,] 0.2018602 0.1149849 0.1886688</code></pre>
+<table class="table">
+<thead><tr class="header">
+<th></th>
+<th align="right">var_means</th>
+<th align="right">var_tot</th>
+<th align="right">prop_var</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>ep_1</td>
+<td align="right">0.09</td>
+<td align="right">0.24</td>
+<td align="right">0.36</td>
+</tr>
+<tr class="even">
+<td>ep_2</td>
+<td align="right">0.18</td>
+<td align="right">0.39</td>
+<td align="right">0.46</td>
+</tr>
+<tr class="odd">
+<td>ep_3</td>
+<td align="right">0.18</td>
+<td align="right">0.40</td>
+<td align="right">0.46</td>
+</tr>
+<tr class="even">
+<td>xi_1</td>
+<td align="right">1.07</td>
+<td align="right">1.78</td>
+<td align="right">0.60</td>
+</tr>
+<tr class="odd">
+<td>xi_2</td>
+<td align="right">1.43</td>
+<td align="right">2.34</td>
+<td align="right">0.61</td>
+</tr>
+<tr class="even">
+<td>xi_3</td>
+<td align="right">1.28</td>
+<td align="right">2.14</td>
+<td align="right">0.60</td>
+</tr>
+<tr class="odd">
+<td>rho_1</td>
+<td align="right">0.14</td>
+<td align="right">0.57</td>
+<td align="right">0.24</td>
+</tr>
+<tr class="even">
+<td>rho_2</td>
+<td align="right">0.04</td>
+<td align="right">0.20</td>
+<td align="right">0.23</td>
+</tr>
+<tr class="odd">
+<td>rho_3</td>
+<td align="right">0.05</td>
+<td align="right">0.19</td>
+<td align="right">0.24</td>
+</tr>
+</tbody>
+</table>
+<p>So the proportion of variance due to the means of individual-level parameter posteriors tends to be highest for <span class="math inline">\(\xi\)</span> and lowest for <span class="math inline">\(\rho\)</span>.</p>
 </div>
 <div id="model-predicted-behavior" class="section level2">
 <h2 class="hasAnchor">
 <a href="#model-predicted-behavior" class="anchor"></a>Model predicted behavior</h2>
 <p>Below is a plot of 313 model predicted runs, all using the exact same task structure (arbitrarily, the first run of the task). Behavior is guided by the mean parameter estimates, so any variabilility in behavior is due to the probabilistic nature of selecting either the right or left option based on the model’s current knowledge at some point during the task. Another way of framing this is that it is the behavior of the averge actor, in 313 identical, hypothetical runs.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/getspltdata-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-26-1.png" width="564"></p>
+<p>Given these model parameters, and the very strong assumption that nothing would purturb them from session to session, what would be the expected test-retest correlation for the differences between the H/T baseline and D/L or P/U conditions?
+The outcome of interest I’ll use is the average difference in the probability of choosing the optimal label in the last half of the run.
+This will over-estimate the true test-reliability because we’re using what is in practice an unknown latent parameter.
+Measurement error in any real situation will attenuate this true reliability.
+One way to assess this reliability is to draw random IDs (which in this case corresponds to simulated runs through the task), and then correlate the mean number of optimal presses in each condition across two sets of random draws.
+After all, since these simulations are all generating using the model parameters from the same participant, the rank-order of the mean probability of optimal press across the three conditions should be similar across simulations to the extent that the generated behavior is stable.
+A less ad hoc approach may be to use an interclass-correlation estimate to partition the variance into that systematically related to condition versus residual variance.
+In both cases, the estimate is middling, around .4 and .5 respectively.
+We can compare this to the observed reliability of the parameter estimates we obtain from the Bayesian models.</p>
+<pre><code>#&gt;      2.5%       50%     97.5% 
+#&gt; 0.3907863 0.4362505 0.4822843</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-27-1.png" width="672"></p>
+<pre><code>#&gt; Linear mixed model fit by REML ['lmerMod']
+#&gt; Formula: mean_mean_p_opt ~ 1 + (1 | condition)
+#&gt;    Data: mean_modpred_ppressopt
+#&gt; 
+#&gt; REML criterion at convergence: -3531.2
+#&gt; 
+#&gt; Scaled residuals: 
+#&gt;     Min      1Q  Median      3Q     Max 
+#&gt; -5.0115 -0.5824  0.1819  0.7034  1.9429 
+#&gt; 
+#&gt; Random effects:
+#&gt;  Groups    Name        Variance Std.Dev.
+#&gt;  condition (Intercept) 0.001532 0.03914 
+#&gt;  Residual              0.001330 0.03647 
+#&gt; Number of obs: 939, groups:  condition, 3
+#&gt; 
+#&gt; Fixed effects:
+#&gt;             Estimate Std. Error t value
+#&gt; (Intercept)  0.78471    0.02263   34.68
+#&gt; [1] 0.5351846</code></pre>
 </div>
 <div id="diagnostics" class="section level2">
 <h2 class="hasAnchor">
@@ -1111,6 +1488,7 @@ Of course, the variance due to other latent causes may also be a reason true rel
       <li>
 <a href="#low-fi">Low-Fi</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#age-and-dev">Age and dev</a></li>
+      <li><a href="#bayesian-h0-test">Bayesian H0 test</a></li>
       </ul>
 </li>
       <li>
@@ -1122,6 +1500,7 @@ Of course, the variance due to other latent causes may also be a reason true rel
 <a href="#results-from-bayesian-learning-models">Results from Bayesian learning models</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#relation-of-learning-model-to-low-fi">Relation of learning model to low-fi</a></li>
       <li><a href="#mean-parameter-estimates">Mean parameter estimates</a></li>
+      <li><a href="#variance">Variance</a></li>
       <li><a href="#model-predicted-behavior">Model predicted behavior</a></li>
       <li><a href="#diagnostics">Diagnostics</a></li>
       </ul>
