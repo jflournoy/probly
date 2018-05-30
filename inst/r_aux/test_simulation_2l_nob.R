@@ -20,7 +20,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit_wide_prior.RDS')
 } else {
     data_dir <- '/data/jflournoy/split/probly'
-    nsims <- 100
+    nsims <- 500
     nchains <- 4
     nsimsperchain <- ceiling(nsims/nchains)
     message('Data dir: ', data_dir)
@@ -28,8 +28,8 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit.RDS')
 }
 test_sim_num <- 50
-sim_test_fn <- file.path(data_dir, 'splt_sim2_test_sims_wider.RDS')
-sim_test_pr_fn <- file.path(data_dir, 'splt_sim2_test_sims_wider_pr.RDS')
+sim_test_fn <- file.path(data_dir, 'splt_sim2_test_sims_wider_exp.RDS')
+sim_test_pr_fn <- file.path(data_dir, 'splt_sim2_test_sims_wider_exp_pr.RDS')
 stan_model_fn <- system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly')
 stan_model_est_fn <- system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly')
 ####TEST stan_model_fn <- './inst/stan/splt_rl_2_level_no_b_2.stan'
@@ -84,7 +84,7 @@ if(!file.exists(sim_test_fn)){
             include = F,
             pars = dont_save_diff_pars_in_sim,
             chains = nchains, cores = nchains,
-            iter = 1000+nsimsperchain, warmup = 1000,
+            iter = 1500+nsimsperchain, warmup = 1500,
             control = list(max_treedepth = 15, adapt_delta = 0.99))
         pright_pred_samps <- rstan::extract(afit, pars = 'pright_pred')[[1]]
         gc()
