@@ -13,7 +13,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
     plan(batchtools_slurm,
          template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
-         resources = list(ncpus = 6, walltime = 60*24*5, memory = '4G',
+         resources = list(ncpus = 6, walltime = 60*24*8, memory = '4G',
                           partitions = 'long,longfat'))
     AWS = F
 } else if(grepl('^ip-', system('hostname', intern = T))) { #AWS
@@ -47,25 +47,40 @@ model_filename_list <- list(
     # intercept_only = system.file('stan', 'splt_intercept_only.stan', package = 'probly'),
     rl_2_level = system.file('stan', 'splt_rl_2_level.stan', package = 'probly'),
     rl_2_level_no_b = system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly'),
+    rl_2_level_no_b_no_rho = system.file('stan', 'splt_rl_2_level_no_b_no_rho.stan', package = 'probly'),
     rl_repar_exp = system.file('stan', 'splt_rl_reparam_exp.stan', package = 'probly'),
-    rl_repar_exp_no_b = system.file('stan', 'splt_rl_reparam_exp_no_b.stan', package = 'probly')
+    rl_repar_exp_no_b = system.file('stan', 'splt_rl_reparam_exp_no_b.stan', package = 'probly'),
+    rl_repar_exp_no_b_no_rho = system.file('stan', 'splt_rl_reparam_exp_no_b_no_rho.stan', package = 'probly')
 )
 
-pop_parlist <- c('mu_delta_ep', 'mu_delta_rho', 'mu_delta_xi',
-                 'tau_ep', 'tau_rho', 'tau_xi',
-                 'L_Omega_xi', 'L_Omega_ep', 'L_Omega_rho')
-indiv_parlist <- c('beta_ep_prm', 'beta_rho_prm', 'beta_xi_prm', 'pR_final', 'log_lik')
+pop_parlist <- c('mu_delta_ep', 'mu_delta_xi',
+                 'tau_ep', 'tau_xi',
+                 'L_Omega_xi', 'L_Omega_ep')
+indiv_parlist <- c('beta_ep_prm', 'beta_xi_prm', 'pR_final', 'log_lik')
+
+pop_parlist_rho <- c('mu_delta_rho', 'tau_rho', 'L_Omega_rho')
+indiv_parlist_rho <- c('beta_rho_prm')
+
 pop_parlist_b <- c('mu_delta_b', 'tau_b', 'L_Omega_b')
 indiv_parlist_b <- c('beta_b')
-pop_parlist_3l <- c('delta_xi', 'delta_ep', 'delta_rho',
-                    'sigma_delta_xi', 'sigma_delta_ep', 'sigma_delta_rho')
+
+pop_parlist_3l <- c('delta_xi', 'delta_ep',
+                    'sigma_delta_xi', 'sigma_delta_ep')
+pop_parlist_3l_rho <- c('delta_rho', 'sigma_delta_rho')
 pop_parlist_3l_b <- c('delta_b', 'sigma_delta_b')
 
 save_pars_list <- list(
-    rl_2_level = c(pop_parlist, indiv_parlist, pop_parlist_b, indiv_parlist_b),
-    rl_2_level_no_b = c(pop_parlist, indiv_parlist),
-    rl_repar_exp = c(pop_parlist, indiv_parlist, pop_parlist_b, indiv_parlist_b, pop_parlist_3l, pop_parlist_3l_b),
-    rl_repar_exp_no_b = c(pop_parlist, indiv_parlist, pop_parlist_3l)
+    rl_2_level = c(pop_parlist, indiv_parlist, pop_parlist_rho, indiv_parlist_rho, pop_parlist_b, indiv_parlist_b),
+    rl_2_level_no_b = c(pop_parlist, indiv_parlist, pop_parlist_rho, indiv_parlist_rho),
+    rl_2_level_no_b_no_rho = c(pop_parlist, indiv_parlist),
+    rl_repar_exp = c(pop_parlist, indiv_parlist,
+                     pop_parlist_rho, indiv_parlist_rho,
+                     pop_parlist_b, indiv_parlist_b,
+                     pop_parlist_3l, pop_parlist_3l_rho, pop_parlist_3l_b),
+    rl_repar_exp_no_b = c(pop_parlist, indiv_parlist,
+                          pop_parlist_rho, indiv_parlist_rho,
+                          pop_parlist_3l, pop_parlist_3l_rho),
+    rl_repar_exp_no_b_no_rho = c(pop_parlist, indiv_parlist, pop_parlist_3l)
 )
 
 if(AWS){
