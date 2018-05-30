@@ -146,6 +146,7 @@ if(!file.exists(sim_test_fit_fn)){
                     chains = 1, cores = 1,
                     iter = 1534, warmup = 1200,
                     include = TRUE, pars = c(pop_parlist, indiv_parlist),
+                    save_dso = F,
                     control = list(max_treedepth = 15, adapt_delta = 0.99))
                 message('Saving sim fit to: ', sim_test_fit_fn)
                 saveRDS(afit, sim_test_fit_fn)
