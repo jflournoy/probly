@@ -46,6 +46,21 @@ logistic_saves_dir <- file.path(data_dir,'/logistic/')
 ggplot2::theme_set(ggplot2::theme_minimal())
 ```
 
+```{r}
+extract_splt_model_pars <- function(stanfit){
+    delta_names <- grep('^(mu_)*delta', names(stanfit), value = T)
+    sigma_names <- grep('(tau|sigma|Omega)', names(stanfit), value = T)
+    beta_names <- grep('beta', names(stanfit), value = T)
+    pr_names <- grep('pR_final', names(stanfit), value = T)
+    thesamples <- rstan::extract(stanfit, pars = c(delta_names, 
+                                                   sigma_names, 
+                                                   beta_names,
+                                                   pr_names))
+    log_lik <- loo::extract_log_lik(stanfit, merge_chains = FALSE)
+    return(list(parameters = thesamples, log_lik = log_lik))
+}
+```
+
 ```{r load_data_for_sim}
 ```
 
@@ -329,9 +344,25 @@ lowfi_df <- dplyr::full_join(
     time_cond_rx_df,
     by = c('id', 'condition'))
 
+lowfi_df_v_bl <- lowfi_df %>%
+    group_by(id) %>%
+    mutate_at(vars(bin_1:slope),
+              funs(. - .[condition == 'Hungry/Thirsty'])) %>%
+    mutate(condition = paste0(condition, ' - Hungry/Thirsty'))
+
+lowfi_df_l <- lowfi_df %>%
+    gather(outcome, value, -id, -condition)
+lowfi_df_v_bl_l <- lowfi_df_v_bl %>%
+    gather(outcome, value, -id, -condition)
+splt_lowfi_outcomes <- bind_rows(lowfi_df_l,lowfi_df_v_bl_l)
+
 ggcorplot(lowfi_df[lowfi_df$condition == 'Hungry/Thirsty', c(3:dim(lowfi_df)[2])], method = 'spearman')
 ggcorplot(lowfi_df[lowfi_df$condition == 'Dating/Looking', c(3:dim(lowfi_df)[2])], method = 'spearman')
 ggcorplot(lowfi_df[lowfi_df$condition == 'Popular/Unpopular', c(3:dim(lowfi_df)[2])], method = 'spearman')
+```
+
+```{r echo=F, eval=F}
+devtools::use_data(splt_lowfi_outcomes)
 ```
 
 Examining the above plots where corelations r > .90 are colored red (and r = .9 color black), it appears that the most wide ranging correlations are from bins that combine information during the latter half of the run in various ways. If one had to choose such a summary in these data, the average number of optimal presses from bin 5 through 8 (from trial `r (5-1)*16 + 1` through trial 128) seems like a good candidate. It is highly correlated with average optimal responding from bin 6-end and 7-end, combined bins 5 & 6, combined bins 6 & 7, as well as the combined bins from start to finish ("bin_start_to_8"). Using the intercept from a logistic regression with the trial number predictor centered toward the end of the trial also captures a good deal of variance that corresponds to optimal responding on trials toward the end of the run.
@@ -1055,84 +1086,136 @@ p_opt_diff_ksrq_scales
 
 # Results from Bayesian learning models
 
+
+## Model comparison
+
 ```{r}
-stanfit_2_level <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level-1522962.RDS')
-stanfit_2_level_no_b <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level_no_b-1522879.RDS')
-stanfit_3_level <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_repar_exp-1522998.RDS')
-stanfit_3_level_no_b <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_repar_exp_no_b-1522938.RDS')
-stanfit <- stanfit_2_level_no_b
+stanfit_list <- lapply(
+    dir('/data/jflournoy/split/probly/', pattern = '*looser-rl*', full.names = T),
+    function(fname){
+        stanfit <- readRDS(fname)
+        pars <- extract_splt_model_pars(stanfit)
+        return(pars)
+    }
+)
+names(stanfit_list) <- dir('/data/jflournoy/split/probly/', pattern = '*looser-rl*')
 
-munames <- grep('mu', names(stanfit), value = T)
-betanames <- grep('beta', names(stanfit), value = T)
-taunames <- grep('tau_\\w{2,3}\\[', names(stanfit), value = T)
-lomeganames <- grep('L_Omega', names(stanfit), value = T)
+stan_loos <- lapply(
+    stanfit_list,
+    function(stanfit){
+        r_eff <- loo::relative_eff(exp(stanfit$log_lik))
+        loo_l <- loo::loo(stanfit$log_lik, r_eff = r_eff, cores = 8)
+        return(loo_l)
+    }
+)
+loo_comp <- loo::compare(x = stan_loos)
+knitr::kable(loo_comp)
+```
 
-stanfit_2_level_betas <- as.matrix(stanfit_2_level, pars = betanames)
-stanfit_2_level_no_b_betas <- as.matrix(stanfit_2_level_no_b, pars = betanames)
-stanfit_3_level_betas <- as.matrix(stanfit_3_level, pars = betanames)
-stanfit_3_level_no_b_betas <- as.matrix(stanfit_3_level_no_b, pars = betanames)
+If we can trust these LOO estimates (it would be better to do leave-one-observation-out rather than leave-oune-participant-out), it looks like the three level structure is probably unnecessary but that the full parameterization is helpful.
 
-betas_xi_means <- lapply(list(
-    'L2' = stanfit_2_level_betas,
-    'L2_no_b' = stanfit_2_level_no_b_betas,
-    'L3' = stanfit_3_level_betas,
-    'L3_no_b' = stanfit_3_level_no_b_betas),
-    function(stanmat){
-        apply(stanmat[,betanames[1:(313*3)]], 
-              2, function(j) median(qnorm(j)))
+We can examine differences in some of the parameters across models to get a sense for this as well.
+
+```{r}
+mean_pars <- lapply(stanfit_list,
+                    function(modext){
+                       meanpars <- lapply(modext$parameters, mean)
+                       names(meanpars) <- names(modext$parameters)
+                       return(meanpars)
+                    })
+
+beta_pars <- c('epsilon' = 'beta_ep_prm', 'rho' = 'beta_rho_prm', 
+               'xi' = 'beta_xi_prm', 'b' = 'beta_b', 'P("right")["final"]' = 'pR_final')
+beta_names_list <- lapply(
+    beta_pars,
+    function(par){
+        grep(paste0('^', par, '\\[\\d+,\\d+\\]'),
+             names(mean_pars$`splt-looser-rl_2_level-1528266.RDS`),
+             value = T)
     })
 
-betas_ep_means <- lapply(list(
-    'L2' = stanfit_2_level_betas,
-    'L2_no_b' = stanfit_2_level_no_b_betas,
-    'L3' = stanfit_3_level_betas,
-    'L3_no_b' = stanfit_3_level_no_b_betas),
-    function(stanmat){
-        apply(stanmat[,betanames[(313*3+1):(2*3*313)]], 
-              2, function(j) median(qnorm(j)))
+names(beta_names_list) <- beta_pars
+
+two_three_level_comparison_plots <- lapply(
+    beta_pars,
+    function(par){
+        adf <- dplyr::data_frame(
+            'two level' = unlist(mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[[par]]]),
+            'three level' = unlist(mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[[par]]]))
+        ggplot2::ggplot(
+            adf,
+            ggplot2::aes(x = `two level`, y = `three level`)) + 
+            ggplot2::geom_point() + 
+            ggplot2::labs(title = parse(text=bquote(.(names(beta_pars)[which(beta_pars == par)]))))
     })
 
-betas_rho_means <- lapply(list(
-    'L2' = stanfit_2_level_betas,
-    'L2_no_b' = stanfit_2_level_no_b_betas,
-    'L3' = stanfit_3_level_betas,
-    'L3_no_b' = stanfit_3_level_no_b_betas),
-    function(stanmat){
-        apply(stanmat[,betanames[(2*3*313+1):(3*3*313)]], 
-              2, function(j) median(log(j)))
-    })
+gridExtra::grid.arrange(grobs = two_three_level_comparison_plots,
+                        ncol = 3)
+```
 
-model_par_corpairs_plot_xi <- GGally::ggpairs(as.data.frame(betas_xi_means), title = expression(xi))
-model_par_corpairs_plot_epsilon <- GGally::ggpairs(as.data.frame(betas_ep_means), title = expression(epsilon))
-model_par_corpairs_plot_rho <- GGally::ggpairs(as.data.frame(betas_rho_means), title = expression(rho))
-model_par_corpairs_plot_xi_and_rho <- GGally::ggpairs(as.data.frame(c(betas_rho_means, betas_xi_means)), title = 'xi rho')
+We can also examine the correlation of parameters as we drop the terms $b$ and $\rho$.
 
-model_par_corpairs_plot_xi
-model_par_corpairs_plot_epsilon
-model_par_corpairs_plot_rho
-model_par_corpairs_plot_xi_and_rho
+```{r fig.width=20,fig.height=20}
+pR_final <- dplyr::data_frame(
+    pR_full = unlist(
+        mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['pR_final']]]),
+    pR_no_b = unlist(
+        mean_pars$`splt-looser-rl_repar_exp_no_b-1528233.RDS`[beta_names_list[['pR_final']]]),
+    pR_no_rho = unlist(
+        mean_pars$`splt-looser-rl_repar_exp_no_b_no_rho-1527735.RDS`[beta_names_list[['pR_final']]])
+)
+par_means_for_corplot <- 
+    dplyr::data_frame(
+        'epsilon["full"]' = unlist(
+            mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['beta_ep_prm']]]),
+        'epsilon["no b"]' = unlist(
+            mean_pars$`splt-looser-rl_repar_exp_no_b-1528233.RDS`[beta_names_list[['beta_ep_prm']]]),
+        'epsilon["no b,"~rho]' = unlist(
+            mean_pars$`splt-looser-rl_repar_exp_no_b_no_rho-1527735.RDS`[beta_names_list[['beta_ep_prm']]]),
+        'xi["full"]' = unlist(
+            mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['beta_xi_prm']]]),
+        'xi["no b"]' = unlist(
+            mean_pars$`splt-looser-rl_repar_exp_no_b-1528233.RDS`[beta_names_list[['beta_xi_prm']]]),
+        'xi["no b,"~rho]' = unlist(
+            mean_pars$`splt-looser-rl_repar_exp_no_b_no_rho-1527735.RDS`[beta_names_list[['beta_xi_prm']]]),
+        'rho["full"]' = unlist(
+            mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['beta_rho_prm']]]),
+        'rho["no b"]' = unlist(
+            mean_pars$`splt-looser-rl_repar_exp_no_b-1528233.RDS`[beta_names_list[['beta_rho_prm']]]),
+        'b["full"]' = unlist(
+            mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['beta_b']]])
+    )
+
+par_mean_cor_plot <- GGally::ggpairs(par_means_for_corplot, 
+                                     labeller = ggplot2::label_parsed, 
+                                     lower = list(continuous = GGally::wrap('points', alpha = .3)))
+print(par_mean_cor_plot)
 ```
 
 ```{r}
+#get just betas 
+stanfit_2_level_betas <- stanfit_list$`splt-looser-rl_2_level-1528266.RDS`$parameters[unlist(beta_names_list[1:4])]
 
+#get only those for the 1st condition, hungry/thirsty -- we repeat the hungry/thirsty draws 3 times
 ht_cond_for_contrast <- 
-    stanfit_2_level_no_b_betas[,
-                               c(rep((313*0*3+313*0+1):(313*0*3+313*1),3),
-                                 rep((313*1*3+313*0+1):(313*1*3+313*1),3),
-                                 rep((313*2*3+313*0+1):(313*2*3+313*1),3))]
-stanfit_2_level_no_b_betas_contrasted <- stanfit_2_level_no_b_betas - ht_cond_for_contrast
+    stanfit_2_level_betas[c(rep((1+0*3*313):(313+0*3*313),3),
+                            rep((1+1*3*313):(313+1*3*313),3),
+                            rep((1+2*3*313):(313+2*3*313),3),
+                            rep((1+3*3*313):(313+3*3*313),3))]
+stanfit_2_level_betas_contrasted <- lapply(seq_along(stanfit_2_level_betas), function(i)
+                                                stanfit_2_level_betas[[i]] - ht_cond_for_contrast[[i]])
+names(stanfit_2_level_betas_contrasted) <- names(stanfit_2_level_betas)
 
-stanfit_2_level_no_b_betas_df <- do.call(
+stanfit_2_level_betas_df <- do.call(
     rbind,
-    apply(
-        cbind(stanfit_2_level_no_b_betas, stanfit_2_level_no_b_betas_contrasted),
-        2,
+    lapply(
+        c(stanfit_2_level_betas, stanfit_2_level_betas_contrasted),
         function(row) data.frame(mean = mean(row), median = median(row), sd = sd(row))))
-stanfit_2_level_no_b_betas_df$par <- dimnames(stanfit_2_level_no_b_betas)[[2]]   
-stanfit_2_level_no_b_betas_df$contrasted <- rep(c(F,T), each = dim(stanfit_2_level_no_b_betas)[[2]])
+stanfit_2_level_betas_df$par <- rownames(stanfit_2_level_betas_df)
+stanfit_2_level_betas_df$contrasted <- rep(c(F,T), each = length(stanfit_2_level_betas))
 
-splt_rl_betas <- stanfit_2_level_no_b_betas_df %>%
-    tidyr::extract(par, c('parameter', 'idx', 'condnum'), 'beta_(.*)_prm\\[(\\d+),([1-3])\\]') %>%
+splt_rl_betas <- stanfit_2_level_betas_df %>%
+    tidyr::extract(par, c('parameter', 'idx', 'condnum'), 'beta_(.*)\\[(\\d+),([1-3])\\]') %>%
     dplyr::left_join(mutate(distinct(splt_orig, id, sample), idx = as.character(1:n()))) %>%
     dplyr::mutate(condition = condition_labels[as.numeric(condnum)],
                   condition = ifelse(contrasted, 
@@ -1143,6 +1226,10 @@ splt_rl_betas_sum <- splt_rl_betas %>%
     dplyr::group_by(id,parameter,condition) %>%
     dplyr::filter(!contrasted) %>%
     dplyr::summarize(mean_par = mean(mean)) %>%
+    dplyr::mutate(mean_par = case_when(parameter == 'ep_prm' ~ qnorm(mean_par),
+                                       parameter == 'xi_prm' ~ qnorm(mean_par),
+                                       parameter == 'b' ~ mean_par,
+                                       parameter == 'rho_prm' ~ log(mean_par))) %>%
     left_join(filter(splt_confidence, block == 8))
 confidence_parameter_plot <- ggplot2::ggplot(splt_rl_betas_sum,
                                              ggplot2::aes(y = confidence, x = mean_par)) + 
@@ -1153,9 +1240,23 @@ confidence_parameter_plot <- ggplot2::ggplot(splt_rl_betas_sum,
     ggplot2::scale_y_continuous(breaks = c(1,3,5)) + 
     ggplot2::labs(y = 'Participant\'s confidence rating on final block',
                   x = 'Posterior mean parameter')
-confidence_parameter_plot
 ```
 
+```{r confidencevparameters, fig.width=5.875, fig.height=4.1, include=F}
+parameter_lookup <- c(
+  ep_prm = 'epsilon',
+  rho_prm = 'rho',
+  xi_prm = 'xi',
+  b = 'b'
+)
+
+confidence_parameter_plot +
+  ggplot2::facet_grid(condition ~ parameter, scales = 'free_x', 
+                      labeller = ggplot2::labeller(
+                        parameter = ggplot2::as_labeller(parameter_lookup,
+                                                         default = ggplot2::label_parsed))) + 
+    ggplot2::theme_minimal()
+```
 ```{r echo = F, eval = F}
 devtools::use_data(splt_rl_betas)
 ```
