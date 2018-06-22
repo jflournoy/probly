@@ -204,7 +204,8 @@ true_beta_xi_hist <- bayesplot::mcmc_hist(true_beta_xi, adjust = .05)
 true_tau_ep_hist <- bayesplot::mcmc_hist((true_tau_ep), adjust = .05)
 true_tau_xi_hist <- bayesplot::mcmc_hist((true_tau_xi), adjust = .05)
 true_tau_rho_hist <- bayesplot::mcmc_hist((true_tau_rho), adjust = .05)
-sample_pR_final_hist <- bayesplot::mcmc_hist((sample_pR_final), adjust = .05)
+sample_pR_final_hist <- bayesplot::mcmc_hist((sample_pR_final), binwidth = .05)
+sample_pR_final_dens <- bayesplot::mcmc_dens((sample_pR_final))
 
 true_mu_ep_hist
 true_beta_ep_hist
@@ -260,7 +261,7 @@ estimated_beta_ep <- rstan::extract(rl_2l_nob_simfit, pars = 'beta_ep_prm')[[1]]
 estimated_beta_rho <- rstan::extract(rl_2l_nob_simfit, pars = 'beta_rho_prm')[[1]]
 estimated_beta_xi <- rstan::extract(rl_2l_nob_simfit, pars = 'beta_xi_prm')[[1]]
 estimated_tau_ep <- rstan::extract(rl_2l_nob_simfit, pars = 'tau_ep')[[1]]
-estimated_tau_unif_ep <- rstan::extract(rl_2l_nob_simfit, pars = 'tau_unif_ep')[[1]]
+estimated_tau_unif_ep <- rstan::extract(rl_2l_nob_simfit, pars = 'tau_ep')[[1]]
 estimated_tau_xi <- rstan::extract(rl_2l_nob_simfit, pars = 'tau_xi')[[1]]
 estimated_tau_rho <- rstan::extract(rl_2l_nob_simfit, pars = 'tau_rho')[[1]]
 estimated_sample_pR_final <- rstan::extract(rl_2l_nob_simfit, pars = 'pR_final')[[1]]
@@ -288,15 +289,22 @@ plot_mu_estimates_v_sims(estimated_samples = estimated_tau_ep,
 ```
 
 ```{r}
-probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_ep[,,1], 
-                           sim_params = true_beta_ep[test_sim_num,,1], 
-                           title = expression(paste(beta[epsilon[1]])))
-probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_ep[,,2], 
-                           sim_params = true_beta_ep[test_sim_num,,2], 
-                           title = expression(paste(beta[epsilon[2]])))
-probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_ep[,,3], 
-                           sim_params = true_beta_ep[test_sim_num,,3], 
-                           title = expression(paste(beta[epsilon[3]])))
+cor.test(apply(estimated_beta_ep[,,1],2,mean), true_beta_ep[test_sim_num,,1], method = 'spearman')
+cor.test(apply(estimated_beta_ep[,,2],2,mean), true_beta_ep[test_sim_num,,2], method = 'spearman')
+cor.test(apply(estimated_beta_ep[,,3],2,mean), true_beta_ep[test_sim_num,,3], method = 'spearman')
+
+probly::plot_beta_estimates_v_sims(estimated_samples = qnorm(estimated_beta_ep[,,1]), 
+                           sim_params = qnorm(true_beta_ep[test_sim_num,,1]), 
+                           title = expression(paste(beta[xi[1]]))) + 
+    ggplot2::coord_cartesian(x = qnorm(c(0.001,1-.001)), y = qnorm(c(0.001,1-.001)))
+probly::plot_beta_estimates_v_sims(estimated_samples = qnorm(estimated_beta_ep[,,2]), 
+                           sim_params = qnorm(true_beta_ep[test_sim_num,,2]), 
+                           title = expression(paste(beta[xi[2]]))) + 
+    ggplot2::coord_cartesian(x = qnorm(c(0.001,1-.001)), y = qnorm(c(0.001,1-.001)))
+probly::plot_beta_estimates_v_sims(estimated_samples = qnorm(estimated_beta_ep[,,3]), 
+                           sim_params = qnorm(true_beta_ep[test_sim_num,,3]), 
+                           title = expression(paste(beta[xi[3]]))) + 
+    ggplot2::coord_cartesian(x = qnorm(c(0.001,1-.001)), y = qnorm(c(0.001,1-.001)))
 ```
 
 ```{r showmanyiep, fig.width=8, fig.height=30}
@@ -321,15 +329,22 @@ plot_mu_estimates_v_sims(estimated_samples = estimated_tau_rho,
 ```
 
 ```{r}
-probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_rho[,,1], 
-                           sim_params = true_beta_rho[test_sim_num,,1], 
-                           title = expression(paste(beta[rho[1]])))
-probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_rho[,,2], 
-                           sim_params = true_beta_rho[test_sim_num,,2], 
-                           title = expression(paste(beta[rho[2]])))
-probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_rho[,,3], 
-                           sim_params = true_beta_rho[test_sim_num,,3], 
-                           title = expression(paste(beta[rho[3]])))
+cor.test(apply(estimated_beta_rho[,,1],2,mean), true_beta_rho[test_sim_num,,1], method = 'spearman')
+cor.test(apply(estimated_beta_rho[,,2],2,mean), true_beta_rho[test_sim_num,,2], method = 'spearman')
+cor.test(apply(estimated_beta_rho[,,3],2,mean), true_beta_rho[test_sim_num,,3], method = 'spearman')
+
+probly::plot_beta_estimates_v_sims(estimated_samples = log(estimated_beta_rho[,,1]), 
+                           sim_params = log(true_beta_rho[test_sim_num,,1]), 
+                           title = expression(paste(beta[rho[1]]))) + 
+    ggplot2::coord_cartesian(xlim = log(c(.1,20)), ylim = log(c(.1,20)))
+probly::plot_beta_estimates_v_sims(estimated_samples = log(estimated_beta_rho[,,2]), 
+                           sim_params = log(true_beta_rho[test_sim_num,,2]), 
+                           title = expression(paste(beta[rho[2]]))) + 
+    ggplot2::coord_cartesian(xlim = log(c(.1,20)), ylim = log(c(.1,20)))
+probly::plot_beta_estimates_v_sims(estimated_samples = log(estimated_beta_rho[,,3]), 
+                           sim_params = log(true_beta_rho[test_sim_num,,3]), 
+                           title = expression(paste(beta[rho[3]]))) + 
+    ggplot2::coord_cartesian(xlim = log(c(.1,20)), ylim = log(c(.1,20)))
 ```
 
 ```{r showmanyirho, fig.width=8, fig.height=30}
@@ -353,15 +368,22 @@ plot_mu_estimates_v_sims(estimated_samples = estimated_tau_xi,
 ```
 
 ```{r}
-probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_xi[,,1], 
-                           sim_params = true_beta_xi[test_sim_num,,1], 
-                           title = expression(paste(beta[xi[1]])))
-probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_xi[,,2], 
-                           sim_params = true_beta_xi[test_sim_num,,2], 
-                           title = expression(paste(beta[xi[2]])))
-probly::plot_beta_estimates_v_sims(estimated_samples = estimated_beta_xi[,,3], 
-                           sim_params = true_beta_xi[test_sim_num,,3], 
-                           title = expression(paste(beta[xi[3]])))
+cor.test(apply(estimated_beta_xi[,,1],2,mean), true_beta_xi[test_sim_num,,1], method = 'spearman')
+cor.test(apply(estimated_beta_xi[,,2],2,mean), true_beta_xi[test_sim_num,,2], method = 'spearman')
+cor.test(apply(estimated_beta_xi[,,3],2,mean), true_beta_xi[test_sim_num,,3], method = 'spearman')
+
+probly::plot_beta_estimates_v_sims(estimated_samples = qnorm(estimated_beta_xi[,,1]), 
+                           sim_params = qnorm(true_beta_xi[test_sim_num,,1]), 
+                           title = expression(paste(beta[xi[1]]))) + 
+    ggplot2::coord_cartesian(x = qnorm(c(0.00001,1-.00001)), y = qnorm(c(0.00001,1-.00001)))
+probly::plot_beta_estimates_v_sims(estimated_samples = qnorm(estimated_beta_xi[,,2]), 
+                           sim_params = qnorm(true_beta_xi[test_sim_num,,2]), 
+                           title = expression(paste(beta[xi[2]]))) + 
+    ggplot2::coord_cartesian(x = qnorm(c(0.00001,1-.00001)), y = qnorm(c(0.00001,1-.00001)))
+probly::plot_beta_estimates_v_sims(estimated_samples = qnorm(estimated_beta_xi[,,3]), 
+                           sim_params = qnorm(true_beta_xi[test_sim_num,,3]), 
+                           title = expression(paste(beta[xi[3]]))) + 
+    ggplot2::coord_cartesian(x = qnorm(c(0.00001,1-.00001)), y = qnorm(c(0.00001,1-.00001)))
 ```
 
 ```{r showmanyixi, fig.width=8, fig.height=30}
@@ -419,23 +441,18 @@ beta_ecdfrez_df <- do.call(
     }))
 beta_ecdfrez_df <- tidyr::extract(beta_ecdfrez_df, param, into = c('param_name', 'id'), regex = '(.*)\\.(.*)')
 
+mu_ecdfrez_df$param <- factor(mu_ecdfrez_df$param,
+                              levels = c('mu_delta_ep', 'mu_delta_rho', 'mu_delta_xi', 
+                                         'tau_ep', 'tau_rho', 'tau_xi'),
+                              labels = c('mu[epsilon]', 'mu[rho]', 'mu[xi]', 
+                                         'tau[epsilon]', 'tau[rho]', 'tau[xi]'))
+mu_ecdfrez_df$k <- factor(mu_ecdfrez_df$k, 
+                          levels = c('V1', 'V2', 'V3'),
+                          labels = c('"k=1"', '"k=2"', '"k=3"'))
 
 ggplot2::ggplot(mu_ecdfrez_df,
                  ggplot2::aes(x = value)) + 
     ggplot2::geom_histogram(binwidth = 1/3) + 
-    ggplot2::facet_grid(param ~ k)
-
-ggplot2::ggplot(
-    dplyr::mutate(
-        dplyr::arrange(
-            dplyr::group_by(mu_ecdfrez_df,
-                            param, k),
-            value),
-        unif_df = punif(seq(min(value), max(value), length.out = n()))),
-    ggplot2::aes(x = unif_df, y = value)) +
-    ggplot2::geom_abline(intercept = 0, slope = 1, color = 'red') +
-    ggplot2::geom_step()+
-    ggplot2::coord_cartesian(xlim = c(0,1), ylim = c(0,1)) + 
     ggplot2::facet_grid(param ~ k)
 
 knitr::kable(
@@ -450,23 +467,17 @@ knitr::kable(
                      ks.p = ks.test(unique(value), punif)$p.value),
     digits = 3)
 
+beta_ecdfrez_df$param_name <- factor(beta_ecdfrez_df$param_name,
+                              levels = c('beta_ep_prm', 'beta_rho_prm', 'beta_xi_prm'),
+                              labels = c('beta[epsilon]', 'beta[rho]', 'beta[xi]'))
+beta_ecdfrez_df$k <- factor(beta_ecdfrez_df$k, 
+                          levels = c(1, 2, 3),
+                          labels = c('"k=1"', '"k=2"', '"k=3"'))
+
 ggplot2::ggplot(beta_ecdfrez_df,
                  ggplot2::aes(x = ecdf_quantile)) + 
     ggplot2::geom_density(bw = .08) + 
     ggplot2::geom_vline(xintercept = c(.025, .975)) + 
-    ggplot2::facet_grid(param_name ~ k)
-
-ggplot2::ggplot(
-    dplyr::mutate(
-        dplyr::arrange(
-            dplyr::group_by(beta_ecdfrez_df,
-                            param_name, k),
-            ecdf_quantile),
-        unif_df = punif(seq(min(ecdf_quantile), max(ecdf_quantile), length.out = n()))),
-    ggplot2::aes(x = unif_df, y = ecdf_quantile)) +
-    ggplot2::geom_abline(intercept = 0, slope = 1, color = 'red') +
-    ggplot2::geom_step()+
-    ggplot2::coord_cartesian(xlim = c(0,1), ylim = c(0,1)) + 
     ggplot2::facet_grid(param_name ~ k)
 
 knitr::kable(
@@ -480,9 +491,50 @@ knitr::kable(
                      ks.D = ks.test(unique(ecdf_quantile), punif)$statistic,
                      ks.p = ks.test(unique(ecdf_quantile), punif)$p.value),
     digits = 3)
+```
 
+```{r}
+mu_unif_dens_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::arrange(
+            dplyr::group_by(mu_ecdfrez_df,
+                            param, k),
+            value),
+        unif_df = punif(seq(min(value), max(value), length.out = n()))),
+    ggplot2::aes(x = unif_df, y = value-unif_df)) +
+    ggplot2::geom_abline(intercept = 0, slope = 0, color = 'red') +
+    ggplot2::geom_step()+
+    ggplot2::scale_x_continuous(breaks = NULL) + 
+    ggplot2::scale_y_continuous(breaks = c(-.15,0,.15)) +
+    ggplot2::coord_cartesian(xlim = c(0,1), ylim = c(-.25,.25)) + 
+    ggplot2::facet_grid(k ~ param, labeller = ggplot2::label_parsed) + 
+    ggplot2::labs(x = '',
+                  y = 'Deviation from uniform of posterior\nempirical probability density',
+                  title = 'Population-level') + 
+    ggplot2::theme(strip.text.y = element_blank())
 
+beta_unif_dens_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::arrange(
+            dplyr::group_by(beta_ecdfrez_df,
+                            param_name, k),
+            ecdf_quantile),
+        unif_df = punif(seq(min(ecdf_quantile), max(ecdf_quantile), length.out = n()))),
+    ggplot2::aes(x = unif_df, y = ecdf_quantile-unif_df)) +
+    ggplot2::geom_abline(intercept = 0, slope = 0, color = 'red') +
+    ggplot2::geom_step()+
+    ggplot2::scale_x_continuous(breaks = NULL) + 
+    ggplot2::scale_y_continuous(breaks = c(-.15,0,.15)) +
+    ggplot2::coord_cartesian(xlim = c(0,1), ylim = c(-.25,.25)) + 
+    ggplot2::facet_grid(k ~ param_name, labeller = ggplot2::label_parsed) + 
+    ggplot2::labs(x = '',
+                  y = '',
+                  title = 'Individual-level')
+```
 
+```{r densityplots, fig.width=5.875, fig.height=4, include=F}
+ggplot2::theme_set(ggplot2::theme_minimal())
+gridExtra::grid.arrange(mu_unif_dens_plot, beta_unif_dens_plot, ncol = 2, widths = c(3,2))
 ```
 
 

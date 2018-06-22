@@ -25,7 +25,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     nsimsperchain <- ceiling(nsims/nchains)
     message('Data dir: ', data_dir)
     plan(tweak(multiprocess, gc = T, workers = nchains))
-    sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit.RDS')
+    sim_test_fit_fn <- file.path(data_dir, 'splt_sim2_test_fit_wide_prior.RDS')
 }
 test_sim_num <- 50
 sim_test_fn <- file.path(data_dir, 'splt_sim2_test_sims_wider_exp.RDS')
@@ -157,3 +157,10 @@ if(!file.exists(sim_test_fit_fn)){
     message('Loading fit of simulated data')
     rl_2l_nob_simfit <- readRDS(sim_test_fit_fn)
 }
+
+# wide_prior_sim_fit <- rstan::sflist2stanfit(lapply(dir(data_dir, pattern = "*wide_prior-chain*", full.names = T),
+#        function(fname){
+#            astanfit <- readRDS(fname)
+#            return(astanfit)
+#        }))
+# saveRDS(wide_prior_sim_fit,file.path(data_dir, 'splt_sim2_test_fit_wide_prior.RDS'))
