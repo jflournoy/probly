@@ -61,6 +61,9 @@
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
     </li>
     <li>
+      <a href="../articles/corr-with-ylg.html">Correspondence with YLG task behavior</a>
+    </li>
+    <li>
       <a href="../articles/descriptive-statistics.html">Descriptive Statistics for SPLT data</a>
     </li>
     <li>
@@ -96,7 +99,7 @@
       <h1>Fit model to participant data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-05-23</h4>
+            <h4 class="date">2018-06-22</h4>
       
       
       <div class="hidden name"><code>fit-model-to-participant-data.Rmd</code></div>
@@ -108,8 +111,7 @@
 <div id="method" class="section level1">
 <h1 class="hasAnchor">
 <a href="#method" class="anchor"></a>Method</h1>
-<p>Using the model presented in the section on <a href="test-simulated-data.html">testing simulated data</a>, I estimate the posterior distribution of the model parameters given the data provided by four groups of participants.
-Quality of estimation can be supported by (A), (B), (C), (D).</p>
+<p>Using the model presented in the section on <a href="test-simulated-data.html">testing simulated data</a>, I estimate the posterior distribution of the model parameters given the data provided by four groups of participants. Quality of estimation can be supported by (A), (B), (C), (D).</p>
 </div>
 <div id="results" class="section level1">
 <h1 class="hasAnchor">
@@ -117,25 +119,20 @@ Quality of estimation can be supported by (A), (B), (C), (D).</p>
 <div id="descriptive-plots" class="section level2">
 <h2 class="hasAnchor">
 <a href="#descriptive-plots" class="anchor"></a>Descriptive plots</h2>
-<p>Examination of the raw data using scatterplots and non-parametric best-fit lines can help insure that data conform to expectations, and that subsequent model estimates accurately reflect the data.
-On average, participants in all samples and all conditions demonstrated learning (Figure <a href="#fig:trialaverages"><strong>??</strong></a>A, although note that given the small sample size, the foster-care involved sample shows more variability across trials).
-There is also some indication that learning occurs more quickly in the two social motive conditions (Figure <a href="#fig:trialaverages"><strong>??</strong></a>B).</p>
-
+<p>Examination of the raw data using scatterplots and non-parametric best-fit lines can help insure that data conform to expectations, and that subsequent model estimates accurately reflect the data. On average, participants in all samples and all conditions demonstrated learning (Figure @ref(fig:trialaverages)A, although note that given the small sample size, the foster-care involved sample shows more variability across trials). There is also some indication that learning occurs more quickly in the two social motive conditions (Figure @ref(fig:trialaverages)B).</p>
+<p>(ref:trialaverages) Average number of optimal responses for each trial across all participants. Best fit lines are generalized additive models with 95% confidence intervals.</p>
 <p><img src="fit-model-to-participant-data_files/figure-html/trialaverages-1.png" width="864"><img src="fit-model-to-participant-data_files/figure-html/trialaverages-2.png" width="864"></p>
-<p>Participants also reported their confidence about which reponses would give them rewards most often (this single item measured confidence globally).
-Confidence generally increases aross trials for all samples (Figure <a href="#fig:confidenceplot">1</a>).</p>
-
+<p>Participants also reported their confidence about which reponses would give them rewards most often (this single item measured confidence globally). Confidence generally increases aross trials for all samples (Figure @ref(fig:confidenceplot)).</p>
+<p>(ref:confidenceplot) Self-reported confidence over blocks.</p>
 <div class="figure">
-<span id="fig:confidenceplot"></span>
-<img src="fit-model-to-participant-data_files/figure-html/confidenceplot-1.png" alt="Self-reported confidence over blocks." width="576"><p class="caption">
-Figure 1: Self-reported confidence over blocks.
+<img src="fit-model-to-participant-data_files/figure-html/confidenceplot-1.png" alt="(ref:confidenceplot)" width="576"><p class="caption">
+(ref:confidenceplot)
 </p>
 </div>
 <div id="proportion-optimal-presses-per-id-condition" class="section level3">
 <h3 class="hasAnchor">
 <a href="#proportion-optimal-presses-per-id-condition" class="anchor"></a>Proportion optimal presses per ID &amp; condition</h3>
-<p>Each of the plots below shows, for each individual, the trajectory of learning across trials.
-Individual plots are sorted by the overall proportion of optimal presses.</p>
+<p>Each of the plots below shows, for each individual, the trajectory of learning across trials. Individual plots are sorted by the overall proportion of optimal presses.</p>
 </div>
 </div>
 </div>
@@ -143,20 +140,20 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 <h1 class="hasAnchor">
 <a href="#low-fi" class="anchor"></a>Low-Fi</h1>
 <p>What’s the least sophisticated way I could possibly examine these data? Probably by taking the mean of some subset of the trials in each condition. So let’s do that and see how much stability there is across bins. since there are 128 trials per condition, I split this into bins of 16 trials each, for 8 bins total. I will also create overlapping double bins (e.g., bins 1 and 2, bins 2 and 3) increaslingly large bins starting from the beginning (e.g., combine bins 1 and 2, then bins 1-3), as well as starting from the end (bins 7 and 8, then bins 6-8). In this way, I hope to build up a picture for how much a summary of one subset of bins captures about the rest of the bins. I suspect that bins toward the end of the run will capture more information about the rest of the run than bins at the beginning of the run, as would be consistent with learning throughout the task.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-3-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-3-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-3-3.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-4-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-4-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-4-3.png" width="672"></p>
 <p>Examining the above plots where corelations r &gt; .90 are colored red (and r = .9 color black), it appears that the most wide ranging correlations are from bins that combine information during the latter half of the run in various ways. If one had to choose such a summary in these data, the average number of optimal presses from bin 5 through 8 (from trial 65 through trial 128) seems like a good candidate. It is highly correlated with average optimal responding from bin 6-end and 7-end, combined bins 5 &amp; 6, combined bins 6 &amp; 7, as well as the combined bins from start to finish (“bin_start_to_8”). Using the intercept from a logistic regression with the trial number predictor centered toward the end of the trial also captures a good deal of variance that corresponds to optimal responding on trials toward the end of the run.</p>
 <div id="age-and-dev" class="section level2">
 <h2 class="hasAnchor">
 <a href="#age-and-dev" class="anchor"></a>Age and dev</h2>
 <p>Here are a few plots of these parameters against age.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-1.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-2.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-3.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-4.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-5.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-6.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-7.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-8.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-9.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-5-10.png" width="564"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-1.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-2.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-3.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-4.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-5.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-6.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-7.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-8.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-9.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-10.png" width="564"></p>
 <div id="datinglooking" class="section level3">
 <h3 class="hasAnchor">
 <a href="#datinglooking" class="anchor"></a>Dating/Looking</h3>
 <div id="diff" class="section level4">
 <h4 class="hasAnchor">
 <a href="#diff" class="anchor"></a>Diff</h4>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-6-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt; 
 #&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
@@ -191,7 +188,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 <div id="raw" class="section level4">
 <h4 class="hasAnchor">
 <a href="#raw" class="anchor"></a>Raw</h4>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt; 
 #&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
@@ -227,7 +224,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 <div id="popularunpopular" class="section level3">
 <h3 class="hasAnchor">
 <a href="#popularunpopular" class="anchor"></a>Popular/Unpopular</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt; 
 #&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
@@ -261,7 +258,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 <div id="raw-1" class="section level4">
 <h4 class="hasAnchor">
 <a href="#raw-1" class="anchor"></a>Raw</h4>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-9-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt; 
 #&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
@@ -402,8 +399,8 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 #&gt; Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 #&gt; is a crude measure of effective sample size, and Rhat is the potential 
 #&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-4.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-5.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-6.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-7.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-8.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-9.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-10.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-11.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-12.png" width="672"></p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-4.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-5.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-6.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-7.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-8.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-9.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-10.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-11.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-12.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <p>One thing that is obvious from the posterior predictive check of this model is that there is more going on than a simple bernoulli process. The distribution of y values is lumpy and bi-modal in a way that suggests a mixture of probabilities of success in the latter trials. Conditioning on word-pairs, age, and self report questionnairs does not help explain these differences.</p>
 </div>
 </div>
@@ -490,8 +487,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 #&gt; (Intercept) 
 #&gt;    0.687019</code></pre>
 <table class="table">
-<caption>
-<span id="tab:unnamed-chunk-12">Table 1: </span>Check if adding sample and stimulus random effects makes a difference</caption>
+<caption>Check if adding sample and stimulus random effects makes a difference</caption>
 <thead><tr class="header">
 <th></th>
 <th align="right">Df</th>
@@ -540,8 +536,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 </tbody>
 </table>
 <table class="table">
-<caption>
-<span id="tab:unnamed-chunk-12">Table 1: </span>Compare trial model to null</caption>
+<caption>Compare trial model to null</caption>
 <thead><tr class="header">
 <th></th>
 <th align="right">Df</th>
@@ -579,8 +574,7 @@ Individual plots are sorted by the overall proportion of optimal presses.</p>
 </tbody>
 </table>
 <table class="table">
-<caption>
-<span id="tab:unnamed-chunk-12">Table 1: </span>Compare condition model to null</caption>
+<caption>Compare condition model to null</caption>
 <thead><tr class="header">
 <th></th>
 <th align="right">Df</th>
@@ -1092,99 +1086,166 @@ Sensation seeking
 </tr>
 </tbody>
 </table>
-<p>In addition to confirmatory factor analyses, scale reliability and general-factor validity were assessed via the <span class="math inline">\(\omega_{h}\)</span> and <span class="math inline">\(\omega_t\)</span> statistics.
-These statistics account for the possibility that variance on items is due to both a general latent factor common to all items, and several group fators that account for variance in subsets of items <span class="citation">(<span class="citeproc-not-found" data-reference-id="zinbarg2006"><strong>???</strong></span>)</span>.
-The <span class="math inline">\(\omega_{h}\)</span> statistic captures the proportion of variance due to a general factor, and so is proportional to the degree of expected correspondence between the scale and another measure of the construct (on a different scale, or at retest), and also indexes the validity of the scale as a measure of the ostensible latent construct.
-The reliability of the whole scale is indexed by <span class="math inline">\(\omega_t\)</span>, which includes variance due to both group and general factors.
-Cronebach’s <span class="math inline">\(\alpha\)</span> is also reported because it is the default practice, and it may be helpful to demonstrate the differences between the two approaches.
-All three statistics were calculated using the <code>omega</code> function in the <code>psych</code> package for R <span class="citation">(<span class="citeproc-not-found" data-reference-id="revelle2017"><strong>???</strong></span>)</span>.</p>
-<p>The mate-seeking and status motive scales from the FSMI showed adequate reliability, with <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\omega_t\)</span> in the acceptable to excellent range according to some rules of thumb (Table ref(tab:fsmi_reliability).
-However, <span class="math inline">\(\omega_h\)</span> indicates that only about 68% of the variance in FSMI Status and 80% of the variance in FSMI mate-seeking are due to the general factor.
-In light of this, any correlations of scale responses with other constructs of interest should be interpretted in light of the possibility that they are due, in part, to associations between variance <em>not</em> due to the general factor (and thus <em>note</em> due to the construct of interest).
-Of course, the variance due to other latent causes may also be a reason true relations are attentuated.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-4.png" width="672"></p>
+<p>In addition to confirmatory factor analyses, scale reliability and general-factor validity were assessed via the <span class="math inline">\(\omega_{h}\)</span> and <span class="math inline">\(\omega_t\)</span> statistics. These statistics account for the possibility that variance on items is due to both a general latent factor common to all items, and several group fators that account for variance in subsets of items <span class="citation">(<span class="citeproc-not-found" data-reference-id="zinbarg2006"><strong>???</strong></span>)</span>. The <span class="math inline">\(\omega_{h}\)</span> statistic captures the proportion of variance due to a general factor, and so is proportional to the degree of expected correspondence between the scale and another measure of the construct (on a different scale, or at retest), and also indexes the validity of the scale as a measure of the ostensible latent construct. The reliability of the whole scale is indexed by <span class="math inline">\(\omega_t\)</span>, which includes variance due to both group and general factors. Cronebach’s <span class="math inline">\(\alpha\)</span> is also reported because it is the default practice, and it may be helpful to demonstrate the differences between the two approaches. All three statistics were calculated using the <code>omega</code> function in the <code>psych</code> package for R <span class="citation">(<span class="citeproc-not-found" data-reference-id="revelle2017"><strong>???</strong></span>)</span>.</p>
+<p>The mate-seeking and status motive scales from the FSMI showed adequate reliability, with <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\omega_t\)</span> in the acceptable to excellent range according to some rules of thumb (Table ref(tab:fsmi_reliability). However, <span class="math inline">\(\omega_h\)</span> indicates that only about 68% of the variance in FSMI Status and 80% of the variance in FSMI mate-seeking are due to the general factor. In light of this, any correlations of scale responses with other constructs of interest should be interpretted in light of the possibility that they are due, in part, to associations between variance <em>not</em> due to the general factor (and thus <em>note</em> due to the construct of interest). Of course, the variance due to other latent causes may also be a reason true relations are attentuated.</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-4.png" width="700"></p>
 </div>
 </div>
 <div id="results-from-bayesian-learning-models" class="section level1">
 <h1 class="hasAnchor">
 <a href="#results-from-bayesian-learning-models" class="anchor"></a>Results from Bayesian learning models</h1>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-4.png" width="672"></p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-15-1.png" width="672"></p>
+<div id="model-comparison" class="section level2">
+<h2 class="hasAnchor">
+<a href="#model-comparison" class="anchor"></a>Model comparison</h2>
+<table class="table">
+<thead><tr class="header">
+<th></th>
+<th align="right">elpd_diff</th>
+<th align="right">se_diff</th>
+<th align="right">elpd_loo</th>
+<th align="right">se_elpd_loo</th>
+<th align="right">p_loo</th>
+<th align="right">se_p_loo</th>
+<th align="right">looic</th>
+<th align="right">se_looic</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>splt-looser-rl_repar_exp-1528144.RDS</td>
+<td align="right">0.000000</td>
+<td align="right">0.00000</td>
+<td align="right">-67294.36</td>
+<td align="right">748.7909</td>
+<td align="right">1336.3851</td>
+<td align="right">26.49085</td>
+<td align="right">134588.7</td>
+<td align="right">1497.582</td>
+</tr>
+<tr class="even">
+<td>splt-looser-rl_2_level-1528266.RDS</td>
+<td align="right">-1.029017</td>
+<td align="right">10.74029</td>
+<td align="right">-67295.39</td>
+<td align="right">748.2735</td>
+<td align="right">1338.8340</td>
+<td align="right">26.91224</td>
+<td align="right">134590.8</td>
+<td align="right">1496.547</td>
+</tr>
+<tr class="odd">
+<td>splt-looser-rl_repar_exp_no_b-1528233.RDS</td>
+<td align="right">-646.375000</td>
+<td align="right">65.01169</td>
+<td align="right">-67940.74</td>
+<td align="right">749.0533</td>
+<td align="right">932.5700</td>
+<td align="right">24.78173</td>
+<td align="right">135881.5</td>
+<td align="right">1498.107</td>
+</tr>
+<tr class="even">
+<td>splt-looser-rl_2_level_no_b-1527784.RDS</td>
+<td align="right">-651.548445</td>
+<td align="right">64.79281</td>
+<td align="right">-67945.91</td>
+<td align="right">748.9771</td>
+<td align="right">937.3269</td>
+<td align="right">24.43944</td>
+<td align="right">135891.8</td>
+<td align="right">1497.954</td>
+</tr>
+<tr class="odd">
+<td>splt-looser-rl_repar_exp_no_b_no_rho-1527735.RDS</td>
+<td align="right">-1150.560895</td>
+<td align="right">89.09096</td>
+<td align="right">-68444.92</td>
+<td align="right">703.3773</td>
+<td align="right">735.6582</td>
+<td align="right">20.09551</td>
+<td align="right">136889.8</td>
+<td align="right">1406.755</td>
+</tr>
+<tr class="even">
+<td>splt-looser-rl_2_level_no_b_no_rho-1527729.RDS</td>
+<td align="right">-1162.885070</td>
+<td align="right">88.45619</td>
+<td align="right">-68457.25</td>
+<td align="right">703.2826</td>
+<td align="right">746.0496</td>
+<td align="right">19.56013</td>
+<td align="right">136914.5</td>
+<td align="right">1406.565</td>
+</tr>
+</tbody>
+</table>
+<p>If we can trust these LOO estimates (it would be better to do leave-one-observation-out rather than leave-oune-participant-out), it looks like the three level structure is probably unnecessary but that the full parameterization is helpful.</p>
+<p>We can examine differences in some of the parameters across models to get a sense for this as well.</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
+<p>We can also examine the correlation of parameters as we drop the terms <span class="math inline">\(b\)</span> and <span class="math inline">\(\rho\)</span>.</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-18-1.png" width="1920"></p>
+</div>
 <div id="relation-of-learning-model-to-low-fi" class="section level2">
 <h2 class="hasAnchor">
 <a href="#relation-of-learning-model-to-low-fi" class="anchor"></a>Relation of learning model to low-fi</h2>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-2.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-3.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-4.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-5.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-6.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-7.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-8.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-9.png" width="672"></p>
-<pre><code>#&gt;        z 
-#&gt; -2.33789
-#&gt; [1] 0.01939297
-#&gt;      r.tau 
-#&gt; -0.1681599
-#&gt;    d.r.tau 
-#&gt; -0.3411783
-#&gt;          z 
-#&gt; -0.4333172
-#&gt; [1] 0.6647843
-#&gt;       r.tau 
-#&gt; -0.03157224
-#&gt;     d.r.tau 
-#&gt; -0.06317597</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-10.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-4.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-5.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-6.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-7.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-8.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-9.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-10.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-4.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-5.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-6.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-7.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
 <pre><code>#&gt; Call:psych::corr.test(x = select(ungroup(lowfi_learning_pdiffs_df_w), 
 #&gt;     -id), method = "spearman")
 #&gt; Correlation matrix 
 #&gt;                            fsmi_mate fsmi_stat ep_mean_Dating/Looking
 #&gt; fsmi_mate                       1.00      0.07                  -0.15
-#&gt; fsmi_stat                       0.07      1.00                  -0.04
-#&gt; ep_mean_Dating/Looking         -0.15     -0.04                   1.00
-#&gt; ep_mean_Popular/Unpopular      -0.09     -0.03                   0.70
-#&gt; rho_mean_Dating/Looking         0.04      0.05                  -0.08
-#&gt; rho_mean_Popular/Unpopular      0.03     -0.03                  -0.08
-#&gt; xi_mean_Dating/Looking          0.01     -0.06                   0.01
-#&gt; xi_mean_Popular/Unpopular       0.04     -0.02                   0.03
+#&gt; fsmi_stat                       0.07      1.00                  -0.06
+#&gt; ep_mean_Dating/Looking         -0.15     -0.06                   1.00
+#&gt; ep_mean_Popular/Unpopular      -0.08     -0.04                   0.73
+#&gt; rho_mean_Dating/Looking         0.02      0.01                  -0.14
+#&gt; rho_mean_Popular/Unpopular      0.02     -0.02                  -0.15
+#&gt; xi_mean_Dating/Looking          0.02     -0.05                   0.22
+#&gt; xi_mean_Popular/Unpopular       0.04     -0.02                   0.22
 #&gt;                            ep_mean_Popular/Unpopular
-#&gt; fsmi_mate                                      -0.09
-#&gt; fsmi_stat                                      -0.03
-#&gt; ep_mean_Dating/Looking                          0.70
+#&gt; fsmi_mate                                      -0.08
+#&gt; fsmi_stat                                      -0.04
+#&gt; ep_mean_Dating/Looking                          0.73
 #&gt; ep_mean_Popular/Unpopular                       1.00
-#&gt; rho_mean_Dating/Looking                        -0.06
-#&gt; rho_mean_Popular/Unpopular                      0.02
-#&gt; xi_mean_Dating/Looking                          0.03
-#&gt; xi_mean_Popular/Unpopular                       0.01
+#&gt; rho_mean_Dating/Looking                        -0.15
+#&gt; rho_mean_Popular/Unpopular                     -0.12
+#&gt; xi_mean_Dating/Looking                          0.30
+#&gt; xi_mean_Popular/Unpopular                       0.27
 #&gt;                            rho_mean_Dating/Looking
-#&gt; fsmi_mate                                     0.04
-#&gt; fsmi_stat                                     0.05
-#&gt; ep_mean_Dating/Looking                       -0.08
-#&gt; ep_mean_Popular/Unpopular                    -0.06
+#&gt; fsmi_mate                                     0.02
+#&gt; fsmi_stat                                     0.01
+#&gt; ep_mean_Dating/Looking                       -0.14
+#&gt; ep_mean_Popular/Unpopular                    -0.15
 #&gt; rho_mean_Dating/Looking                       1.00
-#&gt; rho_mean_Popular/Unpopular                    0.70
-#&gt; xi_mean_Dating/Looking                       -0.45
-#&gt; xi_mean_Popular/Unpopular                    -0.42
+#&gt; rho_mean_Popular/Unpopular                    0.92
+#&gt; xi_mean_Dating/Looking                       -0.40
+#&gt; xi_mean_Popular/Unpopular                    -0.35
 #&gt;                            rho_mean_Popular/Unpopular
-#&gt; fsmi_mate                                        0.03
-#&gt; fsmi_stat                                       -0.03
-#&gt; ep_mean_Dating/Looking                          -0.08
-#&gt; ep_mean_Popular/Unpopular                        0.02
-#&gt; rho_mean_Dating/Looking                          0.70
+#&gt; fsmi_mate                                        0.02
+#&gt; fsmi_stat                                       -0.02
+#&gt; ep_mean_Dating/Looking                          -0.15
+#&gt; ep_mean_Popular/Unpopular                       -0.12
+#&gt; rho_mean_Dating/Looking                          0.92
 #&gt; rho_mean_Popular/Unpopular                       1.00
-#&gt; xi_mean_Dating/Looking                          -0.36
-#&gt; xi_mean_Popular/Unpopular                       -0.40
+#&gt; xi_mean_Dating/Looking                          -0.34
+#&gt; xi_mean_Popular/Unpopular                       -0.37
 #&gt;                            xi_mean_Dating/Looking
-#&gt; fsmi_mate                                    0.01
-#&gt; fsmi_stat                                   -0.06
-#&gt; ep_mean_Dating/Looking                       0.01
-#&gt; ep_mean_Popular/Unpopular                    0.03
-#&gt; rho_mean_Dating/Looking                     -0.45
-#&gt; rho_mean_Popular/Unpopular                  -0.36
+#&gt; fsmi_mate                                    0.02
+#&gt; fsmi_stat                                   -0.05
+#&gt; ep_mean_Dating/Looking                       0.22
+#&gt; ep_mean_Popular/Unpopular                    0.30
+#&gt; rho_mean_Dating/Looking                     -0.40
+#&gt; rho_mean_Popular/Unpopular                  -0.34
 #&gt; xi_mean_Dating/Looking                       1.00
-#&gt; xi_mean_Popular/Unpopular                    0.98
+#&gt; xi_mean_Popular/Unpopular                    0.95
 #&gt;                            xi_mean_Popular/Unpopular
 #&gt; fsmi_mate                                       0.04
 #&gt; fsmi_stat                                      -0.02
-#&gt; ep_mean_Dating/Looking                          0.03
-#&gt; ep_mean_Popular/Unpopular                       0.01
-#&gt; rho_mean_Dating/Looking                        -0.42
-#&gt; rho_mean_Popular/Unpopular                     -0.40
-#&gt; xi_mean_Dating/Looking                          0.98
+#&gt; ep_mean_Dating/Looking                          0.22
+#&gt; ep_mean_Popular/Unpopular                       0.27
+#&gt; rho_mean_Dating/Looking                        -0.35
+#&gt; rho_mean_Popular/Unpopular                     -0.37
+#&gt; xi_mean_Dating/Looking                          0.95
 #&gt; xi_mean_Popular/Unpopular                       1.00
 #&gt; Sample Size 
 #&gt;                            fsmi_mate fsmi_stat ep_mean_Dating/Looking
@@ -1243,46 +1304,46 @@ Of course, the variance due to other latent causes may also be a reason true rel
 #&gt; xi_mean_Popular/Unpopular                        308
 #&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
 #&gt;                            fsmi_mate fsmi_stat ep_mean_Dating/Looking
-#&gt; fsmi_mate                       0.00      1.00                   0.45
+#&gt; fsmi_mate                       0.00      1.00                   0.40
 #&gt; fsmi_stat                       0.34      0.00                   1.00
-#&gt; ep_mean_Dating/Looking          0.02      0.55                   0.00
-#&gt; ep_mean_Popular/Unpopular       0.19      0.64                   0.00
-#&gt; rho_mean_Dating/Looking         0.53      0.43                   0.18
-#&gt; rho_mean_Popular/Unpopular      0.70      0.63                   0.14
-#&gt; xi_mean_Dating/Looking          0.91      0.40                   0.80
-#&gt; xi_mean_Popular/Unpopular       0.55      0.79                   0.64
+#&gt; ep_mean_Dating/Looking          0.03      0.38                   0.00
+#&gt; ep_mean_Popular/Unpopular       0.23      0.52                   0.00
+#&gt; rho_mean_Dating/Looking         0.76      0.89                   0.01
+#&gt; rho_mean_Popular/Unpopular      0.78      0.74                   0.01
+#&gt; xi_mean_Dating/Looking          0.77      0.42                   0.00
+#&gt; xi_mean_Popular/Unpopular       0.51      0.78                   0.00
 #&gt;                            ep_mean_Popular/Unpopular
 #&gt; fsmi_mate                                       1.00
 #&gt; fsmi_stat                                       1.00
 #&gt; ep_mean_Dating/Looking                          0.00
 #&gt; ep_mean_Popular/Unpopular                       0.00
-#&gt; rho_mean_Dating/Looking                         0.27
-#&gt; rho_mean_Popular/Unpopular                      0.77
-#&gt; xi_mean_Dating/Looking                          0.61
-#&gt; xi_mean_Popular/Unpopular                       0.80
+#&gt; rho_mean_Dating/Looking                         0.01
+#&gt; rho_mean_Popular/Unpopular                      0.03
+#&gt; xi_mean_Dating/Looking                          0.00
+#&gt; xi_mean_Popular/Unpopular                       0.00
 #&gt;                            rho_mean_Dating/Looking
-#&gt; fsmi_mate                                        1
-#&gt; fsmi_stat                                        1
-#&gt; ep_mean_Dating/Looking                           1
-#&gt; ep_mean_Popular/Unpopular                        1
-#&gt; rho_mean_Dating/Looking                          0
-#&gt; rho_mean_Popular/Unpopular                       0
-#&gt; xi_mean_Dating/Looking                           0
-#&gt; xi_mean_Popular/Unpopular                        0
+#&gt; fsmi_mate                                     1.00
+#&gt; fsmi_stat                                     1.00
+#&gt; ep_mean_Dating/Looking                        0.17
+#&gt; ep_mean_Popular/Unpopular                     0.13
+#&gt; rho_mean_Dating/Looking                       0.00
+#&gt; rho_mean_Popular/Unpopular                    0.00
+#&gt; xi_mean_Dating/Looking                        0.00
+#&gt; xi_mean_Popular/Unpopular                     0.00
 #&gt;                            rho_mean_Popular/Unpopular
-#&gt; fsmi_mate                                           1
-#&gt; fsmi_stat                                           1
-#&gt; ep_mean_Dating/Looking                              1
-#&gt; ep_mean_Popular/Unpopular                           1
-#&gt; rho_mean_Dating/Looking                             0
-#&gt; rho_mean_Popular/Unpopular                          0
-#&gt; xi_mean_Dating/Looking                              0
-#&gt; xi_mean_Popular/Unpopular                           0
+#&gt; fsmi_mate                                        1.00
+#&gt; fsmi_stat                                        1.00
+#&gt; ep_mean_Dating/Looking                           0.13
+#&gt; ep_mean_Popular/Unpopular                        0.40
+#&gt; rho_mean_Dating/Looking                          0.00
+#&gt; rho_mean_Popular/Unpopular                       0.00
+#&gt; xi_mean_Dating/Looking                           0.00
+#&gt; xi_mean_Popular/Unpopular                        0.00
 #&gt;                            xi_mean_Dating/Looking
 #&gt; fsmi_mate                                       1
 #&gt; fsmi_stat                                       1
-#&gt; ep_mean_Dating/Looking                          1
-#&gt; ep_mean_Popular/Unpopular                       1
+#&gt; ep_mean_Dating/Looking                          0
+#&gt; ep_mean_Popular/Unpopular                       0
 #&gt; rho_mean_Dating/Looking                         0
 #&gt; rho_mean_Popular/Unpopular                      0
 #&gt; xi_mean_Dating/Looking                          0
@@ -1290,34 +1351,34 @@ Of course, the variance due to other latent causes may also be a reason true rel
 #&gt;                            xi_mean_Popular/Unpopular
 #&gt; fsmi_mate                                          1
 #&gt; fsmi_stat                                          1
-#&gt; ep_mean_Dating/Looking                             1
-#&gt; ep_mean_Popular/Unpopular                          1
+#&gt; ep_mean_Dating/Looking                             0
+#&gt; ep_mean_Popular/Unpopular                          0
 #&gt; rho_mean_Dating/Looking                            0
 #&gt; rho_mean_Popular/Unpopular                         0
 #&gt; xi_mean_Dating/Looking                             0
 #&gt; xi_mean_Popular/Unpopular                          0
 #&gt; 
 #&gt;  To see confidence intervals of the correlations, print with the short=FALSE option</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt;  Kendall's rank correlation tau
 #&gt; 
 #&gt; data:  lowfi_learning_df$ep_mean[lowfi_learning_df$condition == "Dating/Looking"] and lowfi_learning_df$fsmi_mate[lowfi_learning_df$condition == "Dating/Looking"]
-#&gt; z = -2.3379, p-value = 0.01939
+#&gt; z = -2.2884, p-value = 0.02212
 #&gt; alternative hypothesis: true tau is not equal to 0
 #&gt; sample estimates:
-#&gt;       tau 
-#&gt; -0.107565</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-18-2.png" width="672"></p>
+#&gt;        tau 
+#&gt; -0.1052863</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-2.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt;  Kendall's rank correlation tau
 #&gt; 
 #&gt; data:  lowfi_learning_df$ep_mean[lowfi_learning_df$condition == "Popular/Unpopular"] and lowfi_learning_df$fsmi_stat[lowfi_learning_df$condition == "Popular/Unpopular"]
-#&gt; z = -0.43332, p-value = 0.6648
+#&gt; z = -0.65732, p-value = 0.511
 #&gt; alternative hypothesis: true tau is not equal to 0
 #&gt; sample estimates:
-#&gt;         tau 
-#&gt; -0.02010285</code></pre>
+#&gt;       tau 
+#&gt; -0.030495</code></pre>
 </div>
 <div id="mean-parameter-estimates" class="section level2">
 <h2 class="hasAnchor">
@@ -1325,17 +1386,22 @@ Of course, the variance due to other latent causes may also be a reason true rel
 <div id="learning-rate" class="section level3">
 <h3 class="hasAnchor">
 <a href="#learning-rate" class="anchor"></a>Learning rate</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-19-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-19-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-2.png" width="700"></p>
 </div>
 <div id="size-of-reward-modifier" class="section level3">
 <h3 class="hasAnchor">
 <a href="#size-of-reward-modifier" class="anchor"></a>Size of reward modifier</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-20-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-20-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-26-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-26-2.png" width="700"></p>
 </div>
 <div id="irriducible-noise-e-g--what-the-whaaa" class="section level3">
 <h3 class="hasAnchor">
 <a href="#irriducible-noise-e-g--what-the-whaaa" class="anchor"></a>Irriducible noise (e.g., “what the whaaa?”)</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-1.png" width="672"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-2.png" width="672"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-27-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-27-2.png" width="700"></p>
+</div>
+<div id="right-bias" class="section level3">
+<h3 class="hasAnchor">
+<a href="#right-bias" class="anchor"></a>Right-Bias</h3>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-28-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-28-2.png" width="700"></p>
 </div>
 </div>
 <div id="variance" class="section level2">
@@ -1343,25 +1409,42 @@ Of course, the variance due to other latent causes may also be a reason true rel
 <a href="#variance" class="anchor"></a>Variance</h2>
 <pre><code>#&gt;   id:sample  stim_image      sample 
 #&gt; 0.076362025 0.006069852 0.007163039</code></pre>
-<p>In a simple logistic regression, grouping responses by participant, nested in sample, and by stimulus image, it turns out that only 8% of the variance is due to differences in participants.
-Note, that this is for the average probability of choosing an optimal response.
-Another 1% and 1% of the variance is accounted for by sample and stimulus image, respectively.</p>
-<p>In the context of the learning model, it’s more difficult to estimate the proportion of total variance accounted for by individually-varying parameters, but there are a couple of ways to get a sense for how much variation in the individual parameters relative to the precision of those estimates.
-First, one can examine the proportion of variance accounted for by individual level parameters across each parameter and condition.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-1.png" width="672"></p>
+<p>In a simple logistic regression, grouping responses by participant, nested in sample, and by stimulus image, it turns out that only 8% of the variance is due to differences in participants. Note, that this is for the average probability of choosing an optimal response. Another 1% and 1% of the variance is accounted for by sample and stimulus image, respectively.</p>
+<p>In the context of the learning model, it’s more difficult to estimate the proportion of total variance accounted for by individually-varying parameters, but there are a couple of ways to get a sense for how much variation in the individual parameters relative to the precision of those estimates. First, one can examine the proportion of variance accounted for by individual level parameters across each parameter and condition.</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-31-1.png" width="700"></p>
 <p>One might also examine the variance of posterior means versus the total variance across iterations.</p>
 <pre><code>#&gt;           [,1]      [,2]      [,3]
-#&gt; [1,] 0.2264696 0.1592426 0.1921352
-#&gt; [2,] 0.1592426 0.3821786 0.2386947
-#&gt; [3,] 0.1921352 0.2386947 0.3905422
+#&gt; [1,] 0.3113584 0.1802120 0.1852237
+#&gt; [2,] 0.1802120 0.3866927 0.2483462
+#&gt; [3,] 0.1852237 0.2483462 0.3975069
 #&gt;          [,1]     [,2]     [,3]
-#&gt; [1,] 1.700298 1.754443 1.606736
-#&gt; [2,] 1.754443 2.192224 1.909932
-#&gt; [3,] 1.606736 1.909932 2.013367
+#&gt; [1,] 1.915094 1.802893 1.612204
+#&gt; [2,] 1.802893 2.240438 1.882073
+#&gt; [3,] 1.612204 1.882073 1.987667
 #&gt;           [,1]      [,2]      [,3]
-#&gt; [1,] 0.5190370 0.2237558 0.2018602
-#&gt; [2,] 0.2237558 0.1900061 0.1149849
-#&gt; [3,] 0.2018602 0.1149849 0.1886688</code></pre>
+#&gt; [1,] 0.9010991 0.5562050 0.5392281
+#&gt; [2,] 0.5562050 0.5039343 0.3957680
+#&gt; [3,] 0.5392281 0.3957680 0.4703153
+#&gt;            [,1]       [,2]       [,3]
+#&gt; [1,] 0.12722568 0.04523686 0.05519683
+#&gt; [2,] 0.04523686 0.16245257 0.08157617
+#&gt; [3,] 0.05519683 0.08157617 0.17990481
+#&gt;           [,1]      [,2]      [,3]
+#&gt; [1,] 1.0000000 0.5193623 0.5264946
+#&gt; [2,] 0.5193623 1.0000000 0.6334352
+#&gt; [3,] 0.5264946 0.6334352 1.0000000
+#&gt;           [,1]      [,2]      [,3]
+#&gt; [1,] 1.0000000 0.8703791 0.8263292
+#&gt; [2,] 0.8703791 1.0000000 0.8918630
+#&gt; [3,] 0.8263292 0.8918630 1.0000000
+#&gt;           [,1]      [,2]      [,3]
+#&gt; [1,] 1.0000000 0.8253947 0.8283077
+#&gt; [2,] 0.8253947 1.0000000 0.8129413
+#&gt; [3,] 0.8283077 0.8129413 1.0000000
+#&gt;           [,1]      [,2]      [,3]
+#&gt; [1,] 1.0000000 0.3146602 0.3648425
+#&gt; [2,] 0.3146602 1.0000000 0.4771760
+#&gt; [3,] 0.3648425 0.4771760 1.0000000</code></pre>
 <table class="table">
 <thead><tr class="header">
 <th></th>
@@ -1372,57 +1455,75 @@ First, one can examine the proportion of variance accounted for by individual le
 <tbody>
 <tr class="odd">
 <td>ep_1</td>
-<td align="right">0.09</td>
-<td align="right">0.24</td>
-<td align="right">0.36</td>
+<td align="right">0.12</td>
+<td align="right">0.32</td>
+<td align="right">0.37</td>
 </tr>
 <tr class="even">
 <td>ep_2</td>
 <td align="right">0.18</td>
 <td align="right">0.39</td>
-<td align="right">0.46</td>
+<td align="right">0.45</td>
 </tr>
 <tr class="odd">
 <td>ep_3</td>
 <td align="right">0.18</td>
 <td align="right">0.40</td>
-<td align="right">0.46</td>
+<td align="right">0.45</td>
 </tr>
 <tr class="even">
 <td>xi_1</td>
-<td align="right">1.07</td>
-<td align="right">1.78</td>
-<td align="right">0.60</td>
+<td align="right">0.97</td>
+<td align="right">2.03</td>
+<td align="right">0.48</td>
 </tr>
 <tr class="odd">
 <td>xi_2</td>
-<td align="right">1.43</td>
-<td align="right">2.34</td>
-<td align="right">0.61</td>
+<td align="right">1.21</td>
+<td align="right">2.43</td>
+<td align="right">0.50</td>
 </tr>
 <tr class="even">
 <td>xi_3</td>
-<td align="right">1.28</td>
+<td align="right">1.07</td>
 <td align="right">2.14</td>
-<td align="right">0.60</td>
+<td align="right">0.50</td>
 </tr>
 <tr class="odd">
 <td>rho_1</td>
-<td align="right">0.14</td>
-<td align="right">0.57</td>
-<td align="right">0.24</td>
+<td align="right">0.43</td>
+<td align="right">0.92</td>
+<td align="right">0.47</td>
 </tr>
 <tr class="even">
 <td>rho_2</td>
-<td align="right">0.04</td>
-<td align="right">0.20</td>
-<td align="right">0.23</td>
+<td align="right">0.24</td>
+<td align="right">0.52</td>
+<td align="right">0.46</td>
 </tr>
 <tr class="odd">
 <td>rho_3</td>
-<td align="right">0.05</td>
-<td align="right">0.19</td>
-<td align="right">0.24</td>
+<td align="right">0.22</td>
+<td align="right">0.48</td>
+<td align="right">0.47</td>
+</tr>
+<tr class="even">
+<td>b_1</td>
+<td align="right">0.06</td>
+<td align="right">0.13</td>
+<td align="right">0.49</td>
+</tr>
+<tr class="odd">
+<td>b_2</td>
+<td align="right">0.09</td>
+<td align="right">0.16</td>
+<td align="right">0.56</td>
+</tr>
+<tr class="even">
+<td>b_3</td>
+<td align="right">0.10</td>
+<td align="right">0.18</td>
+<td align="right">0.56</td>
 </tr>
 </tbody>
 </table>
@@ -1432,44 +1533,35 @@ First, one can examine the proportion of variance accounted for by individual le
 <h2 class="hasAnchor">
 <a href="#model-predicted-behavior" class="anchor"></a>Model predicted behavior</h2>
 <p>Below is a plot of 313 model predicted runs, all using the exact same task structure (arbitrarily, the first run of the task). Behavior is guided by the mean parameter estimates, so any variabilility in behavior is due to the probabilistic nature of selecting either the right or left option based on the model’s current knowledge at some point during the task. Another way of framing this is that it is the behavior of the averge actor, in 313 identical, hypothetical runs.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-26-1.png" width="564"></p>
-<p>Given these model parameters, and the very strong assumption that nothing would purturb them from session to session, what would be the expected test-retest correlation for the differences between the H/T baseline and D/L or P/U conditions?
-The outcome of interest I’ll use is the average difference in the probability of choosing the optimal label in the last half of the run.
-This will over-estimate the true test-reliability because we’re using what is in practice an unknown latent parameter.
-Measurement error in any real situation will attenuate this true reliability.
-One way to assess this reliability is to draw random IDs (which in this case corresponds to simulated runs through the task), and then correlate the mean number of optimal presses in each condition across two sets of random draws.
-After all, since these simulations are all generating using the model parameters from the same participant, the rank-order of the mean probability of optimal press across the three conditions should be similar across simulations to the extent that the generated behavior is stable.
-A less ad hoc approach may be to use an interclass-correlation estimate to partition the variance into that systematically related to condition versus residual variance.
-In both cases, the estimate is middling, around .4 and .5 respectively.
-We can compare this to the observed reliability of the parameter estimates we obtain from the Bayesian models.</p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-33-1.png" width="564"></p>
+<p>Given these model parameters, and the very strong assumption that nothing would purturb them from session to session, what would be the expected test-retest correlation for the differences between the H/T baseline and D/L or P/U conditions? The outcome of interest I’ll use is the average difference in the probability of choosing the optimal label in the last half of the run. This will over-estimate the true test-reliability because we’re using what is in practice an unknown latent parameter. Measurement error in any real situation will attenuate this true reliability. One way to assess this reliability is to draw random IDs (which in this case corresponds to simulated runs through the task), and then correlate the mean number of optimal presses in each condition across two sets of random draws. After all, since these simulations are all generating using the model parameters from the same participant, the rank-order of the mean probability of optimal press across the three conditions should be similar across simulations to the extent that the generated behavior is stable. A less ad hoc approach may be to use an interclass-correlation estimate to partition the variance into that systematically related to condition versus residual variance. In both cases, the estimate is middling, around .4 and .5 respectively. We can compare this to the observed reliability of the parameter estimates we obtain from the Bayesian models.</p>
 <pre><code>#&gt;      2.5%       50%     97.5% 
-#&gt; 0.3907863 0.4362505 0.4822843</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-27-1.png" width="672"></p>
+#&gt; 0.3327701 0.3849789 0.4354539</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-34-1.png" width="700"></p>
 <pre><code>#&gt; Linear mixed model fit by REML ['lmerMod']
 #&gt; Formula: mean_mean_p_opt ~ 1 + (1 | condition)
 #&gt;    Data: mean_modpred_ppressopt
 #&gt; 
-#&gt; REML criterion at convergence: -3531.2
+#&gt; REML criterion at convergence: -3633.4
 #&gt; 
 #&gt; Scaled residuals: 
 #&gt;     Min      1Q  Median      3Q     Max 
-#&gt; -5.0115 -0.5824  0.1819  0.7034  1.9429 
+#&gt; -3.7921 -0.6720  0.1129  0.6755  2.3860 
 #&gt; 
 #&gt; Random effects:
 #&gt;  Groups    Name        Variance Std.Dev.
-#&gt;  condition (Intercept) 0.001532 0.03914 
-#&gt;  Residual              0.001330 0.03647 
+#&gt;  condition (Intercept) 0.001113 0.03337 
+#&gt;  Residual              0.001193 0.03455 
 #&gt; Number of obs: 939, groups:  condition, 3
 #&gt; 
 #&gt; Fixed effects:
 #&gt;             Estimate Std. Error t value
-#&gt; (Intercept)  0.78471    0.02263   34.68
-#&gt; [1] 0.5351846</code></pre>
+#&gt; (Intercept)   0.7798     0.0193   40.41
+#&gt; [1] 0.482656</code></pre>
 </div>
 <div id="diagnostics" class="section level2">
 <h2 class="hasAnchor">
 <a href="#diagnostics" class="anchor"></a>Diagnostics</h2>
-<p><img src="fit-model-to-participant-data_files/figure-html/pairs2-1.png" width="2880"></p>
 </div>
 </div>
   </div>
@@ -1498,7 +1590,8 @@ We can compare this to the observed reliability of the parameter estimates we ob
 </li>
       <li>
 <a href="#results-from-bayesian-learning-models">Results from Bayesian learning models</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#relation-of-learning-model-to-low-fi">Relation of learning model to low-fi</a></li>
+<li><a href="#model-comparison">Model comparison</a></li>
+      <li><a href="#relation-of-learning-model-to-low-fi">Relation of learning model to low-fi</a></li>
       <li><a href="#mean-parameter-estimates">Mean parameter estimates</a></li>
       <li><a href="#variance">Variance</a></li>
       <li><a href="#model-predicted-behavior">Model predicted behavior</a></li>

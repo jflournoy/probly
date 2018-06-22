@@ -8,7 +8,7 @@ output:
     toc_depth: 2
     number_sections: FALSE
 pkgdown:
-  as_is: true
+as_is: true
 vignette: >
   %\VignetteIndexEntry{Vignette Title}
   %\VignetteEngine{knitr::rmarkdown}
@@ -438,7 +438,7 @@ gender_colors <- c('#1f78b4', '#33a02c')
 ggplot2::theme_set(ggplot2::theme_minimal())
 legend_width <- .75
 linetype_scale_diffs <- ggplot2::scale_linetype_manual(breaks = sort(condition_labels)[c(1,3)], 
-                                                 values = c('longdash', 'dashed'))
+                                                       values = c('longdash', 'dashed'))
 linetype_scale <- ggplot2::scale_linetype_manual(breaks = sort(condition_labels)[1:3], 
                                                  values = c('longdash', 'solid', 'dashed')) 
 
@@ -664,14 +664,14 @@ ggcorplot(
         dplyr::ungroup(
             dplyr::filter(lowfi_df_dev_v_bl,
                           condition == 'Dating/Looking')), 
-            bin_5_to_end, age:premeditation), method = 'kendall') +
+        bin_5_to_end, age:premeditation), method = 'kendall') +
     ggplot2::scale_fill_gradient2(limits = c(-1,1), na.value = 'white')
 
 nada <- lapply(psych::corr.test(dplyr::select(
-        dplyr::ungroup(
-            dplyr::filter(lowfi_df_dev_v_bl,
-                          condition == 'Dating/Looking')), 
-            bin_5_to_end, age:premeditation),
+    dplyr::ungroup(
+        dplyr::filter(lowfi_df_dev_v_bl,
+                      condition == 'Dating/Looking')), 
+    bin_5_to_end, age:premeditation),
     use = 'pairwise.complete.obs', method = 'kendall')[c('r','p')], 
     function(x) print(knitr::kable(x, digits = 3)))
 ```
@@ -684,14 +684,14 @@ ggcorplot(
         dplyr::ungroup(
             dplyr::filter(lowfi_df_dev,
                           condition == 'Dating/Looking')), 
-            bin_5_to_end, age:premeditation), method = 'kendall') +
+        bin_5_to_end, age:premeditation), method = 'kendall') +
     ggplot2::scale_fill_gradient2(limits = c(-1,1), na.value = 'white')
 
 nada <- lapply(psych::corr.test(dplyr::select(
-        dplyr::ungroup(
-            dplyr::filter(lowfi_df_dev,
-                          condition == 'Dating/Looking')), 
-            bin_5_to_end, age:premeditation),
+    dplyr::ungroup(
+        dplyr::filter(lowfi_df_dev,
+                      condition == 'Dating/Looking')), 
+    bin_5_to_end, age:premeditation),
     use = 'pairwise.complete.obs', method = 'kendall')[c('r','p')], 
     function(x) print(knitr::kable(x, digits = 3)))
 ```
@@ -704,14 +704,14 @@ ggcorplot(
         dplyr::ungroup(
             dplyr::filter(lowfi_df_dev_v_bl,
                           condition == 'Popular/Unpopular')), 
-            bin_5_to_end, age:premeditation), method = 'kendall') +
+        bin_5_to_end, age:premeditation), method = 'kendall') +
     ggplot2::scale_fill_gradient2(limits = c(-1,1), na.value = 'white')
 
 nada <- lapply(psych::corr.test(dplyr::select(
-        dplyr::ungroup(
-            dplyr::filter(lowfi_df_dev_v_bl,
-                          condition == 'Dating/Looking')), 
-            bin_5_to_end, age:premeditation),
+    dplyr::ungroup(
+        dplyr::filter(lowfi_df_dev_v_bl,
+                      condition == 'Dating/Looking')), 
+    bin_5_to_end, age:premeditation),
     use = 'pairwise.complete.obs', method = 'kendall')[c('r','p')], 
     function(x) print(knitr::kable(x, digits = 3)))
 ```
@@ -724,14 +724,14 @@ ggcorplot(
         dplyr::ungroup(
             dplyr::filter(lowfi_df_dev,
                           condition == 'Popular/Unpopular')), 
-            bin_5_to_end, age:premeditation), method = 'kendall') +
+        bin_5_to_end, age:premeditation), method = 'kendall') +
     ggplot2::scale_fill_gradient2(limits = c(-1,1), na.value = 'white')
 
 nada <- lapply(psych::corr.test(dplyr::select(
-        dplyr::ungroup(
-            dplyr::filter(lowfi_df_dev,
-                          condition == 'Dating/Looking')), 
-            bin_5_to_end, age:premeditation),
+    dplyr::ungroup(
+        dplyr::filter(lowfi_df_dev,
+                      condition == 'Dating/Looking')), 
+    bin_5_to_end, age:premeditation),
     use = 'pairwise.complete.obs', method = 'kendall')[c('r','p')], 
     function(x) print(knitr::kable(x, digits = 3)))
 ```
@@ -754,51 +754,51 @@ b_priors <- set_prior('normal(0, 2)', class = 'b')
 age_model <- probly::CachedFit(
     {
         brm(bin_5_to_end_suc | trials(k) ~ 1 + condition + s(age_c, k = 4, by = condition) + (1 | id), 
-                    data = lowfi_df_dev, family = binomial(link = 'logit'),
-                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
-                    prior = b_priors, sample_prior = 'yes')
+            data = lowfi_df_dev, family = binomial(link = 'logit'),
+            chains = 4, cores = 4, warmup = 2000, iter = 3000,
+            prior = b_priors, sample_prior = 'yes')
     }, 
     rds_filename = file.path(data_dir, 'brm_avg_opt_age_model.RDS'))
 
 age_model_bf <- probly::CachedFit(
     {
         brm(bin_5_to_end_suc | trials(k) ~ 1 + poly(age_c,2)*condition + (1 | id), 
-                    data = lowfi_df_dev, family = binomial(link = 'logit'),
-                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
-                    prior = b_priors, sample_prior = 'no',
-                    save_all_pars = TRUE)
+            data = lowfi_df_dev, family = binomial(link = 'logit'),
+            chains = 4, cores = 4, warmup = 2000, iter = 3000,
+            prior = b_priors, sample_prior = 'no',
+            save_all_pars = TRUE)
     }, 
     rds_filename = file.path(data_dir, 'brm_avg_opt_age_model_bf.RDS'))
 
 fsmi_model_bf <- probly::CachedFit(
     {
         brm(bin_5_to_end_suc | trials(k) ~ 1 + fsmi_mate*condition + fsmi_stat*condition + (1 | id), 
-                    data = lowfi_df_dev, family = binomial(link = 'logit'),
-                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
-                    prior = b_priors, sample_prior = 'no',
-                    save_all_pars = TRUE)
+            data = lowfi_df_dev, family = binomial(link = 'logit'),
+            chains = 4, cores = 4, warmup = 2000, iter = 3000,
+            prior = b_priors, sample_prior = 'no',
+            save_all_pars = TRUE)
     }, 
     rds_filename = file.path(data_dir, 'brm_avg_opt_fsmi_model_bf.RDS'))
 
 ksrq_adm_model_bf <- probly::CachedFit(
     {
         brm(bin_5_to_end_suc | trials(k) ~ 1 + 
-                        k_srq_admiration*condition + (1 | id), 
-                    data = lowfi_df_dev, family = binomial(link = 'logit'),
-                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
-                    prior = b_priors, sample_prior = 'no',
-                    save_all_pars = TRUE)
+                k_srq_admiration*condition + (1 | id), 
+            data = lowfi_df_dev, family = binomial(link = 'logit'),
+            chains = 4, cores = 4, warmup = 2000, iter = 3000,
+            prior = b_priors, sample_prior = 'no',
+            save_all_pars = TRUE)
     }, 
     rds_filename = file.path(data_dir, 'brm_avg_opt_ksrq_adm_model_bf.RDS'))
 
 ksrq_sr_model_bf <- probly::CachedFit(
     {
         brm(bin_5_to_end_suc | trials(k) ~ 1 + 
-                        k_srq_sexual_relationships*condition + (1 | id), 
-                    data = lowfi_df_dev, family = binomial(link = 'logit'),
-                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
-                    prior = b_priors, sample_prior = 'no',
-                    save_all_pars = TRUE)
+                k_srq_sexual_relationships*condition + (1 | id), 
+            data = lowfi_df_dev, family = binomial(link = 'logit'),
+            chains = 4, cores = 4, warmup = 2000, iter = 3000,
+            prior = b_priors, sample_prior = 'no',
+            save_all_pars = TRUE)
     }, 
     rds_filename = file.path(data_dir, 'brm_avg_opt_ksrq_sr_model_bf.RDS'))
 
@@ -806,10 +806,10 @@ ksrq_sr_model_bf <- probly::CachedFit(
 null_model_bf <- probly::CachedFit(
     {
         brm(bin_5_to_end_suc | trials(k) ~ 1 + condition + (1 | id), 
-                    data = lowfi_df_dev, family = binomial(link = 'logit'),
-                    chains = 4, cores = 4, warmup = 2000, iter = 3000,
-                    prior = b_priors, sample_prior = 'no',
-                    save_all_pars = TRUE)
+            data = lowfi_df_dev, family = binomial(link = 'logit'),
+            chains = 4, cores = 4, warmup = 2000, iter = 3000,
+            prior = b_priors, sample_prior = 'no',
+            save_all_pars = TRUE)
     }, 
     rds_filename = file.path(data_dir, 'brm_avg_opt_null_model_bf.RDS'))
 
@@ -1090,6 +1090,7 @@ p_opt_diff_ksrq_scales
 ## Model comparison
 
 ```{r}
+stanfit_2_level <- readRDS(file.path(data_dir,'splt-looser-rl_2_level-1528266.RDS'))
 stanfit_list <- lapply(
     dir('/data/jflournoy/split/probly/', pattern = '*looser-rl*', full.names = T),
     function(fname){
@@ -1119,9 +1120,9 @@ We can examine differences in some of the parameters across models to get a sens
 ```{r}
 mean_pars <- lapply(stanfit_list,
                     function(modext){
-                       meanpars <- lapply(modext$parameters, mean)
-                       names(meanpars) <- names(modext$parameters)
-                       return(meanpars)
+                        meanpars <- lapply(modext$parameters, mean)
+                        names(meanpars) <- names(modext$parameters)
+                        return(meanpars)
                     })
 
 beta_pars <- c('epsilon' = 'beta_ep_prm', 'rho' = 'beta_rho_prm', 
@@ -1203,14 +1204,16 @@ ht_cond_for_contrast <-
                             rep((1+2*3*313):(313+2*3*313),3),
                             rep((1+3*3*313):(313+3*3*313),3))]
 stanfit_2_level_betas_contrasted <- lapply(seq_along(stanfit_2_level_betas), function(i)
-                                                stanfit_2_level_betas[[i]] - ht_cond_for_contrast[[i]])
+    stanfit_2_level_betas[[i]] - ht_cond_for_contrast[[i]])
 names(stanfit_2_level_betas_contrasted) <- names(stanfit_2_level_betas)
 
 stanfit_2_level_betas_df <- do.call(
     rbind,
     lapply(
         c(stanfit_2_level_betas, stanfit_2_level_betas_contrasted),
-        function(row) data.frame(mean = mean(row), median = median(row), sd = sd(row))))
+        function(row) data.frame(mean = mean(row), median = median(row), sd = sd(row),
+                                 upper = quantile(row, probs = .975),
+                                 lower = quantile(row, probs = .025))))
 stanfit_2_level_betas_df$par <- rownames(stanfit_2_level_betas_df)
 stanfit_2_level_betas_df$contrasted <- rep(c(F,T), each = length(stanfit_2_level_betas))
 
@@ -1229,12 +1232,13 @@ splt_rl_betas_sum <- splt_rl_betas %>%
     dplyr::mutate(mean_par = case_when(parameter == 'ep_prm' ~ qnorm(mean_par),
                                        parameter == 'xi_prm' ~ qnorm(mean_par),
                                        parameter == 'b' ~ mean_par,
-                                       parameter == 'rho_prm' ~ log(mean_par))) %>%
+                                       parameter == 'rho_prm' ~ log(mean_par)),
+                  condition = factor(condition, levels = condition_labels)) %>%
     left_join(filter(splt_confidence, block == 8))
 confidence_parameter_plot <- ggplot2::ggplot(splt_rl_betas_sum,
                                              ggplot2::aes(y = confidence, x = mean_par)) + 
     ggplot2::geom_point(position = ggplot2::position_jitter(w=0,h=.33), alpha = .25) + 
-    ggplot2::geom_smooth(alpha = .5, method = 'gam', formula = y ~ s(x, fx = T, k = 3),
+    ggplot2::geom_smooth(alpha = .5, method = 'gam', formula = y ~ s(x),
                          color = 'black', size = .5) + 
     ggplot2::facet_grid(condition~parameter, scales = 'free_x') + 
     ggplot2::scale_y_continuous(breaks = c(1,3,5)) + 
@@ -1244,17 +1248,17 @@ confidence_parameter_plot <- ggplot2::ggplot(splt_rl_betas_sum,
 
 ```{r confidencevparameters, fig.width=5.875, fig.height=4.1, include=F}
 parameter_lookup <- c(
-  ep_prm = 'epsilon',
-  rho_prm = 'rho',
-  xi_prm = 'xi',
-  b = 'b'
+    ep_prm = 'epsilon',
+    rho_prm = 'rho',
+    xi_prm = 'xi',
+    b = 'b'
 )
 
 confidence_parameter_plot +
-  ggplot2::facet_grid(condition ~ parameter, scales = 'free_x', 
-                      labeller = ggplot2::labeller(
-                        parameter = ggplot2::as_labeller(parameter_lookup,
-                                                         default = ggplot2::label_parsed))) + 
+    ggplot2::facet_grid(condition ~ parameter, scales = 'free_x', 
+                        labeller = ggplot2::labeller(
+                            parameter = ggplot2::as_labeller(parameter_lookup,
+                                                             default = ggplot2::label_parsed))) + 
     ggplot2::theme_minimal()
 ```
 ```{r echo = F, eval = F}
@@ -1264,18 +1268,18 @@ devtools::use_data(splt_rl_betas)
 ## Relation of learning model to low-fi
 
 ```{r}
-
-which_model <- 'L3_no_b'
-splt_learning_betas <- data.frame(par = names(betas_ep_means[[which_model]]),
-                                  ep_mean = betas_ep_means[[which_model]],
-                                  rho_mean = betas_rho_means[[which_model]],
-                                  xi_mean = betas_xi_means[[which_model]]) %>%
+mean_pars_model <- mean_pars$`splt-looser-rl_2_level-1528266.RDS`
+splt_learning_betas <- data.frame(par = beta_names_list$beta_ep_prm,
+                                  ep_mean = unlist(mean_pars_model[beta_names_list$beta_ep_prm]),
+                                  rho_mean = unlist(mean_pars_model[beta_names_list$beta_rho_prm]),
+                                  xi_mean = unlist(mean_pars_model[beta_names_list$beta_xi_prm]),
+                                  b_mean = unlist(mean_pars_model[beta_names_list$beta_b])) %>%
     mutate(condition_num = as.numeric(sub('.*\\[\\d+,(\\d)\\]', '\\1', par)),
            condition = condition_labels[condition_num],
            idx = as.numeric(sub('.*\\[(\\d+),\\d\\]', '\\1', par)),
            rho_mean_bin = (cut2(rho_mean, cuts = quantile(rho_mean, probs = seq(0, 1, length.out = 13)[-c(1,13)]))),
            xi_mean_bin = (cut2(xi_mean, cuts = mean(xi_mean))),
-           eprho = pnorm(ep_mean)*exp(rho_mean)*10) %>%
+           eprho = ep_mean*rho_mean*10) %>%
     select(-condition_num, -par) %>%
     left_join(mutate(distinct(splt_orig, id), idx = 1:n()))
 
@@ -1299,11 +1303,40 @@ qplot(lowfi_learning_df$ep_mean, qnorm(lowfi_learning_df$p_opt), geom = c('point
 qplot(lowfi_learning_df$rho_mean, qnorm(lowfi_learning_df$p_opt), geom = c('point', 'smooth'),
       method = 'gam', formula = y ~ s(x, fx = T, k = 3))
 qplot(lowfi_learning_df$eprho, qnorm(lowfi_learning_df$p_opt), geom = c('point', 'smooth'),
+      method = 'gam', formula = y ~ s(x, fx = T, k = 4))
+qplot(lowfi_learning_df$b_mean, qnorm(lowfi_learning_df$p_opt), geom = c('point', 'smooth'),
       method = 'gam', formula = y ~ s(x, fx = T, k = 6))
 
+pr_final_df <- data_frame(pr_final = unlist(mean_pars_model[beta_names_list$pR_final]),
+                          par = beta_names_list$pR_final) %>%
+    mutate(cue = as.numeric(sub('.*\\[\\d+,(\\d)\\]', '\\1', par)),
+           idx = as.numeric(sub('.*\\[(\\d+),\\d\\]', '\\1', par))) %>%
+    select(-par) %>%
+    left_join(mutate(distinct(splt_orig, id), idx = 1:n()))
+
+modeled_splt_data <- readRDS(file.path(data_dir, 'splt-looser-data--1527693.RDS'))
+modeled_splt_data$cue <- as.numeric(as.factor(paste0(modeled_splt_data$condition, '_', modeled_splt_data$sex)))
+modeled_splt_data$condition_num <- as.numeric(modeled_splt_data$condition)
+modeled_splt_data_cue_df <- arrange(dplyr::distinct(modeled_splt_data, id, cue, condition, proportion),
+                                    id, condition, proportion) %>%
+    dplyr::left_join(pr_final_df, by = c('cue', 'id')) %>%
+    dplyr::mutate(p_opt_final = dplyr::case_when(proportion == '20_80' ~ pr_final,
+                                                 proportion == '80_20' ~ 1-pr_final))
+
+modeled_splt_data_cue_df_cond_sum <- modeled_splt_data_cue_df %>%
+    dplyr::group_by(id, condition) %>%
+    dplyr::summarize(p_opt_final = mean(p_opt_final)) %>%
+    dplyr::mutate(condition = condition_labels[condition])
+
+lowfi_learning_df <- left_join(lowfi_learning_df, modeled_splt_data_cue_df_cond_sum, 
+                               by = c('id', 'condition'))
+qplot(lowfi_learning_df$p_opt_final, lowfi_learning_df$bin_5_to_end)
+qplot(lowfi_learning_df$p_opt_final, lowfi_learning_df$p_opt)
+
+qnorm_cap = .0001
 allparameter_plot <- ggplot2::ggplot(lowfi_learning_df,
-                                     ggplot2::aes(x = ep_mean,
-                                                  y = qnorm(p_opt),
+                                     ggplot2::aes(x = qnorm(ep_mean),
+                                                  y = qnorm(bin_5_to_end-qnorm_cap),
                                                   group = xi_mean_bin,
                                                   color = xi_mean)) + 
     ggplot2::geom_hline(yintercept = qnorm(.8), alpha = .5) + 
@@ -1315,39 +1348,45 @@ allparameter_plot <- ggplot2::ggplot(lowfi_learning_df,
     ggplot2::scale_color_gradient(low = 'red', high = 'blue') + 
     ggplot2::facet_wrap(~rho_mean_bin) + 
     # ggplot2::theme(strip.text = element_blank()) + 
-    ggplot2::coord_cartesian(ylim = c(qnorm(.40), qnorm(.998))) + 
-    ggplot2::scale_y_continuous(breaks = qnorm(c(.5, .8, .998)), labels = c(.5, .8, .995)) +
-    ggplot2::scale_x_continuous(breaks = qnorm(c(.01, .05, .20)), labels = c(.01, .05, .20)) + 
-    ggplot2::labs(x = expression(paste('Median posterior ',beta[epsilon])),
-                  y = 'Probability of choosing optimal lable',
-                  caption = expression(paste('Facet labels are ranges for median posterior ', beta[rho])),
-                  color = expression(paste('Median ', beta[xi])),
-                  linetype = expression(paste('Median ', beta[xi], ' range')))
+    ggplot2::coord_cartesian(ylim = c(qnorm(.40), qnorm(1-qnorm_cap))) + 
+    ggplot2::scale_y_continuous(breaks = qnorm(c(.5, .8, .95, 1 - qnorm_cap)), labels = c(.5, .8, .95, 1)) +
+    ggplot2::scale_x_continuous(breaks = qnorm(c(.01, .05, .20)), labels = c(.01, .05, .20)) +
+    ggplot2::labs(x = expression(paste('Posterior ',bar(epsilon))),
+                  y = 'Probability of choosing optimal label',
+                  caption = expression(paste('Facet labels are ranges for posterior ', bar(rho)[i])),
+                  color = expression(paste(bar(xi)[i])),
+                  linetype = expression(paste(bar(xi)[i], ' range')))
 allparameter_plot
+```
 
+
+
+```{r}
 lowfi_learning_pdiffs_df <- group_by(lowfi_learning_df, id) %>% 
-    mutate(rho_mean_contrast = exp(rho_mean) - exp(rho_mean[condition == 'Hungry/Thirsty']),
-           ep_mean_contrast = pnorm(ep_mean) - pnorm(ep_mean[condition == 'Hungry/Thirsty']),
-           xi_mean_contrast = pnorm(xi_mean) - pnorm(xi_mean[condition == 'Hungry/Thirsty']),
-           bin5end_diff = pnorm(bin_5_to_end) - pnorm(bin_5_to_end[condition == 'Hungry/Thirsty']))
+    mutate(rho_mean_contrast = rho_mean - rho_mean[condition == 'Hungry/Thirsty'],
+           ep_mean_contrast = ep_mean - ep_mean[condition == 'Hungry/Thirsty'],
+           xi_mean_contrast = xi_mean - xi_mean[condition == 'Hungry/Thirsty'],
+           bin5end_diff = bin_5_to_end - bin_5_to_end[condition == 'Hungry/Thirsty'])
+
+lowfi_learning_pdiffs_df$condition <- factor(lowfi_learning_pdiffs_df$condition, levels = condition_labels)
 
 ggplot2::ggplot(filter(lowfi_learning_pdiffs_df, condition != condition_labels[1]),
                 ggplot2::aes(y = ep_mean_contrast,
                              x = fsmi_mate)) + 
     ggplot2::geom_point(alpha = .5) + 
-    ggplot2::geom_smooth(method = 'gam', formula = y ~ s(x), 
+    ggplot2::geom_smooth(method = 'lm',
                          alpha = .2, color = 'black', size = .5) + 
     ggplot2::scale_color_gradient(low = 'red', high = 'blue') + 
     ggplot2::facet_wrap(~condition) + 
     # ggplot2::theme(strip.text = element_blank()) + 
-    ggplot2::labs(y = expression(paste('Median posterior ',beta[epsilon])),
+    ggplot2::labs(y = expression(paste('Mean posterior ',beta[epsilon])),
                   x = 'FSMI mate seeking')
 
 ggplot2::ggplot(filter(lowfi_learning_pdiffs_df, condition != condition_labels[1]),
                 ggplot2::aes(y = ep_mean_contrast,
                              x = fsmi_stat)) + 
     ggplot2::geom_point(alpha = .5) + 
-    ggplot2::geom_smooth(method = 'lm', formula = y ~ poly(x,2), 
+    ggplot2::geom_smooth(method = 'lm',
                          alpha = .2, color = 'black', size = .5) + 
     ggplot2::scale_color_gradient(low = 'red', high = 'blue') + 
     ggplot2::facet_wrap(~condition) + 
@@ -1355,32 +1394,104 @@ ggplot2::ggplot(filter(lowfi_learning_pdiffs_df, condition != condition_labels[1
     ggplot2::labs(y = expression(paste('Median posterior ',beta[epsilon])),
                   x = 'FSMI status')
 
-fsmims_ep_test_tau <- cor.test(
-    lowfi_learning_pdiffs_df$ep_mean[lowfi_learning_pdiffs_df$condition == 'Dating/Looking'],
+ggplot2::ggplot(filter(lowfi_learning_pdiffs_df, condition != condition_labels[1]),
+                ggplot2::aes(y = rho_mean_contrast,
+                             x = fsmi_mate)) + 
+    ggplot2::geom_point(alpha = .5) + 
+    ggplot2::geom_smooth(method = 'lm',
+                         alpha = .2, color = 'black', size = .5) + 
+    ggplot2::scale_color_gradient(low = 'red', high = 'blue') + 
+    ggplot2::facet_wrap(~condition) + 
+    # ggplot2::theme(strip.text = element_blank()) + 
+    ggplot2::labs(y = expression(paste('Mean posterior ',beta[rho])),
+                  x = 'FSMI mate seeking')
+
+ggplot2::ggplot(filter(lowfi_learning_pdiffs_df, condition != condition_labels[1]),
+                ggplot2::aes(y = rho_mean_contrast,
+                             x = fsmi_stat)) + 
+    ggplot2::geom_point(alpha = .5) + 
+    ggplot2::geom_smooth(method = 'lm',
+                         alpha = .2, color = 'black', size = .5) + 
+    ggplot2::scale_color_gradient(low = 'red', high = 'blue') + 
+    ggplot2::facet_wrap(~condition) + 
+    # ggplot2::theme(strip.text = element_blank()) + 
+    ggplot2::labs(y = expression(paste('Median posterior ',beta[rho])),
+                  x = 'FSMI status')
+
+ggplot2::ggplot(filter(lowfi_learning_pdiffs_df, condition != condition_labels[1]),
+                ggplot2::aes(y = xi_mean_contrast,
+                             x = fsmi_mate)) + 
+    ggplot2::geom_point(alpha = .5) + 
+    ggplot2::geom_smooth(method = 'lm',
+                         alpha = .2, color = 'black', size = .5) + 
+    ggplot2::scale_color_gradient(low = 'red', high = 'blue') + 
+    ggplot2::facet_wrap(~condition) + 
+    # ggplot2::theme(strip.text = element_blank()) + 
+    ggplot2::labs(y = expression(paste('Mean posterior ',beta[xi])),
+                  x = 'FSMI mate seeking')
+
+ggplot2::ggplot(filter(lowfi_learning_pdiffs_df, condition != condition_labels[1]),
+                ggplot2::aes(y = xi_mean_contrast,
+                             x = fsmi_stat)) + 
+    ggplot2::geom_point(alpha = .5) + 
+    ggplot2::geom_smooth(method = 'lm',
+                         alpha = .2, color = 'black', size = .5) + 
+    ggplot2::scale_color_gradient(low = 'red', high = 'blue') + 
+    ggplot2::facet_wrap(~condition) + 
+    # ggplot2::theme(strip.text = element_blank()) + 
+    ggplot2::labs(y = expression(paste('Median posterior ',beta[xi])),
+                  x = 'FSMI status')
+
+ggplot2::ggplot(filter(lowfi_learning_pdiffs_df, condition != condition_labels[1]),
+                ggplot2::aes(y = ep_mean_contrast,
+                             x = age)) + 
+    ggplot2::geom_point(alpha = .5) + 
+    ggplot2::geom_smooth(method = 'gam',
+                         alpha = .2, color = 'black', size = .5) + 
+    ggplot2::scale_color_gradient(low = 'red', high = 'blue') + 
+    ggplot2::facet_wrap(~condition) + 
+    # ggplot2::theme(strip.text = element_blank()) + 
+    ggplot2::labs(y = expression(paste('Median posterior ',beta[xi])),
+                  x = 'FSMI status')
+```
+
+```{r}
+
+fsmims_ep_test_tau_ms <- cor.test(
+    lowfi_learning_pdiffs_df$ep_mean_contrast[lowfi_learning_pdiffs_df$condition == 'Dating/Looking'],
     lowfi_learning_pdiffs_df$fsmi_mate[lowfi_learning_pdiffs_df$condition == 'Dating/Looking'],
     method = 'kendall',
     exact = F)
 
-fsmims_ep_test_tau$statistic
-fsmims_ep_test_tau$p.value
-fsmims_ep_test_tau$r <- c(r = sin(.5 * pi * fsmims_ep_test_tau$estimate))
-fsmims_ep_test_tau$r
-fsmims_ep_test_tau$d <- c(d = 2*fsmims_ep_test_tau$r / ( 1 - fsmims_ep_test_tau$r^2 )^.5 )
-fsmims_ep_test_tau$d
-
-fsmist_ep_test_tau <- cor.test(
-    lowfi_learning_pdiffs_df$ep_mean[lowfi_learning_pdiffs_df$condition == 'Popular/Unpopular'],
+fsmist_ep_test_tau_st <- cor.test(
+    lowfi_learning_pdiffs_df$ep_mean_contrast[lowfi_learning_pdiffs_df$condition == 'Popular/Unpopular'],
     lowfi_learning_pdiffs_df$fsmi_stat[lowfi_learning_pdiffs_df$condition == 'Popular/Unpopular'],
     method = 'kendall',
     exact = F)
 
-fsmist_ep_test_tau$statistic
-fsmist_ep_test_tau$p.value
-fsmist_ep_test_tau$r <- c(r = sin(.5 * pi * fsmist_ep_test_tau$estimate))
-fsmist_ep_test_tau$r
-fsmist_ep_test_tau$d <- c(d = 2*fsmist_ep_test_tau$r / ( 1 - fsmist_ep_test_tau$r^2 )^.5 )
-fsmist_ep_test_tau$d
+fsmims_rho_test_tau_ms <- cor.test(
+    lowfi_learning_pdiffs_df$rho_mean_contrast[lowfi_learning_pdiffs_df$condition == 'Dating/Looking'],
+    lowfi_learning_pdiffs_df$fsmi_mate[lowfi_learning_pdiffs_df$condition == 'Dating/Looking'],
+    method = 'kendall',
+    exact = F)
 
+fsmist_rho_test_tau_st <- cor.test(
+    lowfi_learning_pdiffs_df$rho_mean_contrast[lowfi_learning_pdiffs_df$condition == 'Popular/Unpopular'],
+    lowfi_learning_pdiffs_df$fsmi_stat[lowfi_learning_pdiffs_df$condition == 'Popular/Unpopular'],
+    method = 'kendall',
+    exact = F)
+
+fsmims_xi_test_tau_ms <- cor.test(
+    lowfi_learning_pdiffs_df$xi_mean_contrast[lowfi_learning_pdiffs_df$condition == 'Dating/Looking'],
+    lowfi_learning_pdiffs_df$fsmi_mate[lowfi_learning_pdiffs_df$condition == 'Dating/Looking'],
+    method = 'kendall',
+    exact = F)
+
+fsmist_xi_test_tau_st <- cor.test(
+    lowfi_learning_pdiffs_df$xi_mean_contrast[lowfi_learning_pdiffs_df$condition == 'Popular/Unpopular'],
+    lowfi_learning_pdiffs_df$fsmi_stat[lowfi_learning_pdiffs_df$condition == 'Popular/Unpopular'],
+    method = 'kendall',
+    exact = F)
 
 lowfi_learning_pdiffs_df_w <- distinct(lowfi_learning_pdiffs_df) %>%
     filter(condition != condition_labels[1]) %>%
@@ -1421,17 +1532,17 @@ cor.test(lowfi_learning_df$ep_mean[lowfi_learning_df$condition=='Popular/Unpopul
 ### Learning rate
 
 ```{r}
-munames <- grep('mu', names(stanfit_2_level_no_b), value = T)
-stanfitmat <- as.array(stanfit_2_level_no_b)
+munames <- grep('mu', names(stanfit_2_level), value = T)
+stanfitmat <- as.array(stanfit_2_level)
 
-bayesplot::mcmc_combo(stanfitmat, pars = munames[4:6], facet_args = list(scales = 'fixed'),
+bayesplot::mcmc_combo(stanfitmat, pars = munames[1:3], facet_args = list(scales = 'fixed'),
                       # transformations = pnorm, 
                       combo = c('areas_ridges', 'trace'), 
                       prob_outer = 1-.005, prob = .95, widths = c(3,4))
 
-mu_ep_1 <- rstan::extract(stanfit_2_level_no_b, pars = munames[4])[[1]]
-mu_ep_2 <- rstan::extract(stanfit_2_level_no_b, pars = munames[5])[[1]]
-mu_ep_3 <- rstan::extract(stanfit_2_level_no_b, pars = munames[6])[[1]]
+mu_ep_1 <- rstan::extract(stanfit_2_level, pars = munames[1])[[1]]
+mu_ep_2 <- rstan::extract(stanfit_2_level, pars = munames[2])[[1]]
+mu_ep_3 <- rstan::extract(stanfit_2_level, pars = munames[3])[[1]]
 
 epsilon_difference_plot <- bayesplot::mcmc_areas(dplyr::data_frame(`e_2 - e_1` = pnorm(mu_ep_2) - pnorm(mu_ep_1),
                                                                    `e_3 - e_1` = pnorm(mu_ep_3) - pnorm(mu_ep_1),
@@ -1452,9 +1563,9 @@ bayesplot::mcmc_combo(stanfitmat, pars = munames[7:9], facet_args = list(scales 
                       combo = c('areas_ridges', 'trace'), 
                       prob_outer = 1-.005, prob = .95, widths = c(3,4))
 
-mu_rho_1 <- rstan::extract(stanfit_2_level_no_b, pars = munames[7])[[1]]
-mu_rho_2 <- rstan::extract(stanfit_2_level_no_b, pars = munames[8])[[1]]
-mu_rho_3 <- rstan::extract(stanfit_2_level_no_b, pars = munames[9])[[1]]
+mu_rho_1 <- rstan::extract(stanfit_2_level, pars = munames[7])[[1]]
+mu_rho_2 <- rstan::extract(stanfit_2_level, pars = munames[8])[[1]]
+mu_rho_3 <- rstan::extract(stanfit_2_level, pars = munames[9])[[1]]
 
 rho_difference_plot <- bayesplot::mcmc_areas(dplyr::data_frame(`r_2 - r_1` = exp(mu_rho_2) - exp(mu_rho_1),
                                                                `r_3 - r_1` = exp(mu_rho_3) - exp(mu_rho_1),
@@ -1469,12 +1580,12 @@ rho_difference_plot
 ### Irriducible noise (e.g., "what the whaaa?")
 
 ```{r}
-bayesplot::mcmc_combo(stanfitmat, pars = munames[1:3], facet_args = list(scales = 'fixed'),
+bayesplot::mcmc_combo(stanfitmat, pars = munames[4:6], facet_args = list(scales = 'fixed'),
                       transformations = pnorm, combo = c('areas', 'trace'), prob_outer = 1-.005, prob = .95, widths = c(3,4))
 
-mu_xi_1 <- rstan::extract(stanfit_2_level_no_b, pars = munames[1])[[1]]
-mu_xi_2 <- rstan::extract(stanfit_2_level_no_b, pars = munames[2])[[1]]
-mu_xi_3 <- rstan::extract(stanfit_2_level_no_b, pars = munames[3])[[1]]
+mu_xi_1 <- rstan::extract(stanfit_2_level, pars = munames[4])[[1]]
+mu_xi_2 <- rstan::extract(stanfit_2_level, pars = munames[5])[[1]]
+mu_xi_3 <- rstan::extract(stanfit_2_level, pars = munames[6])[[1]]
 
 xi_difference_plot <- bayesplot::mcmc_areas(
     dplyr::data_frame(`x_2 - x_1` = pnorm(mu_xi_2) - pnorm(mu_xi_1),
@@ -1487,11 +1598,32 @@ xi_difference_plot <- bayesplot::mcmc_areas(
 xi_difference_plot
 ```
 
+### Right-Bias
+
+```{r}
+bayesplot::mcmc_combo(stanfitmat, pars = munames[10:12], facet_args = list(scales = 'fixed'),
+                      combo = c('areas_ridges', 'trace'), 
+                      prob_outer = 1-.005, prob = .95, widths = c(3,4))
+
+mu_b_1 <- rstan::extract(stanfit_2_level, pars = munames[10])[[1]]
+mu_b_2 <- rstan::extract(stanfit_2_level, pars = munames[11])[[1]]
+mu_b_3 <- rstan::extract(stanfit_2_level, pars = munames[12])[[1]]
+
+b_difference_plot <- bayesplot::mcmc_areas(dplyr::data_frame(`b_2 - b_1` = exp(mu_b_2) - exp(mu_b_1),
+                                                             `b_3 - b_1` = exp(mu_b_3) - exp(mu_b_1),
+                                                             `b_3 - b_2` = exp(mu_b_3) - exp(mu_b_2)), prob_outer = 1-.005, prob = 1-.05) + 
+    ggplot2::scale_y_discrete(breaks = c('b_3 - b_2', 'b_3 - b_1', 'b_2 - b_1'),
+                              labels = c(expression(b[3]-b[2]),
+                                         expression(b[3]-b[1]),
+                                         expression(b[2]-b[1])))
+b_difference_plot
+```
+
 ## Variance
 
 ```{r}
 groupvar <- unlist(lapply(lme4::VarCorr(check_stim_rx_null_stim_rx_m), 
-                   function(x) x['(Intercept)','(Intercept)']))
+                          function(x) x['(Intercept)','(Intercept)']))
 resvar <- pi^2 /3
 (icc_cond <- groupvar/(resvar + sum(groupvar)))
 ```
@@ -1505,15 +1637,17 @@ In the context of the learning model, it's more difficult to estimate the propor
 First, one can examine the proportion of variance accounted for by individual level parameters across each parameter and condition.
 
 ```{r}
-covsamps_ep <- probly::extract_cor_cov_samps(stanfit_2_level_no_b, par_subscript = 'ep')
-covsamps_xi <- probly::extract_cor_cov_samps(stanfit_2_level_no_b, par_subscript = 'xi')
-covsamps_rho <- probly::extract_cor_cov_samps(stanfit_2_level_no_b, par_subscript = 'rho')
+covsamps_ep <- probly::extract_cor_cov_samps(stanfit_2_level, par_subscript = 'ep')
+covsamps_xi <- probly::extract_cor_cov_samps(stanfit_2_level, par_subscript = 'xi')
+covsamps_rho <- probly::extract_cor_cov_samps(stanfit_2_level, par_subscript = 'rho')
+covsamps_b <- probly::extract_cor_cov_samps(stanfit_2_level, par_subscript = 'b')
 
 prop_var <- function(covmat) diag(covmat) / sum(diag(covmat))
 
 var_prop_ep <- apply(apply(covsamps_ep$Sigma, c(3), prop_var), 1, quantile, probs = c(.025, .5, .975))
 var_prop_xi <- apply(apply(covsamps_xi$Sigma, c(3), prop_var), 1, quantile, probs = c(.025, .5, .975))
 var_prop_rho <- apply(apply(covsamps_rho$Sigma, c(3), prop_var), 1, quantile, probs = c(.025, .5, .975))
+var_prop_b <- apply(apply(covsamps_rho$Sigma, c(3), prop_var), 1, quantile, probs = c(.025, .5, .975))
 ```
 
 ```{r}
@@ -1541,25 +1675,38 @@ propvar_plot
 One might also examine the variance of posterior means versus the total variance across iterations.
 
 ```{r}
-par_regex_list <- unlist(lapply(c('ep', 'xi', 'rho'), paste0, '_prm\\[\\d+,', 1:3, '\\]'))
+par_regex_list <- unlist(lapply(c('ep_prm', 'xi_prm', 'rho_prm', 'b'), paste0, '\\[\\d+,', 1:3, '\\]'))
 
 apply(covsamps_ep$Sigma, c(1,2), mean)
 apply(covsamps_xi$Sigma, c(1,2), mean)
 apply(covsamps_rho$Sigma, c(1,2), mean)
+apply(covsamps_b$Sigma, c(1,2), mean)
+
+cov2cor(apply(covsamps_ep$Sigma, c(1,2), mean))
+cov2cor(apply(covsamps_xi$Sigma, c(1,2), mean))
+cov2cor(apply(covsamps_rho$Sigma, c(1,2), mean))
+cov2cor(apply(covsamps_b$Sigma, c(1,2), mean))
 
 var_stuff <- lapply(par_regex_list, function(par_regex){
     if(grepl('(xi|ep)', par_regex)){
-        par_samples_trans <-  qnorm(stanfit_2_level_no_b_betas[,grepl(par_regex,
-                                                                      dimnames(stanfit_2_level_no_b_betas)[[2]])])
+        par_samples_trans <-  lapply(
+            stanfit_2_level_betas[grepl(par_regex,
+                                        names(stanfit_2_level_betas))],
+            qnorm)
     } else if(grepl('rho', par_regex)){
-        par_samples_trans <-  log(stanfit_2_level_no_b_betas[,grepl(par_regex,
-                                                                    dimnames(stanfit_2_level_no_b_betas)[[2]])])
+        par_samples_trans <-  lapply(
+            stanfit_2_level_betas[grepl(par_regex,
+                                        names(stanfit_2_level_betas))],
+            log)
+    } else {
+        par_samples_trans <-  stanfit_2_level_betas[grepl(par_regex,
+                                                          names(stanfit_2_level_betas))]
     }
-    par_means <- apply(par_samples_trans, 2, mean)
+    par_means <- unlist(lapply(par_samples_trans, mean))
     var_means <- var(par_means)
-    var_tot <- var(as.numeric(par_samples_trans))
+    var_tot <- var(as.numeric(unlist(par_samples_trans)))
     alist <- list(c(var_means = var_means, var_tot = var_tot, prop_var = var_means/var_tot))
-    names(alist) <- sub('(ep|xi|rho).*([1-3]).*', '\\1_\\2', par_regex)
+    names(alist) <- sub('(ep|xi|rho|b).*([1-3]).*', '\\1_\\2', par_regex)
     alist
 })
 knitr::kable(t(as.data.frame(var_stuff)), row.names = TRUE, digits = 2)
@@ -1631,7 +1778,7 @@ cue_mat_unif <- matrix(rep(rep(1:6, each = 128/2), N), byrow = T, nrow = N)
 outcome_arr_unif <- outcome_arr
 
 beta_xi_mat <- matrix(
-    rep(apply(rstan::extract(stanfit_2_level_no_b, pars = 'mu_delta_xi')[[1]], c(2,3), mean), 
+    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_xi')[[1]], c(2,3), mean), 
         313), 
     nrow = 313, 
     byrow = T)
@@ -1641,12 +1788,12 @@ beta_b_mat <- matrix(
     nrow = 313, 
     byrow = T)
 beta_ep_mat <- matrix(
-    rep(apply(rstan::extract(stanfit_2_level_no_b, pars = 'mu_delta_ep')[[1]], c(2,3), mean), 
+    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_ep')[[1]], c(2,3), mean), 
         313), 
     nrow = 313, 
     byrow = T)
 beta_rho_mat <- matrix(
-    rep(apply(rstan::extract(stanfit_2_level_no_b, pars = 'mu_delta_rho')[[1]], c(2,3), mean), 
+    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_rho')[[1]], c(2,3), mean), 
         313), 
     nrow = 313, 
     byrow = T)
@@ -1786,7 +1933,7 @@ pairs(stanfit, pars = munames)
 pairs(stanfit, pars = taunames)
 ```
 
-```{r pairs2, fig.width=30, fig.height=30}
+```{r pairs2, fig.width=30, fig.height=30, eval=F}
 ep_cor_cov_samps <- probly::extract_cor_cov_samps(stanfit, par_subscript = 'ep')
 xi_cor_cov_samps <- probly::extract_cor_cov_samps(stanfit, par_subscript = 'xi')
 rho_cor_cov_samps <- probly::extract_cor_cov_samps(stanfit, par_subscript = 'rho')
