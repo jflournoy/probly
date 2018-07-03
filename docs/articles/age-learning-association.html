@@ -18,7 +18,7 @@
 <![endif]-->
 </head>
 <body>
-    <div class="container template-vignette">
+    <div class="container template-article">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -61,6 +61,9 @@
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
     </li>
     <li>
+      <a href="../articles/corr-with-ylg.html">Correspondence with YLG task behavior</a>
+    </li>
+    <li>
       <a href="../articles/descriptive-statistics.html">Descriptive Statistics for SPLT data</a>
     </li>
     <li>
@@ -91,199 +94,435 @@
 
       
       </header><div class="row">
-  <div class="col-md-9">
+  <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1>Association of age with learning parameters</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-04-27</h4>
+            <h4 class="date">2018-06-27</h4>
       
       
+      <div class="hidden name"><code>age-learning-association.Rmd</code></div>
 
     </div>
 
     
     
-<div class="contents">
 <p>One participant, age 42 years, was excluded from the following analysis given the extreme difference in age.</p>
+<p><img src="age-learning-association_files/figure-html/ageparplots-1.png" width="564"></p>
+<p><img src="age-learning-association_files/figure-html/ageparconplots-1.png" width="564"></p>
+<p><img src="age-learning-association_files/figure-html/pubertyparplots-1.png" width="564"></p>
+<p><img src="age-learning-association_files/figure-html/pubertyparconplots-1.png" width="564"></p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Parameter</th>
+<th align="left">Age-group</th>
+<th align="right"><span class="math inline">\(\beta\)</span></th>
+<th align="right"><span class="math inline">\(\text{SE}_{\beta}\)</span></th>
+<th align="right"><span class="math inline">\(t\)</span></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">-0.08</td>
+<td align="right">0.09</td>
+<td align="right">-0.90</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">College</td>
+<td align="right">0.05</td>
+<td align="right">0.06</td>
+<td align="right">0.89</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">All</td>
+<td align="right">0.08</td>
+<td align="right">0.05</td>
+<td align="right">1.69</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">0.14</td>
+<td align="right">0.10</td>
+<td align="right">1.35</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">College</td>
+<td align="right">0.04</td>
+<td align="right">0.06</td>
+<td align="right">0.60</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">All</td>
+<td align="right">0.08</td>
+<td align="right">0.05</td>
+<td align="right">1.44</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">-0.19</td>
+<td align="right">0.10</td>
+<td align="right">-1.83</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">College</td>
+<td align="right">0.02</td>
+<td align="right">0.06</td>
+<td align="right">0.35</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">All</td>
+<td align="right">-0.05</td>
+<td align="right">0.05</td>
+<td align="right">-0.92</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">0.10</td>
+<td align="right">0.09</td>
+<td align="right">1.21</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">College</td>
+<td align="right">0.01</td>
+<td align="right">0.06</td>
+<td align="right">0.26</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">All</td>
+<td align="right">0.06</td>
+<td align="right">0.05</td>
+<td align="right">1.35</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Parameter</th>
+<th align="left">Age-group</th>
+<th align="right"><span class="math inline">\(\beta\)</span></th>
+<th align="right"><span class="math inline">\(\text{SE}_{\beta}\)</span></th>
+<th align="right"><span class="math inline">\(t\)</span></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">-0.13</td>
+<td align="right">0.08</td>
+<td align="right">-1.59</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">College</td>
+<td align="right">0.01</td>
+<td align="right">0.06</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">All</td>
+<td align="right">0.06</td>
+<td align="right">0.05</td>
+<td align="right">1.26</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">-0.06</td>
+<td align="right">0.10</td>
+<td align="right">-0.59</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">College</td>
+<td align="right">-0.02</td>
+<td align="right">0.07</td>
+<td align="right">-0.27</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">All</td>
+<td align="right">-0.09</td>
+<td align="right">0.05</td>
+<td align="right">-1.60</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">-0.01</td>
+<td align="right">0.10</td>
+<td align="right">-0.05</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">College</td>
+<td align="right">-0.03</td>
+<td align="right">0.06</td>
+<td align="right">-0.45</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">All</td>
+<td align="right">0.00</td>
+<td align="right">0.05</td>
+<td align="right">0.05</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">0.03</td>
+<td align="right">0.09</td>
+<td align="right">0.33</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">College</td>
+<td align="right">0.03</td>
+<td align="right">0.06</td>
+<td align="right">0.50</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">All</td>
+<td align="right">0.04</td>
+<td align="right">0.05</td>
+<td align="right">0.71</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Parameter</th>
+<th align="left">Age-group</th>
+<th align="right"><span class="math inline">\(\beta\)</span></th>
+<th align="right"><span class="math inline">\(\text{SE}_{\beta}\)</span></th>
+<th align="right"><span class="math inline">\(t\)</span></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">0.09</td>
+<td align="right">0.09</td>
+<td align="right">0.95</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">College</td>
+<td align="right">0.00</td>
+<td align="right">0.06</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">All</td>
+<td align="right">0.07</td>
+<td align="right">0.05</td>
+<td align="right">1.46</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">0.03</td>
+<td align="right">0.10</td>
+<td align="right">0.32</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">College</td>
+<td align="right">0.10</td>
+<td align="right">0.06</td>
+<td align="right">1.56</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">All</td>
+<td align="right">0.08</td>
+<td align="right">0.05</td>
+<td align="right">1.50</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">-0.21</td>
+<td align="right">0.10</td>
+<td align="right">-2.10</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">College</td>
+<td align="right">-0.10</td>
+<td align="right">0.07</td>
+<td align="right">-1.50</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">All</td>
+<td align="right">-0.14</td>
+<td align="right">0.06</td>
+<td align="right">-2.55</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">0.11</td>
+<td align="right">0.09</td>
+<td align="right">1.26</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">College</td>
+<td align="right">-0.01</td>
+<td align="right">0.06</td>
+<td align="right">-0.10</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">All</td>
+<td align="right">0.05</td>
+<td align="right">0.05</td>
+<td align="right">1.12</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Parameter</th>
+<th align="left">Age-group</th>
+<th align="right"><span class="math inline">\(\beta\)</span></th>
+<th align="right"><span class="math inline">\(\text{SE}_{\beta}\)</span></th>
+<th align="right"><span class="math inline">\(t\)</span></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">0.00</td>
+<td align="right">0.09</td>
+<td align="right">-0.04</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">College</td>
+<td align="right">-0.03</td>
+<td align="right">0.06</td>
+<td align="right">-0.57</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="left">All</td>
+<td align="right">0.02</td>
+<td align="right">0.05</td>
+<td align="right">0.48</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">0.01</td>
+<td align="right">0.10</td>
+<td align="right">0.09</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">College</td>
+<td align="right">-0.04</td>
+<td align="right">0.07</td>
+<td align="right">-0.54</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="left">All</td>
+<td align="right">-0.06</td>
+<td align="right">0.06</td>
+<td align="right">-1.01</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">-0.07</td>
+<td align="right">0.10</td>
+<td align="right">-0.74</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">College</td>
+<td align="right">0.04</td>
+<td align="right">0.06</td>
+<td align="right">0.72</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="left">All</td>
+<td align="right">0.01</td>
+<td align="right">0.05</td>
+<td align="right">0.12</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">Adolescent</td>
+<td align="right">0.04</td>
+<td align="right">0.09</td>
+<td align="right">0.39</td>
+</tr>
+<tr class="odd">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">College</td>
+<td align="right">0.01</td>
+<td align="right">0.06</td>
+<td align="right">0.18</td>
+</tr>
+<tr class="even">
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="left">All</td>
+<td align="right">0.03</td>
+<td align="right">0.05</td>
+<td align="right">0.50</td>
+</tr>
+</tbody>
+</table>
 <div id="development-as-predictor" class="section level1">
 <h1 class="hasAnchor">
 <a href="#development-as-predictor" class="anchor"></a>Development as predictor</h1>
-<p>To make a preliminary assessment of the relation of developmental variables to motivational framing’s potentiation of learning, I examine covariation of the learning rate, <span class="math inline">\(\epsilon\)</span> (in each condition, as well as differences between the two motive-relevant conditions and the more neutral condition), with age and puberty as measured by the PDS <span class="citation">(Petersen, Crockett, Richards, &amp; Boxer, 1988)</span>. First, I examine plots of the central tendency of these parameters against the two developmental variables (separated by gender for PDS). I use the transformed mean of the poster samples of each individual’s parameter for each condition, <em>k</em>, <span class="math inline">\(\text{pnorm}(\beta_{\epsilon k})\)</span>. The differences are calculated on the transformed scale.</p>
-<p>Second, for each draw from the posterior, I regress the vector of individually varying <span class="math inline">\(\beta_{\epsilon k}\)</span> on the development variable, controlling for gender. Gender is centered, such that the value of the intercept is the average parameter across males and females (which are unbalanced in the sample). I examine the distribution of parameter estimates from these regressions to describe any systematic relations that are not large enough to be obvious in the scatterplots. (This method is an ad hoc approximation to incorporating these paramters into the full model, and is merely an interim analysis while I solve other modeling problems).</p>
+<p>To make a preliminary assessment of the relation of developmental variables to motivational framing’s potentiation of learning, I examine covariation of the learning rate, <span class="math inline">\(\epsilon\)</span> (in each condition, as well as differences between the two motive-relevant conditions and the more neutral condition), with age and puberty as measured by the PDS <span class="citation">(Petersen, Crockett, Richards, &amp; Boxer, 1988)</span>.
+First, I examine plots of the central tendency of these parameters against the two developmental variables (separated by gender for PDS).
+I use the transformed mean of the poster samples of each individual’s parameter for each condition, <em>k</em>, <span class="math inline">\(\text{pnorm}(\beta_{\epsilon k})\)</span>. The differences are calculated on the transformed scale.</p>
+<p>Second, for each draw from the posterior, I regress the vector of individually varying <span class="math inline">\(\beta_{\epsilon k}\)</span> on the development variable, controlling for gender.
+Gender is centered, such that the value of the intercept is the average parameter across males and females (which are unbalanced in the sample).
+I examine the distribution of parameter estimates from these regressions to describe any systematic relations that are not large enough to be obvious in the scatterplots.
+(This method is an ad hoc approximation to incorporating these paramters into the full model, and is merely an interim analysis while I solve other modeling problems).</p>
 <div id="visual-inspection-of-developmental-relations" class="section level2">
 <h2 class="hasAnchor">
 <a href="#visual-inspection-of-developmental-relations" class="anchor"></a>Visual inspection of developmental relations</h2>
-<p>Descriptive plots suggestion little or not relation between development and model parameter posterior distributions of the <span class="math inline">\(\beta_{\epsilon k}\)</span> parameters, or their contrasts (Figure <a href="#fig:descriptiveplots">1</a>).</p>
+<p>Descriptive plots suggestion little or not relation between development and model parameter posterior distributions of the <span class="math inline">\(\beta_{\epsilon k}\)</span> parameters, or their contrasts (Figure <a href="#fig:descriptiveplots"><strong>??</strong></a>).</p>
 
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-1.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-2.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-3.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-4.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-5.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-6.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-7.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-8.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-9.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
-<div class="figure">
-<span id="fig:descriptiveplots"></span>
-<img src="age-learning-association_files/figure-html/descriptiveplots-10.png" alt="Individual parameters versus development, with generalized additive model smooths." width="480"><p class="caption">
-Figure 1: Individual parameters versus development, with generalized additive model smooths.
-</p>
-</div>
 </div>
 <div id="age-linear-models" class="section level2">
 <h2 class="hasAnchor">
 <a href="#age-linear-models" class="anchor"></a>Age linear models</h2>
-<p>The results from the linear models confirm that the linear relation between age and all <span class="math inline">\(\beta_{\epsilon k}\)</span> parameters and their contrasts are centered around 0 (Figure <a href="#fig:agelinearplots">2</a>).</p>
+<p>The results from the linear models confirm that the linear relation between age and all <span class="math inline">\(\beta_{\epsilon k}\)</span> parameters and their contrasts are centered around 0 (Figure <a href="#fig:agelinearplots"><strong>??</strong></a>).</p>
 
-<div class="figure">
-<span id="fig:agelinearplots"></span>
-<img src="age-learning-association_files/figure-html/agelinearplots-1.png" alt="Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 2: Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
-<div class="figure">
-<span id="fig:agelinearplots"></span>
-<img src="age-learning-association_files/figure-html/agelinearplots-2.png" alt="Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 2: Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
-<div class="figure">
-<span id="fig:agelinearplots"></span>
-<img src="age-learning-association_files/figure-html/agelinearplots-3.png" alt="Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 2: Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
-<div class="figure">
-<span id="fig:agelinearplots"></span>
-<img src="age-learning-association_files/figure-html/agelinearplots-4.png" alt="Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 2: Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
-<div class="figure">
-<span id="fig:agelinearplots"></span>
-<img src="age-learning-association_files/figure-html/agelinearplots-5.png" alt="Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 2: Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
 </div>
 <div id="age-linear-models-1" class="section level2">
 <h2 class="hasAnchor">
 <a href="#age-linear-models-1" class="anchor"></a>Age linear models</h2>
-<p>The results from the linear models confirm that the linear relation between pubert and all <span class="math inline">\(\beta_{\epsilon k}\)</span> parameters and their contrasts are centered around 0 (Figure <a href="#fig:publinearplots">3</a>). However, there is some indication that the relation between the learning rate parameters and PDS differs by gender such that boys show more positive covariance between PDS and learning rate (Table <a href="#tab:interactiontable">1</a>). These results do seem to capture something about the smooth lines in Figure <a href="#fig:descriptiveplots">1</a>, though if the interaction were to take on any of the values in a considerable portion of the posterior density, this result would be reversed.</p>
+<p>The results from the linear models confirm that the linear relation between pubert and all <span class="math inline">\(\beta_{\epsilon k}\)</span> parameters and their contrasts are centered around 0 (Figure <a href="#fig:publinearplots"><strong>??</strong></a>).
+However, there is some indication that the relation between the learning rate parameters and PDS differs by gender such that boys show more positive covariance between PDS and learning rate (Table <a href="#tab:interactiontable"><strong>??</strong></a>).
+These results do seem to capture something about the smooth lines in Figure <a href="#fig:descriptiveplots"><strong>??</strong></a>, though if the interaction were to take on any of the values in a considerable portion of the posterior density, this result would be reversed.</p>
 
-<table class="table">
-<caption>
-<span id="tab:interactiontable">Table 1: </span>Mean of posterior densities for girls and boys relation between PDS and learning rate.</caption>
-<thead><tr class="header">
-<th align="left">Parameter</th>
-<th align="right">Mean, girls</th>
-<th align="right">Mean, boys</th>
-</tr></thead>
-<tbody>
-<tr class="odd">
-<td align="left"><span class="math inline">\(\beta_{\epsilon, \text{ht}}\)</span></td>
-<td align="right">-0.006</td>
-<td align="right">0.013</td>
-</tr>
-<tr class="even">
-<td align="left"><span class="math inline">\(\beta_{\epsilon, \text{dl}}\)</span></td>
-<td align="right">-0.023</td>
-<td align="right">0.027</td>
-</tr>
-<tr class="odd">
-<td align="left"><span class="math inline">\(\beta_{\epsilon, \text{pu}}\)</span></td>
-<td align="right">-0.019</td>
-<td align="right">0.019</td>
-</tr>
-<tr class="even">
-<td align="left"><span class="math inline">\(\beta_{\epsilon, \text{dl - ht}}\)</span></td>
-<td align="right">-0.017</td>
-<td align="right">0.014</td>
-</tr>
-<tr class="odd">
-<td align="left"><span class="math inline">\(\beta_{\epsilon, \text{pu - ht}}\)</span></td>
-<td align="right">-0.013</td>
-<td align="right">0.006</td>
-</tr>
-</tbody>
-</table>
-<div class="figure">
-<span id="fig:publinearplots"></span>
-<img src="age-learning-association_files/figure-html/publinearplots-1.png" alt="Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 3: Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
-<div class="figure">
-<span id="fig:publinearplots"></span>
-<img src="age-learning-association_files/figure-html/publinearplots-2.png" alt="Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 3: Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
-<div class="figure">
-<span id="fig:publinearplots"></span>
-<img src="age-learning-association_files/figure-html/publinearplots-3.png" alt="Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 3: Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
-<div class="figure">
-<span id="fig:publinearplots"></span>
-<img src="age-learning-association_files/figure-html/publinearplots-4.png" alt="Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 3: Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
-<div class="figure">
-<span id="fig:publinearplots"></span>
-<img src="age-learning-association_files/figure-html/publinearplots-5.png" alt="Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density." width="480"><p class="caption">
-Figure 3: Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
-</p>
-</div>
+
 </div>
 </div>
 <div id="references" class="section level1 unnumbered">
@@ -292,7 +531,6 @@ Figure 3: Posterior distribution of parameter estimates regressed on puberty. Sh
 <div id="refs" class="references">
 <div id="ref-petersen1988">
 <p>Petersen, A. C., Crockett, L., Richards, M., &amp; Boxer, A. (1988). A self-report measure of pubertal status: Reliability, validity, and initial norms. <em>Journal of Youth and Adolescence</em>, <em>17</em>(2), 117–133. doi:<a href="https://doi.org/10.1007/BF01537962">10.1007/BF01537962</a></p>
-</div>
 </div>
 </div>
 </div>

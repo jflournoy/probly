@@ -99,7 +99,7 @@
       <h1>Fit model to participant data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-06-22</h4>
+            <h4 class="date">2018-06-26</h4>
       
       
       <div class="hidden name"><code>fit-model-to-participant-data.Rmd</code></div>
@@ -147,13 +147,80 @@
 <a href="#age-and-dev" class="anchor"></a>Age and dev</h2>
 <p>Here are a few plots of these parameters against age.</p>
 <p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-1.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-2.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-3.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-4.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-5.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-6.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-7.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-8.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-9.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-10.png" width="564"></p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Variables</th>
+<th align="left">Age-group</th>
+<th align="right"><span class="math inline">\(\beta\)</span></th>
+<th align="right"><span class="math inline">\(\text{SE}_{\beta}\)</span></th>
+<th align="right"><span class="math inline">\(t\)</span></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">Adolescent</td>
+<td align="right">0.17</td>
+<td align="right">0.09</td>
+<td align="right">1.87</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">College</td>
+<td align="right">0.00</td>
+<td align="right">0.06</td>
+<td align="right">0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">Adolescent</td>
+<td align="right">0.17</td>
+<td align="right">0.09</td>
+<td align="right">1.85</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">College</td>
+<td align="right">0.09</td>
+<td align="right">0.06</td>
+<td align="right">1.45</td>
+</tr>
+<tr class="odd">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">Adolescent</td>
+<td align="right">0.08</td>
+<td align="right">0.10</td>
+<td align="right">0.82</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">College</td>
+<td align="right">0.01</td>
+<td align="right">0.06</td>
+<td align="right">0.15</td>
+</tr>
+<tr class="odd">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">Adolescent</td>
+<td align="right">0.03</td>
+<td align="right">0.10</td>
+<td align="right">0.29</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">College</td>
+<td align="right">0.02</td>
+<td align="right">0.06</td>
+<td align="right">0.27</td>
+</tr>
+</tbody>
+</table>
 <div id="datinglooking" class="section level3">
 <h3 class="hasAnchor">
 <a href="#datinglooking" class="anchor"></a>Dating/Looking</h3>
 <div id="diff" class="section level4">
 <h4 class="hasAnchor">
 <a href="#diff" class="anchor"></a>Diff</h4>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-8-1.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt; 
 #&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
@@ -188,7 +255,7 @@
 <div id="raw" class="section level4">
 <h4 class="hasAnchor">
 <a href="#raw" class="anchor"></a>Raw</h4>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-9-1.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt; 
 #&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
@@ -224,7 +291,7 @@
 <div id="popularunpopular" class="section level3">
 <h3 class="hasAnchor">
 <a href="#popularunpopular" class="anchor"></a>Popular/Unpopular</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-10-1.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt; 
 #&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
@@ -258,7 +325,7 @@
 <div id="raw-1" class="section level4">
 <h4 class="hasAnchor">
 <a href="#raw-1" class="anchor"></a>Raw</h4>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt; 
 #&gt;                               bin_5_to_end      age   fsmi_mate   fsmi_stat   partnered   k_srq_admiration   k_srq_passivity   k_srq_sexual_relationships   k_srq_sociability   sensation_seeking   premeditation
@@ -399,8 +466,8 @@
 #&gt; Samples were drawn using sampling(NUTS). For each parameter, Eff.Sample 
 #&gt; is a crude measure of effective sample size, and Rhat is the potential 
 #&gt; scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-4.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-5.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-6.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-7.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-8.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-9.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-10.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-11.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-12-12.png" width="700"></p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-13-1.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-4.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-5.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-6.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-7.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-8.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-9.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-10.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-11.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-14-12.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-15-1.png" width="700"></p>
 <p>One thing that is obvious from the posterior predictive check of this model is that there is more going on than a simple bernoulli process. The distribution of y values is lumpy and bi-modal in a way that suggests a mixture of probabilities of success in the latter trials. Conditioning on word-pairs, age, and self report questionnairs does not help explain these differences.</p>
 </div>
 </div>
@@ -1180,16 +1247,161 @@ Sensation seeking
 </table>
 <p>If we can trust these LOO estimates (it would be better to do leave-one-observation-out rather than leave-oune-participant-out), it looks like the three level structure is probably unnecessary but that the full parameterization is helpful.</p>
 <p>We can examine differences in some of the parameters across models to get a sense for this as well.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-17-1.png" width="700"></p>
 <p>We can also examine the correlation of parameters as we drop the terms <span class="math inline">\(b\)</span> and <span class="math inline">\(\rho\)</span>.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-18-1.png" width="1920"></p>
+<pre><code>#&gt; Call:psych::corr.test(x = dplyr::select(par_means_for_corplot, contains("eps")))
+#&gt; Correlation matrix 
+#&gt;                      epsilon["max"] epsilon["no b"] epsilon["no b,"~rho]
+#&gt; epsilon["max"]                 1.00            0.92                 0.84
+#&gt; epsilon["no b"]                0.92            1.00                 0.90
+#&gt; epsilon["no b,"~rho]           0.84            0.90                 1.00
+#&gt; Sample Size 
+#&gt; [1] 939
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;                      epsilon["max"] epsilon["no b"] epsilon["no b,"~rho]
+#&gt; epsilon["max"]                    0               0                    0
+#&gt; epsilon["no b"]                   0               0                    0
+#&gt; epsilon["no b,"~rho]              0               0                    0
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option
+#&gt; Call:psych::corr.test(x = dplyr::select(par_means_for_corplot, contains("xi")))
+#&gt; Correlation matrix 
+#&gt;                 xi["max"] xi["no b"] xi["no b,"~rho]
+#&gt; xi["max"]            1.00       0.93            0.88
+#&gt; xi["no b"]           0.93       1.00            0.96
+#&gt; xi["no b,"~rho]      0.88       0.96            1.00
+#&gt; Sample Size 
+#&gt; [1] 939
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;                 xi["max"] xi["no b"] xi["no b,"~rho]
+#&gt; xi["max"]               0          0               0
+#&gt; xi["no b"]              0          0               0
+#&gt; xi["no b,"~rho]         0          0               0
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option
+#&gt; Call:psych::corr.test(x = dplyr::select(par_means_for_corplot, contains("rho[")))
+#&gt; Correlation matrix 
+#&gt;             rho["max"] rho["no b"]
+#&gt; rho["max"]        1.00        0.69
+#&gt; rho["no b"]       0.69        1.00
+#&gt; Sample Size 
+#&gt; [1] 939
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;             rho["max"] rho["no b"]
+#&gt; rho["max"]           0           0
+#&gt; rho["no b"]          0           0
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option
+#&gt; Call:psych::corr.test(x = dplyr::select(par_means_for_corplot, contains("max")), 
+#&gt;     method = "spearman")
+#&gt; Correlation matrix 
+#&gt;                epsilon["max"] xi["max"] rho["max"] b["max"]
+#&gt; epsilon["max"]           1.00      0.20      -0.16    -0.04
+#&gt; xi["max"]                0.20      1.00      -0.33     0.03
+#&gt; rho["max"]              -0.16     -0.33       1.00     0.10
+#&gt; b["max"]                -0.04      0.03       0.10     1.00
+#&gt; Sample Size 
+#&gt; [1] 939
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;                epsilon["max"] xi["max"] rho["max"] b["max"]
+#&gt; epsilon["max"]           0.00      0.00          0     0.47
+#&gt; xi["max"]                0.00      0.00          0     0.47
+#&gt; rho["max"]               0.00      0.00          0     0.01
+#&gt; b["max"]                 0.24      0.42          0     0.00
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option
+#&gt; Call:psych::corr.test(x = dplyr::select(par_means_for_corplot, contains("\"no b\"")))
+#&gt; Correlation matrix 
+#&gt;                 epsilon["no b"] xi["no b"] rho["no b"]
+#&gt; epsilon["no b"]            1.00       0.11       -0.39
+#&gt; xi["no b"]                 0.11       1.00       -0.14
+#&gt; rho["no b"]               -0.39      -0.14        1.00
+#&gt; Sample Size 
+#&gt; [1] 939
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;                 epsilon["no b"] xi["no b"] rho["no b"]
+#&gt; epsilon["no b"]               0          0           0
+#&gt; xi["no b"]                    0          0           0
+#&gt; rho["no b"]                   0          0           0
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option
+#&gt; Call:psych::corr.test(x = dplyr::select(par_means_for_corplot, contains("\"no b,\"")))
+#&gt; Correlation matrix 
+#&gt;                      epsilon["no b,"~rho] xi["no b,"~rho]
+#&gt; epsilon["no b,"~rho]                 1.00            0.03
+#&gt; xi["no b,"~rho]                      0.03            1.00
+#&gt; Sample Size 
+#&gt; [1] 939
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;                      epsilon["no b,"~rho] xi["no b,"~rho]
+#&gt; epsilon["no b,"~rho]                  0.0             0.3
+#&gt; xi["no b,"~rho]                       0.3             0.0
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-1.png" width="1920"></p>
+<pre><code>#&gt; Call:psych::corr.p(r = psych::corr.test(filter(splt_rl_betas_sum, 
+#&gt;     parameter == "rho_prm", block == 8)[, c("mean_par", "confidence")], 
+#&gt;     method = "spearman")$r, n = 300, alpha = 0.005)
+#&gt; Correlation matrix 
+#&gt;            mean_par confidence
+#&gt; mean_par       1.00       0.37
+#&gt; confidence     0.37       1.00
+#&gt; Sample Size 
+#&gt; [1] 300
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;            mean_par confidence
+#&gt; mean_par          0          0
+#&gt; confidence        0          0
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option
+#&gt; 
+#&gt;  Confidence intervals based upon normal theory.  To get bootstrapped values, try cor.ci
+#&gt;             lower    r upper p
+#&gt; mn_pr-cnfdn  0.22 0.37   0.5 0
+#&gt; Call:psych::corr.p(r = psych::corr.test(filter(splt_rl_betas_sum, 
+#&gt;     parameter == "xi_prm", block == 8)[, c("mean_par", "confidence")], 
+#&gt;     method = "spearman")$r, n = 300, alpha = 0.005)
+#&gt; Correlation matrix 
+#&gt;            mean_par confidence
+#&gt; mean_par       1.00      -0.34
+#&gt; confidence    -0.34       1.00
+#&gt; Sample Size 
+#&gt; [1] 300
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;            mean_par confidence
+#&gt; mean_par          0          0
+#&gt; confidence        0          0
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option
+#&gt; 
+#&gt;  Confidence intervals based upon normal theory.  To get bootstrapped values, try cor.ci
+#&gt;             lower     r upper p
+#&gt; mn_pr-cnfdn -0.48 -0.34 -0.19 0
+#&gt; Call:psych::corr.p(r = psych::corr.test(filter(splt_rl_betas_sum, 
+#&gt;     parameter == "ep_prm", block == 8)[, c("mean_par", "confidence")], 
+#&gt;     method = "spearman")$r, n = 300, alpha = 0.005)
+#&gt; Correlation matrix 
+#&gt;            mean_par confidence
+#&gt; mean_par       1.00      -0.12
+#&gt; confidence    -0.12       1.00
+#&gt; Sample Size 
+#&gt; [1] 300
+#&gt; Probability values (Entries above the diagonal are adjusted for multiple tests.) 
+#&gt;            mean_par confidence
+#&gt; mean_par       0.00       0.05
+#&gt; confidence     0.05       0.00
+#&gt; 
+#&gt;  To see confidence intervals of the correlations, print with the short=FALSE option
+#&gt; 
+#&gt;  Confidence intervals based upon normal theory.  To get bootstrapped values, try cor.ci
+#&gt;             lower     r upper    p
+#&gt; mn_pr-cnfdn -0.27 -0.12  0.05 0.05</code></pre>
 </div>
 <div id="relation-of-learning-model-to-low-fi" class="section level2">
 <h2 class="hasAnchor">
 <a href="#relation-of-learning-model-to-low-fi" class="anchor"></a>Relation of learning model to low-fi</h2>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-4.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-5.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-6.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-7.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-8.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-9.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-21-10.png" width="700"></p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-4.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-5.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-6.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-22-7.png" width="700"></p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-23-1.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-4.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-5.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-6.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-7.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-8.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-9.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-10.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-4.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-5.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-6.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-7.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-26-1.png" width="700"></p>
 <pre><code>#&gt; Call:psych::corr.test(x = select(ungroup(lowfi_learning_pdiffs_df_w), 
 #&gt;     -id), method = "spearman")
 #&gt; Correlation matrix 
@@ -1359,7 +1571,7 @@ Sensation seeking
 #&gt; xi_mean_Popular/Unpopular                          0
 #&gt; 
 #&gt;  To see confidence intervals of the correlations, print with the short=FALSE option</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-1.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-27-1.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt;  Kendall's rank correlation tau
 #&gt; 
@@ -1369,7 +1581,7 @@ Sensation seeking
 #&gt; sample estimates:
 #&gt;        tau 
 #&gt; -0.1052863</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-24-2.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-27-2.png" width="700"></p>
 <pre><code>#&gt; 
 #&gt;  Kendall's rank correlation tau
 #&gt; 
@@ -1386,22 +1598,22 @@ Sensation seeking
 <div id="learning-rate" class="section level3">
 <h3 class="hasAnchor">
 <a href="#learning-rate" class="anchor"></a>Learning rate</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-25-2.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-28-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-28-2.png" width="700"></p>
 </div>
 <div id="size-of-reward-modifier" class="section level3">
 <h3 class="hasAnchor">
 <a href="#size-of-reward-modifier" class="anchor"></a>Size of reward modifier</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-26-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-26-2.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-29-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-29-2.png" width="700"></p>
 </div>
 <div id="irriducible-noise-e-g--what-the-whaaa" class="section level3">
 <h3 class="hasAnchor">
 <a href="#irriducible-noise-e-g--what-the-whaaa" class="anchor"></a>Irriducible noise (e.g., “what the whaaa?”)</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-27-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-27-2.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-30-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-30-2.png" width="700"></p>
 </div>
 <div id="right-bias" class="section level3">
 <h3 class="hasAnchor">
 <a href="#right-bias" class="anchor"></a>Right-Bias</h3>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-28-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-28-2.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-31-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-31-2.png" width="700"></p>
 </div>
 </div>
 <div id="variance" class="section level2">
@@ -1411,7 +1623,7 @@ Sensation seeking
 #&gt; 0.076362025 0.006069852 0.007163039</code></pre>
 <p>In a simple logistic regression, grouping responses by participant, nested in sample, and by stimulus image, it turns out that only 8% of the variance is due to differences in participants. Note, that this is for the average probability of choosing an optimal response. Another 1% and 1% of the variance is accounted for by sample and stimulus image, respectively.</p>
 <p>In the context of the learning model, it’s more difficult to estimate the proportion of total variance accounted for by individually-varying parameters, but there are a couple of ways to get a sense for how much variation in the individual parameters relative to the precision of those estimates. First, one can examine the proportion of variance accounted for by individual level parameters across each parameter and condition.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-31-1.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-34-1.png" width="700"></p>
 <p>One might also examine the variance of posterior means versus the total variance across iterations.</p>
 <pre><code>#&gt;           [,1]      [,2]      [,3]
 #&gt; [1,] 0.3113584 0.1802120 0.1852237
@@ -1533,31 +1745,31 @@ Sensation seeking
 <h2 class="hasAnchor">
 <a href="#model-predicted-behavior" class="anchor"></a>Model predicted behavior</h2>
 <p>Below is a plot of 313 model predicted runs, all using the exact same task structure (arbitrarily, the first run of the task). Behavior is guided by the mean parameter estimates, so any variabilility in behavior is due to the probabilistic nature of selecting either the right or left option based on the model’s current knowledge at some point during the task. Another way of framing this is that it is the behavior of the averge actor, in 313 identical, hypothetical runs.</p>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-33-1.png" width="564"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-36-1.png" width="564"></p>
 <p>Given these model parameters, and the very strong assumption that nothing would purturb them from session to session, what would be the expected test-retest correlation for the differences between the H/T baseline and D/L or P/U conditions? The outcome of interest I’ll use is the average difference in the probability of choosing the optimal label in the last half of the run. This will over-estimate the true test-reliability because we’re using what is in practice an unknown latent parameter. Measurement error in any real situation will attenuate this true reliability. One way to assess this reliability is to draw random IDs (which in this case corresponds to simulated runs through the task), and then correlate the mean number of optimal presses in each condition across two sets of random draws. After all, since these simulations are all generating using the model parameters from the same participant, the rank-order of the mean probability of optimal press across the three conditions should be similar across simulations to the extent that the generated behavior is stable. A less ad hoc approach may be to use an interclass-correlation estimate to partition the variance into that systematically related to condition versus residual variance. In both cases, the estimate is middling, around .4 and .5 respectively. We can compare this to the observed reliability of the parameter estimates we obtain from the Bayesian models.</p>
 <pre><code>#&gt;      2.5%       50%     97.5% 
-#&gt; 0.3327701 0.3849789 0.4354539</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-34-1.png" width="700"></p>
+#&gt; 0.3249964 0.3821612 0.4369912</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-37-1.png" width="700"></p>
 <pre><code>#&gt; Linear mixed model fit by REML ['lmerMod']
 #&gt; Formula: mean_mean_p_opt ~ 1 + (1 | condition)
 #&gt;    Data: mean_modpred_ppressopt
 #&gt; 
-#&gt; REML criterion at convergence: -3633.4
+#&gt; REML criterion at convergence: -3639.8
 #&gt; 
 #&gt; Scaled residuals: 
 #&gt;     Min      1Q  Median      3Q     Max 
-#&gt; -3.7921 -0.6720  0.1129  0.6755  2.3860 
+#&gt; -3.7051 -0.6594  0.1170  0.6849  2.6056 
 #&gt; 
 #&gt; Random effects:
 #&gt;  Groups    Name        Variance Std.Dev.
-#&gt;  condition (Intercept) 0.001113 0.03337 
-#&gt;  Residual              0.001193 0.03455 
+#&gt;  condition (Intercept) 0.001091 0.03303 
+#&gt;  Residual              0.001185 0.03443 
 #&gt; Number of obs: 939, groups:  condition, 3
 #&gt; 
 #&gt; Fixed effects:
 #&gt;             Estimate Std. Error t value
-#&gt; (Intercept)   0.7798     0.0193   40.41
-#&gt; [1] 0.482656</code></pre>
+#&gt; (Intercept)   0.7775     0.0191    40.7
+#&gt; [1] 0.4792777</code></pre>
 </div>
 <div id="diagnostics" class="section level2">
 <h2 class="hasAnchor">

@@ -61,6 +61,9 @@
       <a href="../articles/collect-data.html">Collect and Clean SPLT Data</a>
     </li>
     <li>
+      <a href="../articles/corr-with-ylg.html">Correspondence with YLG task behavior</a>
+    </li>
+    <li>
       <a href="../articles/descriptive-statistics.html">Descriptive Statistics for SPLT data</a>
     </li>
     <li>
@@ -96,7 +99,7 @@
       <h1>Fundamental Social Motives Confirmatory Factor Analysis</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-05-13</h4>
+            <h4 class="date">2018-07-03</h4>
       
       
       <div class="hidden name"><code>fsmi-cfa.Rmd</code></div>
@@ -812,25 +815,93 @@ Although this bifactor does improve fit across all factors, it does not load str
 Figure 3: FSMI mate-seeking &amp; status CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
 </p>
 </div>
-<p>A CFA for mate-seeking and status factors fit well (RMSEA = 0.051, <span class="math inline">\(\hat\gamma\)</span> = 0.977), with the two factors showing a small, positive, non-significant correlation (<span class="math inline">\(r = 0.09, Z = 1.02\)</span>).</p>
-<p>Note that item 54, “I do not worry very much about losing status” has a particularly low loading on the status factor.</p>
+<p>A CFA for mate-seeking and status factors fit well (RMSEA = 0.051, <span class="math inline">\(\hat\gamma\)</span> = 0.977), with the two factors showing a small, positive, non-significant correlation (<span class="math inline">\(r = 0.09, Z = 1.02\)</span>).
+Note that item 54, “I do not worry very much about losing status” has a particularly low loading on the status factor (standardized loading = -0.31).</p>
 </div>
 </div>
 <div id="k-srq" class="section level2">
 <h2 class="hasAnchor">
 <a href="#k-srq" class="anchor"></a>K-SRQ</h2>
-<pre><code>#&gt; lavaan (0.6-1.1193) converged normally after  51 iterations
+<div id="measurement-invariance" class="section level3">
+<h3 class="hasAnchor">
+<a href="#measurement-invariance" class="anchor"></a>Measurement invariance</h3>
+<pre><code>#&gt; $ksrq_cfa
+#&gt;        rmsea          mfi     gammaHat  adjGammaHat          AIC 
+#&gt; 9.289217e-02 7.752621e-01 9.271530e-01 8.876427e-01 1.321388e+04 
+#&gt; 
+#&gt; $ksrq_cfa_metric
+#&gt;        rmsea          mfi     gammaHat  adjGammaHat          AIC 
+#&gt; 9.206468e-02 7.664916e-01 9.241440e-01 8.899938e-01 1.320614e+04 
+#&gt; 
+#&gt; $ksrq_cfa_metric_cov
+#&gt;        rmsea          mfi     gammaHat  adjGammaHat          AIC 
+#&gt; 9.179351e-02 7.438135e-01 9.162942e-01 8.915697e-01 1.319530e+04 
+#&gt; 
+#&gt; $delta1
+#&gt;         rmsea           mfi      gammaHat   adjGammaHat           AIC 
+#&gt; -0.0008274881 -0.0087704481 -0.0030089345  0.0023510234 -7.7412448775 
+#&gt; 
+#&gt; $delta2
+#&gt;         rmsea           mfi      gammaHat   adjGammaHat           AIC 
+#&gt; -2.711699e-04 -2.267811e-02 -7.849819e-03  1.575990e-03 -1.083868e+01
+#&gt; Scaled Chi Square Difference Test (method = "satorra.bentler.2001")
+#&gt; 
+#&gt;                  Df   AIC   BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; ksrq_cfa        236 13214 13892 398.41                              
+#&gt; ksrq_cfa_metric 251 13206 13827 420.66                 15
+#&gt; Scaled Chi Square Difference Test (method = "satorra.bentler.2001")
+#&gt; 
+#&gt;                      Df   AIC   BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; ksrq_cfa_metric     251 13206 13827 420.66                              
+#&gt; ksrq_cfa_metric_cov 281 13195 13704 469.83                 30
+#&gt;                            k_srq_d k_srq_p k_sr__ k_srq_s
+#&gt; k_srq_admiration            0.000                        
+#&gt; k_srq_passivity             0.009   0.000                
+#&gt; k_srq_sexual_relationships -0.023   0.014   0.000        
+#&gt; k_srq_sociability           0.014   0.016  -0.002  0.000</code></pre>
+<p>A CFA for the four K-SRQ factors was tested for metric invariance across samples by comparing a model with loadings constrained to equality to one with loadings free to vary across the four groups.
+This resulted in considerably worse model fit as determined by a change in the MFI &gt; .01.
+Loading constraints were removed from four items (“I like it if others looks up to me”, “I like being a member of a group/club”, “I like kissing”, “I like flirting”) that load onto Admiration, Sociability, and Sexual Relationships, respectively.
+This resulted in adequately small fit differences between the unconstrained and invariant models (<span class="math inline">\(\delta\)</span>RMSEA = -0.00083, <span class="math inline">\(\delta\)</span>MFI = -0.009, <span class="math inline">\(\delta\hat{\gamma}\)</span> = -0.003).
+The final model showed somewhat poor fit (<span class="math inline">\(\text{N}_{\text{total}}\)</span> = 319, RMSEA = 0.09, MFI = 0.77, <span class="math inline">\(\hat\gamma\)</span> = 0.924).</p>
+<p>Models with and without constraintes between latent variances and covariances were compared using the Akaike information criterion (AIC).
+Constraining equivalent latent covariance structures across groups resulted in lower AIC (<span class="math inline">\(\delta\text{AIC} = -11\)</span>).
+Loadings without constraints across groups do not contribute to this comparison, so the magnitude of correlations was compared across the metric invariant and unconstrained models (while mainting the constraint of covariance across groups).
+The differences in correlations were in the range <em>r</em> = [-0.02, 0.02], indicating very low sensitivity the observed measurement invariance.
+To maintain content coverage <span class="citation">(<span class="citeproc-not-found" data-reference-id="borsboom2006"><strong>???</strong></span>)</span>, the unconstrained model is used, though sensitivity to constraints on the four non-invariant loadings is assessed again.
+Correlations among the Admiration, Sociability, and Sexual Relationships subscales were all high (<em>r</em> = [.67,.84]).
+Correlations of Passivity with these three subscales was generally low, but positive (<em>r</em> = [.07, .21]; see Table ??? for all latent variable correlations).</p>
+</div>
+<div id="misc" class="section level3">
+<h3 class="hasAnchor">
+<a href="#misc" class="anchor"></a>Misc</h3>
+<pre><code>#&gt; lavaan (0.6-1.1193) converged normally after 218 iterations
 #&gt; 
 #&gt;                                                   Used       Total
-#&gt;   Number of observations                           319         334
-#&gt;   Number of missing patterns                         9
+#&gt;   Number of observations per group         
+#&gt;   yads_online                                      138         145
+#&gt;   yads                                              83          84
+#&gt;   TDS2                                              65          65
+#&gt;   TDS1                                              33          39
+#&gt;   Number of missing patterns per group     
+#&gt;   yads_online                                        5
+#&gt;   yads                                               3
+#&gt;   TDS2                                               3
+#&gt;   TDS1                                               2
 #&gt; 
 #&gt;   Estimator                                         ML      Robust
-#&gt;   Model Fit Test Statistic                     134.441      99.328
-#&gt;   Degrees of freedom                                59          59
-#&gt;   P-value (Chi-square)                           0.000       0.001
-#&gt;   Scaling correction factor                                  1.354
+#&gt;   Model Fit Test Statistic                     398.406     319.440
+#&gt;   Degrees of freedom                               236         236
+#&gt;   P-value (Chi-square)                           0.000       0.000
+#&gt;   Scaling correction factor                                  1.247
 #&gt;     for the Yuan-Bentler correction
+#&gt; 
+#&gt; Chi-square for each group:
+#&gt; 
+#&gt;   yads_online                                   82.868      66.443
+#&gt;   yads                                         100.301      80.421
+#&gt;   TDS2                                         124.475      99.804
+#&gt;   TDS1                                          90.761      72.772
 #&gt; 
 #&gt; Parameter Estimates:
 #&gt; 
@@ -838,81 +909,84 @@ Figure 3: FSMI mate-seeking &amp; status CFA. Path weights and labels reflect st
 #&gt;   Observed information based on                Hessian
 #&gt;   Standard Errors                   Robust.huber.white
 #&gt; 
+#&gt; 
+#&gt; Group 1 [yads_online]:
+#&gt; 
 #&gt; Latent Variables:
 #&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
 #&gt;   k_srq_admiration =~                                              
-#&gt;     K_SRQ_1                        0.931    0.082   11.349    0.000
-#&gt;     K_SRQ_7                        0.940    0.072   13.065    0.000
-#&gt;     K_SRQ_11                       1.052    0.068   15.394    0.000
-#&gt;     K_SRQ_18                       0.967    0.071   13.713    0.000
+#&gt;     K_SRQ_1                        1.000                           
+#&gt;     K_SRQ_7                        0.947    0.137    6.930    0.000
+#&gt;     K_SRQ_11                       0.975    0.139    7.028    0.000
+#&gt;     K_SRQ_18                       1.027    0.113    9.079    0.000
 #&gt;   k_srq_passivity =~                                               
-#&gt;     K_SRQ_12                       1.180    0.090   13.092    0.000
-#&gt;     K_SRQ_21                       1.275    0.099   12.911    0.000
-#&gt;     K_SRQ_23                       0.945    0.082   11.528    0.000
+#&gt;     K_SRQ_12                       1.000                           
+#&gt;     K_SRQ_21                       1.214    0.245    4.955    0.000
+#&gt;     K_SRQ_23                       0.957    0.122    7.860    0.000
 #&gt;   k_srq_sexual_relationships =~                                    
-#&gt;     K_SRQ_9                        0.996    0.095   10.497    0.000
-#&gt;     K_SRQ_13                       0.937    0.092   10.132    0.000
-#&gt;     K_SRQ_20                       1.204    0.086   13.977    0.000
+#&gt;     K_SRQ_9                        1.000                           
+#&gt;     K_SRQ_13                       0.944    0.184    5.132    0.000
+#&gt;     K_SRQ_20                       1.064    0.155    6.850    0.000
 #&gt;   k_srq_sociability =~                                             
-#&gt;     K_SRQ_4                        0.945    0.123    7.683    0.000
-#&gt;     K_SRQ_10                       0.756    0.100    7.572    0.000
-#&gt;     K_SRQ_15                       0.995    0.084   11.791    0.000
+#&gt;     K_SRQ_4                        1.000                           
+#&gt;     K_SRQ_10                       1.082    0.166    6.506    0.000
+#&gt;     K_SRQ_15                       1.063    0.218    4.867    0.000
 #&gt;    Std.lv  Std.all
 #&gt;                   
-#&gt;     0.931    0.764
-#&gt;     0.940    0.755
-#&gt;     1.052    0.823
-#&gt;     0.967    0.740
+#&gt;     0.984    0.791
+#&gt;     0.931    0.797
+#&gt;     0.959    0.809
+#&gt;     1.010    0.775
 #&gt;                   
-#&gt;     1.180    0.762
-#&gt;     1.275    0.784
-#&gt;     0.945    0.646
+#&gt;     1.065    0.727
+#&gt;     1.293    0.824
+#&gt;     1.019    0.696
 #&gt;                   
-#&gt;     0.996    0.649
-#&gt;     0.937    0.727
-#&gt;     1.204    0.789
+#&gt;     1.007    0.660
+#&gt;     0.951    0.732
+#&gt;     1.071    0.705
 #&gt;                   
-#&gt;     0.945    0.537
-#&gt;     0.756    0.549
-#&gt;     0.995    0.683
+#&gt;     0.938    0.524
+#&gt;     1.014    0.762
+#&gt;     0.997    0.683
 #&gt; 
 #&gt; Covariances:
 #&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
 #&gt;   k_srq_admiration ~~                                              
-#&gt;     k_srq_passivty                 0.041    0.079    0.517    0.605
-#&gt;     k_srq_sxl_rltn                 0.636    0.064    9.997    0.000
-#&gt;     k_srq_sociblty                 0.691    0.086    8.072    0.000
+#&gt;     k_srq_passivty                 0.179    0.113    1.582    0.114
+#&gt;     k_srq_sxl_rltn                 0.776    0.203    3.821    0.000
+#&gt;     k_srq_sociblty                 0.795    0.218    3.640    0.000
 #&gt;   k_srq_passivity ~~                                               
-#&gt;     k_srq_sxl_rltn                 0.151    0.074    2.033    0.042
-#&gt;     k_srq_sociblty                 0.205    0.080    2.563    0.010
+#&gt;     k_srq_sxl_rltn                 0.127    0.117    1.090    0.276
+#&gt;     k_srq_sociblty                 0.254    0.118    2.160    0.031
 #&gt;   k_srq_sexual_relationships ~~                                    
-#&gt;     k_srq_sociblty                 0.838    0.060   13.955    0.000
+#&gt;     k_srq_sociblty                 0.846    0.228    3.703    0.000
 #&gt;    Std.lv  Std.all
 #&gt;                   
-#&gt;     0.041    0.041
-#&gt;     0.636    0.636
-#&gt;     0.691    0.691
+#&gt;     0.171    0.171
+#&gt;     0.784    0.784
+#&gt;     0.862    0.862
 #&gt;                   
-#&gt;     0.151    0.151
-#&gt;     0.205    0.205
+#&gt;     0.118    0.118
+#&gt;     0.254    0.254
 #&gt;                   
-#&gt;     0.838    0.838
+#&gt;     0.896    0.896
 #&gt; 
 #&gt; Intercepts:
 #&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .K_SRQ_1           5.734    0.068   83.978    0.000    5.734    4.702
-#&gt;    .K_SRQ_7           5.464    0.070   78.262    0.000    5.464    4.389
-#&gt;    .K_SRQ_11          5.502    0.072   76.833    0.000    5.502    4.302
-#&gt;    .K_SRQ_18          5.435    0.073   73.996    0.000    5.435    4.157
-#&gt;    .K_SRQ_12          3.013    0.087   34.769    0.000    3.013    1.947
-#&gt;    .K_SRQ_21          3.092    0.091   33.939    0.000    3.092    1.902
-#&gt;    .K_SRQ_23          3.354    0.082   40.743    0.000    3.354    2.295
-#&gt;    .K_SRQ_9           5.149    0.088   58.272    0.000    5.149    3.352
-#&gt;    .K_SRQ_13          5.860    0.072   81.047    0.000    5.860    4.548
-#&gt;    .K_SRQ_20          5.328    0.086   62.253    0.000    5.328    3.492
-#&gt;    .K_SRQ_4           4.705    0.099   47.654    0.000    4.705    2.675
-#&gt;    .K_SRQ_10          5.483    0.077   71.083    0.000    5.483    3.981
-#&gt;    .K_SRQ_15          5.547    0.082   67.875    0.000    5.547    3.807
+#&gt;    .K_SRQ_1           5.580    0.106   52.683    0.000    5.580    4.485
+#&gt;    .K_SRQ_7           5.377    0.099   54.058    0.000    5.377    4.602
+#&gt;    .K_SRQ_11          5.326    0.101   52.726    0.000    5.326    4.488
+#&gt;    .K_SRQ_18          5.310    0.111   47.722    0.000    5.310    4.072
+#&gt;    .K_SRQ_12          2.884    0.125   23.128    0.000    2.884    1.969
+#&gt;    .K_SRQ_21          3.283    0.134   24.568    0.000    3.283    2.091
+#&gt;    .K_SRQ_23          3.454    0.126   27.321    0.000    3.454    2.357
+#&gt;    .K_SRQ_9           5.239    0.130   40.347    0.000    5.239    3.435
+#&gt;    .K_SRQ_13          5.949    0.111   53.827    0.000    5.949    4.582
+#&gt;    .K_SRQ_20          5.377    0.129   41.583    0.000    5.377    3.540
+#&gt;    .K_SRQ_4           4.789    0.153   31.264    0.000    4.789    2.679
+#&gt;    .K_SRQ_10          5.471    0.113   48.296    0.000    5.471    4.111
+#&gt;    .K_SRQ_15          5.457    0.124   43.898    0.000    5.457    3.737
 #&gt;     k_srq_admiratn    0.000                               0.000    0.000
 #&gt;     k_srq_passivty    0.000                               0.000    0.000
 #&gt;     k_srq_sxl_rltn    0.000                               0.000    0.000
@@ -920,23 +994,332 @@ Figure 3: FSMI mate-seeking &amp; status CFA. Path weights and labels reflect st
 #&gt; 
 #&gt; Variances:
 #&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
-#&gt;    .K_SRQ_1           0.620    0.108    5.754    0.000    0.620    0.417
-#&gt;    .K_SRQ_7           0.666    0.110    6.048    0.000    0.666    0.430
-#&gt;    .K_SRQ_11          0.528    0.087    6.069    0.000    0.528    0.323
-#&gt;    .K_SRQ_18          0.774    0.119    6.528    0.000    0.774    0.453
-#&gt;    .K_SRQ_12          1.003    0.188    5.322    0.000    1.003    0.419
-#&gt;    .K_SRQ_21          1.018    0.215    4.725    0.000    1.018    0.385
-#&gt;    .K_SRQ_23          1.243    0.130    9.542    0.000    1.243    0.582
-#&gt;    .K_SRQ_9           1.367    0.191    7.158    0.000    1.367    0.579
-#&gt;    .K_SRQ_13          0.782    0.095    8.210    0.000    0.782    0.471
-#&gt;    .K_SRQ_20          0.878    0.149    5.881    0.000    0.878    0.377
-#&gt;    .K_SRQ_4           2.199    0.237    9.272    0.000    2.199    0.711
-#&gt;    .K_SRQ_10          1.326    0.154    8.588    0.000    1.326    0.699
-#&gt;    .K_SRQ_15          1.133    0.174    6.513    0.000    1.133    0.534
-#&gt;     k_srq_admiratn    1.000                               1.000    1.000
-#&gt;     k_srq_passivty    1.000                               1.000    1.000
-#&gt;     k_srq_sxl_rltn    1.000                               1.000    1.000
-#&gt;     k_srq_sociblty    1.000                               1.000    1.000
+#&gt;    .K_SRQ_1           0.580    0.113    5.130    0.000    0.580    0.375
+#&gt;    .K_SRQ_7           0.498    0.090    5.552    0.000    0.498    0.365
+#&gt;    .K_SRQ_11          0.488    0.092    5.282    0.000    0.488    0.346
+#&gt;    .K_SRQ_18          0.679    0.167    4.073    0.000    0.679    0.400
+#&gt;    .K_SRQ_12          1.011    0.281    3.596    0.000    1.011    0.471
+#&gt;    .K_SRQ_21          0.793    0.350    2.266    0.023    0.793    0.322
+#&gt;    .K_SRQ_23          1.108    0.206    5.390    0.000    1.108    0.516
+#&gt;    .K_SRQ_9           1.314    0.300    4.381    0.000    1.314    0.565
+#&gt;    .K_SRQ_13          0.782    0.161    4.845    0.000    0.782    0.464
+#&gt;    .K_SRQ_20          1.161    0.250    4.650    0.000    1.161    0.503
+#&gt;    .K_SRQ_4           2.317    0.348    6.660    0.000    2.317    0.725
+#&gt;    .K_SRQ_10          0.742    0.151    4.918    0.000    0.742    0.419
+#&gt;    .K_SRQ_15          1.138    0.221    5.154    0.000    1.138    0.534
+#&gt;     k_srq_admiratn    0.968    0.262    3.698    0.000    1.000    1.000
+#&gt;     k_srq_passivty    1.135    0.303    3.750    0.000    1.000    1.000
+#&gt;     k_srq_sxl_rltn    1.013    0.267    3.790    0.000    1.000    1.000
+#&gt;     k_srq_sociblty    0.879    0.315    2.793    0.005    1.000    1.000
+#&gt; 
+#&gt; 
+#&gt; Group 2 [yads]:
+#&gt; 
+#&gt; Latent Variables:
+#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
+#&gt;   k_srq_admiration =~                                              
+#&gt;     K_SRQ_1                        1.000                           
+#&gt;     K_SRQ_7                        0.816    0.143    5.695    0.000
+#&gt;     K_SRQ_11                       1.164    0.141    8.246    0.000
+#&gt;     K_SRQ_18                       0.896    0.177    5.059    0.000
+#&gt;   k_srq_passivity =~                                               
+#&gt;     K_SRQ_12                       1.000                           
+#&gt;     K_SRQ_21                       0.888    0.198    4.487    0.000
+#&gt;     K_SRQ_23                       0.499    0.166    3.016    0.003
+#&gt;   k_srq_sexual_relationships =~                                    
+#&gt;     K_SRQ_9                        1.000                           
+#&gt;     K_SRQ_13                       0.563    0.205    2.747    0.006
+#&gt;     K_SRQ_20                       1.193    0.140    8.541    0.000
+#&gt;   k_srq_sociability =~                                             
+#&gt;     K_SRQ_4                        1.000                           
+#&gt;     K_SRQ_10                       0.485    0.225    2.157    0.031
+#&gt;     K_SRQ_15                       1.545    0.610    2.532    0.011
+#&gt;    Std.lv  Std.all
+#&gt;                   
+#&gt;     0.973    0.813
+#&gt;     0.794    0.714
+#&gt;     1.133    0.847
+#&gt;     0.871    0.674
+#&gt;                   
+#&gt;     1.392    0.915
+#&gt;     1.236    0.749
+#&gt;     0.695    0.483
+#&gt;                   
+#&gt;     1.073    0.769
+#&gt;     0.604    0.622
+#&gt;     1.281    0.886
+#&gt;                   
+#&gt;     0.694    0.406
+#&gt;     0.337    0.346
+#&gt;     1.073    0.728
+#&gt; 
+#&gt; Covariances:
+#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
+#&gt;   k_srq_admiration ~~                                              
+#&gt;     k_srq_passivty                 0.236    0.193    1.223    0.221
+#&gt;     k_srq_sxl_rltn                 0.498    0.193    2.585    0.010
+#&gt;     k_srq_sociblty                 0.491    0.126    3.902    0.000
+#&gt;   k_srq_passivity ~~                                               
+#&gt;     k_srq_sxl_rltn                 0.122    0.186    0.652    0.514
+#&gt;     k_srq_sociblty                 0.263    0.163    1.608    0.108
+#&gt;   k_srq_sexual_relationships ~~                                    
+#&gt;     k_srq_sociblty                 0.538    0.269    2.000    0.046
+#&gt;    Std.lv  Std.all
+#&gt;                   
+#&gt;     0.174    0.174
+#&gt;     0.477    0.477
+#&gt;     0.727    0.727
+#&gt;                   
+#&gt;     0.081    0.081
+#&gt;     0.272    0.272
+#&gt;                   
+#&gt;     0.722    0.722
+#&gt; 
+#&gt; Intercepts:
+#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+#&gt;    .K_SRQ_1           5.651    0.131   43.017    0.000    5.651    4.722
+#&gt;    .K_SRQ_7           5.533    0.123   45.094    0.000    5.533    4.976
+#&gt;    .K_SRQ_11          5.337    0.147   36.346    0.000    5.337    3.990
+#&gt;    .K_SRQ_18          5.337    0.142   37.635    0.000    5.337    4.131
+#&gt;    .K_SRQ_12          3.181    0.167   19.038    0.000    3.181    2.090
+#&gt;    .K_SRQ_21          3.217    0.181   17.757    0.000    3.217    1.949
+#&gt;    .K_SRQ_23          3.422    0.158   21.640    0.000    3.422    2.375
+#&gt;    .K_SRQ_9           5.151    0.170   30.376    0.000    5.151    3.691
+#&gt;    .K_SRQ_13          6.145    0.107   57.648    0.000    6.145    6.328
+#&gt;    .K_SRQ_20          5.373    0.159   33.867    0.000    5.373    3.717
+#&gt;    .K_SRQ_4           4.940    0.188   26.318    0.000    4.940    2.889
+#&gt;    .K_SRQ_10          5.916    0.107   55.449    0.000    5.916    6.086
+#&gt;    .K_SRQ_15          5.675    0.162   35.085    0.000    5.675    3.851
+#&gt;     k_srq_admiratn    0.000                               0.000    0.000
+#&gt;     k_srq_passivty    0.000                               0.000    0.000
+#&gt;     k_srq_sxl_rltn    0.000                               0.000    0.000
+#&gt;     k_srq_sociblty    0.000                               0.000    0.000
+#&gt; 
+#&gt; Variances:
+#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+#&gt;    .K_SRQ_1           0.486    0.108    4.504    0.000    0.486    0.339
+#&gt;    .K_SRQ_7           0.605    0.154    3.936    0.000    0.605    0.490
+#&gt;    .K_SRQ_11          0.506    0.211    2.396    0.017    0.506    0.283
+#&gt;    .K_SRQ_18          0.910    0.232    3.925    0.000    0.910    0.545
+#&gt;    .K_SRQ_12          0.378    0.428    0.884    0.377    0.378    0.163
+#&gt;    .K_SRQ_21          1.197    0.474    2.525    0.012    1.197    0.439
+#&gt;    .K_SRQ_23          1.592    0.233    6.818    0.000    1.592    0.767
+#&gt;    .K_SRQ_9           0.796    0.267    2.983    0.003    0.796    0.409
+#&gt;    .K_SRQ_13          0.578    0.158    3.667    0.000    0.578    0.613
+#&gt;    .K_SRQ_20          0.449    0.409    1.098    0.272    0.449    0.215
+#&gt;    .K_SRQ_4           2.442    0.430    5.682    0.000    2.442    0.835
+#&gt;    .K_SRQ_10          0.831    0.203    4.096    0.000    0.831    0.880
+#&gt;    .K_SRQ_15          1.021    0.368    2.771    0.006    1.021    0.470
+#&gt;     k_srq_admiratn    0.947    0.237    4.001    0.000    1.000    1.000
+#&gt;     k_srq_passivty    1.939    0.526    3.687    0.000    1.000    1.000
+#&gt;     k_srq_sxl_rltn    1.152    0.348    3.309    0.001    1.000    1.000
+#&gt;     k_srq_sociblty    0.482    0.341    1.413    0.158    1.000    1.000
+#&gt; 
+#&gt; 
+#&gt; Group 3 [TDS2]:
+#&gt; 
+#&gt; Latent Variables:
+#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
+#&gt;   k_srq_admiration =~                                              
+#&gt;     K_SRQ_1                        1.000                           
+#&gt;     K_SRQ_7                        1.148    0.198    5.785    0.000
+#&gt;     K_SRQ_11                       1.551    0.918    1.690    0.091
+#&gt;     K_SRQ_18                       1.128    0.227    4.973    0.000
+#&gt;   k_srq_passivity =~                                               
+#&gt;     K_SRQ_12                       1.000                           
+#&gt;     K_SRQ_21                       0.994    0.333    2.986    0.003
+#&gt;     K_SRQ_23                       0.819    0.145    5.636    0.000
+#&gt;   k_srq_sexual_relationships =~                                    
+#&gt;     K_SRQ_9                        1.000                           
+#&gt;     K_SRQ_13                       0.691    0.144    4.788    0.000
+#&gt;     K_SRQ_20                       1.178    0.146    8.089    0.000
+#&gt;   k_srq_sociability =~                                             
+#&gt;     K_SRQ_4                        1.000                           
+#&gt;     K_SRQ_10                       0.603    0.477    1.263    0.207
+#&gt;     K_SRQ_15                       0.881    0.331    2.662    0.008
+#&gt;    Std.lv  Std.all
+#&gt;                   
+#&gt;     0.577    0.568
+#&gt;     0.662    0.571
+#&gt;     0.895    0.778
+#&gt;     0.651    0.575
+#&gt;                   
+#&gt;     1.308    0.763
+#&gt;     1.300    0.783
+#&gt;     1.071    0.742
+#&gt;                   
+#&gt;     1.239    0.717
+#&gt;     0.856    0.625
+#&gt;     1.459    0.918
+#&gt;                   
+#&gt;     1.047    0.594
+#&gt;     0.631    0.399
+#&gt;     0.923    0.667
+#&gt; 
+#&gt; Covariances:
+#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
+#&gt;   k_srq_admiration ~~                                              
+#&gt;     k_srq_passivty                 0.030    0.167    0.178    0.859
+#&gt;     k_srq_sxl_rltn                 0.401    0.127    3.151    0.002
+#&gt;     k_srq_sociblty                 0.398    0.102    3.905    0.000
+#&gt;   k_srq_passivity ~~                                               
+#&gt;     k_srq_sxl_rltn                 0.648    0.291    2.228    0.026
+#&gt;     k_srq_sociblty                 0.195    0.349    0.557    0.577
+#&gt;   k_srq_sexual_relationships ~~                                    
+#&gt;     k_srq_sociblty                 1.101    0.415    2.652    0.008
+#&gt;    Std.lv  Std.all
+#&gt;                   
+#&gt;     0.040    0.040
+#&gt;     0.561    0.561
+#&gt;     0.659    0.659
+#&gt;                   
+#&gt;     0.400    0.400
+#&gt;     0.142    0.142
+#&gt;                   
+#&gt;     0.849    0.849
+#&gt; 
+#&gt; Intercepts:
+#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+#&gt;    .K_SRQ_1           6.123    0.126   48.618    0.000    6.123    6.030
+#&gt;    .K_SRQ_7           5.600    0.144   38.891    0.000    5.600    4.824
+#&gt;    .K_SRQ_11          6.000    0.143   42.055    0.000    6.000    5.216
+#&gt;    .K_SRQ_18          5.800    0.141   41.045    0.000    5.800    5.123
+#&gt;    .K_SRQ_12          3.123    0.213   14.688    0.000    3.123    1.822
+#&gt;    .K_SRQ_21          2.600    0.206   12.600    0.000    2.600    1.566
+#&gt;    .K_SRQ_23          3.055    0.180   16.984    0.000    3.055    2.117
+#&gt;    .K_SRQ_9           5.031    0.214   23.481    0.000    5.031    2.912
+#&gt;    .K_SRQ_13          5.521    0.170   32.425    0.000    5.521    4.034
+#&gt;    .K_SRQ_20          5.170    0.197   26.208    0.000    5.170    3.253
+#&gt;    .K_SRQ_4           4.415    0.219   20.204    0.000    4.415    2.506
+#&gt;    .K_SRQ_10          5.119    0.197   26.041    0.000    5.119    3.234
+#&gt;    .K_SRQ_15          5.658    0.173   32.725    0.000    5.658    4.092
+#&gt;     k_srq_admiratn    0.000                               0.000    0.000
+#&gt;     k_srq_passivty    0.000                               0.000    0.000
+#&gt;     k_srq_sxl_rltn    0.000                               0.000    0.000
+#&gt;     k_srq_sociblty    0.000                               0.000    0.000
+#&gt; 
+#&gt; Variances:
+#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+#&gt;    .K_SRQ_1           0.698    0.428    1.631    0.103    0.698    0.677
+#&gt;    .K_SRQ_7           0.909    0.468    1.944    0.052    0.909    0.674
+#&gt;    .K_SRQ_11          0.523    0.278    1.878    0.060    0.523    0.395
+#&gt;    .K_SRQ_18          0.859    0.323    2.656    0.008    0.859    0.670
+#&gt;    .K_SRQ_12          1.228    0.595    2.064    0.039    1.228    0.418
+#&gt;    .K_SRQ_21          1.068    0.585    1.824    0.068    1.068    0.387
+#&gt;    .K_SRQ_23          0.935    0.302    3.094    0.002    0.935    0.449
+#&gt;    .K_SRQ_9           1.450    0.399    3.629    0.000    1.450    0.486
+#&gt;    .K_SRQ_13          1.141    0.193    5.926    0.000    1.141    0.609
+#&gt;    .K_SRQ_20          0.397    0.221    1.794    0.073    0.397    0.157
+#&gt;    .K_SRQ_4           2.008    0.609    3.295    0.001    2.008    0.647
+#&gt;    .K_SRQ_10          2.107    0.453    4.651    0.000    2.107    0.841
+#&gt;    .K_SRQ_15          1.061    0.535    1.984    0.047    1.061    0.555
+#&gt;     k_srq_admiratn    0.333    0.217    1.534    0.125    1.000    1.000
+#&gt;     k_srq_passivty    1.710    0.632    2.707    0.007    1.000    1.000
+#&gt;     k_srq_sxl_rltn    1.534    0.471    3.259    0.001    1.000    1.000
+#&gt;     k_srq_sociblty    1.096    0.675    1.624    0.104    1.000    1.000
+#&gt; 
+#&gt; 
+#&gt; Group 4 [TDS1]:
+#&gt; 
+#&gt; Latent Variables:
+#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
+#&gt;   k_srq_admiration =~                                              
+#&gt;     K_SRQ_1                        1.000                           
+#&gt;     K_SRQ_7                        1.697    0.554    3.065    0.002
+#&gt;     K_SRQ_11                       1.381    0.342    4.039    0.000
+#&gt;     K_SRQ_18                       1.238    0.239    5.179    0.000
+#&gt;   k_srq_passivity =~                                               
+#&gt;     K_SRQ_12                       1.000                           
+#&gt;     K_SRQ_21                       3.508    5.494    0.638    0.523
+#&gt;     K_SRQ_23                       0.271    0.297    0.915    0.360
+#&gt;   k_srq_sexual_relationships =~                                    
+#&gt;     K_SRQ_9                        1.000                           
+#&gt;     K_SRQ_13                       2.361    1.200    1.968    0.049
+#&gt;     K_SRQ_20                       2.640    1.280    2.063    0.039
+#&gt;   k_srq_sociability =~                                             
+#&gt;     K_SRQ_4                        1.000                           
+#&gt;     K_SRQ_10                       0.605    0.692    0.874    0.382
+#&gt;     K_SRQ_15                       1.136    0.605    1.879    0.060
+#&gt;    Std.lv  Std.all
+#&gt;                   
+#&gt;     0.972    0.716
+#&gt;     1.650    0.896
+#&gt;     1.342    0.926
+#&gt;     1.204    0.790
+#&gt;                   
+#&gt;     0.657    0.425
+#&gt;     2.304    1.520
+#&gt;     0.178    0.123
+#&gt;                   
+#&gt;     0.573    0.399
+#&gt;     1.352    0.890
+#&gt;     1.511    0.942
+#&gt;                   
+#&gt;     0.966    0.601
+#&gt;     0.585    0.350
+#&gt;     1.098    0.734
+#&gt; 
+#&gt; Covariances:
+#&gt;                                 Estimate  Std.Err  z-value  P(&gt;|z|)
+#&gt;   k_srq_admiration ~~                                              
+#&gt;     k_srq_passivty                -0.255    0.527   -0.484    0.629
+#&gt;     k_srq_sxl_rltn                 0.411    0.233    1.766    0.077
+#&gt;     k_srq_sociblty                 0.401    0.259    1.545    0.122
+#&gt;   k_srq_passivity ~~                                               
+#&gt;     k_srq_sxl_rltn                -0.099    0.183   -0.542    0.588
+#&gt;     k_srq_sociblty                -0.093    0.121   -0.769    0.442
+#&gt;   k_srq_sexual_relationships ~~                                    
+#&gt;     k_srq_sociblty                 0.284    0.236    1.203    0.229
+#&gt;    Std.lv  Std.all
+#&gt;                   
+#&gt;    -0.399   -0.399
+#&gt;     0.738    0.738
+#&gt;     0.426    0.426
+#&gt;                   
+#&gt;    -0.264   -0.264
+#&gt;    -0.147   -0.147
+#&gt;                   
+#&gt;     0.513    0.513
+#&gt; 
+#&gt; Intercepts:
+#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+#&gt;    .K_SRQ_1           5.818    0.236   24.601    0.000    5.818    4.283
+#&gt;    .K_SRQ_7           5.394    0.321   16.829    0.000    5.394    2.929
+#&gt;    .K_SRQ_11          5.667    0.252   22.458    0.000    5.667    3.909
+#&gt;    .K_SRQ_18          5.492    0.269   20.432    0.000    5.492    3.604
+#&gt;    .K_SRQ_12          2.909    0.269   10.820    0.000    2.909    1.883
+#&gt;    .K_SRQ_21          2.939    0.264   11.136    0.000    2.939    1.938
+#&gt;    .K_SRQ_23          3.364    0.253   13.302    0.000    3.364    2.315
+#&gt;    .K_SRQ_9           4.939    0.250   19.784    0.000    4.939    3.444
+#&gt;    .K_SRQ_13          5.424    0.264   20.525    0.000    5.424    3.573
+#&gt;    .K_SRQ_20          5.303    0.279   18.985    0.000    5.303    3.305
+#&gt;    .K_SRQ_4           4.333    0.280   15.480    0.000    4.333    2.695
+#&gt;    .K_SRQ_10          5.152    0.291   17.700    0.000    5.152    3.081
+#&gt;    .K_SRQ_15          5.394    0.260   20.709    0.000    5.394    3.605
+#&gt;     k_srq_admiratn    0.000                               0.000    0.000
+#&gt;     k_srq_passivty    0.000                               0.000    0.000
+#&gt;     k_srq_sxl_rltn    0.000                               0.000    0.000
+#&gt;     k_srq_sociblty    0.000                               0.000    0.000
+#&gt; 
+#&gt; Variances:
+#&gt;                    Estimate  Std.Err  z-value  P(&gt;|z|)   Std.lv  Std.all
+#&gt;    .K_SRQ_1           0.901    0.467    1.927    0.054    0.901    0.488
+#&gt;    .K_SRQ_7           0.668    0.306    2.188    0.029    0.668    0.197
+#&gt;    .K_SRQ_11          0.299    0.156    1.913    0.056    0.299    0.142
+#&gt;    .K_SRQ_18          0.872    0.471    1.850    0.064    0.872    0.376
+#&gt;    .K_SRQ_12          1.954    0.792    2.467    0.014    1.954    0.819
+#&gt;    .K_SRQ_21         -3.011    7.369   -0.409    0.683   -3.011   -1.310
+#&gt;    .K_SRQ_23          2.078    0.335    6.209    0.000    2.078    0.985
+#&gt;    .K_SRQ_9           1.729    0.401    4.313    0.000    1.729    0.841
+#&gt;    .K_SRQ_13          0.478    0.235    2.033    0.042    0.478    0.207
+#&gt;    .K_SRQ_20          0.290    0.432    0.672    0.501    0.290    0.113
+#&gt;    .K_SRQ_4           1.652    0.716    2.308    0.021    1.652    0.639
+#&gt;    .K_SRQ_10          2.453    0.779    3.151    0.002    2.453    0.878
+#&gt;    .K_SRQ_15          1.033    0.846    1.220    0.222    1.033    0.461
+#&gt;     k_srq_admiratn    0.945    0.686    1.379    0.168    1.000    1.000
+#&gt;     k_srq_passivty    0.432    0.793    0.544    0.586    1.000    1.000
+#&gt;     k_srq_sxl_rltn    0.328    0.284    1.154    0.248    1.000    1.000
+#&gt;     k_srq_sociblty    0.934    0.735    1.271    0.204    1.000    1.000
 #&gt; lavaan (0.6-1.1193) converged normally after  47 iterations
 #&gt; 
 #&gt;                                                   Used       Total
@@ -1027,6 +1410,24 @@ Figure 3: FSMI mate-seeking &amp; status CFA. Path weights and labels reflect st
 Figure 4: K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
 </p>
 </div>
+<div class="figure">
+<span id="fig:ksrqcfaplot"></span>
+<img src="fsmi-cfa_files/figure-html/ksrqcfaplot-2.png" alt="K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown." width="768"><p class="caption">
+Figure 4: K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
+</p>
+</div>
+<div class="figure">
+<span id="fig:ksrqcfaplot"></span>
+<img src="fsmi-cfa_files/figure-html/ksrqcfaplot-3.png" alt="K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown." width="768"><p class="caption">
+Figure 4: K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
+</p>
+</div>
+<div class="figure">
+<span id="fig:ksrqcfaplot"></span>
+<img src="fsmi-cfa_files/figure-html/ksrqcfaplot-4.png" alt="K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown." width="768"><p class="caption">
+Figure 4: K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
+</p>
+</div>
 
 <div class="figure">
 <span id="fig:ksrq3faccfaplot"></span>
@@ -1034,6 +1435,12 @@ Figure 4: K-SRQ CFA. Path weights and labels reflect standardized loading streng
 Figure 5: K-SRQ CFA. Path weights and labels reflect standardized loading strength. Residuals, exogenous variances, and means not shown.
 </p>
 </div>
+<pre><code>#&gt;       rmsea         mfi    gammaHat adjGammaHat 
+#&gt;    -0.00008    -0.01160    -0.00300     0.00069
+#&gt;       rmsea         mfi    gammaHat adjGammaHat 
+#&gt;     0.00220    -0.02176    -0.00577    -0.00671
+#&gt;       rmsea         mfi    gammaHat adjGammaHat 
+#&gt;    -0.00018     0.00109     0.00028     0.00057</code></pre>
 
 <table class="table">
 <caption>
@@ -1044,163 +1451,188 @@ Figure 5: K-SRQ CFA. Path weights and labels reflect standardized loading streng
 <th align="left">rhs</th>
 <th align="left">est_rep_1</th>
 <th align="left">est_rep_2</th>
-<th align="right">std.all_1</th>
-<th align="right">std.all_2</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">fsmi_mate</td>
 <td align="left">~~</td>
 <td align="left">fsmi_stat</td>
-<td align="left">0.26 [ 0.03, 0.48]</td>
-<td align="left">-0.09 [-0.34, 0.16]</td>
-<td align="right">0.25</td>
-<td align="right">-0.15</td>
+<td align="left">0.25 [ 0.05, 0.44]</td>
+<td align="left">-0.15 [-0.53, 0.24]</td>
 </tr>
 <tr class="even">
 <td align="left">fsmi_mate</td>
 <td align="left">~~</td>
 <td align="left">k_srq_admiration</td>
-<td align="left">0.39 [ 0.18, 0.59]</td>
-<td align="left">-0.22 [-0.57, 0.12]</td>
-<td align="right">0.35</td>
-<td align="right">-0.31</td>
+<td align="left">0.35 [ 0.20, 0.50]</td>
+<td align="left">-0.31 [-0.68, 0.07]</td>
 </tr>
 <tr class="odd">
 <td align="left">fsmi_mate</td>
 <td align="left">~~</td>
 <td align="left">k_srq_passivity</td>
-<td align="left">0.46 [ 0.16, 0.76]</td>
-<td align="left">0.07 [-0.24, 0.37]</td>
-<td align="right">0.33</td>
-<td align="right">0.09</td>
+<td align="left">0.33 [ 0.18, 0.49]</td>
+<td align="left">0.09 [-0.30, 0.47]</td>
 </tr>
 <tr class="even">
 <td align="left">fsmi_mate</td>
 <td align="left">~~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="left">0.44 [ 0.16, 0.72]</td>
-<td align="left">-0.20 [-0.55, 0.15]</td>
-<td align="right">0.40</td>
-<td align="right">-0.38</td>
+<td align="left">0.40 [ 0.23, 0.58]</td>
+<td align="left">-0.38 [-0.87, 0.10]</td>
 </tr>
 <tr class="odd">
 <td align="left">fsmi_mate</td>
 <td align="left">~~</td>
 <td align="left">k_srq_sociability</td>
-<td align="left">0.30 [ 0.09, 0.51]</td>
-<td align="left">-0.19 [-0.54, 0.15]</td>
-<td align="right">0.31</td>
-<td align="right">-0.33</td>
+<td align="left">0.31 [ 0.10, 0.52]</td>
+<td align="left">-0.33 [-0.79, 0.14]</td>
 </tr>
 <tr class="even">
 <td align="left">fsmi_stat</td>
 <td align="left">~~</td>
 <td align="left">k_srq_admiration</td>
-<td align="left">0.58 [ 0.28, 0.89]</td>
-<td align="left">0.56 [ 0.17, 0.94]</td>
-<td align="right">0.69</td>
-<td align="right">0.53</td>
+<td align="left">0.69 [ 0.50, 0.88]</td>
+<td align="left">0.53 [ 0.25, 0.82]</td>
 </tr>
 <tr class="odd">
 <td align="left">fsmi_stat</td>
 <td align="left">~~</td>
 <td align="left">k_srq_passivity</td>
-<td align="left">-0.06 [-0.30, 0.17]</td>
-<td align="left">-0.28 [-0.82, 0.25]</td>
-<td align="right">-0.06</td>
-<td align="right">-0.25</td>
+<td align="left">-0.06 [-0.29, 0.17]</td>
+<td align="left">-0.25 [-0.67, 0.17]</td>
 </tr>
 <tr class="even">
 <td align="left">fsmi_stat</td>
 <td align="left">~~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="left">0.39 [ 0.12, 0.66]</td>
-<td align="left">0.16 [-0.15, 0.47]</td>
-<td align="right">0.47</td>
-<td align="right">0.22</td>
+<td align="left">0.47 [ 0.25, 0.68]</td>
+<td align="left">0.22 [-0.15, 0.58]</td>
 </tr>
 <tr class="odd">
 <td align="left">fsmi_stat</td>
 <td align="left">~~</td>
 <td align="left">k_srq_sociability</td>
-<td align="left">0.41 [ 0.16, 0.67]</td>
-<td align="left">0.40 [ 0.06, 0.74]</td>
-<td align="right">0.56</td>
-<td align="right">0.47</td>
+<td align="left">0.56 [ 0.34, 0.78]</td>
+<td align="left">0.47 [ 0.09, 0.84]</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_admiration</td>
 <td align="left">~~</td>
 <td align="left">k_srq_passivity</td>
-<td align="left">0.24 [ 0.03, 0.45]</td>
-<td align="left">0.00 [-0.43, 0.44]</td>
-<td align="right">0.21</td>
-<td align="right">0.00</td>
+<td align="left">0.21 [ 0.04, 0.39]</td>
+<td align="left">0.00 [-0.33, 0.33]</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_admiration</td>
 <td align="left">~~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="left">0.59 [ 0.30, 0.88]</td>
-<td align="left">0.70 [ 0.09, 1.31]</td>
-<td align="right">0.66</td>
-<td align="right">0.81</td>
+<td align="left">0.66 [ 0.50, 0.82]</td>
+<td align="left">0.81 [ 0.61, 1.02]</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_admiration</td>
 <td align="left">~~</td>
 <td align="left">k_srq_sociability</td>
-<td align="left">0.63 [ 0.36, 0.91]</td>
-<td align="left">0.87 [ 0.23, 1.50]</td>
-<td align="right">0.80</td>
-<td align="right">0.88</td>
+<td align="left">0.80 [ 0.63, 0.96]</td>
+<td align="left">0.88 [ 0.62, 1.13]</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_passivity</td>
 <td align="left">~~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="left">0.09 [-0.11, 0.29]</td>
-<td align="left">0.07 [-0.30, 0.44]</td>
-<td align="right">0.08</td>
-<td align="right">0.07</td>
+<td align="left">0.08 [-0.09, 0.26]</td>
+<td align="left">0.07 [-0.29, 0.44]</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_passivity</td>
 <td align="left">~~</td>
 <td align="left">k_srq_sociability</td>
-<td align="left">0.26 [ 0.05, 0.47]</td>
-<td align="left">0.17 [-0.25, 0.60]</td>
-<td align="right">0.27</td>
-<td align="right">0.16</td>
+<td align="left">0.27 [ 0.07, 0.46]</td>
+<td align="left">0.16 [-0.21, 0.53]</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_sexual_relationships</td>
 <td align="left">~~</td>
 <td align="left">k_srq_sociability</td>
-<td align="left">0.63 [ 0.27, 0.98]</td>
-<td align="left">0.74 [ 0.12, 1.36]</td>
-<td align="right">0.80</td>
-<td align="right">1.05</td>
+<td align="left">0.80 [ 0.64, 0.96]</td>
+<td align="left">1.05 [ 0.74, 1.35]</td>
 </tr>
 </tbody>
 </table>
 <div class="figure">
 <span id="fig:unnamed-chunk-11"></span>
-<img src="fsmi-cfa_files/figure-html/unnamed-chunk-11-1.png" alt="Correlations between FSMI and K-SRQ scales of interest." width="456"><p class="caption">
+<img src="fsmi-cfa_files/figure-html/unnamed-chunk-11-1.png" alt="Correlations between FSMI and K-SRQ scales of interest." width="564"><p class="caption">
 Figure 6: Correlations between FSMI and K-SRQ scales of interest.
 </p>
+</div>
 </div>
 <div id="k-srq-and-age" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-and-age" class="anchor"></a>K-SRQ and age</h3>
+<pre><code>#&gt;                                 df        AIC
+#&gt; ksrq_cfa_metric_agesem_sample  215 18081.9856
+#&gt; ksrq_cfa_metric_agesem         115 18216.0062
+#&gt; difference                    -100   134.0206
+#&gt;                                         df        AIC
+#&gt; ksrq_cfa_metric_agesem_reginvar         95 18195.1278
+#&gt; ksrq_cfa_metric_agesem_reginvar_sample 155 18014.9820
+#&gt; difference                              60  -180.1458
+#&gt;                                         df         AIC
+#&gt; ksrq_cfa_metric_agesem_sample          215 18081.98562
+#&gt; ksrq_cfa_metric_agesem_reginvar_sample 155 18014.98198
+#&gt; difference                             -60   -67.00364
+#&gt;                             age_c gender_c age_c2 age_c:gender_c
+#&gt; k_srq_admiration           -0.002    0.002  0.000          0.000
+#&gt; k_srq_passivity             0.000    0.002  0.000          0.000
+#&gt; k_srq_sexual_relationships -0.027   -0.037  0.002         -0.026
+#&gt; k_srq_sociability           0.006   -0.013  0.000          0.011
+#&gt;                            age_c2:gender_c
+#&gt; k_srq_admiration                    -0.001
+#&gt; k_srq_passivity                      0.000
+#&gt; k_srq_sexual_relationships           0.004
+#&gt; k_srq_sociability                    0.003
+#&gt;                             age_c gender_c age_c2 age_c:gender_c
+#&gt; k_srq_admiration           -0.177   -1.219 -2.401         -0.086
+#&gt; k_srq_passivity             0.462    0.245 -1.443          0.755
+#&gt; k_srq_sexual_relationships  0.861   -1.277 -2.567         -0.567
+#&gt; k_srq_sociability          -0.547    0.022 -2.310         -0.725
+#&gt;                            age_c2:gender_c
+#&gt; k_srq_admiration                    -0.196
+#&gt; k_srq_passivity                     -1.358
+#&gt; k_srq_sexual_relationships          -1.592
+#&gt; k_srq_sociability                   -1.122
+#&gt;                             age_c gender_c age_c2 age_c:gender_c
+#&gt; k_srq_admiration           -0.126   -1.226 -2.368         -0.089
+#&gt; k_srq_passivity             0.465    0.237 -1.450          0.750
+#&gt; k_srq_sexual_relationships  1.448   -1.059 -2.889         -0.129
+#&gt; k_srq_sociability          -0.668    0.101 -2.403         -0.901
+#&gt;                            age_c2:gender_c
+#&gt; k_srq_admiration                    -0.149
+#&gt; k_srq_passivity                     -1.360
+#&gt; k_srq_sexual_relationships          -1.859
+#&gt; k_srq_sociability                   -1.334
+#&gt;                             age_c gender_c age_c2 age_c:gender_c
+#&gt; k_srq_admiration           -0.051    0.007 -0.034          0.003
+#&gt; k_srq_passivity            -0.003    0.008  0.007          0.005
+#&gt; k_srq_sexual_relationships -0.587   -0.219  0.323         -0.438
+#&gt; k_srq_sociability           0.121   -0.079  0.092          0.175
+#&gt;                            age_c2:gender_c
+#&gt; k_srq_admiration                    -0.046
+#&gt; k_srq_passivity                      0.002
+#&gt; k_srq_sexual_relationships           0.266
+#&gt; k_srq_sociability                    0.211</code></pre>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-13-1.png" width="564"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-12">Table 2: </span>K-SRQ and age; N obs. = 346</caption>
+<span id="tab:unnamed-chunk-14">Table 2: </span>K-SRQ and age; N obs. = 333</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
 <th align="left">rhs</th>
+<th align="right">block</th>
+<th align="right">group</th>
+<th align="left">label</th>
 <th align="right">est</th>
 <th align="right">se</th>
 <th align="right">z</th>
@@ -1216,54 +1648,406 @@ Figure 6: Correlations between FSMI and K-SRQ scales of interest.
 <td align="left">k_srq_admiration</td>
 <td align="left">~</td>
 <td align="left">age_c</td>
-<td align="right">-0.07</td>
-<td align="right">0.03</td>
-<td align="right">-2.45</td>
-<td align="right">0.01</td>
-<td align="right">-0.12</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p14.</td>
 <td align="right">-0.01</td>
-<td align="right">-0.07</td>
-<td align="right">-0.16</td>
-<td align="right">-0.07</td>
+<td align="right">0.04</td>
+<td align="right">-0.13</td>
+<td align="right">0.90</td>
+<td align="right">-0.09</td>
+<td align="right">0.08</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_admiration</td>
 <td align="left">~</td>
 <td align="left">age_c2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p15.</td>
 <td align="right">-0.02</td>
 <td align="right">0.01</td>
-<td align="right">-1.88</td>
-<td align="right">0.06</td>
+<td align="right">-2.37</td>
+<td align="right">0.02</td>
+<td align="right">-0.04</td>
+<td align="right">0.00</td>
 <td align="right">-0.03</td>
+<td align="right">-0.13</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p16.</td>
+<td align="right">-0.18</td>
+<td align="right">0.15</td>
+<td align="right">-1.23</td>
+<td align="right">0.22</td>
+<td align="right">-0.48</td>
+<td align="right">0.11</td>
+<td align="right">-0.20</td>
+<td align="right">-0.09</td>
+<td align="right">-0.20</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p17.</td>
+<td align="right">0.00</td>
+<td align="right">0.05</td>
+<td align="right">-0.09</td>
+<td align="right">0.93</td>
+<td align="right">-0.11</td>
+<td align="right">0.10</td>
+<td align="right">-0.01</td>
+<td align="right">0.00</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p18.</td>
+<td align="right">0.00</td>
+<td align="right">0.02</td>
+<td align="right">-0.15</td>
+<td align="right">0.88</td>
+<td align="right">-0.04</td>
+<td align="right">0.03</td>
+<td align="right">0.00</td>
+<td align="right">-0.01</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p19.</td>
+<td align="right">0.02</td>
+<td align="right">0.05</td>
+<td align="right">0.47</td>
+<td align="right">0.64</td>
+<td align="right">-0.07</td>
+<td align="right">0.12</td>
+<td align="right">0.02</td>
+<td align="right">0.02</td>
+<td align="right">0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p20.</td>
+<td align="right">-0.02</td>
+<td align="right">0.01</td>
+<td align="right">-1.45</td>
+<td align="right">0.15</td>
+<td align="right">-0.04</td>
+<td align="right">0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.07</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p21.</td>
+<td align="right">0.05</td>
+<td align="right">0.22</td>
+<td align="right">0.24</td>
+<td align="right">0.81</td>
+<td align="right">-0.38</td>
+<td align="right">0.49</td>
+<td align="right">0.04</td>
+<td align="right">0.02</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p22.</td>
+<td align="right">0.05</td>
+<td align="right">0.07</td>
+<td align="right">0.75</td>
+<td align="right">0.45</td>
+<td align="right">-0.08</td>
+<td align="right">0.18</td>
+<td align="right">0.04</td>
+<td align="right">0.04</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p23.</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-1.36</td>
+<td align="right">0.17</td>
+<td align="right">-0.07</td>
+<td align="right">0.01</td>
+<td align="right">-0.02</td>
+<td align="right">-0.08</td>
+<td align="right">-0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p24.</td>
+<td align="right">0.07</td>
+<td align="right">0.05</td>
+<td align="right">1.45</td>
+<td align="right">0.15</td>
+<td align="right">-0.02</td>
+<td align="right">0.16</td>
+<td align="right">0.07</td>
+<td align="right">0.09</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p25.</td>
+<td align="right">-0.03</td>
+<td align="right">0.01</td>
+<td align="right">-2.89</td>
+<td align="right">0.00</td>
+<td align="right">-0.05</td>
+<td align="right">-0.01</td>
+<td align="right">-0.03</td>
+<td align="right">-0.15</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p26.</td>
+<td align="right">-0.16</td>
+<td align="right">0.15</td>
+<td align="right">-1.06</td>
+<td align="right">0.29</td>
+<td align="right">-0.45</td>
+<td align="right">0.14</td>
+<td align="right">-0.17</td>
+<td align="right">-0.07</td>
+<td align="right">-0.17</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p27.</td>
+<td align="right">-0.01</td>
+<td align="right">0.06</td>
+<td align="right">-0.13</td>
+<td align="right">0.90</td>
+<td align="right">-0.13</td>
+<td align="right">0.11</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p28.</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-1.86</td>
+<td align="right">0.06</td>
+<td align="right">-0.07</td>
+<td align="right">0.00</td>
+<td align="right">-0.04</td>
+<td align="right">-0.11</td>
+<td align="right">-0.04</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p29.</td>
+<td align="right">-0.03</td>
+<td align="right">0.05</td>
+<td align="right">-0.67</td>
+<td align="right">0.50</td>
+<td align="right">-0.13</td>
+<td align="right">0.06</td>
+<td align="right">-0.04</td>
+<td align="right">-0.05</td>
+<td align="right">-0.04</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p30.</td>
+<td align="right">-0.03</td>
+<td align="right">0.01</td>
+<td align="right">-2.40</td>
+<td align="right">0.02</td>
+<td align="right">-0.05</td>
+<td align="right">0.00</td>
+<td align="right">-0.03</td>
+<td align="right">-0.14</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p31.</td>
+<td align="right">0.02</td>
+<td align="right">0.17</td>
+<td align="right">0.10</td>
+<td align="right">0.92</td>
+<td align="right">-0.31</td>
+<td align="right">0.35</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p32.</td>
+<td align="right">-0.05</td>
+<td align="right">0.06</td>
+<td align="right">-0.90</td>
+<td align="right">0.37</td>
+<td align="right">-0.17</td>
+<td align="right">0.06</td>
+<td align="right">-0.06</td>
+<td align="right">-0.05</td>
+<td align="right">-0.06</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="left">.p33.</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-1.33</td>
+<td align="right">0.18</td>
+<td align="right">-0.06</td>
+<td align="right">0.01</td>
+<td align="right">-0.03</td>
+<td align="right">-0.09</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p14.</td>
+<td align="right">-0.01</td>
+<td align="right">0.04</td>
+<td align="right">-0.13</td>
+<td align="right">0.90</td>
+<td align="right">-0.09</td>
+<td align="right">0.08</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p15.</td>
+<td align="right">-0.02</td>
+<td align="right">0.01</td>
+<td align="right">-2.37</td>
+<td align="right">0.02</td>
+<td align="right">-0.04</td>
 <td align="right">0.00</td>
 <td align="right">-0.02</td>
-<td align="right">-0.13</td>
+<td align="right">-0.23</td>
 <td align="right">-0.02</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_admiration</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">-0.22</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p16.</td>
+<td align="right">-0.18</td>
 <td align="right">0.15</td>
-<td align="right">-1.51</td>
-<td align="right">0.13</td>
-<td align="right">-0.51</td>
-<td align="right">0.07</td>
-<td align="right">-0.24</td>
-<td align="right">-0.11</td>
-<td align="right">-0.24</td>
+<td align="right">-1.23</td>
+<td align="right">0.22</td>
+<td align="right">-0.48</td>
+<td align="right">0.11</td>
+<td align="right">-0.20</td>
+<td align="right">-0.10</td>
+<td align="right">-0.20</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_admiration</td>
 <td align="left">~</td>
 <td align="left">age_c:gender_c</td>
-<td align="right">-0.01</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p17.</td>
+<td align="right">0.00</td>
 <td align="right">0.05</td>
-<td align="right">-0.17</td>
-<td align="right">0.86</td>
+<td align="right">-0.09</td>
+<td align="right">0.93</td>
 <td align="right">-0.11</td>
-<td align="right">0.09</td>
+<td align="right">0.10</td>
 <td align="right">-0.01</td>
 <td align="right">-0.01</td>
 <td align="right">-0.01</td>
@@ -1272,40 +2056,389 @@ Figure 6: Correlations between FSMI and K-SRQ scales of interest.
 <td align="left">k_srq_admiration</td>
 <td align="left">~</td>
 <td align="left">age_c2:gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p18.</td>
 <td align="right">0.00</td>
 <td align="right">0.02</td>
-<td align="right">0.02</td>
-<td align="right">0.99</td>
+<td align="right">-0.15</td>
+<td align="right">0.88</td>
 <td align="right">-0.04</td>
-<td align="right">0.04</td>
+<td align="right">0.03</td>
 <td align="right">0.00</td>
-<td align="right">0.00</td>
+<td align="right">-0.02</td>
 <td align="right">0.00</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_passivity</td>
 <td align="left">~</td>
 <td align="left">age_c</td>
-<td align="right">0.04</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p19.</td>
+<td align="right">0.02</td>
+<td align="right">0.05</td>
+<td align="right">0.47</td>
+<td align="right">0.64</td>
+<td align="right">-0.07</td>
+<td align="right">0.12</td>
+<td align="right">0.02</td>
 <td align="right">0.03</td>
-<td align="right">1.37</td>
-<td align="right">0.17</td>
-<td align="right">-0.02</td>
-<td align="right">0.10</td>
-<td align="right">0.04</td>
-<td align="right">0.08</td>
-<td align="right">0.04</td>
+<td align="right">0.02</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_passivity</td>
 <td align="left">~</td>
 <td align="left">age_c2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p20.</td>
 <td align="right">-0.02</td>
 <td align="right">0.01</td>
-<td align="right">-1.60</td>
+<td align="right">-1.45</td>
+<td align="right">0.15</td>
+<td align="right">-0.04</td>
+<td align="right">0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.13</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p21.</td>
+<td align="right">0.05</td>
+<td align="right">0.22</td>
+<td align="right">0.24</td>
+<td align="right">0.81</td>
+<td align="right">-0.38</td>
+<td align="right">0.49</td>
+<td align="right">0.04</td>
+<td align="right">0.02</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p22.</td>
+<td align="right">0.05</td>
+<td align="right">0.07</td>
+<td align="right">0.75</td>
+<td align="right">0.45</td>
+<td align="right">-0.08</td>
+<td align="right">0.18</td>
+<td align="right">0.04</td>
+<td align="right">0.05</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p23.</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-1.36</td>
+<td align="right">0.17</td>
+<td align="right">-0.07</td>
+<td align="right">0.01</td>
+<td align="right">-0.02</td>
+<td align="right">-0.13</td>
+<td align="right">-0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p24.</td>
+<td align="right">0.07</td>
+<td align="right">0.05</td>
+<td align="right">1.45</td>
+<td align="right">0.15</td>
+<td align="right">-0.02</td>
+<td align="right">0.16</td>
+<td align="right">0.07</td>
 <td align="right">0.11</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p25.</td>
+<td align="right">-0.03</td>
+<td align="right">0.01</td>
+<td align="right">-2.89</td>
+<td align="right">0.00</td>
+<td align="right">-0.05</td>
+<td align="right">-0.01</td>
+<td align="right">-0.03</td>
+<td align="right">-0.28</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p26.</td>
+<td align="right">-0.16</td>
+<td align="right">0.15</td>
+<td align="right">-1.06</td>
+<td align="right">0.29</td>
+<td align="right">-0.45</td>
+<td align="right">0.14</td>
+<td align="right">-0.16</td>
+<td align="right">-0.08</td>
+<td align="right">-0.16</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p27.</td>
+<td align="right">-0.01</td>
+<td align="right">0.06</td>
+<td align="right">-0.13</td>
+<td align="right">0.90</td>
+<td align="right">-0.13</td>
+<td align="right">0.11</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p28.</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-1.86</td>
+<td align="right">0.06</td>
+<td align="right">-0.07</td>
+<td align="right">0.00</td>
+<td align="right">-0.04</td>
+<td align="right">-0.19</td>
+<td align="right">-0.04</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p29.</td>
+<td align="right">-0.03</td>
+<td align="right">0.05</td>
+<td align="right">-0.67</td>
+<td align="right">0.50</td>
+<td align="right">-0.13</td>
+<td align="right">0.06</td>
+<td align="right">-0.04</td>
+<td align="right">-0.06</td>
+<td align="right">-0.04</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p30.</td>
+<td align="right">-0.03</td>
+<td align="right">0.01</td>
+<td align="right">-2.40</td>
+<td align="right">0.02</td>
+<td align="right">-0.05</td>
+<td align="right">0.00</td>
+<td align="right">-0.03</td>
+<td align="right">-0.26</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p31.</td>
+<td align="right">0.02</td>
+<td align="right">0.17</td>
+<td align="right">0.10</td>
+<td align="right">0.92</td>
+<td align="right">-0.31</td>
+<td align="right">0.35</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p32.</td>
+<td align="right">-0.05</td>
+<td align="right">0.06</td>
+<td align="right">-0.90</td>
+<td align="right">0.37</td>
+<td align="right">-0.17</td>
+<td align="right">0.06</td>
+<td align="right">-0.06</td>
+<td align="right">-0.07</td>
+<td align="right">-0.06</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="left">.p33.</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-1.33</td>
+<td align="right">0.18</td>
+<td align="right">-0.06</td>
+<td align="right">0.01</td>
+<td align="right">-0.03</td>
+<td align="right">-0.15</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p14.</td>
+<td align="right">-0.01</td>
+<td align="right">0.04</td>
+<td align="right">-0.13</td>
+<td align="right">0.90</td>
+<td align="right">-0.09</td>
+<td align="right">0.08</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p15.</td>
+<td align="right">-0.02</td>
+<td align="right">0.01</td>
+<td align="right">-2.37</td>
+<td align="right">0.02</td>
 <td align="right">-0.04</td>
 <td align="right">0.00</td>
+<td align="right">-0.02</td>
+<td align="right">-0.19</td>
+<td align="right">-0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p16.</td>
+<td align="right">-0.18</td>
+<td align="right">0.15</td>
+<td align="right">-1.23</td>
+<td align="right">0.22</td>
+<td align="right">-0.48</td>
+<td align="right">0.11</td>
+<td align="right">-0.20</td>
+<td align="right">-0.10</td>
+<td align="right">-0.20</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p17.</td>
+<td align="right">0.00</td>
+<td align="right">0.05</td>
+<td align="right">-0.09</td>
+<td align="right">0.93</td>
+<td align="right">-0.11</td>
+<td align="right">0.10</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p18.</td>
+<td align="right">0.00</td>
+<td align="right">0.02</td>
+<td align="right">-0.15</td>
+<td align="right">0.88</td>
+<td align="right">-0.04</td>
+<td align="right">0.03</td>
+<td align="right">0.00</td>
+<td align="right">-0.02</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p19.</td>
+<td align="right">0.02</td>
+<td align="right">0.05</td>
+<td align="right">0.47</td>
+<td align="right">0.64</td>
+<td align="right">-0.07</td>
+<td align="right">0.12</td>
+<td align="right">0.02</td>
+<td align="right">0.03</td>
+<td align="right">0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p20.</td>
+<td align="right">-0.02</td>
+<td align="right">0.01</td>
+<td align="right">-1.45</td>
+<td align="right">0.15</td>
+<td align="right">-0.04</td>
+<td align="right">0.01</td>
 <td align="right">-0.01</td>
 <td align="right">-0.10</td>
 <td align="right">-0.01</td>
@@ -1314,107 +2447,471 @@ Figure 6: Correlations between FSMI and K-SRQ scales of interest.
 <td align="left">k_srq_passivity</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">0.09</td>
-<td align="right">0.21</td>
-<td align="right">0.41</td>
-<td align="right">0.68</td>
-<td align="right">-0.32</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p21.</td>
+<td align="right">0.05</td>
+<td align="right">0.22</td>
+<td align="right">0.24</td>
+<td align="right">0.81</td>
+<td align="right">-0.38</td>
 <td align="right">0.49</td>
-<td align="right">0.07</td>
 <td align="right">0.04</td>
-<td align="right">0.07</td>
+<td align="right">0.02</td>
+<td align="right">0.04</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_passivity</td>
 <td align="left">~</td>
 <td align="left">age_c:gender_c</td>
-<td align="right">0.06</td>
-<td align="right">0.06</td>
-<td align="right">0.94</td>
-<td align="right">0.35</td>
-<td align="right">-0.06</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p22.</td>
+<td align="right">0.05</td>
+<td align="right">0.07</td>
+<td align="right">0.75</td>
+<td align="right">0.45</td>
+<td align="right">-0.08</td>
 <td align="right">0.18</td>
-<td align="right">0.05</td>
+<td align="right">0.04</td>
 <td align="right">0.06</td>
-<td align="right">0.05</td>
+<td align="right">0.04</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_passivity</td>
 <td align="left">~</td>
 <td align="left">age_c2:gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p23.</td>
 <td align="right">-0.03</td>
 <td align="right">0.02</td>
-<td align="right">-1.38</td>
+<td align="right">-1.36</td>
 <td align="right">0.17</td>
 <td align="right">-0.07</td>
 <td align="right">0.01</td>
 <td align="right">-0.02</td>
-<td align="right">-0.11</td>
+<td align="right">-0.13</td>
 <td align="right">-0.02</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_sexual_relationships</td>
 <td align="left">~</td>
 <td align="left">age_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p24.</td>
 <td align="right">0.07</td>
-<td align="right">0.03</td>
-<td align="right">2.24</td>
-<td align="right">0.03</td>
-<td align="right">0.01</td>
-<td align="right">0.13</td>
-<td align="right">0.07</td>
+<td align="right">0.05</td>
+<td align="right">1.45</td>
 <td align="right">0.15</td>
-<td align="right">0.07</td>
+<td align="right">-0.02</td>
+<td align="right">0.16</td>
+<td align="right">0.06</td>
+<td align="right">0.10</td>
+<td align="right">0.06</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_sexual_relationships</td>
 <td align="left">~</td>
 <td align="left">age_c2</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p25.</td>
 <td align="right">-0.03</td>
 <td align="right">0.01</td>
-<td align="right">-3.41</td>
+<td align="right">-2.89</td>
 <td align="right">0.00</td>
 <td align="right">-0.05</td>
 <td align="right">-0.01</td>
 <td align="right">-0.03</td>
-<td align="right">-0.23</td>
+<td align="right">-0.21</td>
 <td align="right">-0.03</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_sexual_relationships</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p26.</td>
 <td align="right">-0.16</td>
 <td align="right">0.15</td>
-<td align="right">-1.11</td>
-<td align="right">0.27</td>
+<td align="right">-1.06</td>
+<td align="right">0.29</td>
 <td align="right">-0.45</td>
-<td align="right">0.13</td>
-<td align="right">-0.17</td>
+<td align="right">0.14</td>
+<td align="right">-0.15</td>
 <td align="right">-0.08</td>
-<td align="right">-0.17</td>
+<td align="right">-0.15</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_sexual_relationships</td>
 <td align="left">~</td>
 <td align="left">age_c:gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p27.</td>
 <td align="right">-0.01</td>
 <td align="right">0.06</td>
-<td align="right">-0.22</td>
-<td align="right">0.82</td>
+<td align="right">-0.13</td>
+<td align="right">0.90</td>
 <td align="right">-0.13</td>
 <td align="right">0.11</td>
 <td align="right">-0.01</td>
-<td align="right">-0.02</td>
+<td align="right">-0.01</td>
 <td align="right">-0.01</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_sexual_relationships</td>
 <td align="left">~</td>
 <td align="left">age_c2:gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p28.</td>
 <td align="right">-0.03</td>
 <td align="right">0.02</td>
-<td align="right">-1.87</td>
+<td align="right">-1.86</td>
+<td align="right">0.06</td>
+<td align="right">-0.07</td>
+<td align="right">0.00</td>
+<td align="right">-0.03</td>
+<td align="right">-0.19</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p29.</td>
+<td align="right">-0.03</td>
+<td align="right">0.05</td>
+<td align="right">-0.67</td>
+<td align="right">0.50</td>
+<td align="right">-0.13</td>
+<td align="right">0.06</td>
+<td align="right">-0.04</td>
+<td align="right">-0.06</td>
+<td align="right">-0.04</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p30.</td>
+<td align="right">-0.03</td>
+<td align="right">0.01</td>
+<td align="right">-2.40</td>
+<td align="right">0.02</td>
+<td align="right">-0.05</td>
+<td align="right">0.00</td>
+<td align="right">-0.03</td>
+<td align="right">-0.21</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p31.</td>
+<td align="right">0.02</td>
+<td align="right">0.17</td>
+<td align="right">0.10</td>
+<td align="right">0.92</td>
+<td align="right">-0.31</td>
+<td align="right">0.35</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p32.</td>
+<td align="right">-0.05</td>
+<td align="right">0.06</td>
+<td align="right">-0.90</td>
+<td align="right">0.37</td>
+<td align="right">-0.17</td>
+<td align="right">0.06</td>
+<td align="right">-0.06</td>
+<td align="right">-0.09</td>
+<td align="right">-0.06</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sociability</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="left">.p33.</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-1.33</td>
+<td align="right">0.18</td>
+<td align="right">-0.06</td>
+<td align="right">0.01</td>
+<td align="right">-0.03</td>
+<td align="right">-0.16</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p14.</td>
+<td align="right">-0.01</td>
+<td align="right">0.04</td>
+<td align="right">-0.13</td>
+<td align="right">0.90</td>
+<td align="right">-0.09</td>
+<td align="right">0.08</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p15.</td>
+<td align="right">-0.02</td>
+<td align="right">0.01</td>
+<td align="right">-2.37</td>
+<td align="right">0.02</td>
+<td align="right">-0.04</td>
+<td align="right">0.00</td>
+<td align="right">-0.03</td>
+<td align="right">-0.17</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p16.</td>
+<td align="right">-0.18</td>
+<td align="right">0.15</td>
+<td align="right">-1.23</td>
+<td align="right">0.22</td>
+<td align="right">-0.48</td>
+<td align="right">0.11</td>
+<td align="right">-0.20</td>
+<td align="right">-0.10</td>
+<td align="right">-0.20</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p17.</td>
+<td align="right">0.00</td>
+<td align="right">0.05</td>
+<td align="right">-0.09</td>
+<td align="right">0.93</td>
+<td align="right">-0.11</td>
+<td align="right">0.10</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_admiration</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p18.</td>
+<td align="right">0.00</td>
+<td align="right">0.02</td>
+<td align="right">-0.15</td>
+<td align="right">0.88</td>
+<td align="right">-0.04</td>
+<td align="right">0.03</td>
+<td align="right">0.00</td>
+<td align="right">-0.01</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p19.</td>
+<td align="right">0.02</td>
+<td align="right">0.05</td>
+<td align="right">0.47</td>
+<td align="right">0.64</td>
+<td align="right">-0.07</td>
+<td align="right">0.12</td>
+<td align="right">0.02</td>
+<td align="right">0.03</td>
+<td align="right">0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p20.</td>
+<td align="right">-0.02</td>
+<td align="right">0.01</td>
+<td align="right">-1.45</td>
+<td align="right">0.15</td>
+<td align="right">-0.04</td>
+<td align="right">0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.09</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p21.</td>
+<td align="right">0.05</td>
+<td align="right">0.22</td>
+<td align="right">0.24</td>
+<td align="right">0.81</td>
+<td align="right">-0.38</td>
+<td align="right">0.49</td>
+<td align="right">0.04</td>
+<td align="right">0.02</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p22.</td>
+<td align="right">0.05</td>
+<td align="right">0.07</td>
+<td align="right">0.75</td>
+<td align="right">0.45</td>
+<td align="right">-0.08</td>
+<td align="right">0.18</td>
+<td align="right">0.04</td>
+<td align="right">0.05</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_passivity</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p23.</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-1.36</td>
+<td align="right">0.17</td>
+<td align="right">-0.07</td>
+<td align="right">0.01</td>
+<td align="right">-0.02</td>
+<td align="right">-0.10</td>
+<td align="right">-0.02</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p24.</td>
+<td align="right">0.07</td>
+<td align="right">0.05</td>
+<td align="right">1.45</td>
+<td align="right">0.15</td>
+<td align="right">-0.02</td>
+<td align="right">0.16</td>
+<td align="right">0.07</td>
+<td align="right">0.12</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p25.</td>
+<td align="right">-0.03</td>
+<td align="right">0.01</td>
+<td align="right">-2.89</td>
+<td align="right">0.00</td>
+<td align="right">-0.05</td>
+<td align="right">-0.01</td>
+<td align="right">-0.03</td>
+<td align="right">-0.20</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p26.</td>
+<td align="right">-0.16</td>
+<td align="right">0.15</td>
+<td align="right">-1.06</td>
+<td align="right">0.29</td>
+<td align="right">-0.45</td>
+<td align="right">0.14</td>
+<td align="right">-0.16</td>
+<td align="right">-0.08</td>
+<td align="right">-0.16</td>
+</tr>
+<tr class="even">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p27.</td>
+<td align="right">-0.01</td>
+<td align="right">0.06</td>
+<td align="right">-0.13</td>
+<td align="right">0.90</td>
+<td align="right">-0.13</td>
+<td align="right">0.11</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">k_srq_sexual_relationships</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p28.</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-1.86</td>
 <td align="right">0.06</td>
 <td align="right">-0.07</td>
 <td align="right">0.00</td>
@@ -1426,83 +2923,440 @@ Figure 6: Correlations between FSMI and K-SRQ scales of interest.
 <td align="left">k_srq_sociability</td>
 <td align="left">~</td>
 <td align="left">age_c</td>
-<td align="right">0.01</td>
-<td align="right">0.03</td>
-<td align="right">0.34</td>
-<td align="right">0.74</td>
-<td align="right">-0.05</td>
-<td align="right">0.07</td>
-<td align="right">0.01</td>
-<td align="right">0.03</td>
-<td align="right">0.01</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p29.</td>
+<td align="right">-0.03</td>
+<td align="right">0.05</td>
+<td align="right">-0.67</td>
+<td align="right">0.50</td>
+<td align="right">-0.13</td>
+<td align="right">0.06</td>
+<td align="right">-0.04</td>
+<td align="right">-0.06</td>
+<td align="right">-0.04</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_sociability</td>
 <td align="left">~</td>
 <td align="left">age_c2</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p30.</td>
 <td align="right">-0.03</td>
 <td align="right">0.01</td>
-<td align="right">-3.03</td>
-<td align="right">0.00</td>
+<td align="right">-2.40</td>
+<td align="right">0.02</td>
 <td align="right">-0.05</td>
-<td align="right">-0.01</td>
+<td align="right">0.00</td>
 <td align="right">-0.03</td>
-<td align="right">-0.24</td>
+<td align="right">-0.19</td>
 <td align="right">-0.03</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_sociability</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">0.04</td>
-<td align="right">0.17</td>
-<td align="right">0.21</td>
-<td align="right">0.83</td>
-<td align="right">-0.29</td>
-<td align="right">0.36</td>
-<td align="right">0.04</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p31.</td>
 <td align="right">0.02</td>
-<td align="right">0.04</td>
+<td align="right">0.17</td>
+<td align="right">0.10</td>
+<td align="right">0.92</td>
+<td align="right">-0.31</td>
+<td align="right">0.35</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">0.02</td>
 </tr>
 <tr class="odd">
 <td align="left">k_srq_sociability</td>
 <td align="left">~</td>
 <td align="left">age_c:gender_c</td>
-<td align="right">-0.07</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p32.</td>
+<td align="right">-0.05</td>
 <td align="right">0.06</td>
-<td align="right">-1.19</td>
-<td align="right">0.23</td>
-<td align="right">-0.19</td>
-<td align="right">0.05</td>
-<td align="right">-0.08</td>
-<td align="right">-0.09</td>
-<td align="right">-0.08</td>
+<td align="right">-0.90</td>
+<td align="right">0.37</td>
+<td align="right">-0.17</td>
+<td align="right">0.06</td>
+<td align="right">-0.06</td>
+<td align="right">-0.07</td>
+<td align="right">-0.06</td>
 </tr>
 <tr class="even">
 <td align="left">k_srq_sociability</td>
 <td align="left">~</td>
 <td align="left">age_c2:gender_c</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="left">.p33.</td>
 <td align="right">-0.03</td>
 <td align="right">0.02</td>
-<td align="right">-1.45</td>
-<td align="right">0.15</td>
-<td align="right">-0.07</td>
+<td align="right">-1.33</td>
+<td align="right">0.18</td>
+<td align="right">-0.06</td>
 <td align="right">0.01</td>
 <td align="right">-0.03</td>
-<td align="right">-0.14</td>
+<td align="right">-0.12</td>
 <td align="right">-0.03</td>
 </tr>
 </tbody>
 </table>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-12-1.png" width="672"></p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">K-SRQ factor</th>
+<th align="left">Sample</th>
+<th align="left"><span class="math inline">\(\text{Age}\)</span></th>
+<th align="left"><span class="math inline">\(\text{Age}\times\text{Gender}\)</span></th>
+<th align="left"><span class="math inline">\(\text{Age}^2\)</span></th>
+<th align="left"><span class="math inline">\(\text{Age}^2\times\text{Gender}\)</span></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Admiration</td>
+<td align="left">Foster-care involved adolescents</td>
+<td align="left">-0.01 [-0.17, 0.15]</td>
+<td align="left">-0.01 [-0.14, 0.13]</td>
+<td align="left">-0.17 [-0.31, -0.03]</td>
+<td align="left">-0.01 [-0.19, 0.16]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Community adolescents</td>
+<td align="left">-0.01 [-0.15, 0.13]</td>
+<td align="left">-0.01 [-0.17, 0.16]</td>
+<td align="left">-0.19 [-0.34, -0.04]</td>
+<td align="left">-0.02 [-0.25, 0.21]</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">College students</td>
+<td align="left">-0.01 [-0.15, 0.13]</td>
+<td align="left">-0.01 [-0.14, 0.13]</td>
+<td align="left">-0.23 [-0.41, -0.05]</td>
+<td align="left">-0.02 [-0.23, 0.20]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">College students - online</td>
+<td align="left">-0.01 [-0.12, 0.11]</td>
+<td align="left">-0.00 [-0.11, 0.10]</td>
+<td align="left">-0.13 [-0.23, -0.02]</td>
+<td align="left">-0.01 [-0.14, 0.12]</td>
+</tr>
+<tr class="odd">
+<td align="left">Passivity</td>
+<td align="left">Foster-care involved adolescents</td>
+<td align="left">0.03 [-0.11, 0.17]</td>
+<td align="left">0.05 [-0.08, 0.17]</td>
+<td align="left">-0.09 [-0.21, 0.03]</td>
+<td align="left">-0.10 [-0.25, 0.05]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Community adolescents</td>
+<td align="left">0.03 [-0.09, 0.15]</td>
+<td align="left">0.06 [-0.09, 0.21]</td>
+<td align="left">-0.10 [-0.24, 0.03]</td>
+<td align="left">-0.13 [-0.33, 0.06]</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">College students</td>
+<td align="left">0.03 [-0.10, 0.16]</td>
+<td align="left">0.05 [-0.08, 0.17]</td>
+<td align="left">-0.13 [-0.30, 0.04]</td>
+<td align="left">-0.13 [-0.31, 0.06]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">College students - online</td>
+<td align="left">0.02 [-0.08, 0.13]</td>
+<td align="left">0.04 [-0.06, 0.14]</td>
+<td align="left">-0.07 [-0.16, 0.02]</td>
+<td align="left">-0.08 [-0.19, 0.03]</td>
+</tr>
+<tr class="odd">
+<td align="left">Sexual Relationships</td>
+<td align="left">Foster-care involved adolescents</td>
+<td align="left">0.12 [-0.04, 0.27]</td>
+<td align="left">-0.01 [-0.15, 0.13]</td>
+<td align="left">-0.20 [-0.32, -0.08]</td>
+<td align="left">-0.15 [-0.30, 0.00]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Community adolescents</td>
+<td align="left">0.10 [-0.03, 0.23]</td>
+<td align="left">-0.01 [-0.18, 0.16]</td>
+<td align="left">-0.21 [-0.34, -0.09]</td>
+<td align="left">-0.19 [-0.37, -0.00]</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">College students</td>
+<td align="left">0.11 [-0.04, 0.25]</td>
+<td align="left">-0.01 [-0.15, 0.13]</td>
+<td align="left">-0.28 [-0.45, -0.10]</td>
+<td align="left">-0.19 [-0.38, 0.00]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">College students - online</td>
+<td align="left">0.09 [-0.03, 0.21]</td>
+<td align="left">-0.01 [-0.12, 0.11]</td>
+<td align="left">-0.15 [-0.25, -0.05]</td>
+<td align="left">-0.11 [-0.23, 0.00]</td>
+</tr>
+<tr class="odd">
+<td align="left">Sociability</td>
+<td align="left">Foster-care involved adolescents</td>
+<td align="left">-0.06 [-0.25, 0.12]</td>
+<td align="left">-0.07 [-0.21, 0.08]</td>
+<td align="left">-0.19 [-0.34, -0.04]</td>
+<td align="left">-0.12 [-0.30, 0.06]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Community adolescents</td>
+<td align="left">-0.06 [-0.22, 0.11]</td>
+<td align="left">-0.09 [-0.27, 0.10]</td>
+<td align="left">-0.21 [-0.38, -0.05]</td>
+<td align="left">-0.16 [-0.39, 0.07]</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">College students</td>
+<td align="left">-0.06 [-0.22, 0.10]</td>
+<td align="left">-0.07 [-0.21, 0.08]</td>
+<td align="left">-0.26 [-0.45, -0.06]</td>
+<td align="left">-0.15 [-0.36, 0.07]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">College students - online</td>
+<td align="left">-0.05 [-0.18, 0.09]</td>
+<td align="left">-0.05 [-0.17, 0.06]</td>
+<td align="left">-0.14 [-0.25, -0.03]</td>
+<td align="left">-0.09 [-0.22, 0.04]</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="k-srq-pds" class="section level3">
+<h3 class="hasAnchor">
+<a href="#k-srq-pds" class="anchor"></a>K-SRQ PDS</h3>
+<pre><code>#&gt;                                         df         AIC
+#&gt; ksrq_cfa_metric_pdssem_sample          215 12847.89180
+#&gt; ksrq_cfa_metric_pdssem_reginvar_sample 155 12789.65739
+#&gt; difference                             -60   -58.23441
+#&gt;                                         df         AIC
+#&gt; ksrq_cfa_metric_pdssem_sample          215 12847.89180
+#&gt; ksrq_cfa_metric_pdssem_reginvar_sample 155 12789.65739
+#&gt; difference                             -60   -58.23441
+#&gt;                            pds_c gender_c pds_c2 pds_c:gender_c
+#&gt; k_srq_admiration           0.656   -0.461 -0.180          0.926
+#&gt; k_srq_passivity            0.446   -0.501 -0.388          0.927
+#&gt; k_srq_sexual_relationships 0.822   -0.673 -0.348          0.912
+#&gt; k_srq_sociability          0.881   -0.880 -0.212          1.360
+#&gt;                            pds_c2:gender_c
+#&gt; k_srq_admiration                    -0.376
+#&gt; k_srq_passivity                     -0.403
+#&gt; k_srq_sexual_relationships          -0.431
+#&gt; k_srq_sociability                   -0.337
+#&gt;                                    pds_c      gender_c        pds_c2
+#&gt; k_srq_admiration            4.868343e-03 -0.0047089914 -1.174250e-04
+#&gt; k_srq_passivity             7.596724e-05  0.0003031932 -3.425341e-05
+#&gt; k_srq_sexual_relationships -2.605097e-02  0.0043537329  8.580981e-03
+#&gt; k_srq_sociability          -2.735066e-02  0.0005337490  2.965507e-02
+#&gt;                            pds_c:gender_c pds_c2:gender_c
+#&gt; k_srq_admiration              0.001753105   -0.0008352670
+#&gt; k_srq_passivity               0.001013819   -0.0003176457
+#&gt; k_srq_sexual_relationships   -0.010127155    0.0036732749
+#&gt; k_srq_sociability            -0.045937013    0.0490474331
+#&gt;                            pds_c gender_c pds_c2 pds_c:gender_c
+#&gt; k_srq_admiration           2.734   -2.583 -0.924          2.026
+#&gt; k_srq_passivity            1.561   -1.371 -1.328          1.716
+#&gt; k_srq_sexual_relationships 2.949   -2.935 -1.405          1.656
+#&gt; k_srq_sociability          3.541   -3.122 -1.006          2.698
+#&gt;                            pds_c2:gender_c
+#&gt; k_srq_admiration                    -0.875
+#&gt; k_srq_passivity                     -0.716
+#&gt; k_srq_sexual_relationships          -0.858
+#&gt; k_srq_sociability                   -0.761
+#&gt;                            pds_c gender_c pds_c2 pds_c:gender_c
+#&gt; k_srq_admiration           2.663   -2.524 -0.916          2.009
+#&gt; k_srq_passivity            1.560   -1.374 -1.327          1.708
+#&gt; k_srq_sexual_relationships 3.277   -2.877 -1.523          1.763
+#&gt; k_srq_sociability          3.465   -3.114 -1.323          2.763
+#&gt;                            pds_c2:gender_c
+#&gt; k_srq_admiration                    -0.860
+#&gt; k_srq_passivity                     -0.714
+#&gt; k_srq_sexual_relationships          -0.878
+#&gt; k_srq_sociability                   -1.027
+#&gt;                             pds_c gender_c pds_c2 pds_c:gender_c
+#&gt; k_srq_admiration            0.071   -0.059 -0.008          0.016
+#&gt; k_srq_passivity             0.001    0.003 -0.001          0.007
+#&gt; k_srq_sexual_relationships -0.327   -0.058  0.117         -0.107
+#&gt; k_srq_sociability           0.076   -0.008  0.317         -0.066
+#&gt;                            pds_c2:gender_c
+#&gt; k_srq_admiration                    -0.016
+#&gt; k_srq_passivity                     -0.002
+#&gt; k_srq_sexual_relationships           0.020
+#&gt; k_srq_sociability                    0.266</code></pre>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-16-1.png" width="564"></p>
+<table class="table">
+<thead><tr class="header">
+<th align="left">K-SRQ factor</th>
+<th align="left">Sample</th>
+<th align="left"><span class="math inline">\(\text{PDS}\)</span></th>
+<th align="left"><span class="math inline">\(\text{PDS}\times\text{Gender}\)</span></th>
+<th align="left"><span class="math inline">\(\text{PDS}^2\)</span></th>
+<th align="left"><span class="math inline">\(\text{PDS}^2\times\text{Gender}\)</span></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Admiration</td>
+<td align="left">Foster-care involved adolescents</td>
+<td align="left">0.44 [0.12, 0.75]</td>
+<td align="left">0.28 [0.02, 0.54]</td>
+<td align="left">-0.10 [-0.32, 0.12]</td>
+<td align="left">-0.14 [-0.45, 0.17]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Community adolescents</td>
+<td align="left">0.39 [0.13, 0.65]</td>
+<td align="left">0.26 [0.03, 0.48]</td>
+<td align="left">-0.09 [-0.28, 0.10]</td>
+<td align="left">-0.11 [-0.36, 0.14]</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">College students</td>
+<td align="left">0.19 [0.05, 0.32]</td>
+<td align="left">0.38 [0.02, 0.75]</td>
+<td align="left">-0.07 [-0.23, 0.08]</td>
+<td align="left">-0.14 [-0.46, 0.18]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">College students - online</td>
+<td align="left">0.27 [0.08, 0.45]</td>
+<td align="left">0.35 [0.03, 0.67]</td>
+<td align="left">-0.07 [-0.22, 0.08]</td>
+<td align="left">-0.13 [-0.44, 0.17]</td>
+</tr>
+<tr class="odd">
+<td align="left">Passivity</td>
+<td align="left">Foster-care involved adolescents</td>
+<td align="left">0.24 [-0.06, 0.54]</td>
+<td align="left">0.22 [-0.04, 0.48]</td>
+<td align="left">-0.15 [-0.38, 0.07]</td>
+<td align="left">-0.12 [-0.43, 0.20]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Community adolescents</td>
+<td align="left">0.22 [-0.05, 0.49]</td>
+<td align="left">0.21 [-0.03, 0.44]</td>
+<td align="left">-0.14 [-0.34, 0.07]</td>
+<td align="left">-0.10 [-0.37, 0.17]</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">College students</td>
+<td align="left">0.10 [-0.03, 0.23]</td>
+<td align="left">0.30 [-0.05, 0.66]</td>
+<td align="left">-0.11 [-0.28, 0.05]</td>
+<td align="left">-0.12 [-0.45, 0.21]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">College students - online</td>
+<td align="left">0.15 [-0.04, 0.33]</td>
+<td align="left">0.28 [-0.04, 0.60]</td>
+<td align="left">-0.11 [-0.27, 0.05]</td>
+<td align="left">-0.12 [-0.43, 0.20]</td>
+</tr>
+<tr class="odd">
+<td align="left">Sexual Relationships</td>
+<td align="left">Foster-care involved adolescents</td>
+<td align="left">0.59 [0.23, 0.96]</td>
+<td align="left">0.26 [-0.04, 0.56]</td>
+<td align="left">-0.19 [-0.43, 0.06]</td>
+<td align="left">-0.16 [-0.52, 0.20]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Community adolescents</td>
+<td align="left">0.53 [0.24, 0.82]</td>
+<td align="left">0.23 [-0.01, 0.48]</td>
+<td align="left">-0.16 [-0.37, 0.04]</td>
+<td align="left">-0.13 [-0.41, 0.16]</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">College students</td>
+<td align="left">0.26 [0.09, 0.42]</td>
+<td align="left">0.36 [-0.05, 0.77]</td>
+<td align="left">-0.14 [-0.32, 0.04]</td>
+<td align="left">-0.16 [-0.53, 0.21]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">College students - online</td>
+<td align="left">0.37 [0.15, 0.58]</td>
+<td align="left">0.32 [-0.03, 0.68]</td>
+<td align="left">-0.13 [-0.30, 0.04]</td>
+<td align="left">-0.15 [-0.50, 0.19]</td>
+</tr>
+<tr class="odd">
+<td align="left">Sociability</td>
+<td align="left">Foster-care involved adolescents</td>
+<td align="left">0.66 [0.28, 1.03]</td>
+<td align="left">0.46 [0.13, 0.78]</td>
+<td align="left">-0.17 [-0.43, 0.09]</td>
+<td align="left">-0.19 [-0.55, 0.17]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Community adolescents</td>
+<td align="left">0.55 [0.29, 0.81]</td>
+<td align="left">0.39 [0.16, 0.63]</td>
+<td align="left">-0.14 [-0.35, 0.06]</td>
+<td align="left">-0.15 [-0.42, 0.12]</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">College students</td>
+<td align="left">0.28 [0.12, 0.45]</td>
+<td align="left">0.64 [0.19, 1.08]</td>
+<td align="left">-0.13 [-0.32, 0.07]</td>
+<td align="left">-0.20 [-0.57, 0.17]</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">College students - online</td>
+<td align="left">0.39 [0.19, 0.60]</td>
+<td align="left">0.56 [0.19, 0.92]</td>
+<td align="left">-0.12 [-0.29, 0.06]</td>
+<td align="left">-0.18 [-0.52, 0.15]</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="k-srq-discussion" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-discussion" class="anchor"></a>K-SRQ Discussion</h3>
-<p>A CFA for four of the K-SRQ factors (admiration, passivity, sexual relationships, and sociability) fit fairly well (RMSEA = 0.063, <span class="math inline">\(\hat\gamma\)</span> = 0.965).
+<p>A CFA for four of the K-SRQ factors (admiration, passivity, sexual relationships, and sociability) fit fairly well (RMSEA = 0.093, <span class="math inline">\(\hat\gamma\)</span> = 0.924).
 All factors except passivity were strongly inter-correlated, raising doubts about the discriminant validity of the separate factors.
 A parallel scree plot analysis suggests a 3 factor structure, with one item from the original sociability factor loading on a factor with the admiration items (weakly), and the other two loading with the sexual relationships items.
-A CFA using this factor structure (with no cross-loadings) demonstrates similar fit to the <em>a priori</em> model (RMSEA = 0.063, <span class="math inline">\(\hat\gamma\)</span> = 0.965), and with similarly substantial correlations between the former admiration and sexual relationships factors.
+A CFA using this factor structure (with no cross-loadings) demonstrates similar fit to the <em>a priori</em> model (RMSEA = 0.093, <span class="math inline">\(\hat\gamma\)</span> = 0.924), and with similarly substantial correlations between the former admiration and sexual relationships factors.
 A 4 factor EFA retains this general structure, while letting the sociability item, which previously loaded with admiration items, dominate its own factor.
 The new 3-factor structure improves somewhat on the <em>a priori</em> model, but the sexual relationships factor has not become any more interpretable as representing a mate-seeking motivation, per se.
 Moreover, the sexual relationship factor, as well as its cousin in the 3-factor model both show nominally higher correlations with FSMI status than FSMI mate-seeking.
@@ -1520,6 +3374,397 @@ The distinction between the seeking new romantic or sexual partners, and enjoyme
 Past work has shown that sexual activity (age at first sex, specifically), if it is in the context of a romantic relationshuip, is protective with respect to dellinquency <span class="citation">(Harden &amp; Mendle, 2011; Harden, Mendle, Hill, Turkheimer, &amp; Emery, 2007)</span>.</p>
 </div>
 </div>
+<div id="urgency-premeditation-perseverence-sensation-seeking" class="section level2">
+<h2 class="hasAnchor">
+<a href="#urgency-premeditation-perseverence-sensation-seeking" class="anchor"></a>Urgency, premeditation, perseverence, sensation seeking</h2>
+<div id="measurement-invariance-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#measurement-invariance-1" class="anchor"></a>Measurement invariance</h3>
+<pre><code>#&gt;   cfi rmsea   mfi 
+#&gt; 0.743 0.063 0.039
+#&gt; uppsp_cfa_mi_metric.mfi 
+#&gt;            -0.001029825
+#&gt;    uppsp_cfa_mi_metric.gammaHat uppsp_cfa_mi_metric.adjGammaHat 
+#&gt;                   -0.0035502826                    0.0006313326</code></pre>
+<p>The UPPS-P scale shows metric invariance, so we can look at covariance from latent factors.</p>
+</div>
+<div id="upps-p-and-age" class="section level3">
+<h3 class="hasAnchor">
+<a href="#upps-p-and-age" class="anchor"></a>UPPS-P and age</h3>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-18-1.png" width="672"></p>
+<table class="table">
+<caption>
+<span id="tab:unnamed-chunk-19">Table 3: </span>K-SRQ and age; N obs. = 333</caption>
+<thead><tr class="header">
+<th align="left">lhs</th>
+<th align="left">op</th>
+<th align="left">rhs</th>
+<th align="right">est</th>
+<th align="right">se</th>
+<th align="right">z</th>
+<th align="right">pvalue</th>
+<th align="right">ci.lower</th>
+<th align="right">ci.upper</th>
+<th align="right">std.lv</th>
+<th align="right">std.all</th>
+<th align="right">std.nox</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">neg_urgency</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">-0.03</td>
+<td align="right">0.01</td>
+<td align="right">-1.82</td>
+<td align="right">0.07</td>
+<td align="right">-0.05</td>
+<td align="right">0.00</td>
+<td align="right">-0.05</td>
+<td align="right">-0.12</td>
+<td align="right">-0.05</td>
+</tr>
+<tr class="even">
+<td align="left">neg_urgency</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">1.37</td>
+<td align="right">0.17</td>
+<td align="right">0.00</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">0.10</td>
+<td align="right">0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">neg_urgency</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">-0.17</td>
+<td align="right">0.09</td>
+<td align="right">-1.90</td>
+<td align="right">0.06</td>
+<td align="right">-0.34</td>
+<td align="right">0.01</td>
+<td align="right">-0.33</td>
+<td align="right">-0.16</td>
+<td align="right">-0.33</td>
+</tr>
+<tr class="even">
+<td align="left">neg_urgency</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">0.05</td>
+<td align="right">0.03</td>
+<td align="right">1.77</td>
+<td align="right">0.08</td>
+<td align="right">-0.01</td>
+<td align="right">0.10</td>
+<td align="right">0.10</td>
+<td align="right">0.11</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="odd">
+<td align="left">neg_urgency</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">1.72</td>
+<td align="right">0.08</td>
+<td align="right">0.00</td>
+<td align="right">0.04</td>
+<td align="right">0.03</td>
+<td align="right">0.15</td>
+<td align="right">0.03</td>
+</tr>
+<tr class="even">
+<td align="left">premeditation</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">-0.02</td>
+<td align="right">0.01</td>
+<td align="right">-2.03</td>
+<td align="right">0.04</td>
+<td align="right">-0.03</td>
+<td align="right">0.00</td>
+<td align="right">-0.07</td>
+<td align="right">-0.17</td>
+<td align="right">-0.07</td>
+</tr>
+<tr class="odd">
+<td align="left">premeditation</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">-0.23</td>
+<td align="right">0.82</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">-0.02</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">premeditation</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">0.00</td>
+<td align="right">0.03</td>
+<td align="right">-0.04</td>
+<td align="right">0.97</td>
+<td align="right">-0.07</td>
+<td align="right">0.07</td>
+<td align="right">-0.01</td>
+<td align="right">0.00</td>
+<td align="right">-0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">premeditation</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">-0.01</td>
+<td align="right">0.01</td>
+<td align="right">-0.40</td>
+<td align="right">0.69</td>
+<td align="right">-0.03</td>
+<td align="right">0.02</td>
+<td align="right">-0.02</td>
+<td align="right">-0.03</td>
+<td align="right">-0.02</td>
+</tr>
+<tr class="even">
+<td align="left">premeditation</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.65</td>
+<td align="right">0.52</td>
+<td align="right">-0.01</td>
+<td align="right">0.01</td>
+<td align="right">0.01</td>
+<td align="right">0.06</td>
+<td align="right">0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">perseverance</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">-0.02</td>
+<td align="right">0.01</td>
+<td align="right">-1.98</td>
+<td align="right">0.05</td>
+<td align="right">-0.04</td>
+<td align="right">0.00</td>
+<td align="right">-0.05</td>
+<td align="right">-0.12</td>
+<td align="right">-0.05</td>
+</tr>
+<tr class="even">
+<td align="left">perseverance</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">-0.46</td>
+<td align="right">0.64</td>
+<td align="right">-0.01</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">-0.03</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="odd">
+<td align="left">perseverance</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">-0.05</td>
+<td align="right">0.06</td>
+<td align="right">-0.87</td>
+<td align="right">0.39</td>
+<td align="right">-0.18</td>
+<td align="right">0.07</td>
+<td align="right">-0.15</td>
+<td align="right">-0.07</td>
+<td align="right">-0.15</td>
+</tr>
+<tr class="even">
+<td align="left">perseverance</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">-0.01</td>
+<td align="right">0.02</td>
+<td align="right">-0.57</td>
+<td align="right">0.57</td>
+<td align="right">-0.05</td>
+<td align="right">0.03</td>
+<td align="right">-0.03</td>
+<td align="right">-0.03</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">perseverance</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">2.75</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0.03</td>
+<td align="right">0.04</td>
+<td align="right">0.20</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="even">
+<td align="left">sensation_seeking</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">-0.01</td>
+<td align="right">0.01</td>
+<td align="right">-0.99</td>
+<td align="right">0.32</td>
+<td align="right">-0.04</td>
+<td align="right">0.01</td>
+<td align="right">-0.03</td>
+<td align="right">-0.07</td>
+<td align="right">-0.03</td>
+</tr>
+<tr class="odd">
+<td align="left">sensation_seeking</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">-0.06</td>
+<td align="right">0.95</td>
+<td align="right">-0.01</td>
+<td align="right">0.01</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+</tr>
+<tr class="even">
+<td align="left">sensation_seeking</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">0.05</td>
+<td align="right">0.09</td>
+<td align="right">0.51</td>
+<td align="right">0.61</td>
+<td align="right">-0.13</td>
+<td align="right">0.22</td>
+<td align="right">0.10</td>
+<td align="right">0.05</td>
+<td align="right">0.10</td>
+</tr>
+<tr class="odd">
+<td align="left">sensation_seeking</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">0.04</td>
+<td align="right">0.03</td>
+<td align="right">1.41</td>
+<td align="right">0.16</td>
+<td align="right">-0.01</td>
+<td align="right">0.09</td>
+<td align="right">0.08</td>
+<td align="right">0.09</td>
+<td align="right">0.08</td>
+</tr>
+<tr class="even">
+<td align="left">sensation_seeking</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">2.19</td>
+<td align="right">0.03</td>
+<td align="right">0.00</td>
+<td align="right">0.03</td>
+<td align="right">0.04</td>
+<td align="right">0.17</td>
+<td align="right">0.04</td>
+</tr>
+<tr class="odd">
+<td align="left">pos_urgency</td>
+<td align="left">~</td>
+<td align="left">age_c</td>
+<td align="right">-0.04</td>
+<td align="right">0.02</td>
+<td align="right">-2.30</td>
+<td align="right">0.02</td>
+<td align="right">-0.07</td>
+<td align="right">-0.01</td>
+<td align="right">-0.06</td>
+<td align="right">-0.14</td>
+<td align="right">-0.06</td>
+</tr>
+<tr class="even">
+<td align="left">pos_urgency</td>
+<td align="left">~</td>
+<td align="left">age_c2</td>
+<td align="right">0.01</td>
+<td align="right">0.01</td>
+<td align="right">1.16</td>
+<td align="right">0.24</td>
+<td align="right">-0.01</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">0.08</td>
+<td align="right">0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">pos_urgency</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">-0.02</td>
+<td align="right">0.11</td>
+<td align="right">-0.22</td>
+<td align="right">0.83</td>
+<td align="right">-0.25</td>
+<td align="right">0.20</td>
+<td align="right">-0.04</td>
+<td align="right">-0.02</td>
+<td align="right">-0.04</td>
+</tr>
+<tr class="even">
+<td align="left">pos_urgency</td>
+<td align="left">~</td>
+<td align="left">age_c:gender_c</td>
+<td align="right">0.01</td>
+<td align="right">0.03</td>
+<td align="right">0.17</td>
+<td align="right">0.86</td>
+<td align="right">-0.06</td>
+<td align="right">0.07</td>
+<td align="right">0.01</td>
+<td align="right">0.01</td>
+<td align="right">0.01</td>
+</tr>
+<tr class="odd">
+<td align="left">pos_urgency</td>
+<td align="left">~</td>
+<td align="left">age_c2:gender_c</td>
+<td align="right">0.02</td>
+<td align="right">0.01</td>
+<td align="right">1.20</td>
+<td align="right">0.23</td>
+<td align="right">-0.01</td>
+<td align="right">0.04</td>
+<td align="right">0.02</td>
+<td align="right">0.11</td>
+<td align="right">0.02</td>
+</tr>
+</tbody>
+</table>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-19-1.png" width="672"></p>
+</div>
+</div>
 </div>
 <div id="predicting-sexual-behavior" class="section level1">
 <h1 class="hasAnchor">
@@ -1527,21 +3772,21 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <p>The number of partners and frequency of sex is expected to be different between those who are in or not in long-term relationships.</p>
 <pre><code>#&gt;             
 #&gt;              TDS1 TDS2 yads yads_online &lt;NA&gt;
-#&gt;   0             2   48   17          37    0
-#&gt;   1-9           1    7   33          30    0
+#&gt;   0             2   48   17          35    0
+#&gt;   1-9           1    7   33          28    0
 #&gt;   10-19         0    2    9          20    0
 #&gt;   20-29         0    3    5          12    0
 #&gt;   30-39         1    1    3          11    0
-#&gt;   40 or more    1    0    6          30    0
-#&gt;   &lt;NA&gt;         34    4   11          18    1
+#&gt;   40 or more    1    0    6          27    0
+#&gt;   &lt;NA&gt;         34    4   11          12    1
 #&gt;            
 #&gt;             TDS1 TDS2 yads yads_online &lt;NA&gt;
-#&gt;   0            2   48   17          38    0
-#&gt;   1            3   10   29          56    0
-#&gt;   2            0    4   17          20    0
-#&gt;   3            1    3    9          16    0
+#&gt;   0            2   48   17          35    0
+#&gt;   1            3   10   29          54    0
+#&gt;   2            0    4   17          19    0
+#&gt;   3            1    3    9          15    0
 #&gt;   4 or more    0    0    9          14    0
-#&gt;   &lt;NA&gt;        33    0    3          14    1</code></pre>
+#&gt;   &lt;NA&gt;        33    0    3           8    1</code></pre>
 <p><img src="fsmi-cfa_files/figure-html/sesfsmiplot-1.png" width="768"></p>
 <div id="number-of-partners" class="section level2">
 <h2 class="hasAnchor">
@@ -1549,10 +3794,10 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <div id="fsmi-mate-seeking" class="section level3">
 <h3 class="hasAnchor">
 <a href="#fsmi-mate-seeking" class="anchor"></a>FSMI mate seeking</h3>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-14-1.png" width="384"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-21-1.png" width="384"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-14">Table 3: </span>FSMI Predicting number of partners among unpartnered college students; N obs. = 157</caption>
+<span id="tab:unnamed-chunk-21">Table 4: </span>FSMI Predicting number of partners among unpartnered college students; N obs. = 153</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -1572,36 +3817,36 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">fsmi_mate</td>
-<td align="right">0.20</td>
+<td align="right">0.18</td>
 <td align="right">0.07</td>
-<td align="right">2.77</td>
+<td align="right">2.48</td>
 <td align="right">0.01</td>
-<td align="right">0.06</td>
-<td align="right">0.34</td>
-<td align="right">0.24</td>
-<td align="right">0.24</td>
-<td align="right">0.24</td>
+<td align="right">0.04</td>
+<td align="right">0.33</td>
+<td align="right">0.22</td>
+<td align="right">0.21</td>
+<td align="right">0.21</td>
 </tr>
 <tr class="even">
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">-0.53</td>
+<td align="right">-0.52</td>
 <td align="right">0.18</td>
-<td align="right">-2.89</td>
+<td align="right">-2.83</td>
 <td align="right">0.00</td>
 <td align="right">-0.88</td>
-<td align="right">-0.17</td>
-<td align="right">-0.53</td>
+<td align="right">-0.16</td>
+<td align="right">-0.52</td>
 <td align="right">-0.23</td>
-<td align="right">-0.51</td>
+<td align="right">-0.50</td>
 </tr>
 </tbody>
 </table>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-14-2.png" width="384"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-21-2.png" width="384"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-14">Table 3: </span>FSMI Predicting number of partners among all college participants with SES responses; N obs. = 214</caption>
+<span id="tab:unnamed-chunk-21">Table 4: </span>FSMI Predicting number of partners among all college participants with SES responses; N obs. = 207</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -1621,29 +3866,29 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">fsmi_mate</td>
-<td align="right">0.17</td>
+<td align="right">0.15</td>
 <td align="right">0.05</td>
-<td align="right">3.33</td>
+<td align="right">2.98</td>
 <td align="right">0</td>
-<td align="right">0.07</td>
-<td align="right">0.26</td>
+<td align="right">0.05</td>
 <td align="right">0.25</td>
-<td align="right">0.24</td>
-<td align="right">0.24</td>
+<td align="right">0.22</td>
+<td align="right">0.22</td>
+<td align="right">0.22</td>
 </tr>
 <tr class="even">
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">-0.51</td>
-<td align="right">0.16</td>
-<td align="right">-3.20</td>
-<td align="right">0</td>
-<td align="right">-0.82</td>
-<td align="right">-0.20</td>
-<td align="right">-0.51</td>
-<td align="right">-0.22</td>
 <td align="right">-0.49</td>
+<td align="right">0.16</td>
+<td align="right">-3.09</td>
+<td align="right">0</td>
+<td align="right">-0.80</td>
+<td align="right">-0.18</td>
+<td align="right">-0.49</td>
+<td align="right">-0.22</td>
+<td align="right">-0.48</td>
 </tr>
 </tbody>
 </table>
@@ -1651,10 +3896,10 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <div id="k-srq-sexual-relationship" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-sexual-relationship" class="anchor"></a>K-SRQ sexual relationship</h3>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-15-1.png" width="384"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-22-1.png" width="384"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-15">Table 4: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 140</caption>
+<span id="tab:unnamed-chunk-22">Table 5: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 136</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -1674,9 +3919,9 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="right">0.33</td>
+<td align="right">0.32</td>
 <td align="right">0.09</td>
-<td align="right">3.69</td>
+<td align="right">3.63</td>
 <td align="right">0.00</td>
 <td align="right">0.15</td>
 <td align="right">0.50</td>
@@ -1688,22 +3933,22 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">-0.41</td>
+<td align="right">-0.40</td>
 <td align="right">0.19</td>
-<td align="right">-2.18</td>
+<td align="right">-2.11</td>
 <td align="right">0.03</td>
 <td align="right">-0.78</td>
-<td align="right">-0.04</td>
-<td align="right">-0.41</td>
-<td align="right">-0.19</td>
-<td align="right">-0.41</td>
+<td align="right">-0.03</td>
+<td align="right">-0.40</td>
+<td align="right">-0.18</td>
+<td align="right">-0.40</td>
 </tr>
 </tbody>
 </table>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-15-2.png" width="384"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-22-2.png" width="384"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-15">Table 4: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260</caption>
+<span id="tab:unnamed-chunk-22">Table 5: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 253</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -1723,12 +3968,12 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="right">0.35</td>
+<td align="right">0.36</td>
 <td align="right">0.07</td>
-<td align="right">5.05</td>
+<td align="right">5.03</td>
 <td align="right">0.00</td>
 <td align="right">0.22</td>
-<td align="right">0.49</td>
+<td align="right">0.50</td>
 <td align="right">0.38</td>
 <td align="right">0.34</td>
 <td align="right">0.34</td>
@@ -1737,28 +3982,28 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">-0.06</td>
+<td align="right">-0.05</td>
 <td align="right">0.15</td>
-<td align="right">-0.42</td>
-<td align="right">0.67</td>
-<td align="right">-0.35</td>
-<td align="right">0.22</td>
-<td align="right">-0.06</td>
-<td align="right">-0.03</td>
-<td align="right">-0.06</td>
+<td align="right">-0.34</td>
+<td align="right">0.73</td>
+<td align="right">-0.34</td>
+<td align="right">0.24</td>
+<td align="right">-0.05</td>
+<td align="right">-0.02</td>
+<td align="right">-0.04</td>
 </tr>
 <tr class="odd">
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">age_c</td>
-<td align="right">0.21</td>
+<td align="right">0.22</td>
 <td align="right">0.03</td>
-<td align="right">6.06</td>
+<td align="right">6.18</td>
 <td align="right">0.00</td>
-<td align="right">0.14</td>
+<td align="right">0.15</td>
 <td align="right">0.28</td>
-<td align="right">0.21</td>
-<td align="right">0.42</td>
+<td align="right">0.22</td>
+<td align="right">0.43</td>
 <td align="right">0.19</td>
 </tr>
 </tbody>
@@ -1774,12 +4019,12 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
 #&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
-#&gt; fsmi_sex_feq_sem      152         121.20                              
-#&gt; fsmi_sex_feq_sem_null 154         125.38     0.5786 0.83489     0.3805</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-16-1.png" width="576"></p>
+#&gt; fsmi_sex_feq_sem      152         119.23                              
+#&gt; fsmi_sex_feq_sem_null 154         125.13    0.80987 0.82805     0.3063</code></pre>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-23-1.png" width="576"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-16">Table 5: </span>FSMI mate-seeking predicting number of sexual encounters among all college participants with SES responses; N obs. = 203</caption>
+<span id="tab:unnamed-chunk-23">Table 6: </span>FSMI mate-seeking predicting number of sexual encounters among all college participants with SES responses; N obs. = 196</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -1803,15 +4048,15 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">fsmi_mate</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">-0.08</td>
+<td align="right">-0.09</td>
 <td align="right">0.07</td>
-<td align="right">-1.13</td>
-<td align="right">0.26</td>
-<td align="right">-0.21</td>
-<td align="right">0.06</td>
-<td align="right">-0.09</td>
-<td align="right">-0.09</td>
-<td align="right">-0.09</td>
+<td align="right">-1.34</td>
+<td align="right">0.18</td>
+<td align="right">-0.23</td>
+<td align="right">0.04</td>
+<td align="right">-0.11</td>
+<td align="right">-0.11</td>
+<td align="right">-0.11</td>
 </tr>
 <tr class="even">
 <td align="left">ordered_sex_freq</td>
@@ -1819,15 +4064,15 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">gender_c</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">-0.48</td>
+<td align="right">-0.49</td>
 <td align="right">0.19</td>
-<td align="right">-2.48</td>
+<td align="right">-2.52</td>
 <td align="right">0.01</td>
-<td align="right">-0.86</td>
-<td align="right">-0.10</td>
-<td align="right">-0.48</td>
+<td align="right">-0.87</td>
+<td align="right">-0.11</td>
+<td align="right">-0.49</td>
 <td align="right">-0.22</td>
-<td align="right">-0.47</td>
+<td align="right">-0.48</td>
 </tr>
 <tr class="odd">
 <td align="left">ordered_sex_freq</td>
@@ -1835,15 +4080,15 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">fsmi_mate</td>
 <td align="right">2</td>
 <td align="right">2</td>
-<td align="right">-0.03</td>
+<td align="right">-0.04</td>
 <td align="right">0.15</td>
-<td align="right">-0.20</td>
-<td align="right">0.84</td>
-<td align="right">-0.32</td>
-<td align="right">0.26</td>
-<td align="right">-0.03</td>
-<td align="right">-0.03</td>
-<td align="right">-0.03</td>
+<td align="right">-0.30</td>
+<td align="right">0.77</td>
+<td align="right">-0.33</td>
+<td align="right">0.24</td>
+<td align="right">-0.05</td>
+<td align="right">-0.05</td>
+<td align="right">-0.05</td>
 </tr>
 <tr class="even">
 <td align="left">ordered_sex_freq</td>
@@ -1855,8 +4100,8 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">0.35</td>
 <td align="right">0.00</td>
 <td align="right">1.00</td>
-<td align="right">-0.69</td>
-<td align="right">0.69</td>
+<td align="right">-0.70</td>
+<td align="right">0.70</td>
 <td align="right">0.00</td>
 <td align="right">0.00</td>
 <td align="right">0.00</td>
@@ -1870,14 +4115,14 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
 #&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)   
-#&gt; ksrq_sex_freq_sem      10         10.972                                 
-#&gt; ksrq_sex_freq_null_sem 12         45.225     10.344 0.97559    0.00124 **
+#&gt; ksrq_sex_freq_sem      10         11.151                                 
+#&gt; ksrq_sex_freq_null_sem 12         41.051     9.0358 0.97041   0.002507 **
 #&gt; ---
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-17-1.png" width="576"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-24-1.png" width="576"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-17">Table 6: </span>K-SRQ sexual relationships predicting number of sexual encounters among all college participants with SES responses; N obs. = 203</caption>
+<span id="tab:unnamed-chunk-24">Table 7: </span>K-SRQ sexual relationships predicting number of sexual encounters among all college participants with SES responses; N obs. = 196</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -1901,15 +4146,15 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">k_srq_sexual_relationships</td>
 <td align="right">1</td>
 <td align="right">1</td>
-<td align="right">0.39</td>
+<td align="right">0.37</td>
 <td align="right">0.10</td>
-<td align="right">4.10</td>
+<td align="right">3.84</td>
 <td align="right">0.00</td>
-<td align="right">0.20</td>
-<td align="right">0.58</td>
-<td align="right">0.36</td>
-<td align="right">0.35</td>
-<td align="right">0.35</td>
+<td align="right">0.18</td>
+<td align="right">0.56</td>
+<td align="right">0.34</td>
+<td align="right">0.34</td>
+<td align="right">0.34</td>
 </tr>
 <tr class="even">
 <td align="left">ordered_sex_freq</td>
@@ -1919,13 +4164,13 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">1</td>
 <td align="right">-0.31</td>
 <td align="right">0.20</td>
-<td align="right">-1.54</td>
+<td align="right">-1.56</td>
 <td align="right">0.12</td>
 <td align="right">-0.70</td>
 <td align="right">0.08</td>
 <td align="right">-0.31</td>
 <td align="right">-0.14</td>
-<td align="right">-0.30</td>
+<td align="right">-0.31</td>
 </tr>
 <tr class="odd">
 <td align="left">ordered_sex_freq</td>
@@ -1934,11 +4179,11 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">2</td>
 <td align="right">2</td>
 <td align="right">0.17</td>
-<td align="right">0.15</td>
-<td align="right">1.08</td>
-<td align="right">0.28</td>
-<td align="right">-0.14</td>
-<td align="right">0.47</td>
+<td align="right">0.16</td>
+<td align="right">1.02</td>
+<td align="right">0.31</td>
+<td align="right">-0.15</td>
+<td align="right">0.48</td>
 <td align="right">0.13</td>
 <td align="right">0.13</td>
 <td align="right">0.13</td>
@@ -1949,32 +4194,32 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">gender_c</td>
 <td align="right">2</td>
 <td align="right">2</td>
-<td align="right">0.17</td>
+<td align="right">0.15</td>
 <td align="right">0.35</td>
-<td align="right">0.48</td>
-<td align="right">0.63</td>
-<td align="right">-0.51</td>
-<td align="right">0.85</td>
-<td align="right">0.17</td>
-<td align="right">0.08</td>
-<td align="right">0.17</td>
+<td align="right">0.41</td>
+<td align="right">0.68</td>
+<td align="right">-0.55</td>
+<td align="right">0.84</td>
+<td align="right">0.15</td>
+<td align="right">0.07</td>
+<td align="right">0.15</td>
 </tr>
 </tbody>
 </table>
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
 #&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
-#&gt; ksrq_sex_freq_all_sem       8         27.180                              
-#&gt; ksrq_sex_freq_all_null_sem  9         99.823      39.75       1  2.887e-10
+#&gt; ksrq_sex_freq_all_sem       8         25.837                              
+#&gt; ksrq_sex_freq_all_null_sem  9         95.712     38.542       1  5.359e-10
 #&gt;                               
 #&gt; ksrq_sex_freq_all_sem         
 #&gt; ksrq_sex_freq_all_null_sem ***
 #&gt; ---
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-18-1.png" width="576"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-25-1.png" width="576"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-18">Table 7: </span>K-SRQ sexual relationships predicting number of sexual encounters among all participants with SES responses; N obs. = 253</caption>
+<span id="tab:unnamed-chunk-25">Table 8: </span>K-SRQ sexual relationships predicting number of sexual encounters among all participants with SES responses; N obs. = 246</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -1996,27 +4241,27 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">k_srq_sexual_relationships</td>
 <td align="right">0.42</td>
 <td align="right">0.06</td>
-<td align="right">6.76</td>
+<td align="right">6.56</td>
 <td align="right">0.00</td>
-<td align="right">0.30</td>
+<td align="right">0.29</td>
 <td align="right">0.54</td>
 <td align="right">0.40</td>
-<td align="right">0.35</td>
-<td align="right">0.35</td>
+<td align="right">0.34</td>
+<td align="right">0.34</td>
 </tr>
 <tr class="even">
 <td align="left">ordered_sex_freq</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">0.15</td>
-<td align="right">0.16</td>
-<td align="right">0.94</td>
-<td align="right">0.35</td>
-<td align="right">-0.16</td>
-<td align="right">0.46</td>
-<td align="right">0.15</td>
-<td align="right">0.06</td>
 <td align="right">0.13</td>
+<td align="right">0.16</td>
+<td align="right">0.85</td>
+<td align="right">0.39</td>
+<td align="right">-0.18</td>
+<td align="right">0.44</td>
+<td align="right">0.13</td>
+<td align="right">0.06</td>
+<td align="right">0.12</td>
 </tr>
 <tr class="odd">
 <td align="left">ordered_sex_freq</td>
@@ -2024,13 +4269,13 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">age_c</td>
 <td align="right">0.26</td>
 <td align="right">0.04</td>
-<td align="right">6.64</td>
+<td align="right">6.74</td>
 <td align="right">0.00</td>
-<td align="right">0.18</td>
-<td align="right">0.33</td>
+<td align="right">0.19</td>
+<td align="right">0.34</td>
 <td align="right">0.26</td>
-<td align="right">0.49</td>
-<td align="right">0.22</td>
+<td align="right">0.50</td>
+<td align="right">0.23</td>
 </tr>
 </tbody>
 </table>
@@ -2041,7 +4286,7 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <a href="#using-both-k-srq-sexual-relationship-and-fsmi-mate-seeking-scales" class="anchor"></a>Using both K-SRQ sexual relationship and FSMI mate-seeking scales</h2>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-19">Table 8: </span>K-SRQ sexual relationships and FSMI mate-seeking predicting number of partners among unpartnered college students; N obs. = 132</caption>
+<span id="tab:unnamed-chunk-26">Table 9: </span>K-SRQ sexual relationships and FSMI mate-seeking predicting number of partners among unpartnered college students; N obs. = 128</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -2061,27 +4306,27 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">fsmi_mate</td>
+<td align="right">0.12</td>
+<td align="right">0.08</td>
+<td align="right">1.49</td>
 <td align="right">0.14</td>
-<td align="right">0.08</td>
-<td align="right">1.77</td>
-<td align="right">0.08</td>
-<td align="right">-0.01</td>
-<td align="right">0.29</td>
-<td align="right">0.18</td>
-<td align="right">0.18</td>
-<td align="right">0.18</td>
+<td align="right">-0.04</td>
+<td align="right">0.28</td>
+<td align="right">0.15</td>
+<td align="right">0.15</td>
+<td align="right">0.15</td>
 </tr>
 <tr class="even">
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="right">0.27</td>
+<td align="right">0.28</td>
 <td align="right">0.10</td>
 <td align="right">2.68</td>
 <td align="right">0.01</td>
 <td align="right">0.07</td>
-<td align="right">0.47</td>
-<td align="right">0.30</td>
+<td align="right">0.48</td>
+<td align="right">0.31</td>
 <td align="right">0.30</td>
 <td align="right">0.30</td>
 </tr>
@@ -2089,21 +4334,21 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">ordered_num_partner</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">-0.39</td>
+<td align="right">-0.38</td>
 <td align="right">0.20</td>
-<td align="right">-1.97</td>
-<td align="right">0.05</td>
-<td align="right">-0.78</td>
-<td align="right">0.00</td>
-<td align="right">-0.39</td>
-<td align="right">-0.18</td>
-<td align="right">-0.39</td>
+<td align="right">-1.91</td>
+<td align="right">0.06</td>
+<td align="right">-0.77</td>
+<td align="right">0.01</td>
+<td align="right">-0.38</td>
+<td align="right">-0.17</td>
+<td align="right">-0.38</td>
 </tr>
 </tbody>
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-19">Table 8: </span>K-SRQ sexual relationships and FSMI mate-seeking predicting number of sexual encounters unpartnered college students; N obs. = 132</caption>
+<span id="tab:unnamed-chunk-26">Table 9: </span>K-SRQ sexual relationships and FSMI mate-seeking predicting number of sexual encounters unpartnered college students; N obs. = 128</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -2123,27 +4368,27 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">ordered_sex_freq</td>
 <td align="left">~</td>
 <td align="left">fsmi_mate</td>
-<td align="right">-0.20</td>
+<td align="right">-0.21</td>
 <td align="right">0.08</td>
-<td align="right">-2.46</td>
+<td align="right">-2.57</td>
 <td align="right">0.01</td>
-<td align="right">-0.35</td>
-<td align="right">-0.04</td>
-<td align="right">-0.25</td>
-<td align="right">-0.24</td>
-<td align="right">-0.24</td>
+<td align="right">-0.37</td>
+<td align="right">-0.05</td>
+<td align="right">-0.27</td>
+<td align="right">-0.26</td>
+<td align="right">-0.26</td>
 </tr>
 <tr class="even">
 <td align="left">ordered_sex_freq</td>
 <td align="left">~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="right">0.34</td>
+<td align="right">0.35</td>
 <td align="right">0.10</td>
-<td align="right">3.40</td>
+<td align="right">3.32</td>
 <td align="right">0.00</td>
-<td align="right">0.15</td>
-<td align="right">0.54</td>
-<td align="right">0.39</td>
+<td align="right">0.14</td>
+<td align="right">0.55</td>
+<td align="right">0.40</td>
 <td align="right">0.39</td>
 <td align="right">0.39</td>
 </tr>
@@ -2153,13 +4398,13 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">gender_c</td>
 <td align="right">-0.34</td>
 <td align="right">0.21</td>
-<td align="right">-1.60</td>
+<td align="right">-1.62</td>
 <td align="right">0.11</td>
 <td align="right">-0.75</td>
-<td align="right">0.08</td>
+<td align="right">0.07</td>
 <td align="right">-0.34</td>
-<td align="right">-0.15</td>
-<td align="right">-0.33</td>
+<td align="right">-0.16</td>
+<td align="right">-0.34</td>
 </tr>
 </tbody>
 </table>
@@ -2177,14 +4422,14 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.bentler.2001")
 #&gt; 
 #&gt;                               Df    AIC    BIC  Chisq Chisq diff Df diff
-#&gt; ksrq_protection_adol_sem       8 6024.3 6078.1 27.700                   
-#&gt; ksrq_protection_adol_null_sem  9 6023.3 6073.3 28.735    0.86668       1
+#&gt; ksrq_protection_adol_sem       8 5864.8 5918.1 28.107                   
+#&gt; ksrq_protection_adol_null_sem  9 5863.5 5913.1 28.876    0.65762       1
 #&gt;                               Pr(&gt;Chisq)
 #&gt; ksrq_protection_adol_sem                
-#&gt; ksrq_protection_adol_null_sem     0.3519</code></pre>
+#&gt; ksrq_protection_adol_null_sem     0.4174</code></pre>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-20">Table 9: </span>K-SRQ sexual relationships predicting use of protection among adolescents; N obs. = 346</caption>
+<span id="tab:unnamed-chunk-27">Table 10: </span>K-SRQ sexual relationships predicting use of protection among adolescents; N obs. = 333</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -2204,29 +4449,29 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">continuous_use_protection</td>
 <td align="left">~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="right">0.23</td>
+<td align="right">0.20</td>
 <td align="right">0.24</td>
-<td align="right">0.96</td>
-<td align="right">0.34</td>
-<td align="right">-0.24</td>
-<td align="right">0.70</td>
-<td align="right">0.22</td>
-<td align="right">0.10</td>
-<td align="right">0.10</td>
+<td align="right">0.83</td>
+<td align="right">0.41</td>
+<td align="right">-0.28</td>
+<td align="right">0.68</td>
+<td align="right">0.20</td>
+<td align="right">0.09</td>
+<td align="right">0.09</td>
 </tr>
 <tr class="even">
 <td align="left">continuous_use_protection</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">0.64</td>
+<td align="right">0.61</td>
 <td align="right">0.37</td>
-<td align="right">1.74</td>
-<td align="right">0.08</td>
-<td align="right">-0.08</td>
-<td align="right">1.36</td>
-<td align="right">0.64</td>
+<td align="right">1.63</td>
+<td align="right">0.10</td>
+<td align="right">-0.12</td>
+<td align="right">1.33</td>
+<td align="right">0.61</td>
 <td align="right">0.13</td>
-<td align="right">0.28</td>
+<td align="right">0.27</td>
 </tr>
 <tr class="odd">
 <td align="left">continuous_use_protection</td>
@@ -2234,8 +4479,8 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">age_c</td>
 <td align="right">-0.10</td>
 <td align="right">0.10</td>
-<td align="right">-0.98</td>
-<td align="right">0.33</td>
+<td align="right">-0.95</td>
+<td align="right">0.34</td>
 <td align="right">-0.30</td>
 <td align="right">0.10</td>
 <td align="right">-0.10</td>
@@ -2251,14 +4496,14 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.bentler.2001")
 #&gt; 
 #&gt;                               Df    AIC    BIC  Chisq Chisq diff Df diff
-#&gt; fsmi_ksrq_protection_sem      42 5799.5 5902.8 82.741                   
-#&gt; fsmi_ksrq_protection_null_sem 44 5796.5 5893.5 83.699    0.75282       2
+#&gt; fsmi_ksrq_protection_sem      42 5639.2 5741.5 81.324                   
+#&gt; fsmi_ksrq_protection_null_sem 44 5635.9 5732.0 82.016    0.52972       2
 #&gt;                               Pr(&gt;Chisq)
 #&gt; fsmi_ksrq_protection_sem                
-#&gt; fsmi_ksrq_protection_null_sem     0.6863</code></pre>
+#&gt; fsmi_ksrq_protection_null_sem     0.7673</code></pre>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-21">Table 10: </span>K-SRQ sexual relationships and FSMI mate-seeking predicting number of partners among unpartnered college students; N obs. = 169</caption>
+<span id="tab:unnamed-chunk-28">Table 11: </span>K-SRQ sexual relationships and FSMI mate-seeking predicting number of partners among unpartnered college students; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -2278,29 +4523,29 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">continuous_use_protection</td>
 <td align="left">~</td>
 <td align="left">fsmi_mate</td>
-<td align="right">-0.09</td>
-<td align="right">0.26</td>
-<td align="right">-0.35</td>
-<td align="right">0.73</td>
-<td align="right">-0.61</td>
-<td align="right">0.42</td>
 <td align="right">-0.10</td>
-<td align="right">-0.04</td>
-<td align="right">-0.04</td>
+<td align="right">0.27</td>
+<td align="right">-0.38</td>
+<td align="right">0.71</td>
+<td align="right">-0.63</td>
+<td align="right">0.43</td>
+<td align="right">-0.11</td>
+<td align="right">-0.05</td>
+<td align="right">-0.05</td>
 </tr>
 <tr class="even">
 <td align="left">continuous_use_protection</td>
 <td align="left">~</td>
 <td align="left">k_srq_sexual_relationships</td>
-<td align="right">0.32</td>
+<td align="right">0.27</td>
 <td align="right">0.35</td>
-<td align="right">0.90</td>
-<td align="right">0.37</td>
-<td align="right">-0.38</td>
-<td align="right">1.01</td>
-<td align="right">0.28</td>
-<td align="right">0.13</td>
-<td align="right">0.13</td>
+<td align="right">0.77</td>
+<td align="right">0.44</td>
+<td align="right">-0.42</td>
+<td align="right">0.96</td>
+<td align="right">0.24</td>
+<td align="right">0.11</td>
+<td align="right">0.11</td>
 </tr>
 <tr class="odd">
 <td align="left">continuous_use_protection</td>
@@ -2308,13 +4553,13 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">gender_c</td>
 <td align="right">0.77</td>
 <td align="right">0.44</td>
-<td align="right">1.76</td>
+<td align="right">1.73</td>
 <td align="right">0.08</td>
-<td align="right">-0.09</td>
-<td align="right">1.63</td>
+<td align="right">-0.10</td>
+<td align="right">1.64</td>
 <td align="right">0.77</td>
 <td align="right">0.16</td>
-<td align="right">0.35</td>
+<td align="right">0.34</td>
 </tr>
 </tbody>
 </table>
@@ -2364,8 +4609,17 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 </li>
       <li>
 <a href="#k-srq">K-SRQ</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#k-srq-and-age">K-SRQ and age</a></li>
+<li><a href="#measurement-invariance">Measurement invariance</a></li>
+      <li><a href="#misc">Misc</a></li>
+      <li><a href="#k-srq-and-age">K-SRQ and age</a></li>
+      <li><a href="#k-srq-pds">K-SRQ PDS</a></li>
       <li><a href="#k-srq-discussion">K-SRQ Discussion</a></li>
+      </ul>
+</li>
+      <li>
+<a href="#urgency-premeditation-perseverence-sensation-seeking">Urgency, premeditation, perseverence, sensation seeking</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#measurement-invariance-1">Measurement invariance</a></li>
+      <li><a href="#upps-p-and-age">UPPS-P and age</a></li>
       </ul>
 </li>
       </ul>
