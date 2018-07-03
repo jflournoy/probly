@@ -33,7 +33,14 @@ library(future)
 library(listenv)
 data('splt_dev_and_demog', package = 'probly')
 data('splt', package = 'probly')
+data('splt_rl_betas', package = 'probly')
 splt <- splt[!is.na(splt$pressed_r),]
+splt_dev_and_demog <- dplyr::filter(splt_dev_and_demog,
+                                    age < 30)
+save_out_dir <- '~/code_new/social-motives-rl-writeup/rda/'
+if(!dir.exists(save_out_dir)){
+    dir.create(save_out_dir)
+}
 
 task_with_age <- dplyr::mutate(
     dplyr::left_join(
@@ -47,8 +54,233 @@ task_with_age <- dplyr::mutate(
     PDS_mean_score_c = PDS_mean_score - 
         mean(PDS_mean_score, na.rm = T),
     gender_c = gender - .5)
+library(dplyr)
+splt_rl_betas_w <- dplyr::select(splt_rl_betas, mean, parameter, id, sample, condition, contrasted) %>%
+    dplyr::mutate(mean = dplyr::case_when(
+        !contrasted & parameter == 'b' ~ mean,
+        !contrasted & parameter %in% c('ep_prm', 'xi_prm') ~ qnorm(mean),
+        !contrasted & parameter == 'rho_prm' ~ log(mean),
+        TRUE ~ mean)) %>%
+    tidyr::spread(parameter, mean)
 
-learning_model <- readRDS('/data/jflournoy/split/probly/splt-tght-rl_2_level-1522962.RDS')
+condition_labels <- c(
+    'HngT' = 'Hungry/Thirsty',
+    'DtnL' = 'Dating/Looking',
+    'PplU' = 'Popular/Unpopular',
+    'DtnL-HngT' = 'Dating/Looking - Hungry/Thirsty',
+    'PplU-HngT' = 'Popular/Unpopular - Hungry/Thirsty'
+)
+
+betas_with_age_w <- dplyr::left_join(task_with_age, splt_rl_betas_w, by = c('id')) %>%
+    dplyr::mutate(agegroup = ifelse(grepl('yads', sample.x), 'College\nstudents', 'Adolescents'),
+                  condition = factor(condition, levels = condition_labels))
+betas_with_age <- dplyr::left_join(task_with_age, splt_rl_betas, by = c('id')) %>%
+    dplyr::mutate(mean = dplyr::case_when(
+        !contrasted & parameter == 'b' ~ mean,
+        !contrasted & parameter %in% c('ep_prm', 'xi_prm') ~ qnorm(mean),
+        !contrasted & parameter == 'rho_prm' ~ log(mean),
+        TRUE ~ mean),
+        agegroup = ifelse(grepl('yads', sample.x), 'College\nstudents', 'Adolescents'),
+        parameter = factor(parameter, levels = c("ep_prm", "rho_prm", "xi_prm", "b")),
+        condition = factor(condition, levels = condition_labels))
+```
+
+```{r}
+apal <- c("#b71c00",
+          "#e44afc",
+          "#2f9100",
+          "#160055",
+          "#ff578f",
+          "#015eaa")
+sample_colors <- apal[3:4]
+linetype_scale <- ggplot2::scale_linetype_manual(breaks = levels(betas_with_age$condition)[1:3], 
+                                                 values = c('solid',
+                                                            'longdash',
+                                                            'dashed')) 
+linetype_scale_cont <- ggplot2::scale_linetype_manual(breaks = levels(betas_with_age$condition)[4:5], 
+                                                      values = c('longdash', 'dashed'),
+                                                      labels = as.vector(levels(betas_with_age$condition)[2:3])) 
+legend_width <- .75
+parameter_lookup <- c(
+    ep_prm = 'epsilon',
+    rho_prm = 'rho',
+    xi_prm = 'xi',
+    b = 'b'
+)
+
+parameter_lookup_latex <- c(
+    ep_prm = '$\\epsilon$',
+    rho_prm = '$\\rho$',
+    xi_prm = '$\\xi$',
+    b = '$b$'
+)
+
+make_devpar_plot <- function(adf, x = 'age', y = 'mean'){
+    ggplot2::ggplot(adf,
+                    ggplot2::aes_string(x = x, y = y, color = 'agegroup')) +
+        ggplot2::geom_point(alpha = .1, position = ggplot2::position_jitter(width = .15, height = 0)) + 
+        ggplot2::geom_smooth(#ggplot2::aes(group = agegroup),
+                             color = '#999999',
+                             method = 'gam', formula = y ~ s(x, fx = T, k = 4),
+                             size = 2, alpha = .5) + 
+        ggplot2::geom_smooth(ggplot2::aes(linetype = condition,
+                                          group = condition),
+                             color = '#333333',
+                             method = 'gam', formula = y ~ s(x, fx = T, k = 4),
+                             size = .5, se = F, alpha = .2) + 
+        ggplot2::labs(linetype = 'Condition') +
+        ggplot2::scale_color_manual(name = 'Age group', 
+                                    values = sample_colors) +
+        ggplot2::guides(linetype = ggplot2::guide_legend(override.aes = list(color = 'black')),
+                        color = ggplot2::guide_legend(override.aes = list(alpha = 1))) + 
+        ggplot2::theme(legend.key.width = ggplot2::unit(legend_width, units = 'cm')) + 
+        ggplot2::facet_wrap(~ parameter, scales = 'free', 
+                            labeller = ggplot2::labeller(
+                                parameter = ggplot2::as_labeller(parameter_lookup,
+                                                                 default = ggplot2::label_parsed)))
+}
+
+ggplot2::theme_set(ggplot2::theme_minimal())
+age_par_plot <- make_devpar_plot(filter(betas_with_age, condition != 'Hungry/Thirsty - Hungry/Thirsty',
+                                        !contrasted)) +
+    linetype_scale + 
+    ggplot2::labs(x = 'Age', y = 'Parameter value\n(on unconstrained scale)')
+
+age_par_con_plot <- make_devpar_plot(filter(betas_with_age, condition != 'Hungry/Thirsty - Hungry/Thirsty',
+                       contrasted)) + 
+    linetype_scale_cont + 
+    ggplot2::labs(x = 'Age', y = 'Parameter value\ndifference from Hungry/Thirsty')
+
+puberty_par_plot <- make_devpar_plot(filter(betas_with_age, 
+                                            condition != 'Hungry/Thirsty - Hungry/Thirsty',
+                                            !contrasted),
+                                     x = 'PDS_mean_score') +
+    linetype_scale + 
+    ggplot2::labs(x = 'Pubertal development scale', y = 'Parameter value\n(on unconstrained scale)')
+
+puberty_par_con_plot <- make_devpar_plot(filter(betas_with_age, 
+                                                condition != 'Hungry/Thirsty - Hungry/Thirsty',
+                                                contrasted),
+                                         x = 'PDS_mean_score') + 
+    linetype_scale_cont + 
+    ggplot2::labs(x = 'Pubertal development scale', y = 'Parameter value\ndifference from Hungry/Thirsty')
+```
+
+```{r ageparplots, fig.width=5.875, fig.height=4}
+print(age_par_plot)
+```
+
+```{r ageparconplots, fig.width=5.875, fig.height=4}
+print(age_par_con_plot)
+```
+
+```{r pubertyparplots, fig.width=5.875, fig.height=4}
+print(puberty_par_plot)
+```
+
+```{r pubertyparconplots, fig.width=5.875, fig.height=4}
+print(puberty_par_con_plot)
+```
+
+
+
+```{r somestats}
+betas_with_age_w$age_c2 <- betas_with_age_w$age_c^2
+
+stdCoef.merMod <- function(object) {
+  sdy <- sd(lme4::getME(object,"y"))
+  sdx <- apply(lme4::getME(object,"X"), 2, sd)
+  sc <- lme4::fixef(object)*sdx/sdy
+  se.fixef <- coef(summary(object))[,"Std. Error"]
+  se <- se.fixef*sdx/sdy
+  return(data.frame(stdcoef=sc, stdse=se, stdt = sc / se))
+}
+
+write_age_coef <- function(stddf, rowname = 'age_c'){
+    printrow <- round(stddf[rowname, ], 2)
+    sprintf('$\\beta = %0.2f, \\text{SE} = %0.2f, t = %0.2f$', printrow[1], printrow[2], printrow[3])
+}
+
+mlm_std_beta_table <- function(outcomelist, xstring, adf_adol, adf_col, adf_all, latex_par = T){
+    table_rows <- lapply(outcomelist, function(ystring){
+        aform <- as.formula(paste0(ystring, ' ~ ', xstring, ' + (1 | id)'))
+        adolmod <- lme4::lmer(aform, data = adf_adol, REML = F)
+        colmod <- lme4::lmer(aform, data = adf_col, REML = F)
+        allmod <- lme4::lmer(aform, data = adf_all, REML = F)
+        std_adol_xvar <- stdCoef.merMod(adolmod)[xstring,]
+        std_col_xvar <- stdCoef.merMod(colmod)[xstring,]
+        std_all_xvar <- stdCoef.merMod(allmod)[xstring,]
+        std_df <- dplyr::bind_rows('Adolescent' = std_adol_xvar, 
+                                   'College' = std_col_xvar,
+                                   'All' = std_all_xvar,
+                                   .id = 'Sample')
+        return(std_df)
+    })
+    names(table_rows) <- outcomelist
+    table_full <- dplyr::bind_rows(table_rows, .id = 'Parameter')
+    if(latex_par){
+        table_full$Parameter <- parameter_lookup_latex[table_full$Parameter]
+    }
+    return(table_full)
+}
+
+outcomelist <- list('ep_prm', 'rho_prm', 'xi_prm', 'b')
+
+adf_adol <- betas_with_age_w[!betas_with_age_w$contrasted &
+                                 !grepl('yads', betas_with_age_w$sample.x), ]
+adf_col <- betas_with_age_w[!betas_with_age_w$contrasted &
+                                grepl('yads', betas_with_age_w$sample.x), ]
+adf_all <- betas_with_age_w[!betas_with_age_w$contrasted, ]
+adf_adol_con <- betas_with_age_w[betas_with_age_w$contrasted & 
+                                     betas_with_age_w$condition != 'Hungry/Thirsty - Hungry/Thirsty' &
+                                     !grepl('yads', betas_with_age_w$sample.x), ]
+adf_col_con <- betas_with_age_w[betas_with_age_w$contrasted & 
+                                    betas_with_age_w$condition != 'Hungry/Thirsty - Hungry/Thirsty' &
+                                    grepl('yads', betas_with_age_w$sample.x), ]
+adf_all_con <- betas_with_age_w[betas_with_age_w$contrasted & 
+                                    betas_with_age_w$condition != 'Hungry/Thirsty - Hungry/Thirsty', ]
+
+
+age_param_betas_table <- mlm_std_beta_table(
+    outcomelist,
+    xstring = 'age_c',
+    adf_adol = adf_adol,
+    adf_col = adf_col,
+    adf_all = adf_all)
+
+pds_param_betas_table <- mlm_std_beta_table(
+    outcomelist,
+    xstring = 'PDS_mean_score_c',
+    adf_adol = adf_adol,
+    adf_col = adf_col,
+    adf_all = adf_all)
+
+age_param_con_betas_table <- mlm_std_beta_table(
+    outcomelist,
+    xstring = 'age_c',
+    adf_adol = adf_adol_con,
+    adf_col = adf_col_con,
+    adf_all = adf_all_con)
+
+pds_param_con_betas_table <- mlm_std_beta_table(
+    outcomelist,
+    xstring = 'PDS_mean_score_c',
+    adf_adol = adf_adol_con,
+    adf_col = adf_col_con,
+    adf_all = adf_all_con)
+```
+
+```{r}
+colnames <- c('Parameter', 'Age-group', '$\\beta$', '$\\text{SE}_{\\beta}$', '$t$')
+knitr::kable(age_param_betas_table, digits = 2, escape = F, col.names = colnames)
+knitr::kable(age_param_con_betas_table, digits = 2, escape = F, col.names = colnames)
+knitr::kable(pds_param_betas_table, digits = 2, escape = F, col.names = colnames)
+knitr::kable(pds_param_con_betas_table, digits = 2, escape = F, col.names = colnames)
+```
+
+
+```{r eval=F}
+learning_model <- readRDS('/data/jflournoy/split/probly/splt-looser-rl_2_level-1528266.RDS')
 
 #num [1:4500, 1:313, 1:3]
 beta_ep_mat <- rstan::extract(learning_model, 'beta_ep_prm')[[1]]
@@ -102,7 +334,7 @@ Descriptive plots suggestion little or not relation between development and mode
 
 (ref:descriptiveplots) Individual parameters versus development, with generalized additive model smooths.
 
-```{r descriptiveplots, fig.width=5, fig.height=4, fig.cap='(ref:descriptiveplots)'}
+```{r descriptiveplots, fig.width=5, fig.height=4, fig.cap='(ref:descriptiveplots)', eval=F}
 ggplot2::theme_set(ggplot2::theme_minimal())
 
 plot_formula <- formula('y ~ s(x, k = 3, fx = T)')
@@ -168,7 +400,7 @@ The results from the linear models confirm that the linear relation between age 
 
 (ref:agelinearplots) Posterior distribution of parameter estimates regressed on age. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
 
-```{r agelinearplots, fig.width=5, fig.height=4, fig.cap='(ref:agelinearplots)'}
+```{r agelinearplots, eval=F,  fig.width=5, fig.height=4, fig.cap='(ref:agelinearplots)'}
 age_model_data <- na.omit(
     dplyr::select(beta_ep_mat_df_age, 
                   diff_mate, diff_status, `1`, `2`, `3`,
@@ -224,7 +456,7 @@ These results do seem to capture something about the smooth lines in Figure \@re
 
 (ref:interactiontable) Mean of posterior densities for girls and boys relation between PDS and learning rate.
 
-```{r cheapbayespub}
+```{r cheapbayespub,  eval=F}
 pub_model_data <- na.omit(
     dplyr::select(beta_ep_mat_df_age, 
                   diff_mate, diff_status, `1`, `2`, `3`,
@@ -251,7 +483,7 @@ cheap_bayes_pub_rez <- lapply(as.list(cheap_bayes_pub_lenv), future::value)
 ```
 
 
-```{r interactiontable}
+```{r interactiontable, eval=F}
 knitr::kable(
     dplyr::data_frame(Parameter = c('$\\beta_{\\epsilon, \\text{ht}}$',
                              '$\\beta_{\\epsilon, \\text{dl}}$',
@@ -266,7 +498,7 @@ knitr::kable(
 
 (ref:publinearplots) Posterior distribution of parameter estimates regressed on puberty. Shaded region is the central 95% of the density. Lines terminate at the edge of the central 99% of the density.
 
-```{r publinearplots, fig.width=5, fig.height=4, fig.cap='(ref:publinearplots)'}
+```{r publinearplots, eval=F, fig.width=5, fig.height=4, fig.cap='(ref:publinearplots)'}
 bayesplot::mcmc_areas_ridges(cheap_bayes_pub_rez[[1]], 
                              prob = .95, 
                              prob_outer = .99) + 
@@ -289,5 +521,9 @@ bayesplot::mcmc_areas_ridges(cheap_bayes_pub_rez[[5]],
     ggplot2::labs(title = 'Parameter: beta epsilon, \nCondition: PoUp - HuTh')
 ```
 
+
+```{r echo = F, eval = T}
+save.image(file = file.path(save_out_dir, 'age-learning-association.rda'))
+```
 
 # References

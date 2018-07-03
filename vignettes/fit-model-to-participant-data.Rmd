@@ -654,6 +654,68 @@ p_opt_diff_ksrq_scales
 p_opt_diff_upps_scales
 ```
 
+```{r}
+adf_adol_con <- dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty',
+                              !grepl('yads', sample))
+adf_adol <- dplyr::filter(lowfi_df_dev, 
+                          !grepl('yads', sample))
+adf_col_con <- dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty',
+                              grepl('yads', sample))
+adf_col <- dplyr::filter(lowfi_df_dev, 
+                         grepl('yads', sample))
+
+stdCoef.merMod <- function(object) {
+  sdy <- sd(lme4::getME(object,"y"))
+  sdx <- apply(lme4::getME(object,"X"), 2, sd)
+  sc <- lme4::fixef(object)*sdx/sdy
+  se.fixef <- coef(summary(object))[,"Std. Error"]
+  se <- se.fixef*sdx/sdy
+  return(data.frame(stdcoef=sc, stdse=se, stdt = sc / se))
+}
+
+mlm_std_beta_table <- function(outcomelist, xstring, adf_adol, adf_col, latex_par = T){
+    table_rows <- lapply(outcomelist, function(ystring){
+        aform <- as.formula(paste0(ystring, ' ~ ', xstring, ' + (1 | id)'))
+        adolmod <- lme4::lmer(aform, data = adf_adol, REML = F)
+        colmod <- lme4::lmer(aform, data = adf_col, REML = F)
+        std_adol_xvar <- stdCoef.merMod(adolmod)[xstring,]
+        std_col_xvar <- stdCoef.merMod(colmod)[xstring,]
+        std_df <- dplyr::bind_rows('Adolescent' = std_adol_xvar, 
+                                   'College' = std_col_xvar,
+                                   .id = 'Sample')
+        return(std_df)
+    })
+    names(table_rows) <- outcomelist
+    table_full <- dplyr::bind_rows(table_rows, .id = 'Parameter')
+    return(table_full)
+}
+
+outcomelist <- list('bin_5_to_end')
+age_table <- mlm_std_beta_table(outcomelist, xstring = 'age', adf_adol = adf_adol, adf_col = adf_col)
+pds_table <- mlm_std_beta_table(outcomelist, xstring = 'PDS_mean_score', adf_adol = adf_adol, adf_col = adf_col)
+age_con_table <- mlm_std_beta_table(outcomelist, xstring = 'age', 
+                                adf_adol = adf_adol_con, adf_col = adf_col_con)
+pds_con_table <- mlm_std_beta_table(outcomelist, xstring = 'PDS_mean_score', 
+                                adf_adol = adf_adol_con, adf_col = adf_col_con)
+
+lowfi_regression_table <- dplyr::bind_rows(
+    'Optimal choices $\\sim$ Age' = age_table,
+    'Optimal choices $\\sim$ PDS' = pds_table,
+    'Optimal choices contrasts $\\sim$ Age' = age_con_table,
+    'Optimal choices contrasts $\\sim$ PDS' = pds_con_table,
+    .id = 'Variables'
+)
+
+```
+
+```{r}
+knitr::kable(
+    dplyr::select(lowfi_regression_table, -Parameter),
+    col.names = c('Variables', 'Age-group', '$\\beta$', '$\\text{SE}_{\\beta}$', '$t$'),
+    digits = 2)
+```
+
+
 ### Dating/Looking
 
 #### Diff
@@ -1126,7 +1188,7 @@ mean_pars <- lapply(stanfit_list,
                     })
 
 beta_pars <- c('epsilon' = 'beta_ep_prm', 'rho' = 'beta_rho_prm', 
-               'xi' = 'beta_xi_prm', 'b' = 'beta_b', 'P("right")["final"]' = 'pR_final')
+               'xi' = 'beta_xi_prm', 'b' = 'beta_b', 'P("right")[paste(t," = T")]' = 'pR_final')
 beta_names_list <- lapply(
     beta_pars,
     function(par){
@@ -1147,16 +1209,22 @@ two_three_level_comparison_plots <- lapply(
             adf,
             ggplot2::aes(x = `two level`, y = `three level`)) + 
             ggplot2::geom_point() + 
-            ggplot2::labs(title = parse(text=bquote(.(names(beta_pars)[which(beta_pars == par)]))))
+            ggplot2::labs(title = parse(text=bquote(.(names(beta_pars)[which(beta_pars == par)]))),
+                          x = '', y = '')
     })
 
+two_three_level_comparison_plots[[1]] <- two_three_level_comparison_plots[[1]] + ggplot2::labs(y = 'Three-level')
+two_three_level_comparison_plots[[5]] <- two_three_level_comparison_plots[[5]] + ggplot2::labs(x = 'Two-level')
+```
+
+```{r twothreecorplot, fig.width=5.875, fig.height=4, include=F}
 gridExtra::grid.arrange(grobs = two_three_level_comparison_plots,
                         ncol = 3)
 ```
 
 We can also examine the correlation of parameters as we drop the terms $b$ and $\rho$.
 
-```{r fig.width=20,fig.height=20}
+```{r}
 pR_final <- dplyr::data_frame(
     pR_full = unlist(
         mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['pR_final']]]),
@@ -1165,33 +1233,71 @@ pR_final <- dplyr::data_frame(
     pR_no_rho = unlist(
         mean_pars$`splt-looser-rl_repar_exp_no_b_no_rho-1527735.RDS`[beta_names_list[['pR_final']]])
 )
+
 par_means_for_corplot <- 
     dplyr::data_frame(
-        'epsilon["full"]' = unlist(
-            mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['beta_ep_prm']]]),
-        'epsilon["no b"]' = unlist(
-            mean_pars$`splt-looser-rl_repar_exp_no_b-1528233.RDS`[beta_names_list[['beta_ep_prm']]]),
-        'epsilon["no b,"~rho]' = unlist(
-            mean_pars$`splt-looser-rl_repar_exp_no_b_no_rho-1527735.RDS`[beta_names_list[['beta_ep_prm']]]),
-        'xi["full"]' = unlist(
-            mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['beta_xi_prm']]]),
-        'xi["no b"]' = unlist(
-            mean_pars$`splt-looser-rl_repar_exp_no_b-1528233.RDS`[beta_names_list[['beta_xi_prm']]]),
-        'xi["no b,"~rho]' = unlist(
-            mean_pars$`splt-looser-rl_repar_exp_no_b_no_rho-1527735.RDS`[beta_names_list[['beta_xi_prm']]]),
-        'rho["full"]' = unlist(
-            mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['beta_rho_prm']]]),
-        'rho["no b"]' = unlist(
-            mean_pars$`splt-looser-rl_repar_exp_no_b-1528233.RDS`[beta_names_list[['beta_rho_prm']]]),
-        'b["full"]' = unlist(
-            mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[['beta_b']]])
+        'epsilon["max"]' = qnorm(unlist(
+            mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[['beta_ep_prm']]])),
+        'epsilon["no b"]' = qnorm(unlist(
+            mean_pars$`splt-looser-rl_2_level_no_b-1527784.RDS`[beta_names_list[['beta_ep_prm']]])),
+        'epsilon["no b,"~rho]' = qnorm(unlist(
+            mean_pars$`splt-looser-rl_2_level_no_b_no_rho-1527729.RDS`[beta_names_list[['beta_ep_prm']]])),
+        'xi["max"]' = qnorm(unlist(
+            mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[['beta_xi_prm']]])),
+        'xi["no b"]' = qnorm(unlist(
+            mean_pars$`splt-looser-rl_2_level_no_b-1527784.RDS`[beta_names_list[['beta_xi_prm']]])),
+        'xi["no b,"~rho]' = qnorm(unlist(
+            mean_pars$`splt-looser-rl_2_level_no_b_no_rho-1527729.RDS`[beta_names_list[['beta_xi_prm']]])),
+        'rho["max"]' = log(unlist(
+            mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[['beta_rho_prm']]])),
+        'rho["no b"]' = log(unlist(
+            mean_pars$`splt-looser-rl_2_level_no_b-1527784.RDS`[beta_names_list[['beta_rho_prm']]])),
+        'b["max"]' = unlist(
+            mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[['beta_b']]])
     )
 
 par_mean_cor_plot <- GGally::ggpairs(par_means_for_corplot, 
                                      labeller = ggplot2::label_parsed, 
                                      lower = list(continuous = GGally::wrap('points', alpha = .3)))
+
+psych::corr.test(dplyr::select(par_means_for_corplot, contains('eps')))
+psych::corr.test(dplyr::select(par_means_for_corplot, contains('xi')))
+psych::corr.test(dplyr::select(par_means_for_corplot, contains('rho[')))
+psych::corr.test(dplyr::select(par_means_for_corplot, contains('max')), method = 'spearman')
+psych::corr.test(dplyr::select(par_means_for_corplot, contains('"no b"')))
+psych::corr.test(dplyr::select(par_means_for_corplot, contains('"no b,"')))
+
+par_mean_cor_plot_max2l <- GGally::ggpairs(
+    dplyr::select(par_means_for_corplot, contains('max'))[c(2,3,1,4)], 
+    labeller = ggplot2::label_parsed, 
+    lower = list(continuous = GGally::wrap('smooth_loess', alpha = .1, color = 'blue', size = .5)),
+    upper = list(continuous = GGally::wrap('cor', method = 'spearman')),
+    diag = list(continuous = GGally::wrap('barDiag', bins = 25, fill = '#aaaaaa')))
+
+par_mean_cor_plot_nob2l <- GGally::ggpairs(
+    dplyr::select(par_means_for_corplot, contains('"no b"'))[c(2,3,1)], 
+    labeller = ggplot2::label_parsed, 
+    lower = list(continuous = GGally::wrap('smooth_loess', alpha = .1, color = 'blue', size = .5)),
+    upper = list(continuous = GGally::wrap('cor', method = 'spearman')),
+    diag = list(continuous = GGally::wrap('barDiag', bins = 25, fill = '#aaaaaa')))
+par_mean_cor_plot_nobnorho2l <- GGally::ggpairs(
+    dplyr::select(par_means_for_corplot, contains('"no b,"'))[c(2,1)], 
+    labeller = ggplot2::label_parsed, 
+    lower = list(continuous = GGally::wrap('smooth_loess', alpha = .1, color = 'blue', size = .5)),
+    upper = list(continuous = GGally::wrap('cor', method = 'spearman')),
+    diag = list(continuous = GGally::wrap('barDiag', bins = 25, fill = '#aaaaaa')))
+```
+
+```{r fig.width=20,fig.height=20}
 print(par_mean_cor_plot)
 ```
+
+```{r corparplot, fig.width=5.875, fig.height=4, include=F}
+print(par_mean_cor_plot_max2l)
+print(par_mean_cor_plot_nob2l)
+print(par_mean_cor_plot_nobnorho2l)
+```
+
 
 ```{r}
 #get just betas 
@@ -1244,6 +1350,28 @@ confidence_parameter_plot <- ggplot2::ggplot(splt_rl_betas_sum,
     ggplot2::scale_y_continuous(breaks = c(1,3,5)) + 
     ggplot2::labs(y = 'Participant\'s confidence rating on final block',
                   x = 'Posterior mean parameter')
+
+print(
+    psych::corr.p(
+        psych::corr.test(
+            filter(splt_rl_betas_sum, parameter == 'rho_prm', block == 8)[,c('mean_par', 'confidence')],
+            method = 'spearman')$r,
+        n = 300, alpha = .005),
+    short = F)
+print(
+    psych::corr.p(
+        psych::corr.test(
+            filter(splt_rl_betas_sum, parameter == 'xi_prm', block == 8)[,c('mean_par', 'confidence')],
+            method = 'spearman')$r,
+        n = 300, alpha = .005),
+    short = F)
+print(
+    psych::corr.p(
+        psych::corr.test(
+            filter(splt_rl_betas_sum, parameter == 'ep_prm', block == 8)[,c('mean_par', 'confidence')],
+            method = 'spearman')$r,
+        n = 300, alpha = .005),
+    short = F)
 ```
 
 ```{r confidencevparameters, fig.width=5.875, fig.height=4.1, include=F}
@@ -1782,8 +1910,13 @@ beta_xi_mat <- matrix(
         313), 
     nrow = 313, 
     byrow = T)
+# beta_b_mat <- matrix(
+#     rep(c(0,0,0), 
+#         313), 
+#     nrow = 313, 
+#     byrow = T)
 beta_b_mat <- matrix(
-    rep(c(0,0,0), 
+    rep(apply(rstan::extract(stanfit_2_level, pars = 'mu_delta_b')[[1]], c(2,3), mean), 
         313), 
     nrow = 313, 
     byrow = T)

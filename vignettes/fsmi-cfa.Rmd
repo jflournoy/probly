@@ -28,6 +28,21 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setupoptions}
+
+sample_labels <- c(
+    'TDS1' = 'Foster-care involved adolescents',
+    'TDS2' = 'Community adolescents',
+    'yads' = 'College students',
+    'yads_online' = 'College students - online'
+)
+
+sample_labels_short <- c(
+    'TDS1' = 'FCA',
+    'TDS2' = 'CA',
+    'yads' = 'CSYA',
+    'yads_online' = 'CSYA-O'
+)
+
 college_rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
 adolescent_rubric_dir <- system.file('scoring_rubrics', 'adolescent', package = 'probly')
 
@@ -430,10 +445,11 @@ save_out_list <- c(save_out_list, 'fsmi_cfa_matestat', 'fsmi_matestat_cfa_fit', 
 ```
 
 A CFA for mate-seeking and status factors fit well (RMSEA = `r round(fsmi_matestat_cfa_fit[[1]][['rmsea']],3)`, $\hat\gamma$ = `r round(fsmi_matestat_cfa_fit[[2]][['gammaHat']],3)`), with the two factors showing a small, positive, non-significant correlation ($r = `r round(fsmi_mate_stat_cor[['std.all']],2)`, Z = `r round(fsmi_mate_stat_cor[['z']],2)`$).
-
-Note that item 54, "I do not worry very much about losing status" has a particularly low loading on the status factor.
+Note that item 54, "I do not worry very much about losing status" has a particularly low loading on the status factor (standardized loading = `r round(fsmi_mate_stat_par[fsmi_mate_stat_par$op == '=~' & fsmi_mate_stat_par$rhs == 'fsmi_qs_54','std.all'],2)`).
 
 ## K-SRQ
+
+### Measurement invariance
 
 ```{r ksrq}
 scales_to_use_ksrq <- c('k_srq_admiration', 'k_srq_passivity', 
@@ -442,20 +458,103 @@ scales_to_use_ksrq <- c('k_srq_admiration', 'k_srq_passivity',
 ksrq_model <- milav::create_cfa_from_keylist(
     ksqr_key[scales_to_use_ksrq])
 
-ksrq_cfa <- lavaan::lavaan(model = ksrq_model, data = splt_fsmi,
+ksrq_cfa <- lavaan::lavaan(model = ksrq_model, data = splt_fsmi_devdemog,
+                           missing = 'fiml', estimator = 'MLR',
+                           int.ov.free = TRUE, int.lv.free = FALSE, 
+                           auto.fix.first = TRUE, std.lv = FALSE, 
+                           auto.fix.single = TRUE, auto.var = TRUE, 
+                           auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                           auto.delta = TRUE, auto.cov.y = TRUE,
+                           group = 'sample')
+
+ksrq_cfa_cov <- lavaan::lavaan(model = ksrq_model, data = splt_fsmi_devdemog,
+                           missing = 'fiml', estimator = 'MLR',
+                           int.ov.free = TRUE, int.lv.free = FALSE, 
+                           auto.fix.first = TRUE, std.lv = FALSE, 
+                           auto.fix.single = TRUE, auto.var = TRUE, 
+                           auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                           auto.delta = TRUE, auto.cov.y = TRUE,
+                           group = 'sample', group.equal = c('loadings',
+                                                             'lv.variances',
+                                                             'lv.covariances'))
+
+ksrq_cfa_metric <- lavaan::lavaan(model = ksrq_model, data = splt_fsmi_devdemog,
                                   missing = 'fiml', estimator = 'MLR',
                                   int.ov.free = TRUE, int.lv.free = FALSE, 
-                                  auto.fix.first = FALSE, std.lv = TRUE, 
+                                  auto.fix.first = TRUE, std.lv = FALSE, 
                                   auto.fix.single = TRUE, auto.var = TRUE, 
                                   auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                  auto.delta = TRUE, auto.cov.y = TRUE)
+                                  auto.delta = TRUE, auto.cov.y = TRUE,
+                                  group = 'sample', group.equal = 'loadings',
+                                  group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                                                    'k_srq_admiration =~  K_SRQ_7',
+                                                    'k_srq_sexual_relationships =~ K_SRQ_13',
+                                                    'k_srq_sexual_relationships =~ K_SRQ_20'))
+ksrq_cfa_metric_cov <- lavaan::lavaan(model = ksrq_model, data = splt_fsmi_devdemog,
+                                  missing = 'fiml', estimator = 'MLR',
+                                  int.ov.free = TRUE, int.lv.free = FALSE, 
+                                  auto.fix.first = TRUE, std.lv = FALSE, 
+                                  auto.fix.single = TRUE, auto.var = TRUE, 
+                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                  auto.delta = TRUE, auto.cov.y = TRUE,
+                                  group = 'sample', group.equal = c('loadings',
+                                                                    'lv.variances',
+                                                                    'lv.covariances'),
+                                  group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                                                    'k_srq_admiration =~  K_SRQ_7',
+                                                    'k_srq_sexual_relationships =~ K_SRQ_13',
+                                                    'k_srq_sexual_relationships =~ K_SRQ_20'))
+
 
 ksrq_cfa_fit <- list(
-    lavaan::fitmeasures(ksrq_cfa,
-                        fit.measures = c('rmsea', 'mfi')),
-    semTools::moreFitIndices(ksrq_cfa,
-           fit.measures = c('gammaHat', 'adjGammaHat')))
+    ksrq_cfa = c(unlist(lavaan::fitmeasures(ksrq_cfa,
+                                            fit.measures = c('rmsea', 'mfi'))),
+                 unlist(semTools::moreFitIndices(ksrq_cfa,
+                                                 fit.measures = c('gammaHat', 'adjGammaHat'))),
+                 AIC=AIC(ksrq_cfa)),
+    ksrq_cfa_metric = c(unlist(lavaan::fitmeasures(ksrq_cfa_metric,
+                                                   fit.measures = c('rmsea', 'mfi'))),
+                        unlist(semTools::moreFitIndices(ksrq_cfa_metric,
+                                                        fit.measures = c('gammaHat', 'adjGammaHat'))),
+                 AIC=AIC(ksrq_cfa_metric)),
+    ksrq_cfa_metric_cov = c(unlist(lavaan::fitmeasures(ksrq_cfa_metric_cov,
+                                                   fit.measures = c('rmsea', 'mfi'))),
+                        unlist(semTools::moreFitIndices(ksrq_cfa_metric_cov,
+                                                        fit.measures = c('gammaHat', 'adjGammaHat'))),
+                 AIC=AIC(ksrq_cfa_metric_cov)))
+
+ksrq_cfa_fit$delta1 <- ksrq_cfa_fit$ksrq_cfa_metric - ksrq_cfa_fit$ksrq_cfa
+ksrq_cfa_fit$delta2 <- ksrq_cfa_fit$ksrq_cfa_metric_cov - ksrq_cfa_fit$ksrq_cfa_metric
+ksrq_cfa_fit
+lavTestLRT(ksrq_cfa, ksrq_cfa_metric)
+lavTestLRT(ksrq_cfa_metric, ksrq_cfa_metric_cov)
+ksrq_cor_diff <- inspect(ksrq_cfa_metric_cov, 'cor.lv')$yads_online - inspect(ksrq_cfa_cov, 'cor.lv')$yads_online
+ksrq_cor_diff
+
+ksrq_cfa_metric_invar_stats <- do.call(sprintf, 
+        c(list(fmt = '$\\Delta$RMSEA = %0.5f, $\\Delta$MFI = %0.3f, $\\Delta\\hat{\\gamma}$ = %0.3f'),
+          (ksrq_cfa_fit$delta1)[1:3]))
+
+ksrq_cfa_cov_fit_stats <- do.call(sprintf, 
+        c(list(fmt = '$\\Delta$RMSEA = %0.5f, $\\Delta$MFI = %0.3f, $\\Delta\\hat{\\gamma}$ = %0.3f, $\\Delta$AIC = %0.0f'),
+          (ksrq_cfa_fit$delta2)[c(1:3,5)]))
 ```
+
+A CFA for the four K-SRQ factors was tested for metric invariance across samples by comparing a model with loadings constrained to equality to one with loadings free to vary across the four groups.
+This resulted in considerably worse model fit as determined by a change in the MFI > .01.
+Loading constraints were removed from four items ("I like it if others looks up to me", "I like being a member of a group/club", "I like kissing", "I like flirting") that load onto Admiration, Sociability, and  Sexual Relationships, respectively.
+This resulted in adequately small fit differences between the unconstrained and invariant models (`r ksrq_cfa_metric_invar_stats`).
+The final model showed somewhat poor fit ($\text{N}_{\text{total}}$ = `r lavaan::inspect(ksrq_cfa, what = 'ntotal')`, RMSEA = `r round(ksrq_cfa_fit$ksrq_cfa_metric[['rmsea']],2)`, MFI = `r round(ksrq_cfa_fit$ksrq_cfa_metric[['mfi']],2)`, $\hat\gamma$ = `r round(ksrq_cfa_fit$ksrq_cfa_metric[['gammaHat']],3)`). 
+
+Models with and without constraintes between latent variances and covariances were compared using the Akaike information criterion (AIC).
+Constraining equivalent latent covariance structures across groups resulted in lower AIC ($\Delta\text{AIC} = `r round(ksrq_cfa_fit$delta2[['AIC']])`$).
+Loadings without constraints across groups do not contribute to this comparison, so the magnitude of correlations was compared across the metric invariant and unconstrained models (while mainting the constraint of covariance across groups).
+The differences in correlations were in the range _r_ = [`r round(min(ksrq_cor_diff),2)`, `r round(max(ksrq_cor_diff),2)`], indicating very low sensitivity the observed measurement invariance.
+To maintain content coverage [@borsboom2006], the unconstrained model is used, though sensitivity to constraints on the four non-invariant loadings is assessed again.
+Correlations among the Admiration, Sociability, and  Sexual Relationships subscales were all high (_r_ = [.67,.84]). 
+Correlations of Passivity with these three subscales was generally low, but positive (_r_ = [.07, .21]; see Table ??? for all latent variable correlations).
+
+### Misc
 
 ```{r eval = F}
 psych::fa.parallel(splt_fsmi[,unlist(get_items_from_keys(ksqr_key[scales_to_use_ksrq]))])
@@ -622,12 +721,13 @@ ksrq_matestat_cfa_fit <- list(
               semTools::moreFitIndices(ksrq_matestat_grp_const_cfa_cov_admir_test,
                                        fit.measures = c('gammaHat', 'adjGammaHat'))))
 
-#probably metric invariant, but close to a worse fit.
-# round(ksrq_matestat_cfa_fit$grpmet - ksrq_matestat_cfa_fit$uncon,5)
-# round(ksrq_matestat_cfa_fit$grpmetcovsexrel - ksrq_matestat_cfa_fit$grpmet,5)
-# round(ksrq_matestat_cfa_fit$grpmetcovadmir - ksrq_matestat_cfa_fit$grpmet,5)
+# probably metric invariant, but close to a worse fit.
+round(ksrq_matestat_cfa_fit$grpmet - ksrq_matestat_cfa_fit$uncon,5)
+round(ksrq_matestat_cfa_fit$grpmetcovsexrel - ksrq_matestat_cfa_fit$grpmet,5)
+round(ksrq_matestat_cfa_fit$grpmetcovadmir - ksrq_matestat_cfa_fit$grpmet,5)
 
-ksrq_matestat_grp_const_cfa_par <- parameterestimates(ksrq_matestat_grp_const_cfa, stan = T)
+
+ksrq_matestat_grp_const_cfa_par <- standardizedSolution(ksrq_matestat_grp_const_cfa, ci = TRUE)
 ksrq_matestat_mate_sr_cor <- ksrq_matestat_grp_const_cfa_par[
     ksrq_matestat_grp_const_cfa_par$lhs == 'fsmi_mate' & 
         ksrq_matestat_grp_const_cfa_par$rhs == 'k_srq_sexual_relationships',]
@@ -635,7 +735,7 @@ ksrq_matestat_stat_sr_cor <- ksrq_matestat_grp_const_cfa_par[
     ksrq_matestat_grp_const_cfa_par$lhs == 'fsmi_stat' & 
         ksrq_matestat_grp_const_cfa_par$rhs == 'k_srq_sexual_relationships',]
 ksrq_matestat_metric_invar_stats <- do.call(sprintf, 
-        c(list(fmt = '$\\delta$RMSEA = %0.5f, $\\delta$MFI = %0.3f, $\\delta\\hat{\\gamma}$ = %0.3f'),
+        c(list(fmt = '$\\Delta$RMSEA = %0.5f, $\\Delta$MFI = %0.3f, $\\Delta\\hat{\\gamma}$ = %0.3f'),
           (ksrq_matestat_cfa_fit$grpmet - ksrq_matestat_cfa_fit$uncon)[1:3]))
 
 ksqr_matestat_cordf_l <- dplyr::select(
@@ -651,17 +751,17 @@ ksqr_matestat_cordf_l <- dplyr::select(
                    'k_srq_admiration', 
                    'k_srq_sociability'),
         lhs != rhs),
-    lhs, op, rhs, group, est, ci.upper, ci.lower, std.all, z)
+    lhs, op, rhs, group, est.std, ci.upper, ci.lower, z)
 ksqr_matestat_cordf <- dplyr::mutate(
     tidyr::spread(
         tidyr::unite(
             tidyr::gather(
                 ksqr_matestat_cordf_l,
-                par, value, est, ci.upper, ci.lower, std.all, z), 
+                par, value, est.std, ci.upper, ci.lower, z), 
             grouppar, par, group),
         grouppar, value),
-    est_rep_1 = sprintf('% 0.2f [% 0.2f,% 0.2f]', est_1, ci.lower_1, ci.upper_1),
-    est_rep_2 = sprintf('% 0.2f [% 0.2f,% 0.2f]', est_2, ci.lower_2, ci.upper_2))
+    est_rep_1 = sprintf('% 0.2f [% 0.2f,% 0.2f]', est.std_1, ci.lower_1, ci.upper_1),
+    est_rep_2 = sprintf('% 0.2f [% 0.2f,% 0.2f]', est.std_2, ci.lower_2, ci.upper_2))
 
 save_out_list <- c(save_out_list, 'ksrq_matestat_grp_const_cfa_par', 'ksrq_matestat_cfa_fit',
                    'ksrq_matestat_mate_sr_cor', 'ksrq_matestat_stat_sr_cor',
@@ -675,92 +775,58 @@ save_out_list <- c(save_out_list, 'ksrq_matestat_grp_const_cfa_par', 'ksrq_mates
 ```{r}
 knitr::kable(
     dplyr::select(ksqr_matestat_cordf,
-                  lhs, op, rhs, est_rep_1, est_rep_2, std.all_1, std.all_2),
+                  lhs, op, rhs, est_rep_1, est_rep_2),
     digits = 2,
     caption = '(ref:ksqrmatestatcor)')
 ```
 
-```{r fig.width=4.75, fig.height=5, fig.cap='(ref:ksqrmatestatcor)'}
+```{r fig.width=5.875, fig.height=4.2, fig.cap='(ref:ksqrmatestatcor)'}
 scale_labels <- c('fsmi_mate' = expression(paste('Mate-seeking')[F]),
                   'fsmi_stat' = expression(paste('Status')[F]),
                   'k_srq_admiration' = expression(paste('Admiration')[K]),
                   'k_srq_passivity' = expression(paste('Passivity')[K]),
                   'k_srq_sexual_relationships' = expression(paste('Sexual Rel.')[K]),
                   'k_srq_sociability' = expression(paste('Sociality')[K]))
-
+bordergray <- '#eeeeee'
 ggplot2::theme_set(ggplot2::theme_minimal())
 fsmi_ksrq_plot <- ggplot2::ggplot(
     dplyr::mutate_at(ksqr_matestat_cordf_l,
                      dplyr::vars(lhs,rhs),
                      funs(factor(., levels = names(scale_labels), labels = scale_labels))),
     ggplot2::aes(x = factor(group, levels = 1:2, labels = c('- LTR', '+ LTR')), 
-                 y = est)) + 
+                 y = est.std)) + 
     ggplot2::geom_hline(yintercept = 0, color = '#666666') + 
     ggplot2::geom_errorbar(
         ggplot2::aes(ymin = ci.lower, ymax = ci.upper),
-        width = 0) + 
-    ggplot2::geom_point() + 
-    ggplot2::facet_grid(lhs ~ rhs, switch = 'y', labeller = ggplot2::label_parsed) + 
-    ggplot2::coord_cartesian(ylim = c(-1,1)) + 
-    ggplot2::scale_y_continuous(position = 'right', breaks = c(-.5, .5)) + 
-    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 360-45, hjust = 0)) + 
-    ggplot2::labs(x = '', y = 'Estimate and 95% confidence interval')
+        width = 0, alpha = .5) + 
+    ggplot2::geom_point(size = .75) + 
+    ggplot2::facet_grid(lhs ~ rhs, labeller = ggplot2::label_parsed) + 
+    ggplot2::coord_cartesian(ylim = c(-1.1,1.1)) + 
+    ggplot2::scale_y_continuous(position = 'left', breaks = c(-.5, .5)) + 
+    ggplot2::theme(
+        axis.text.x = ggplot2::element_text(angle = 360-0, hjust = .5),
+        panel.grid.major.x = ggplot2::element_blank(),
+        panel.border = ggplot2::element_rect(fill = NA, color = bordergray, size = 1, linetype = 1),
+        strip.background = ggplot2::element_rect(fill=bordergray, color = bordergray, size = 1, linetype = 1),
+        strip.text.y = ggplot2::element_text(size = 8),
+        axis.line.x = ggplot2::element_line(color = NA, size = .5, linetype = 1),
+        axis.line.y = ggplot2::element_line(color = NA, size = .5, linetype = 1),
+        panel.spacing = ggplot2::unit(0.0, units = 'in'), 
+        plot.margin = ggplot2::margin(2,2,0,2),
+        axis.title.x = ggplot2::element_text(margin = ggplot2::margin(0,0,0,0))
+        ) + 
+    ggplot2::labs(x = '', y = 'Standardized estimate and 95% confidence interval')
 fsmi_ksrq_plot
 save_out_list <- c(save_out_list, 'fsmi_ksrq_plot')
 ```
 
 ### K-SRQ and age
 
-#### Measurement invariance
-
 ```{r}
 splt_fsmi_devdemog$samplegroup <- ifelse(grepl('yads',splt_fsmi_devdemog$sample),
                                          'college',
                                          'adolescent')
 
-ksrq_mi_model <- 'k_srq_admiration =~ K_SRQ_1 + K_SRQ_7 + K_SRQ_11 + K_SRQ_18
-k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20'
-
-ksrq_mi_unconstrained <- lavaan::lavaan(
-    model = ksrq_mi_model, 
-    data = splt_fsmi_devdemog,
-    missing = 'fiml', estimator = 'MLR',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'samplegroup')
-
-ksrq_mi_metric <- lavaan::lavaan(
-    model = ksrq_mi_model, 
-    data = splt_fsmi_devdemog,
-    missing = 'fiml', estimator = 'MLR',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'samplegroup', group.equal = c('loadings', 'intercepts'))
-
-ksrq_mi_fitmeasures <- unlist(lapply(
-    list(ksrq_mi_unconstrained = ksrq_mi_unconstrained,
-         ksrq_mi_metric = ksrq_mi_metric),
-    lavaan::fitmeasures, fit.measures = 'mfi'))
-diff(ksrq_mi_fitmeasures)
-
-ksrq_mi_extfitmeasures <- unlist(lapply(
-    list(ksrq_mi_unconstrained = ksrq_mi_unconstrained,
-         ksrq_mi_metric = ksrq_mi_metric),
-    semTools::moreFitIndices, fit.measures = c('gammaHat', 'adjGammaHat')))
-ksrq_mi_extfitmeasures[3:4]-ksrq_mi_extfitmeasures[1:2]
-```
-
-This small difference in the MFI Indicates that we do not need to reject the null hypothesis of measurement invariance. However, scalar/strong invariance is rejected so comparing means or variances of computed scores is possibly problematic.
-
-#### Substantively
-
-```{r}
 splt_fsmi_devdemog$age_c2 <- splt_fsmi_devdemog$age_c^2
 
 ksrq_age_model <- paste(
@@ -768,39 +834,147 @@ ksrq_age_model <- paste(
     paste0(paste(scales_to_use_ksrq, collapse = ' + '), ' ~ age_c + age_c2 + gender_c + age_c:gender_c + age_c2:gender_c'),
     sep = '\n')
 
-ksrq_age_sem <- lavaan::lavaan(
-    model = ksrq_age_model, 
-    data = splt_fsmi_devdemog,
+ksrq_cfa_metric_agesem_sample <- lavaan::lavaan(
+    model = ksrq_age_model, data = splt_fsmi_devdemog,
     missing = 'fiml', estimator = 'MLR',
     int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
+    auto.fix.first = TRUE, std.lv = FALSE, 
     auto.fix.single = TRUE, auto.var = TRUE, 
     auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'sample', group.equal = c('loadings', 'lv.variances', 'lv.covariances'),
+    group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                      'k_srq_admiration =~  K_SRQ_7',
+                      'k_srq_sexual_relationships =~ K_SRQ_13',
+                      'k_srq_sexual_relationships =~ K_SRQ_20'))
 
-ksrq_age_ints <- inspect(ksrq_age_sem, 'mean.lv')
-ksrq_age_betas <- inspect(ksrq_age_sem, 'coef')$beta[1:4, c(5,7,6,8,9)]
+ksrq_cfa_metric_agesem <- lavaan::lavaan(
+    model = ksrq_age_model, data = splt_fsmi_devdemog,
+    missing = 'fiml', estimator = 'MLR',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = TRUE, std.lv = FALSE, 
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'samplegroup', group.equal = c('loadings', 'lv.variances', 'lv.covariances'),
+    group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                      'k_srq_admiration =~  K_SRQ_7',
+                      'k_srq_sexual_relationships =~ K_SRQ_13',
+                      'k_srq_sexual_relationships =~ K_SRQ_20'))
 
-age_gender_pred_df <- as.data.frame(expand.grid(age = 11:25, gender_c = c(-.5, .5)))
+ksrq_cfa_sampledef_fit <- AIC(ksrq_cfa_metric_agesem_sample,ksrq_cfa_metric_agesem)
+rbind(ksrq_cfa_sampledef_fit, difference = sapply(ksrq_cfa_sampledef_fit, diff))
+
+ksrq_cfa_metric_agesem_reginvar_sample <- lavaan::lavaan(
+    model = ksrq_age_model, data = splt_fsmi_devdemog,
+    missing = 'fiml', estimator = 'MLR',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = TRUE, std.lv = FALSE, 
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'sample', group.equal = c('loadings', 
+                                           'lv.variances', 
+                                           'lv.covariances',
+                                           'regressions', 'means'),
+    group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                      'k_srq_admiration =~  K_SRQ_7',
+                      'k_srq_sexual_relationships =~ K_SRQ_13',
+                      'k_srq_sexual_relationships =~ K_SRQ_20'))
+
+ksrq_cfa_metric_agesem_reginvar <- lavaan::lavaan(
+    model = ksrq_age_model, data = splt_fsmi_devdemog,
+    missing = 'fiml', estimator = 'MLR',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = TRUE, std.lv = FALSE, 
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'samplegroup', group.equal = c('loadings', 
+                                           'lv.variances', 
+                                           'lv.covariances',
+                                           'regressions', 'means'),
+    group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                      'k_srq_admiration =~  K_SRQ_7',
+                      'k_srq_sexual_relationships =~ K_SRQ_13',
+                      'k_srq_sexual_relationships =~ K_SRQ_20'))
+
+ksrq_cfa_reginvar_sampledef_fit <- AIC(ksrq_cfa_metric_agesem_reginvar, 
+                                       ksrq_cfa_metric_agesem_reginvar_sample)
+rbind(ksrq_cfa_reginvar_sampledef_fit, difference = sapply(ksrq_cfa_reginvar_sampledef_fit, diff))
+
+ksrq_cfa_agesem_reginvar_sample <- lavaan::lavaan(
+    model = ksrq_age_model, data = splt_fsmi_devdemog,
+    missing = 'fiml', estimator = 'MLR',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = TRUE, std.lv = FALSE, 
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'sample', group.equal = c('loadings', 
+                                           'lv.variances', 
+                                           'lv.covariances',
+                                           'regressions', 'means'))
+
+ksrq_cfa_metric_agesem_fit <- AIC(ksrq_cfa_metric_agesem_sample, 
+                                  ksrq_cfa_metric_agesem_reginvar_sample)
+rbind(ksrq_cfa_metric_agesem_fit, difference = sapply(ksrq_cfa_metric_agesem_fit, diff))
+
+#invariant and unconstrained model coefficient differences
+round(inspect(ksrq_cfa_metric_agesem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] - 
+    inspect(ksrq_cfa_agesem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)],3)
+
+#invariant and unconstrained model standardized coefficient differences
+ksrq_agesem_betadiffs <- inspect(ksrq_cfa_metric_agesem_reginvar_sample, 'std')$yads_online$beta[1:4, c(5,7,6,8,9)] - 
+    inspect(ksrq_cfa_agesem_reginvar_sample, 'std')$yads_online$beta[1:4, c(5,7,6,8,9)]
+
+#invariant and unconstrained z scores and z score differences
+round(inspect(ksrq_cfa_metric_agesem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] / 
+          inspect(ksrq_cfa_metric_agesem_reginvar_sample, 'se')$yads_online$beta[1:4, c(5,7,6,8,9)], 3)
+round(inspect(ksrq_cfa_agesem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] / 
+          inspect(ksrq_cfa_agesem_reginvar_sample, 'se')$yads_online$beta[1:4, c(5,7,6,8,9)], 3)
+round(inspect(ksrq_cfa_metric_agesem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] /
+          inspect(ksrq_cfa_metric_agesem_reginvar_sample, 'se')$yads_online$beta[1:4, c(5,7,6,8,9)] - 
+          inspect(ksrq_cfa_agesem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] / 
+          inspect(ksrq_cfa_agesem_reginvar_sample, 'se')$yads_online$beta[1:4, c(5,7,6,8,9)], 3)
+
+ksrq_age_ints <- inspect(ksrq_cfa_agesem_reginvar_sample, 'mean.lv')
+ksrq_age_betas <- lapply(inspect(ksrq_cfa_agesem_reginvar_sample, 'coef'), 
+                         function(asample) asample$beta[1:4, c(5,7,6,8,9)])
+
+ksrq_std_pars <- standardizedsolution(ksrq_cfa_agesem_reginvar_sample)
+
+age_gender_pred_df <- rbind(
+    as.data.frame(expand.grid(age = c(11:17,17.9), gender_c = c(-.5, .5), sample = c('TDS1', 'TDS2'))),
+    as.data.frame(expand.grid(age = 18:25, gender_c = c(-.5, .5), sample = c('yads', 'yads_online'))))
 age_gender_pred_df$age_c <- age_gender_pred_df$age - 18
 age_gender_pred_df$age_c2 <- age_gender_pred_df$age_c^2
 age_gender_pred_mat <- model.matrix(~age_c*gender_c+age_c2*gender_c, data = age_gender_pred_df)
 
-ksrq_pred_factor_scores <- do.call(cbind, lapply(seq_along(ksrq_age_ints), function(i){
-    y <- age_gender_pred_mat %*% as.vector(c(ksrq_age_ints[[i]], ksrq_age_betas[i,]))
-    dimnames(y)[2] <- names(ksrq_age_ints)[[i]]
-    y
-}))
+ksrq_pred_factor_scores <- lapply(
+    c('TDS1', 'TDS2', 'yads', 'yads_online'),
+    function(asample) {
+        adf <- do.call(cbind, lapply(seq_along(ksrq_age_ints[[asample]]), function(i){
+            y <- age_gender_pred_mat %*% as.vector(c(ksrq_age_ints[[asample]][[i]], 
+                                                     ksrq_age_betas[[asample]][i,]))
+            dimnames(y)[2] <- names(ksrq_age_ints[[asample]])[[i]]
+            y
+        }))
+        cbind(age_gender_pred_df[age_gender_pred_df$sample == asample,],
+              adf[age_gender_pred_df$sample == asample,])
+    })
 
-participant_measurements <- lavaan::lavPredict(ksrq_age_sem)
-ksrq_age_model_data <- as.data.frame(lavaan::inspect(ksrq_age_sem, 'data'))
-names(ksrq_age_model_data) <- lavaan::lavNames(ksrq_age_sem)
+participant_measurements <-  dplyr::bind_rows(
+    lapply(lavaan::lavPredict(ksrq_cfa_agesem_reginvar_sample), data.frame))
+ksrq_age_model_data_list <- lapply(lavaan::inspect(ksrq_cfa_agesem_reginvar_sample, 'data'), as.data.frame)
+ksrq_age_model_data <- dplyr::bind_rows(ksrq_age_model_data_list, .id = 'sample')
+names(ksrq_age_model_data) <- c('sample', lavaan::lavNames(ksrq_cfa_agesem_reginvar_sample))
 ksrq_age_model_data <- cbind(ksrq_age_model_data, participant_measurements)
 ksrq_age_model_data_l <- tidyr::gather(
-    dplyr::select(ksrq_age_model_data, age_c:gender_c, k_srq_admiration:k_srq_sociability),
+    dplyr::select(ksrq_age_model_data, age_c:gender_c, sample, k_srq_admiration:k_srq_sociability),
     factor,
     value,
-    -gender_c, -age_c, -age_c2)
+    -gender_c, -age_c, -age_c2, -sample)
 ksrq_age_model_data_l$age <- ksrq_age_model_data_l$age_c + 18
 ksrq_age_model_data_l <- dplyr::filter(
     ksrq_age_model_data_l,
@@ -808,39 +982,74 @@ ksrq_age_model_data_l <- dplyr::filter(
     !is.na(age))
 
 age_gender_pred_df <- tidyr::gather(
-    cbind(age_gender_pred_df, ksrq_pred_factor_scores),
+    dplyr::bind_rows(ksrq_pred_factor_scores),
     factor,
     value,
-    -age, -gender_c, -age_c, -age_c2)
+    -age, -gender_c, -age_c, -age_c2, -sample)
+```
 
+```{r fig.width=5.875, fig.height=4}
+gender_colors <- c('#1f78b4', '#33a02c')
+ggplot2::theme_set(ggplot2::theme_minimal())
 ksrq_age_pred_plot <- ggplot2::ggplot(
     age_gender_pred_df,
-    ggplot2::aes(x = age, y = value, group = gender_c, color = factor(gender_c))) + 
+    ggplot2::aes(x = age, y = value, 
+                 group = interaction(sample, gender_c),
+                 linetype = factor(gender_c))) +
     ggplot2::geom_point(data = ksrq_age_model_data_l,
-                        alpha = .5) +
-    ggplot2::geom_line(data = ksrq_age_model_data_l, 
-                       stat = 'smooth') +
+                        alpha = .5, position = ggplot2::position_jitter(h=0, w = .2),
+                        ggplot2::aes(color = factor(gender_c))) +
     ggplot2::geom_line() + 
-    ggplot2::facet_wrap(~factor) + 
-    ggplot2::coord_cartesian(xlim = c(min(ksrq_age_model_data_l$age, na.rm = T), 
-                                      max(ksrq_age_model_data_l$age, na.rm = T)),
-                             ylim = c(-4.5, 3))
+    ggplot2::facet_wrap(~factor,
+                        labeller = ggplot2::labeller(
+                            factor = c('k_srq_admiration' = 'Admiration',
+                                       'k_srq_passivity' = 'Passivity',
+                                       'k_srq_sexual_relationships' = 'Sexual relationships',
+                                       'k_srq_sociability' = 'Sociability'))) + 
+    ggplot2::scale_color_manual(breaks = c(-.5, .5), values = gender_colors,
+                                  labels = c('Male', 'Female'), name = 'Gender') + 
+    ggplot2::scale_linetype_manual(breaks = c(-.5, .5), values = c(2,4),
+                                     labels = c('Male', 'Female'), name = 'Gender') + 
+    ggplot2::coord_cartesian(xlim = c(min(ksrq_age_model_data_l$age, na.rm = T),
+                                      max(ksrq_age_model_data_l$age, na.rm = T))) +
+    ggplot2::labs(x = 'Age (years)', y = 'Latent variable value') + 
+    NULL
+ksrq_age_pred_plot
+```
 
+```{r}
+
+ksrq_std_par_table <- ksrq_std_pars[ksrq_std_pars$op == '~' & ksrq_std_pars$rhs %in% c('age_c', 'age_c:gender_c', 'age_c2', 'age_c2:gender_c'),
+              c('lhs', 'rhs', 'group', 'est.std', 'ci.lower', 'ci.upper')] %>%
+    dplyr::mutate(est.std = sprintf('%0.2f [%0.2f, %0.2f]', est.std, ci.lower, ci.upper),
+                  group = inspect(ksrq_cfa_agesem_reginvar_sample, 'group.label')[group]) %>%
+    dplyr::select(-ci.lower, -ci.upper) %>%
+    tidyr::spread(rhs, est.std) %>%
+    dplyr::mutate(group = sample_labels_short[group],
+                  lhs_ = lhs) %>%
+    dplyr::group_by(lhs_) %>%
+    dplyr::mutate(lhs = c(stringr::str_to_title(sub('_', ' ', sub('k_srq_', '', lhs[[1]]))), 
+                          rep('', n()-1))) %>% 
+    dplyr::ungroup() %>%
+    dplyr::select(lhs, group, age_c, `age_c:gender_c`, age_c2, `age_c2:gender_c`)
 
 ksrq_age_table <- knitr::kable(
-    dplyr::filter(parameterestimates(ksrq_age_sem, stan = T), op == '~'),
+    dplyr::filter(parameterestimates(ksrq_cfa_agesem_reginvar_sample, stan = T), op == '~'),
     digits = 2,
     caption = paste0('K-SRQ and age; N obs. = ',
-                     lavaan::nobs(ksrq_age_sem)))
+                     lavaan::nobs(ksrq_cfa_agesem_reginvar_sample)))
 ksrq_age_table
-ksrq_age_pred_plot
 
+knitr::kable(ksrq_std_par_table,
+             col.names = c('K-SRQ factor', 'Sample', 
+                           '$\\text{Age}$', '$\\text{Age}\\times\\text{Gender}$', 
+                           '$\\text{Age}^2$', '$\\text{Age}^2\\times\\text{Gender}$'),
+             booktabs = TRUE)
 ```
 
 ### K-SRQ PDS
 
 ```{r}
-
 splt_fsmi_devdemog$pds_c <- as.numeric(splt_fsmi_devdemog$PDS_mean_score) - 3.0
 splt_fsmi_devdemog$pds_c2 <- splt_fsmi_devdemog$pds_c^2
 
@@ -860,93 +1069,194 @@ ksrq_pds_model_lin <- paste(
 # pds_mod_data <- dplyr::filter(splt_fsmi_devdemog, !(grepl('yads', sample) & PDS_mean_score < 3))
 pds_mod_data <- splt_fsmi_devdemog
 
-ksrq_pds_sem <- lavaan::lavaan(
-    model = ksrq_pds_model, 
-    data = pds_mod_data,
+ksrq_cfa_metric_pdssem_sample <- lavaan::lavaan(
+    model = ksrq_pds_model, data = pds_mod_data,
     missing = 'fiml', estimator = 'MLR',
     int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
+    auto.fix.first = TRUE, std.lv = FALSE, 
     auto.fix.single = TRUE, auto.var = TRUE, 
     auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'sample', group.equal = c('loadings', 'lv.variances', 'lv.covariances'),
+    group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                      'k_srq_admiration =~  K_SRQ_7',
+                      'k_srq_sexual_relationships =~ K_SRQ_13',
+                      'k_srq_sexual_relationships =~ K_SRQ_20'))
 
-ksrq_pds_lin_sem <- lavaan::lavaan(
-    model = ksrq_pds_model_lin, 
-    data = pds_mod_data,
+ksrq_cfa_metric_pdssem_reginvar_sample <- lavaan::lavaan(
+    model = ksrq_pds_model, data = pds_mod_data,
     missing = 'fiml', estimator = 'MLR',
     int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
+    auto.fix.first = TRUE, std.lv = FALSE, 
     auto.fix.single = TRUE, auto.var = TRUE, 
     auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'sample', group.equal = c('loadings', 
+                                           'lv.variances', 
+                                           'lv.covariances',
+                                           'regressions', 'means'),
+    group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                      'k_srq_admiration =~  K_SRQ_7',
+                      'k_srq_sexual_relationships =~ K_SRQ_13',
+                      'k_srq_sexual_relationships =~ K_SRQ_20'))
 
-anova(ksrq_pds_lin_sem, ksrq_pds_sem)
-```
+ksrq_cfa_metric_pdssemlin_reginvar_sample <- lavaan::lavaan(
+    model = ksrq_pds_model_lin, data = pds_mod_data,
+    missing = 'fiml', estimator = 'MLR',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = TRUE, std.lv = FALSE, 
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'sample', group.equal = c('loadings', 
+                                           'lv.variances', 
+                                           'lv.covariances',
+                                           'regressions', 'means'),
+    group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                      'k_srq_admiration =~  K_SRQ_7',
+                      'k_srq_sexual_relationships =~ K_SRQ_13',
+                      'k_srq_sexual_relationships =~ K_SRQ_20'))
 
-```{r}
-ksrq_pds_ints <- inspect(ksrq_pds_sem, 'mean.lv')
-ksrq_pds_betas <- inspect(ksrq_pds_sem, 'coef')$beta[1:4, c(5,7,6,8,9)]
+ksrq_cfa_pdssem_reginvar_sample <- lavaan::lavaan(
+    model = ksrq_pds_model, data = pds_mod_data,
+    missing = 'fiml', estimator = 'MLR',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = TRUE, std.lv = FALSE, 
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE,
+    group = 'sample', group.equal = c('loadings', 
+                                           'lv.variances', 
+                                           'lv.covariances',
+                                           'regressions', 'means'))
 
-pds_gender_pred_df <- as.data.frame(expand.grid(pds = seq(1,4,.25), gender_c = c(-.5, .5),
-                                                sample = na.omit(unique(pds_mod_data$sample))))
-pds_gender_pred_df$pds_c <- pds_gender_pred_df$pds - 3.0
+ksrq_cfa_metric_pdssem_fit <- AIC(ksrq_cfa_metric_pdssem_sample, 
+                                  ksrq_cfa_metric_pdssem_reginvar_sample)
+rbind(ksrq_cfa_metric_pdssem_fit, difference = sapply(ksrq_cfa_metric_pdssem_fit, diff))
+#Constrained regression fit better
+
+ksrq_cfa_metric_pdssemlin_fit <- AIC(ksrq_cfa_metric_pdssemlin_reginvar_sample,
+                                  ksrq_cfa_metric_pdssem_reginvar_sample)
+rbind(ksrq_cfa_metric_pdssem_fit, difference = sapply(ksrq_cfa_metric_pdssem_fit, diff))
+#quad fit better
+
+#invariant and unconstrained model coefficient differences
+round(inspect(ksrq_cfa_metric_pdssem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] - 
+    inspect(ksrq_cfa_agesem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)],3)
+
+#invariant and unconstrained model standardized coefficient differences
+ksrq_pdssem_betadiffs <- inspect(ksrq_cfa_metric_pdssem_reginvar_sample, 'std')$yads_online$beta[1:4, c(5,7,6,8,9)] - 
+    inspect(ksrq_cfa_pdssem_reginvar_sample, 'std')$yads_online$beta[1:4, c(5,7,6,8,9)]
+ksrq_pdssem_betadiffs
+
+#invariant and unconstrained z scores and z score differences
+round(inspect(ksrq_cfa_metric_pdssem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] / 
+          inspect(ksrq_cfa_metric_pdssem_reginvar_sample, 'se')$yads_online$beta[1:4, c(5,7,6,8,9)], 3)
+round(inspect(ksrq_cfa_pdssem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] / 
+          inspect(ksrq_cfa_pdssem_reginvar_sample, 'se')$yads_online$beta[1:4, c(5,7,6,8,9)], 3)
+round(inspect(ksrq_cfa_metric_pdssem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] /
+          inspect(ksrq_cfa_metric_pdssem_reginvar_sample, 'se')$yads_online$beta[1:4, c(5,7,6,8,9)] - 
+          inspect(ksrq_cfa_pdssem_reginvar_sample, 'coef')$yads_online$beta[1:4, c(5,7,6,8,9)] / 
+          inspect(ksrq_cfa_pdssem_reginvar_sample, 'se')$yads_online$beta[1:4, c(5,7,6,8,9)], 3)
+
+ksrq_pds_ints <- inspect(ksrq_cfa_pdssem_reginvar_sample, 'mean.lv')
+ksrq_pds_betas <- lapply(inspect(ksrq_cfa_pdssem_reginvar_sample, 'coef'), 
+                         function(asample) asample$beta[1:4, c(5,7,6,8,9)])
+
+ksrq_std_pds_pars <- standardizedsolution(ksrq_cfa_pdssem_reginvar_sample)
+
+pds_gender_pred_df <- as.data.frame(expand.grid(pds = seq(1.4, 4, .2), gender_c = c(-.5, .5), 
+                              sample = c('yads', 'yads_online', 'TDS1', 'TDS2')))
+pds_gender_pred_df$pds_c <- pds_gender_pred_df$pds - 3
 pds_gender_pred_df$pds_c2 <- pds_gender_pred_df$pds_c^2
 pds_gender_pred_mat <- model.matrix(~pds_c*gender_c+pds_c2*gender_c, data = pds_gender_pred_df)
 
-ksrq_pds_pred_factor_scores <- do.call(cbind, lapply(seq_along(ksrq_pds_ints), function(i){
-    y <- pds_gender_pred_mat %*% as.vector(c(ksrq_pds_ints[[i]], ksrq_pds_betas[i,]))
-    dimnames(y)[2] <- names(ksrq_pds_ints)[[i]]
-    y
-}))
+ksrq_pred_factor_scores_pds <- lapply(
+    c('TDS1', 'TDS2', 'yads', 'yads_online'),
+    function(asample) {
+        adf <- do.call(cbind, lapply(seq_along(ksrq_pds_ints[[asample]]), function(i){
+            y <- pds_gender_pred_mat %*% as.vector(c(ksrq_pds_ints[[asample]][[i]], 
+                                                     ksrq_pds_betas[[asample]][i,]))
+            dimnames(y)[2] <- names(ksrq_pds_ints[[asample]])[[i]]
+            y
+        }))
+        cbind(pds_gender_pred_df[pds_gender_pred_df$sample == asample,],
+              adf[pds_gender_pred_df$sample == asample,])
+    })
 
-participant_measurements_pds <- lavaan::lavPredict(ksrq_pds_sem)
-ksrq_pds_model_data <- as.data.frame(lavaan::inspect(ksrq_pds_sem, 'data'))
-names(ksrq_pds_model_data) <- lavaan::lavNames(ksrq_pds_sem)
+participant_measurements_pds <-  dplyr::bind_rows(
+    lapply(lavaan::lavPredict(ksrq_cfa_pdssem_reginvar_sample), data.frame))
+ksrq_pds_model_data_list <- lapply(lavaan::inspect(ksrq_cfa_pdssem_reginvar_sample, 'data'), as.data.frame)
+ksrq_pds_model_data <- dplyr::bind_rows(ksrq_pds_model_data_list, .id = 'sample')
+names(ksrq_pds_model_data) <- c('sample', lavaan::lavNames(ksrq_cfa_pdssem_reginvar_sample))
 ksrq_pds_model_data <- cbind(ksrq_pds_model_data, participant_measurements_pds)
-ksrq_pds_model_data$sample <- pds_mod_data$sample
 ksrq_pds_model_data_l <- tidyr::gather(
-    dplyr::select(ksrq_pds_model_data, pds_c:gender_c, k_srq_admiration:k_srq_sociability, sample),
+    dplyr::select(ksrq_pds_model_data, pds_c:gender_c, sample, k_srq_admiration:k_srq_sociability),
     factor,
     value,
     -gender_c, -pds_c, -pds_c2, -sample)
-ksrq_pds_model_data_l$pds <- ksrq_pds_model_data_l$pds_c + 3.0
+ksrq_pds_model_data_l$pds <- ksrq_pds_model_data_l$pds_c + 3
 ksrq_pds_model_data_l <- dplyr::filter(
     ksrq_pds_model_data_l,
     !is.na(gender_c),
     !is.na(pds))
 
 pds_gender_pred_df <- tidyr::gather(
-    cbind(pds_gender_pred_df, ksrq_pds_pred_factor_scores),
+    dplyr::bind_rows(ksrq_pred_factor_scores_pds),
     factor,
     value,
     -pds, -gender_c, -pds_c, -pds_c2, -sample)
 ```
 
-```{r}
+```{r fig.width=5.875, fig.height=4}
+gender_colors <- c('#1f78b4', '#33a02c')
+ggplot2::theme_set(ggplot2::theme_minimal())
 ksrq_pds_pred_plot <- ggplot2::ggplot(
     pds_gender_pred_df,
-    ggplot2::aes(x = pds, y = value, group = gender_c, color = factor(gender_c))) + 
+    ggplot2::aes(x = pds, y = value, 
+                 group = interaction(sample, gender_c),
+                 linetype = factor(gender_c))) +
     ggplot2::geom_point(data = ksrq_pds_model_data_l,
-                        alpha = .5) +
-    ggplot2::geom_line(data = ksrq_pds_model_data_l, 
-                       stat = 'smooth') +
-    ggplot2::geom_line() +
-    ggplot2::facet_grid(gender_c~factor) + 
-    ggplot2::coord_cartesian(xlim = c(min(ksrq_pds_model_data_l$pds, na.rm = T), 
-                                      max(ksrq_pds_model_data_l$pds, na.rm = T)),
-                             ylim = c(-4.5, 3)) + 
-    ggplot2::scale_color_manual(name = 'Gender', breaks = c(-.5, .5), values = c('#1f78b4', '#33a02c'),
-                                labels = c('Male', 'Female')) + 
-    ggplot2::theme_minimal()
-
-
-ksrq_pds_table <- knitr::kable(
-    dplyr::filter(parameterestimates(ksrq_pds_sem, stan = T), op == '~'),
-    digits = 2,
-    caption = paste0('K-SRQ and age; N obs. = ',
-                     lavaan::nobs(ksrq_pds_sem)))
-ksrq_pds_table
+                        alpha = .5, position = ggplot2::position_jitter(h=0, w = .04),
+                        ggplot2::aes(color = factor(gender_c))) +
+    ggplot2::geom_line() + 
+    ggplot2::facet_wrap(~factor,
+                        labeller = ggplot2::labeller(
+                            factor = c('k_srq_admiration' = 'Admiration',
+                                       'k_srq_passivity' = 'Passivity',
+                                       'k_srq_sexual_relationships' = 'Sexual relationships',
+                                       'k_srq_sociability' = 'Sociability'))) + 
+    ggplot2::scale_color_manual(breaks = c(-.5, .5), values = gender_colors,
+                                  labels = c('Male', 'Female'), name = 'Gender') + 
+    ggplot2::scale_linetype_manual(breaks = c(-.5, .5), values = c(2,4),
+                                     labels = c('Male', 'Female'), name = 'Gender') + 
+    ggplot2::coord_cartesian(xlim = c(min(ksrq_pds_model_data_l$pds, na.rm = T),
+                                      max(ksrq_pds_model_data_l$pds, na.rm = T))) +
+    ggplot2::labs(x = 'PDS mean score', y = 'Latent variable value') + 
+    NULL
 ksrq_pds_pred_plot
+```
+
+```{r}
+ksrq_std_pds_par_table <- ksrq_std_pds_pars[ksrq_std_pds_pars$op == '~' & ksrq_std_pds_pars$rhs %in% c('pds_c', 'pds_c:gender_c', 'pds_c2', 'pds_c2:gender_c'),
+              c('lhs', 'rhs', 'group', 'est.std', 'ci.lower', 'ci.upper')] %>%
+    dplyr::mutate(est.std = sprintf('%0.2f [%0.2f, %0.2f]', est.std, ci.lower, ci.upper),
+                  group = inspect(ksrq_cfa_pdssem_reginvar_sample, 'group.label')[group]) %>%
+    dplyr::select(-ci.lower, -ci.upper) %>%
+    tidyr::spread(rhs, est.std) %>%
+    dplyr::mutate(group = sample_labels_short[group],
+                  lhs_ = lhs) %>%
+    dplyr::group_by(lhs_) %>%
+    dplyr::mutate(lhs = c(stringr::str_to_title(sub('_', ' ', sub('k_srq_', '', lhs[[1]]))), 
+                          rep('', n()-1))) %>% 
+    dplyr::ungroup() %>%
+    dplyr::select(lhs, group, pds_c, `pds_c:gender_c`, pds_c2, `pds_c2:gender_c`)
+
+knitr::kable(ksrq_std_pds_par_table,
+             col.names = c('K-SRQ factor', 'Sample', 
+                           '$\\text{PDS}$', '$\\text{PDS}\\times\\text{Gender}$', 
+                           '$\\text{PDS}^2$', '$\\text{PDS}^2\\times\\text{Gender}$'),
+             booktabs = TRUE)
 ```
 
 
@@ -980,7 +1290,7 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 
 ### Measurement invariance
 
-```{r uppsfullcfa}
+```{r uppsfullcfa, eval = F}
 uppsp_cfa_model <- milav::create_cfa_from_keylist(
     upps_key)
 
@@ -1030,7 +1340,7 @@ The UPPS-P scale shows metric invariance, so we can look at covariance from late
 
 ### UPPS-P and age
 
-```{r}
+```{r, eval = F}
 uppsp_age_model <- paste(
     upps_cfa_model,
     paste0(paste(names(upps_key), collapse = ' + '), ' ~ age_c + age_c2 + gender_c + age_c:gender_c + age_c2:gender_c'),
@@ -1055,7 +1365,7 @@ ggplot2::ggplot(
     ggplot2::facet_wrap(~scale)
 ```
 
-```{r}
+```{r, eval = F}
 uppsp_age_sem <- lavaan::lavaan(
     model = uppsp_age_model, 
     data = splt_fsmi_devdemog,
@@ -1129,7 +1439,7 @@ uppsp_age_pred_plot
 
 The number of partners and frequency of sex is expected to be different between those who are in or not in long-term relationships.
 
-```{r}
+```{r, eval = F}
 ggplot2::theme_set(ggplot2::theme_minimal())
 
 
@@ -1137,7 +1447,7 @@ table(splt_fsmi_devdemog$ordered_sex_freq, splt_fsmi_devdemog$sample, useNA = 'i
 table(splt_fsmi_devdemog$ordered_num_partner, splt_fsmi_devdemog$sample, useNA = 'ifany')
 ```
 
-```{r sesfsmiplot, fig.width=8, fig.height=4}
+```{r sesfsmiplot, fig.width=8, fig.height=4, eval = F}
 sex_freq_plot <- ggplot2::ggplot(
     data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$ordered_sex_freq) & 
                                   !is.na(splt_fsmi_devdemog$partnered) & 
@@ -1199,7 +1509,7 @@ save_out_list <- c(save_out_list, 'sex_freq_plot', 'num_partnr_plot')
 
 ### FSMI mate seeking
 
-```{r fig.width=4, fig.height=4}
+```{r fig.width=4, fig.height=4, eval = F}
 fsmi_num_partners_model <- paste(fsmi_cfa_matestat_model, 
                                  'ordered_num_partner ~ fsmi_mate + gender_c', sep = '\n')
 
@@ -1264,7 +1574,7 @@ knitr::kable(
 
 ### K-SRQ sexual relationship
 
-```{r fig.width=4, fig.height=4}
+```{r fig.width=4, fig.height=4, eval = F}
 ksrq_num_partners_model <- paste(ksrq_model, 
                                  'ordered_num_partner ~ k_srq_sexual_relationships + gender_c', sep = '\n')
 ksrq_num_partners_all_model <- paste(ksrq_model, 
@@ -1331,7 +1641,7 @@ knitr::kable(
 
 ### FSMI mate seeking
 
-```{r fig.width=6, fig.height=4}
+```{r fig.width=6, fig.height=4, eval = F}
 fsmi_sex_feq_null_model <- paste(fsmi_cfa_matestat_model, 
                             'ordered_sex_freq ~ 0*fsmi_mate + gender_c', sep = '\n')
 fsmi_sex_feq_model <- paste(fsmi_cfa_matestat_model, 
@@ -1377,7 +1687,7 @@ knitr::kable(
 
 ### K-SRQ sexual relationship
 
-```{r fig.width=6, fig.height=4}
+```{r fig.width=6, fig.height=4, eval = F}
 ksrq_sex_freq_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
                              'ordered_sex_freq ~ k_srq_sexual_relationships + gender_c', sep = '\n')
 ksrq_sex_freq_null_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
@@ -1420,7 +1730,7 @@ knitr::kable(
         lavaan::nobs(fsmi_sex_feq_sem)))
 ```
 
-```{r fig.width=6, fig.height=4}
+```{r fig.width=6, fig.height=4, eval = F}
 ksrq_sex_freq_all_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
                              'ordered_sex_freq ~ k_srq_sexual_relationships + gender_c + age_c', sep = '\n')
 ksrq_sex_freq_all_null_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
@@ -1463,7 +1773,7 @@ knitr::kable(
 
 ## Using both K-SRQ sexual relationship and FSMI mate-seeking scales
 
-```{r}
+```{r, eval = F}
 fsmi_ksrq_num_partners_model <- paste(
     ksrq_model,
     fsmi_cfa_matestat_model, 
@@ -1519,7 +1829,7 @@ knitr::kable(
 
 Not enough adolescents who have had sex and reported frequency of use of protection to look at this group separately (N = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('TDS', splt_fsmi_devdemog$sample)]))`). However, we can look at all people who have complted the K-SRQ and who report on their use of protection (N collge students = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('yads', splt_fsmi_devdemog$sample)]))`). Becuase we don't have information on whether adolescents are in long-term relationships, this collapses across those who do and don't have long-term partners. All participants with data on the K-SRQ are used in the measurement portion of the model.
 
-```{r}
+```{r, eval = F}
 splt_fsmi_devdemog$continuous_use_protection <- as.numeric(splt_fsmi_devdemog$ordered_use_protection)
 
 ksrq_protection_model <- paste(
@@ -1563,7 +1873,7 @@ knitr::kable(
 
 #### FSMI and K-SRQ (college)
 
-```{r}
+```{r, eval = F}
 splt_fsmi_devdemog$continuous_use_protection <- as.numeric(splt_fsmi_devdemog$ordered_use_protection)
 
 fsmi_ksrq_protection_model <- paste(
@@ -1615,6 +1925,6 @@ This helps establish some validity for these two scales. First, it seems likely 
 
 # References
 
-```{r echo = F, eval = F}
+```{r echo = F, eval = T}
 save.image(file = file.path(save_out_dir, 'fsmi-cfa.rda'))
 ```
