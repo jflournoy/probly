@@ -2100,12 +2100,20 @@ college_cor_sensitivity_partnered_abs_max <- max(abs(inspect(all_scales_college_
 
 ```{r}
 data("splt_rl_betas")
+data("splt_lowfi_outcomes")
 splt_rl_betas <- dplyr::mutate(
     splt_rl_betas,
     mean = dplyr::case_when(
         parameter %in% c('ep_prm', 'xi_prm') & !contrasted ~ qnorm(mean),
         parameter %in% c('rho_prm') & !contrasted ~ log(mean),
-        TRUE ~ mean*10))
+        TRUE ~ mean))
+
+splt_lowfi_outcomes <- dplyr::mutate(
+    splt_lowfi_outcomes,
+    value = dplyr::case_when(
+        !grepl(' - Hungry/Thirsty', condition) & grepl('bin', outcome) ~ qnorm(value),
+        TRUE ~ value))
+
 splt_rl_betas_w <- tidyr::spread(
     tidyr::unite(
         dplyr::mutate(
@@ -2115,45 +2123,75 @@ splt_rl_betas_w <- tidyr::spread(
             condition = gsub('[- /]', '', abbreviate(condition, minlength = 12))),
         parcond, parameter, condition),
     parcond, mean)
-splt_fsmi_devdemog_yads_betas <- left_join(splt_fsmi_devdemog_yads,
-                                           splt_rl_betas_w, 
-                                           by = c('SID' = 'id'))
 
-rl_var_names <- names(dplyr::select(splt_rl_betas_w, -id))
-rl_var_names_facts <- paste(paste0(paste0(rl_var_names, '_fac'),
-                                   '=~', rl_var_names),
-                            collapse = '\n')
-rl_var_names_cor <- paste0(paste(rl_var_names, collapse = ' + '), 
-                           '~~', 
-                           paste(all_scale_latent_varnames, collapse = ' + '))
+splt_lowfi_outcomes_w <- tidyr::spread(
+    tidyr::unite(
+        dplyr::mutate(
+            dplyr::filter(
+                dplyr::select(
+                    dplyr::ungroup(splt_lowfi_outcomes), 
+                    value, outcome, condition, id),
+                condition != 'Hungry/Thirsty - Hungry/Thirsty',
+                outcome %in% c('bin_start_to_4', 'bin_5_to_end')),
+            condition = gsub('[- /]', '', abbreviate(condition, minlength = 12))),
+        parcond, outcome, condition),
+    parcond, value)
 
-all_scales_college_cor_load_splt <- lavaan::lavaan(
-    model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
-                  uppsp_cfa_model, ksrq_model, 
-                  rl_var_names_facts, 
-                  sep = '\n'),
-    data = splt_fsmi_devdemog_yads_betas,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'gender',
-    group.equal = c('loadings',
-                    'lv.variances',
-                    'lv.covariances'),
-    verbose = T, optim.method = 'BFGS')
+
+splt_fsmi_devdemog_yads_betas <- dplyr::left_join(
+    dplyr::left_join(splt_fsmi_devdemog_yads,
+                     splt_rl_betas_w, 
+                     by = c('SID' = 'id')),
+    splt_lowfi_outcomes_w,
+    by = c('SID' = 'id'))
+
+rl_var_names <- lapply(c('^ep_prm_', '^rho_prm_', '^xi_prm_', '^b_', 
+                         '^bin_start_to_4_', 'bin_5_to_end_'),
+                       function(betapattern){
+                           varnames <- grep(betapattern, 
+                                            names(splt_fsmi_devdemog_yads_betas),
+                                            value = T)
+                           return(varnames)
+                       })
+
+rl_var_names_facts <- lapply(rl_var_names, 
+                             function(varnames){
+                                 paste(paste0(paste0(varnames, '_fac'),
+                                              '=~', varnames),
+                                       collapse = '\n')
+                                 })
+
+all_scales_college_cor_load_splt <- lapply(
+    rl_var_names_facts,
+    function(rlfacts){
+        lavaan::lavaan(
+            model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
+                          uppsp_cfa_model, ksrq_model, 
+                          rlfacts, 
+                          sep = '\n'),
+            data = splt_fsmi_devdemog_yads_betas,
+            missing = 'fiml', estimator = 'ML',
+            int.ov.free = TRUE, int.lv.free = FALSE, 
+            auto.fix.first = TRUE, std.lv = FALSE, 
+            auto.fix.single = TRUE, auto.var = TRUE, 
+            auto.cov.lv.x = TRUE, auto.th = TRUE, 
+            auto.delta = TRUE, auto.cov.y = TRUE,
+            group = 'gender',
+            group.equal = c('loadings',
+                            'lv.variances',
+                            'lv.covariances'),
+            verbose = F)
+    })
 # control=list(init_nelder_mead=TRUE), verbose = TRUE)
 #optim.method = 'optim'
 # all_scales_college_cor_load_splt_std <- standardizedsolution(all_scales_college_cor_load_splt, ci = T)
 ```
 
-```{r fig.width=3.25, fig.height=1}
+```{r fig.width=3.25, fig.height=1, eval = F}
 ggplot2::theme_set(ggplot2::theme_minimal())
 ggplot2::ggplot(
     data.frame(cors = as.numeric(inspect(all_scales_college_cor_load_splt, 
-                                         'cor.lv')[[1]][14:(14+4*5-1), 1:13])),
+                                         'cor.lv')[[1]][14:(14+1*4-1), 1:13])),
     ggplot2::aes(x = cors)) + 
     ggplot2::geom_vline(xintercept = 0) + 
     ggplot2::geom_histogram(binwidth = .01, alpha = .8) +
