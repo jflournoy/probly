@@ -203,8 +203,11 @@ splt_fsmi_devdemog <- dplyr::mutate_at(splt_fsmi_devdemog,
                                        vars(contains('SES')), funs(ifelse(. == -99, NA, .)))
 
 last_30_response_labels <- list(
-    levels = c(0,1,2,3,4,5,6),
-    labels = c('0', '1-2', '3-5', '6-9', '10-19', '20-29', 'All 30'))
+    levels = c(0,1,2,3,4),
+    labels = c('0', '1-2', '3-5', '6-9', '10 or more'))
+last_30_5drinks_response_labels <- list(
+    levels = c(0,1,2,3),
+    labels = c('0', '1-2', '3-5', '6 or more'))
 
 #This may not be accurate for some people who report, earlier in the questionnaires, that they have had sex in
 # the last six months. That question is more clear that sex can mean a lot of things. This says "sexual intercourse"
@@ -212,15 +215,25 @@ splt_fsmi_devdemog$sex_ever <- factor(splt_fsmi_devdemog$YRBS_31, levels = c(0,1
 
 splt_fsmi_devdemog$alcohol_ever <- factor(splt_fsmi_devdemog$YRBS_12, levels = c(0,1), labels = c('No', 'Yes'))
 splt_fsmi_devdemog$alcohol_days_of_lst30 <- ordered(
-    splt_fsmi_devdemog$YRBS_14,
+    ifelse(splt_fsmi_devdemog$YRBS_14 < 4,
+           splt_fsmi_devdemog$YRBS_14,
+           4),
     levels = last_30_response_labels$levels,
     labels = last_30_response_labels$labels)
+
+table(splt_fsmi_devdemog$alcohol_days_of_lst30)
+
 splt_fsmi_devdemog$alcohol_5drnks_lst30 <- ordered(
-    splt_fsmi_devdemog$YRBS_15,
-    levels = last_30_response_labels$levels,
-    labels = last_30_response_labels$labels)
+    ifelse(splt_fsmi_devdemog$YRBS_15 < 3,
+           splt_fsmi_devdemog$YRBS_15,
+           3),
+    levels = last_30_5drinks_response_labels$levels,
+    labels = last_30_5drinks_response_labels$labels)
+table(splt_fsmi_devdemog$alcohol_5drnks_lst30)
+
 splt_fsmi_devdemog$substance_pre_sex <- factor(splt_fsmi_devdemog$YRBS_35, 
                                                levels = c(0,1), labels = c('No', 'Yes'))
+table(splt_fsmi_devdemog$substance_pre_sex)
 
 splt_fsmi_devdemog$sex_six_months <- splt_fsmi_devdemog$SES_11 == 5
 
@@ -243,8 +256,7 @@ splt_fsmi_devdemog$ordered_sex_freq <- ordered(
                          3),
                   4)),
     labels = c('0', '1-9', '10-19', '20-39', '40 or more'))
-
-
+table((splt_fsmi_devdemog$ordered_sex_freq))
 
 splt_fsmi_devdemog$ordered_num_partner <- ordered(
     ifelse(splt_fsmi_devdemog$SES_13 == 0 | 
@@ -255,6 +267,7 @@ splt_fsmi_devdemog$ordered_num_partner <- ordered(
                   3)),
     levels = 0:3,
     labels = c(0:2, '3 or more'))
+table((splt_fsmi_devdemog$ordered_num_partner))
 
 splt_fsmi_devdemog$gender_c <- splt_fsmi_devdemog$gender - .5
 splt_fsmi_devdemog$age_c <- splt_fsmi_devdemog$age - 18
@@ -3024,7 +3037,7 @@ uppsp_fsmi_partners_model <- paste(
     'ordered_num_partner ~ neg_urgency + sensation_seeking + pos_urgency + fsmi_mate + gender_c',
     sep = '\n')
 
-uppsp_fsmi_partners_null_model <- paste(
+uppsp_fsmi_partners_noupps_model <- paste(
     sensseek_urgency_cfa,
      'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
 ',
@@ -3059,7 +3072,7 @@ uppsp_fsmi_partners_noss_model <- paste(
     'ordered_num_partner ~ neg_urgency + 0*sensation_seeking + pos_urgency + fsmi_mate + gender_c',
     sep = '\n')
 
-uppsp_fsmi_partners_nullnull_model <- paste(
+uppsp_fsmi_partners_null_model <- paste(
     sensseek_urgency_cfa,
      'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
 ',
@@ -3110,8 +3123,8 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
-    uppsp_fsmi_partners_null_sem <- lavaan::lavaan(
-        model = uppsp_fsmi_partners_null_model, 
+    uppsp_fsmi_partners_noupps_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_noupps_model, 
         data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
                                       grepl('yads', splt_fsmi_devdemog$sample),],
         missing = 'listwise', estimator = 'WLSMV',
@@ -3165,8 +3178,8 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
-    uppsp_fsmi_partners_nullnull_sem <- lavaan::lavaan(
-        model = uppsp_fsmi_partners_nullnull_model, 
+    uppsp_fsmi_partners_null_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_null_model, 
         data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
                                       grepl('yads', splt_fsmi_devdemog$sample),],
         missing = 'listwise', estimator = 'WLSMV',
@@ -3177,35 +3190,35 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
         auto.delta = TRUE, auto.cov.y = TRUE)
     
     uppsp_fsmi_partners_lrt <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
-                                                  uppsp_fsmi_partners_null_sem,
-                                                  uppsp_fsmi_partners_nullnull_sem)
+                                                  uppsp_fsmi_partners_noupps_sem,
+                                                  uppsp_fsmi_partners_null_sem)
     
     uppsp_fsmi_partners_lrt2 <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
                                                    uppsp_fsmi_partners_nofsmi_sem,
-                                                   uppsp_fsmi_partners_nullnull_sem)
+                                                   uppsp_fsmi_partners_null_sem)
     
     uppsp_fsmi_partners_lrtpurg <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
                                                    uppsp_fsmi_partners_nopurg_sem,
-                                                   uppsp_fsmi_partners_nullnull_sem)
+                                                   uppsp_fsmi_partners_null_sem)
     
     uppsp_fsmi_partners_lrtnurg <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
                                                    uppsp_fsmi_partners_nonurg_sem,
-                                                   uppsp_fsmi_partners_nullnull_sem)
+                                                   uppsp_fsmi_partners_null_sem)
     
     uppsp_fsmi_partners_lrtss <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
                                                    uppsp_fsmi_partners_noss_sem,
-                                                   uppsp_fsmi_partners_nullnull_sem)
+                                                   uppsp_fsmi_partners_null_sem)
     
     save(fsmi_num_partners_sem,
          fsmi_num_partners_all_sem,
          uppsp_fsmi_partners_sem,
          uppsp_fsmi_partners_all_sem,
-         uppsp_fsmi_partners_null_sem,
+         uppsp_fsmi_partners_noupps_sem,
          uppsp_fsmi_partners_nofsmi_sem,
          uppsp_fsmi_partners_nopurg_sem,
          uppsp_fsmi_partners_nonurg_sem,
          uppsp_fsmi_partners_noss_sem,
-         uppsp_fsmi_partners_nullnull_sem,
+         uppsp_fsmi_partners_null_sem,
          uppsp_fsmi_partners_lrt,
          uppsp_fsmi_partners_lrt2,
          uppsp_fsmi_partners_lrtpurg,
@@ -3229,6 +3242,12 @@ fsmi_num_partners_all_sem_partners <- fsmi_num_partners_all_sem_partners_[fsmi_n
 ```
 
 ```{r fig.width=3.25, fig.height=2}
+uppsp_fsmi_partners_lrt
+uppsp_fsmi_partners_lrt2
+uppsp_fsmi_partners_lrtpurg
+uppsp_fsmi_partners_lrtnurg
+uppsp_fsmi_partners_lrtss
+
 plot_lav_factor_pred(lavfit = fsmi_num_partners_sem, 
                      factor_name = 'fsmi_mate', 
                      orig_data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
@@ -3286,6 +3305,11 @@ When looking at the size of standardized coefficients, positive urgency is the l
 ### K-SRQ sexual relationship
 
 ```{r fig.width=4, fig.height=4}
+ksrq_num_partners_null_model <- paste(ksrq_model, 
+                                 'ordered_num_partner ~ 0*k_srq_sexual_relationships + gender_c', sep = '\n')
+ksrq_num_partners_null_all_model <- paste(ksrq_model, 
+                                 'ordered_num_partner ~ 0*k_srq_sexual_relationships + gender_c + age_c', sep = '\n')
+
 ksrq_num_partners_model <- paste(ksrq_model, 
                                  'ordered_num_partner ~ k_srq_sexual_relationships + k_srq_admiration + gender_c', sep = '\n')
 ksrq_num_partners_all_model <- paste(ksrq_model, 
@@ -3335,6 +3359,27 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
     
     ksrq_num_partners_all_sem <- lavaan::lavaan(
         model = ksrq_num_partners_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_num_partners_null_sem <- lavaan::lavaan(
+        model = ksrq_num_partners_null_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_num_partners_null_all_sem <- lavaan::lavaan(
+        model = ksrq_num_partners_null_all_model, 
         data = splt_fsmi_devdemog,
         missing = 'listwise', estimator = 'WLSMV',
         int.ov.free = TRUE, int.lv.free = FALSE, 
@@ -3406,6 +3451,10 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
+    ksrq_num_partners_null_lrt <- lavaan::lavTestLRT(ksrq_noadmrtn_num_partners_sem,
+                                                       ksrq_num_partners_null_sem)
+    ksrq_num_partners_null_all_lrt <- lavaan::lavTestLRT(ksrq_noadmrtn_num_partners_all_sem,
+                                                       ksrq_num_partners_null_all_sem)
     ksrq_num_partners_admrtn_lrt <- lavaan::lavTestLRT(ksrq_num_partners_sem,
                                                        ksrq_noadmrtn_num_partners_sem)
     uppsp_ksrq_num_partners_lrt <- lavaan::lavTestLRT(uppsp_ksrq_num_partners_sem,
@@ -3415,12 +3464,16 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
     
     save(ksrq_num_partners_sem,
          ksrq_num_partners_all_sem,
+         ksrq_num_partners_null_sem,
+         ksrq_num_partners_null_all_sem,
          ksrq_noadmrtn_num_partners_sem,
          ksrq_noadmrtn_num_partners_all_sem,
          uppsp_ksrq_num_partners_sem,
          uppsp_ksrq_nosr_num_partners_sem,
          uppsp_ksrq_num_partners_all__sem,
          uppsp_ksrq_nosr_num_partners_all__sem,
+         ksrq_num_partners_null_lrt,
+         ksrq_num_partners_null_all_lrt,
          ksrq_num_partners_admrtn_lrt,
          uppsp_ksrq_num_partners_lrt,
          uppsp_ksrq_num_partners_all_lrt,
@@ -3428,9 +3481,6 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
 } else {
     load(ksrq_num_partners_modelsFN)
 }
-
-anewdata <- 
-lavaan::lavPredict(ksrq_num_partners_sem,)
 
 ksrq_num_partners_sem_pred <- lavaan::lavPredict(ksrq_num_partners_sem)
 ksrq_num_partners_sem_partners_ <- splt_fsmi_devdemog$ordered_num_partner[splt_fsmi_devdemog$partnered == 0 &
@@ -3457,57 +3507,63 @@ ggplot2::qplot(ksrq_num_partners_all_sem_pred[,'k_srq_sexual_relationships'],
 ```
 
 ```{r}
+ksrq_num_partners_null_lrt
+ksrq_num_partners_null_all_lrt
+ksrq_num_partners_admrtn_lrt
+uppsp_ksrq_num_partners_lrt
+uppsp_ksrq_num_partners_all_lrt
+
 knitr::kable(
-    dplyr::filter(standardizedsolution(ksrq_num_partners_sem, ci = T), op == '~'),
+    dplyr::filter(parameterestimates(ksrq_num_partners_sem, stan = T, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'K-SRQ Predicting number of partners among unpartnered college students; N obs. = ',
         lavaan::nobs(ksrq_num_partners_sem)))
 
 knitr::kable(
-    dplyr::filter(standardizedsolution(ksrq_noadmrtn_num_partners_sem, ci = T), op == '~'),
+    dplyr::filter(parameterestimates(ksrq_noadmrtn_num_partners_sem, stan = T, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'K-SRQ Predicting number of partners among unpartnered college students; N obs. = ',
         lavaan::nobs(ksrq_num_partners_sem)))
 
 knitr::kable(
-    dplyr::filter(standardizedsolution(ksrq_num_partners_all_sem, ci = T), op == '~'),
+    dplyr::filter(parameterestimates(ksrq_num_partners_all_sem, stan = T, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
         lavaan::nobs(ksrq_num_partners_all_sem)))
 
 knitr::kable(
-    dplyr::filter(standardizedsolution(ksrq_noadmrtn_num_partners_all_sem, ci = T), op == '~'),
+    dplyr::filter(parameterestimates(ksrq_noadmrtn_num_partners_all_sem, stan = T, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
         lavaan::nobs(ksrq_num_partners_all_sem)))
 
 knitr::kable(
-    dplyr::filter(standardizedsolution(uppsp_ksrq_num_partners_sem, ci = T), op == '~'),
+    dplyr::filter(parameterestimates(uppsp_ksrq_num_partners_sem, stan = T, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'K-SRQ Predicting number of partners among unpartnered college students; N obs. = ',
         lavaan::nobs(uppsp_ksrq_num_partners_sem)))
 
 knitr::kable(
-    dplyr::filter(standardizedsolution(uppsp_ksrq_nosr_num_partners_sem, ci = T), op == '~'),
+    dplyr::filter(parameterestimates(uppsp_ksrq_nosr_num_partners_sem, stan = T, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'K-SRQ Predicting number of partners among unpartnered college students; N obs. = ',
         lavaan::nobs(uppsp_ksrq_nosr_num_partners_sem)))
 
 knitr::kable(
-    dplyr::filter(standardizedsolution(uppsp_ksrq_num_partners_all__sem, ci = T), op == '~'),
+    dplyr::filter(parameterestimates(uppsp_ksrq_num_partners_all__sem, stan = T, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
         lavaan::nobs(uppsp_ksrq_num_partners_all__sem)))
 
 knitr::kable(
-    dplyr::filter(standardizedsolution(uppsp_ksrq_nosr_num_partners_all__sem, ci = T), op == '~'),
+    dplyr::filter(parameterestimates(uppsp_ksrq_nosr_num_partners_all__sem, stan = T, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
@@ -3523,96 +3579,150 @@ The coefficient for the Admiration scale is large and negative, which evokes ext
 The magnitude of the Sexual Relationships association (the standard deviation is close to one, so the standardized and unstandardized coefficients are very similar) is about the same size as the effect of reported gender. 
 In other words, the expected difference in number of sexual partners a one point increase on K-SRQ Sexual Relationshi
 
-### SPLT sexual relationship
+### SPLT parameters
 
 ```{r fig.width=4, fig.height=4}
-splt_ep_num_partners_model <- paste(rl_var_names_facts[[1]], 
-                                 'ordered_num_partner ~ ep_prm_DtngLHngT_fac + gender_c', sep = '\n')
-splt_ep_num_partners_all_model <- paste(rl_var_names_facts[[1]], 
-                                 'ordered_num_partner ~ ep_prm_DtngLHngT_fac + gender_c + age_c', sep = '\n')
+splt_param_labels_plaintext <- c(
+    'ep_prm' = '$\\epsilon$', 
+    'rho_prm' = '$\\rho$', 
+    'xi_prm' = '$\\xi$', 
+    'b' = '$b$', 
+    'bin_start_to_4' = 'First-half optimal responses', 
+    'bin_5_to_end' = 'Last-half optimal responses')
+    
+names(rl_var_names_facts) <- c('ep_prm', 'rho_prm', 'xi_prm', 'b', 'bin_start_to_4', 'bin_5_to_end')
+splt_partners_models <- lapply(
+    seq_along(rl_var_names_facts),
+    function(i){
+        splt_num_partners_model <- paste(
+            rl_var_names_facts[[i]], 
+            paste0('ordered_num_partner ~ ',
+                   names(rl_var_names_facts)[[i]],
+                   '_DtngLHngT_fac + gender_c'), sep = '\n')
+        splt_num_partners_null_model <- paste(
+            rl_var_names_facts[[i]], 
+            paste0('ordered_num_partner ~ 0*',
+                   names(rl_var_names_facts)[[i]],
+                   '_DtngLHngT_fac + gender_c'), sep = '\n')
+        splt_num_partners_all_model <- paste(
+            rl_var_names_facts[[i]], 
+            paste0('ordered_num_partner ~ ',
+                   names(rl_var_names_facts)[[i]],
+                   '_DtngLHngT_fac + gender_c + age_c'), sep = '\n')
+        splt_num_partners_all_null_model <- paste(
+            rl_var_names_facts[[i]], 
+            paste0('ordered_num_partner ~ 0*',
+                   names(rl_var_names_facts)[[i]],
+                   '_DtngLHngT_fac + gender_c + age_c'), sep = '\n')
+        return(list(splt_num_partners_model = splt_num_partners_model,
+                    splt_num_partners_null_model = splt_num_partners_null_model,
+                    splt_num_partners_all_model = splt_num_partners_all_model,
+                    splt_num_partners_all_null_model = splt_num_partners_all_null_model))
+    })
+names(splt_partners_models) <- names(rl_var_names_facts)
 
-splt_ep_bl_num_partners_model <- paste(rl_var_names_facts[[1]], 
-                                 'ordered_num_partner ~ ep_prm_HngryThrsty_fac + gender_c', sep = '\n')
-splt_ep_bl_num_partners_all_model <- paste(rl_var_names_facts[[1]], 
-                                 'ordered_num_partner ~ ep_prm_HngryThrsty_fac + gender_c + age_c', sep = '\n')
+splt_num_partners_semsFN <-
+    file.path(data_dir, 'splt_num_partners_semsFN.RDS')
+library(future)
+library(listenv)
+future::plan(sequential)
+splt_num_partners_sems_le <- listenv()
+if(!file.exists(splt_num_partners_semsFN)){
+    for(i in seq_along(splt_partners_models)){
+        splt_num_partners_sems_le[[i]] <- future({
+            splt_num_partners_sem <- lavaan::lavaan(
+                model = splt_partners_models[[i]]$splt_num_partners_model, 
+                data = splt_fsmi_devdemog_betas[splt_fsmi_devdemog_betas$partnered == 0 &
+                                                    grepl('yads', splt_fsmi_devdemog_betas$sample),],
+                missing = 'listwise', estimator = 'WLSMV',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = T, std.lv = F, std.ov = F,
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE)
+            splt_num_partners_null_sem <- lavaan::lavaan(
+                model = splt_partners_models[[i]]$splt_num_partners_null_model, 
+                data = splt_fsmi_devdemog_betas[splt_fsmi_devdemog_betas$partnered == 0 &
+                                                    grepl('yads', splt_fsmi_devdemog_betas$sample),],
+                missing = 'listwise', estimator = 'WLSMV',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = T, std.lv = F, std.ov = F,
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE)
+            
+            splt_num_partners_all_sem <- lavaan::lavaan(
+                model = splt_partners_models[[i]]$splt_num_partners_all_model, 
+                data = splt_fsmi_devdemog_betas,
+                missing = 'listwise', estimator = 'WLSMV',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = T, std.lv = F, std.ov = F,
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE)
+            splt_num_partners_all_null_sem <- lavaan::lavaan(
+                model = splt_partners_models[[i]]$splt_num_partners_all_null_model,
+                data = splt_fsmi_devdemog_betas,
+                missing = 'listwise', estimator = 'WLSMV',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = T, std.lv = F, std.ov = F,
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE)
+            
+            splt_num_partners_lrt <- lavaan::lavTestLRT(splt_num_partners_sem,
+                                                        splt_num_partners_null_sem)
+            splt_num_partners_all_lrt <- lavaan::lavTestLRT(splt_num_partners_all_sem,
+                                                            splt_num_partners_all_null_sem)
+            
+            list(splt_num_partners_sem = splt_num_partners_sem,
+                 splt_num_partners_null_sem = splt_num_partners_null_sem,
+                 splt_num_partners_all_sem = splt_num_partners_all_sem,
+                 splt_num_partners_all_null_sem = splt_num_partners_all_null_sem,
+                 splt_num_partners_lrt = splt_num_partners_lrt,
+                 splt_num_partners_all_lrt = splt_num_partners_all_lrt)
+        })
+    }
+    splt_num_partners_sems <- as.list(
+        lapply(splt_num_partners_sems_le, future::value)
+    )
+    names(splt_num_partners_sems) <- names(splt_partners_models)
+    saveRDS(splt_num_partners_sems, splt_num_partners_semsFN)
+} else {
+    splt_num_partners_sems <- readRDS(splt_num_partners_semsFN)
+}
 
-splt_ep_num_partners_sem <- lavaan::lavaan(
-    model = splt_ep_num_partners_model, 
-    data = splt_fsmi_devdemog_betas[splt_fsmi_devdemog_betas$partnered == 0 &
-                                  grepl('yads', splt_fsmi_devdemog_betas$sample),],
-    missing = 'listwise', estimator = 'WLSMV',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, std.ov = F,
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
+splt_num_partners_chisqp <- lapply(splt_num_partners_sems,
+       function(splt_num_partners_sem){
+           print(splt_num_partners_sem$splt_num_partners_lrt)
+           print(splt_num_partners_sem$splt_num_partners_all_lrt)
+           p <- splt_num_partners_sem$splt_num_partners_lrt[2,'Pr(>Chisq)']
+           p_all <- splt_num_partners_sem$splt_num_partners_all_lrt[2,'Pr(>Chisq)']
+           return(c(p = p , p_all = p_all))
+       })
 
-splt_ep_num_partners_all_sem <- lavaan::lavaan(
-    model = splt_ep_num_partners_all_model, 
-    data = splt_fsmi_devdemog_betas,
-    missing = 'listwise', estimator = 'WLSMV',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, std.ov = F,
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
-
-splt_ep_bl_num_partners_sem <- lavaan::lavaan(
-    model = splt_ep_bl_num_partners_model, 
-    data = splt_fsmi_devdemog_betas[splt_fsmi_devdemog_betas$partnered == 0 &
-                                  grepl('yads', splt_fsmi_devdemog_betas$sample),],
-    missing = 'listwise', estimator = 'WLSMV',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, std.ov = F,
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
-
-splt_ep_bl_num_partners_all_sem <- lavaan::lavaan(
-    model = splt_ep_bl_num_partners_all_model, 
-    data = splt_fsmi_devdemog_betas,
-    missing = 'listwise', estimator = 'WLSMV',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, std.ov = F,
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
-
-ksrq_num_partners_sem_pred <- lavaan::lavPredict(ksrq_num_partners_sem)
-ksrq_num_partners_sem_partners_ <- splt_fsmi_devdemog$ordered_num_partner[splt_fsmi_devdemog$partnered == 0 &
-                                  grepl('yads', splt_fsmi_devdemog$sample)]
-ksrq_num_partners_sem_partners <- ksrq_num_partners_sem_partners_[ksrq_num_partners_sem@Data@case.idx[[1]]]
-
-ksrq_num_partners_all_sem_pred <- lavaan::lavPredict(ksrq_num_partners_all_sem)
-ksrq_num_partners_all_sem_partners_ <- splt_fsmi_devdemog$ordered_num_partner
-ksrq_num_partners_all_sem_partners <- ksrq_num_partners_all_sem_partners_[ksrq_num_partners_all_sem@Data@case.idx[[1]]]
-
-ggplot2::qplot(ksrq_num_partners_sem_pred[,'k_srq_sexual_relationships'],
-               ksrq_num_partners_sem_partners,
-               xlab = 'K-SRQ Sexual relationship factor',
-               ylab = 'Number of partners',
-               geom = 'jitter')
-
-knitr::kable(
-    dplyr::filter(parameterestimates(ksrq_num_partners_sem, stan = T), op == '~'),
-    digits = 2,
-    caption = paste0(
-        'K-SRQ Predicting number of partners among unpartnered college students; N obs. = ',
-        lavaan::nobs(ksrq_num_partners_sem)))
-
-ggplot2::qplot(ksrq_num_partners_all_sem_pred[,'k_srq_sexual_relationships'],
-               ksrq_num_partners_all_sem_partners,
-               xlab = 'K-SRQ Sexual relationship factor',
-               ylab = 'Number of partners',
-               geom = 'jitter')
-
-knitr::kable(
-    dplyr::filter(parameterestimates(ksrq_num_partners_all_sem, stan = T), op == '~'),
-    digits = 2,
-    caption = paste0(
-        'K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
-        lavaan::nobs(ksrq_num_partners_all_sem)))
+nada <- lapply(seq_along(splt_num_partners_sems),
+       function(i){
+           param_label <- splt_param_labels_plaintext[names(splt_num_partners_sems)[[i]]]
+           print(knitr::kable(
+               dplyr::filter(parameterestimates(splt_num_partners_sems[[i]]$splt_num_partners_sem, 
+                                                stan = T), op == '~'),
+               digits = 2,
+               caption = paste0(
+                   param_label, 
+                   ' predicting number of partners among unpartnered college students; N obs. = ',
+                   lavaan::nobs(splt_num_partners_sems[[i]]$splt_num_partners_sem))))
+           
+           print(knitr::kable(
+               dplyr::filter(parameterestimates(splt_num_partners_sems[[i]]$splt_num_partners_all_sem, stan = T), op == '~'),
+               digits = 2,
+               caption = paste0(
+                   param_label, 
+                   ' predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
+                   lavaan::nobs(splt_num_partners_sems[[i]]$splt_num_partners_all_sem))))
+       })
 ```
+No $\chi^2$ tests satisfy the $\alpha = .005$ cutoff. The biggest association is with the $\epsilon$ contrast variable, but it has the wrong sign, with higher learning rates being associated with fewer numbers of sexual partners.
 
 ## Number of sexual encounters
 
