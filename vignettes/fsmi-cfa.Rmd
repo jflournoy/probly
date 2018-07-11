@@ -3728,196 +3728,715 @@ No $\chi^2$ tests satisfy the $\alpha = .005$ cutoff. The biggest association is
 
 ### FSMI mate seeking
 
-```{r fig.width=5.875, fig.height=3}
-fsmi_sex_feq_null_model <- paste(fsmi_cfa_matestat_model, 
-                            'ordered_sex_freq ~ 0*fsmi_mate + gender_c', sep = '\n')
-fsmi_sex_feq_model <- paste(fsmi_cfa_matestat_model, 
-                            'ordered_sex_freq ~ fsmi_mate + gender_c', sep = '\n')
+```{r fig.width=4, fig.height=4}
+fsmi_sex_freq_model <- paste(fsmi_cfa_matestat_model, 
+                             'ordered_sex_freq ~ fsmi_mate + gender_c', sep = '\n')
 
-fsmi_sex_feq_sem_null <- lavaan::lavaan(model = fsmi_sex_feq_null_model, 
-                                   data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
-                                   missing = 'listwise', estimator = 'WLSMV',
-                                   int.ov.free = TRUE, int.lv.free = FALSE, 
-                                   auto.fix.first = T, std.lv = F, 
-                                   auto.fix.single = TRUE, auto.var = TRUE, 
-                                   auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                   auto.delta = TRUE, auto.cov.y = TRUE,
-                                   group = 'partnered')
+sensseek_urgency_cfa <- milav::create_cfa_from_keylist(
+    upps_key[c('pos_urgency','sensation_seeking','neg_urgency')])
 
-fsmi_sex_feq_sem <- lavaan::lavaan(model = fsmi_sex_feq_model, 
-                                   data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
-                                   missing = 'listwise', estimator = 'WLSMV',
-                                   int.ov.free = TRUE, int.lv.free = FALSE, 
-                                   auto.fix.first = T, std.lv = F, 
-                                   auto.fix.single = TRUE, auto.var = TRUE, 
-                                   auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                   auto.delta = TRUE, auto.cov.y = TRUE,
-                                   group = 'partnered')
-lavaan::lavTestLRT(fsmi_sex_feq_sem_null, fsmi_sex_feq_sem)
-
-plot_lav_factor_pred(lavfit = fsmi_sex_feq_sem,
-                     factor_name = 'fsmi_mate', 
-                     orig_data =  splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),], 
-                     dv_name = 'ordered_sex_freq',
-                     geom = 'jitter') + 
-    ggplot2::labs(color = 'Partnered', 
-                  x = 'FSMI mate seeking factor',
-                  y = 'Number of sexual encounters,\npast 6 mo.') + 
-    ggplot2::geom_smooth(method = 'lm', 
-                         formula = y ~ x,
-                         ggplot2::aes(y = as.numeric(dv_dat)), alpha = .2)
-
-knitr::kable(
-    dplyr::filter(parameterestimates(fsmi_sex_feq_sem, stan = T), op == '~'),
-    digits = 2,
-    caption = paste0(
-        'FSMI mate-seeking predicting number of sexual encounters among all college participants with SES responses; N obs. = ',
-        lavaan::nobs(fsmi_sex_feq_sem)))
-```
-
-### K-SRQ sexual relationship
-
-```{r fig.width=6, fig.height=4}
-ksrq_sex_freq_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
-                             'ordered_sex_freq ~ k_srq_sexual_relationships + gender_c', sep = '\n')
-ksrq_sex_freq_null_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
-                             'ordered_sex_freq ~ 0*k_srq_sexual_relationships + gender_c', sep = '\n')
-
-ksrq_sex_freq_sem <- lavaan::lavaan(model = ksrq_sex_freq_model, 
-                                    data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
-                                    missing = 'listwise', estimator = 'WLSMV',
-                                    int.ov.free = TRUE, int.lv.free = FALSE, 
-                                    auto.fix.first = T, std.lv = F, std.ov = F,
-                                    auto.fix.single = TRUE, auto.var = TRUE, 
-                                    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                    auto.delta = TRUE, auto.cov.y = TRUE,
-                                    group = 'partnered')
-ksrq_sex_freq_null_sem <- lavaan::lavaan(model = ksrq_sex_freq_null_model, 
-                                    data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
-                                    missing = 'listwise', estimator = 'WLSMV',
-                                    int.ov.free = TRUE, int.lv.free = FALSE, 
-                                    auto.fix.first = T, std.lv = F, std.ov = F,
-                                    auto.fix.single = TRUE, auto.var = TRUE, 
-                                    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                    auto.delta = TRUE, auto.cov.y = TRUE,
-                                    group = 'partnered')
-lavaan::lavTestLRT(ksrq_sex_freq_null_sem, ksrq_sex_freq_sem)
-
-plot_lav_factor_pred(lavfit = ksrq_sex_freq_sem,
-                     factor_name = 'k_srq_sexual_relationships', 
-                     orig_data =  splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),], 
-                     dv_name = 'ordered_sex_freq',
-                     geom = 'jitter') + 
-    ggplot2::labs(color = 'Partnered', 
-                  x = 'K-SRQ sexual relationships factor',
-                  y = 'Number of sexual encounters, past 6 mo.')
-
-knitr::kable(
-    dplyr::filter(parameterestimates(ksrq_sex_freq_sem, stan = T), op == '~'),
-    digits = 2,
-    caption = paste0(
-        'K-SRQ sexual relationships predicting number of sexual encounters among all college participants with SES responses; N obs. = ',
-        lavaan::nobs(fsmi_sex_feq_sem)))
-```
-
-```{r fig.width=6, fig.height=4}
-ksrq_sex_freq_all_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
-                             'ordered_sex_freq ~ k_srq_sexual_relationships + gender_c + age_c', sep = '\n')
-ksrq_sex_freq_all_null_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
-                             'ordered_sex_freq ~ 0*k_srq_sexual_relationships + gender_c + age_c', sep = '\n')
-
-ksrq_sex_freq_all_sem <- lavaan::lavaan(model = ksrq_sex_freq_all_model, 
-                                    data = splt_fsmi_devdemog,
-                                    missing = 'listwise', estimator = 'WLSMV',
-                                    int.ov.free = TRUE, int.lv.free = FALSE, 
-                                    auto.fix.first = T, std.lv = F, std.ov = F,
-                                    auto.fix.single = TRUE, auto.var = TRUE, 
-                                    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                    auto.delta = TRUE, auto.cov.y = TRUE)
-ksrq_sex_freq_all_null_sem <- lavaan::lavaan(model = ksrq_sex_freq_all_null_model, 
-                                    data = splt_fsmi_devdemog,
-                                    missing = 'listwise', estimator = 'WLSMV',
-                                    int.ov.free = TRUE, int.lv.free = FALSE, 
-                                    auto.fix.first = T, std.lv = F, std.ov = F,
-                                    auto.fix.single = TRUE, auto.var = TRUE, 
-                                    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                    auto.delta = TRUE, auto.cov.y = TRUE)
-lavaan::lavTestLRT(ksrq_sex_freq_all_null_sem, ksrq_sex_freq_all_sem)
-
-plot_lav_factor_pred(lavfit = ksrq_sex_freq_all_sem,
-                     factor_name = 'k_srq_sexual_relationships', 
-                     orig_data =  splt_fsmi_devdemog, 
-                     dv_name = 'ordered_sex_freq',
-                     geom = 'jitter') + 
-    ggplot2::labs(color = 'Partnered', 
-                  x = 'K-SRQ sexual relationships factor',
-                  y = 'Number of sexual encounters, past 6 mo.')
-
-knitr::kable(
-    dplyr::filter(parameterestimates(ksrq_sex_freq_all_sem, stan = T), op == '~'),
-    digits = 2,
-    caption = paste0(
-        'K-SRQ sexual relationships predicting number of sexual encounters among all participants with SES responses; N obs. = ',
-        lavaan::nobs(ksrq_sex_freq_all_sem)))
-```
-
-## Using both K-SRQ sexual relationship and FSMI mate-seeking scales
-
-```{r}
-fsmi_ksrq_num_partners_model <- paste(
-    ksrq_model,
-    fsmi_cfa_matestat_model, 
-    'ordered_num_partner ~ fsmi_mate + k_srq_sexual_relationships + gender_c',
+uppsp_fsmi_sfreq_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_sex_freq ~ neg_urgency + sensation_seeking + pos_urgency + fsmi_mate + gender_c',
     sep = '\n')
 
-fsmi_ksrq_num_partners_sem <- lavaan::lavaan(
-    model = fsmi_ksrq_num_partners_model, 
-    data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
-                                  grepl('yads', splt_fsmi_devdemog$sample),],
-    missing = 'listwise', estimator = 'WLSMV',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
+uppsp_fsmi_sfreq_noupps_model <- paste(
+    sensseek_urgency_cfa,
+     'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+     'ordered_sex_freq ~ 0*neg_urgency + 0*sensation_seeking + 0*pos_urgency + fsmi_mate + gender_c',
+     sep = '\n')
 
-knitr::kable(
-    dplyr::filter(parameterestimates(fsmi_ksrq_num_partners_sem, stan = T), op == '~'),
-    digits = 2,
-    caption = paste0('K-SRQ sexual relationships and FSMI mate-seeking predicting number of partners among unpartnered college students; N obs. = ',
-        lavaan::nobs(fsmi_ksrq_num_partners_sem)))
+uppsp_fsmi_sfreq_nofsmi_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_sex_freq ~ neg_urgency + sensation_seeking + pos_urgency + 0*fsmi_mate + gender_c',
+    sep = '\n')
 
-fsmi_ksrq_freq_model <- paste(
-    ksrq_model, 
-    fsmi_cfa_matestat_model,
-    'ordered_sex_freq ~ fsmi_mate + k_srq_sexual_relationships + gender_c', sep = '\n')
+uppsp_fsmi_sfreq_nopurg_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_sex_freq ~ neg_urgency + sensation_seeking + 0*pos_urgency + fsmi_mate + gender_c',
+    sep = '\n')
 
-fsmi_ksrq_sex_freq_sem <- lavaan::lavaan(
-    model = fsmi_ksrq_freq_model, 
-    data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
-                                  grepl('yads', splt_fsmi_devdemog$sample),],
-    missing = 'listwise', estimator = 'WLSMV',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, std.ov = F,
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'partnered')
-knitr::kable(
-    dplyr::filter(parameterestimates(fsmi_ksrq_sex_freq_sem, stan = T), op == '~'),
-    digits = 2,
-    caption = paste0('K-SRQ sexual relationships and FSMI mate-seeking predicting number of sexual encounters unpartnered college students; N obs. = ',
-        lavaan::nobs(fsmi_ksrq_num_partners_sem)))
+uppsp_fsmi_sfreq_nonurg_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_sex_freq ~ 0*neg_urgency + sensation_seeking + pos_urgency + fsmi_mate + gender_c',
+    sep = '\n')
+
+uppsp_fsmi_sfreq_noss_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_sex_freq ~ neg_urgency + 0*sensation_seeking + pos_urgency + fsmi_mate + gender_c',
+    sep = '\n')
+
+uppsp_fsmi_sfreq_null_model <- paste(
+    sensseek_urgency_cfa,
+     'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+     'ordered_sex_freq ~ 0*neg_urgency + 0*sensation_seeking + 0*pos_urgency + 0*fsmi_mate + gender_c',
+     sep = '\n')
+
+fsmi_sex_freq_modelsFN <- file.path(data_dir, 'fsmi_sex_freq_models.rda')
+if(!file.exists(fsmi_sex_freq_modelsFN)){
+    fsmi_sex_freq_sem <- lavaan::lavaan(
+        model = fsmi_sex_freq_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    fsmi_sex_freq_all_sem <- lavaan::lavaan(
+        model = fsmi_sex_freq_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_all_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_sfreq_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_sfreq_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_noupps_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_sfreq_noupps_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_all_noupps_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_sfreq_noupps_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_nofsmi_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_sfreq_nofsmi_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_nopurg_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_sfreq_nopurg_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_nonurg_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_sfreq_nonurg_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_noss_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_sfreq_noss_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_null_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_sfreq_null_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_sfreq_all_lrt <- lavaan::lavTestLRT(uppsp_fsmi_sfreq_all_sem,
+                                                   uppsp_fsmi_sfreq_all_noupps_sem)
+    
+    uppsp_fsmi_sfreq_lrt <- lavaan::lavTestLRT(uppsp_fsmi_sfreq_sem,
+                                               uppsp_fsmi_sfreq_noupps_sem,
+                                               uppsp_fsmi_sfreq_null_sem)
+    
+    uppsp_fsmi_sfreq_lrt2 <- lavaan::lavTestLRT(uppsp_fsmi_sfreq_sem,
+                                                uppsp_fsmi_sfreq_nofsmi_sem,
+                                                uppsp_fsmi_sfreq_null_sem)
+    
+    uppsp_fsmi_sfreq_lrtpurg <- lavaan::lavTestLRT(uppsp_fsmi_sfreq_sem,
+                                                   uppsp_fsmi_sfreq_nopurg_sem,
+                                                   uppsp_fsmi_sfreq_null_sem)
+    
+    uppsp_fsmi_sfreq_lrtnurg <- lavaan::lavTestLRT(uppsp_fsmi_sfreq_sem,
+                                                   uppsp_fsmi_sfreq_nonurg_sem,
+                                                   uppsp_fsmi_sfreq_null_sem)
+    
+    uppsp_fsmi_sfreq_lrtss <- lavaan::lavTestLRT(uppsp_fsmi_sfreq_sem,
+                                                 uppsp_fsmi_sfreq_noss_sem,
+                                                 uppsp_fsmi_sfreq_null_sem)
+    
+    save(fsmi_sex_freq_sem,
+         fsmi_sex_freq_all_sem,
+         uppsp_fsmi_sfreq_sem,
+         uppsp_fsmi_sfreq_all_sem,
+         uppsp_fsmi_sfreq_noupps_sem,
+         uppsp_fsmi_sfreq_nofsmi_sem,
+         uppsp_fsmi_sfreq_nopurg_sem,
+         uppsp_fsmi_sfreq_nonurg_sem,
+         uppsp_fsmi_sfreq_noss_sem,
+         uppsp_fsmi_sfreq_null_sem,
+         uppsp_fsmi_sfreq_all_sem,
+         uppsp_fsmi_sfreq_all_noupps_sem,
+         uppsp_fsmi_sfreq_all_lrt,
+         uppsp_fsmi_sfreq_lrt,
+         uppsp_fsmi_sfreq_lrt2,
+         uppsp_fsmi_sfreq_lrtpurg,
+         uppsp_fsmi_sfreq_lrtnurg,
+         uppsp_fsmi_sfreq_lrtss,
+         file = fsmi_sex_freq_modelsFN)
+} else {
+    load(fsmi_sex_freq_modelsFN)
+}
+
+fsmi_sex_freq_sem_pred <- lavaan::lavPredict(fsmi_sex_freq_sem)
+fsmi_sex_freq_sem_sfreq_ <- splt_fsmi_devdemog$ordered_sex_freq[
+    splt_fsmi_devdemog$partnered == 0 &
+        grepl('yads', splt_fsmi_devdemog$sample)]
+fsmi_sex_freq_sem_sfreq <- fsmi_sex_freq_sem_sfreq_[fsmi_sex_freq_sem@Data@case.idx[[1]]]
+
+fsmi_sex_freq_all_sem_pred <- lavaan::lavPredict(fsmi_sex_freq_all_sem)
+fsmi_sex_freq_all_sem_sfreq_ <- splt_fsmi_devdemog$ordered_sex_freq[grepl('yads', splt_fsmi_devdemog$sample)]
+fsmi_sex_freq_all_sem_sfreq <- fsmi_sex_freq_all_sem_sfreq_[fsmi_sex_freq_all_sem@Data@case.idx[[1]]]
 ```
 
-## Health-related behavior
+```{r fig.width=3.25, fig.height=2}
+uppsp_fsmi_sfreq_lrt
+uppsp_fsmi_sfreq_lrt2
+uppsp_fsmi_sfreq_lrtpurg
+uppsp_fsmi_sfreq_lrtnurg
+uppsp_fsmi_sfreq_lrtss
 
+plot_lav_factor_pred(lavfit = fsmi_sex_freq_sem, 
+                     factor_name = 'fsmi_mate', 
+                     orig_data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                  grepl('yads', splt_fsmi_devdemog$sample),], 
+                     dv_name = 'ordered_sex_freq',
+                     geom = 'jitter')
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(fsmi_sex_freq_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'FSMI Predicting number of sexual encounters among unpartnered college students; N obs. = ',
+        lavaan::nobs(fsmi_sex_freq_sem)))
+
+plot_lav_factor_pred(lavfit = fsmi_sex_freq_all_sem, 
+                     factor_name = 'fsmi_mate', 
+                     orig_data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),], 
+                     dv_name = 'ordered_sex_freq',
+                     geom = 'jitter')
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(fsmi_sex_freq_all_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'FSMI Predicting number of sexual encounters among all college participants with SES responses; N obs. = ',
+        lavaan::nobs(fsmi_sex_freq_all_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_fsmi_sfreq_nofsmi_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'FSMI Predicting number of sexual encounters among all college participants with SES responses; N obs. = ',
+        lavaan::nobs(uppsp_fsmi_sfreq_nofsmi_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_fsmi_sfreq_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'FSMI Predicting number of sexual encounters among unpartnered college students; N obs. = ',
+        lavaan::nobs(uppsp_fsmi_sfreq_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_fsmi_sfreq_all_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'FSMI Predicting number of sexual encounters among unpartnered college students; N obs. = ',
+        lavaan::nobs(uppsp_fsmi_sfreq_all_sem)))
+```
+
+There is not a strong association between FSMI Mate-seeking and number of sexual encounters in the past six months for unpartnered college students.
+The association was not examined in partnered college students because the Mate-seeking scale asks about looking for new romantic or sexual partners, and so (in normatively monogamous relationships) should not be theoretically related to frequency of sex.
+
+### K-SRQ sexual relationships
+
+```{r fig.width=4, fig.height=4}
+ksrq_sex_freq_null_model <- paste(ksrq_model, 
+                                 'ordered_sex_freq ~ 0*k_srq_sexual_relationships + gender_c', sep = '\n')
+ksrq_sex_freq_null_all_model <- paste(ksrq_model, 
+                                 'ordered_sex_freq ~ 0*k_srq_sexual_relationships + gender_c + age_c', sep = '\n')
+
+ksrq_sex_freq_model <- paste(ksrq_model, 
+                                 'ordered_sex_freq ~ k_srq_sexual_relationships + k_srq_admiration + gender_c', sep = '\n')
+ksrq_sex_freq_all_model <- paste(ksrq_model, 
+                                 'ordered_sex_freq ~ k_srq_sexual_relationships + k_srq_admiration + gender_c + age_c', sep = '\n')
+
+ksrq_noadmrtn_sex_freq_model <- paste(ksrq_model, 
+                                 'ordered_sex_freq ~ k_srq_sexual_relationships + 0*k_srq_admiration + gender_c', sep = '\n')
+ksrq_noadmrtn_sex_freq_all_model <- paste(ksrq_model, 
+                                 'ordered_sex_freq ~ k_srq_sexual_relationships + 0*k_srq_admiration + gender_c + age_c', sep = '\n')
+
+uppsp_ksrq_sex_freq_model <- paste(
+    ksrq_model,
+    sensseek_urgency_cfa,
+    'ordered_sex_freq ~ neg_urgency + sensation_seeking + pos_urgency + k_srq_sexual_relationships + gender_c',
+    sep = '\n')
+
+uppsp_ksrq_nosr_sex_freq_model <- paste(
+    ksrq_model,
+    sensseek_urgency_cfa,
+    'ordered_sex_freq ~ neg_urgency + sensation_seeking + pos_urgency + 0*k_srq_sexual_relationships + gender_c',
+    sep = '\n')
+
+uppsp_ksrq_sex_freq_all_model <- paste(
+    ksrq_model,
+    sensseek_urgency_cfa,
+    'ordered_sex_freq ~ neg_urgency + sensation_seeking + pos_urgency + k_srq_sexual_relationships + gender_c + age_c',
+    sep = '\n')
+
+uppsp_ksrq_nosr_sex_freq_all_model <- paste(
+    ksrq_model,
+    sensseek_urgency_cfa,
+    'ordered_sex_freq ~ neg_urgency + sensation_seeking + pos_urgency + 0*k_srq_sexual_relationships + gender_c + age_c',
+    sep = '\n')
+
+ksrq_sex_freq_modelsFN <- file.path(data_dir, 'ksrq_sex_freq_models.rda')
+if(!file.exists(fsmi_sex_freq_modelsFN)){
+    ksrq_sex_freq_sem <- lavaan::lavaan(
+        model = ksrq_sex_freq_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_sex_freq_all_sem <- lavaan::lavaan(
+        model = ksrq_sex_freq_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_sex_freq_null_sem <- lavaan::lavaan(
+        model = ksrq_sex_freq_null_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_sex_freq_null_all_sem <- lavaan::lavaan(
+        model = ksrq_sex_freq_null_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_noadmrtn_sex_freq_sem <- lavaan::lavaan(
+        model = ksrq_noadmrtn_sex_freq_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_noadmrtn_sex_freq_all_sem <- lavaan::lavaan(
+        model = ksrq_noadmrtn_sex_freq_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_sex_freq_sem <- lavaan::lavaan(
+        model = uppsp_ksrq_sex_freq_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_nosr_sex_freq_sem <- lavaan::lavaan(
+        model = uppsp_ksrq_nosr_sex_freq_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_sex_freq_all__sem <- lavaan::lavaan(
+        model = uppsp_ksrq_sex_freq_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_nosr_sex_freq_all__sem <- lavaan::lavaan(
+        model = uppsp_ksrq_nosr_sex_freq_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_sex_freq_null_lrt <- lavaan::lavTestLRT(ksrq_noadmrtn_sex_freq_sem,
+                                                       ksrq_sex_freq_null_sem)
+    ksrq_sex_freq_null_all_lrt <- lavaan::lavTestLRT(ksrq_noadmrtn_sex_freq_all_sem,
+                                                       ksrq_sex_freq_null_all_sem)
+    ksrq_sex_freq_admrtn_lrt <- lavaan::lavTestLRT(ksrq_sex_freq_sem,
+                                                       ksrq_noadmrtn_sex_freq_sem)
+    uppsp_ksrq_sex_freq_lrt <- lavaan::lavTestLRT(uppsp_ksrq_sex_freq_sem,
+                                                      uppsp_ksrq_nosr_sex_freq_sem)
+    uppsp_ksrq_sex_freq_all_lrt <- lavaan::lavTestLRT(uppsp_ksrq_sex_freq_all__sem,
+                                                          uppsp_ksrq_nosr_sex_freq_all__sem)
+    
+    save(ksrq_sex_freq_sem,
+         ksrq_sex_freq_all_sem,
+         ksrq_sex_freq_null_sem,
+         ksrq_sex_freq_null_all_sem,
+         ksrq_noadmrtn_sex_freq_sem,
+         ksrq_noadmrtn_sex_freq_all_sem,
+         uppsp_ksrq_sex_freq_sem,
+         uppsp_ksrq_nosr_sex_freq_sem,
+         uppsp_ksrq_sex_freq_all__sem,
+         uppsp_ksrq_nosr_sex_freq_all__sem,
+         ksrq_sex_freq_null_lrt,
+         ksrq_sex_freq_null_all_lrt,
+         ksrq_sex_freq_admrtn_lrt,
+         uppsp_ksrq_sex_freq_lrt,
+         uppsp_ksrq_sex_freq_all_lrt,
+         file = ksrq_sex_freq_modelsFN)
+} else {
+    load(ksrq_sex_freq_modelsFN)
+}
+
+ksrq_sex_freq_sem_pred <- lavaan::lavPredict(ksrq_sex_freq_sem)
+ksrq_sex_freq_sem_sfreq_ <- splt_fsmi_devdemog$ordered_sex_freq[splt_fsmi_devdemog$partnered == 0 &
+                                  grepl('yads', splt_fsmi_devdemog$sample)]
+ksrq_sex_freq_sem_sfreq <- ksrq_sex_freq_sem_sfreq_[ksrq_sex_freq_sem@Data@case.idx[[1]]]
+
+ksrq_sex_freq_all_sem_pred <- lavaan::lavPredict(ksrq_sex_freq_all_sem)
+ksrq_sex_freq_all_sem_sfreq_ <- splt_fsmi_devdemog$ordered_sex_freq
+ksrq_sex_freq_all_sem_sfreq <- ksrq_sex_freq_all_sem_sfreq_[ksrq_sex_freq_all_sem@Data@case.idx[[1]]]
+```
+
+```{r fig.width=3.25, fig.height=2}
+ggplot2::qplot(ksrq_sex_freq_sem_pred[,'k_srq_sexual_relationships'],
+               ksrq_sex_freq_sem_sfreq,
+               xlab = 'K-SRQ Sexual relationship factor',
+               ylab = 'Number of\nsexual encounters',
+               geom = 'jitter')
+
+ggplot2::qplot(ksrq_sex_freq_all_sem_pred[,'k_srq_sexual_relationships'],
+               ksrq_sex_freq_all_sem_sfreq,
+               xlab = 'K-SRQ Sexual relationship factor',
+               ylab = 'Number of\nsexual encounters',
+               geom = 'jitter')
+```
+
+```{r}
+ksrq_sex_freq_null_lrt
+ksrq_sex_freq_null_all_lrt
+ksrq_sex_freq_admrtn_lrt
+uppsp_ksrq_sex_freq_lrt
+uppsp_ksrq_sex_freq_all_lrt
+
+knitr::kable(
+    dplyr::filter(parameterestimates(ksrq_sex_freq_sem, stan = T, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = ',
+        lavaan::nobs(ksrq_sex_freq_sem)))
+
+knitr::kable(
+    dplyr::filter(parameterestimates(ksrq_noadmrtn_sex_freq_sem, stan = T, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = ',
+        lavaan::nobs(ksrq_noadmrtn_sex_freq_sem)))
+
+knitr::kable(
+    dplyr::filter(parameterestimates(ksrq_sex_freq_all_sem, stan = T, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = ',
+        lavaan::nobs(ksrq_sex_freq_all_sem)))
+
+knitr::kable(
+    dplyr::filter(parameterestimates(ksrq_noadmrtn_sex_freq_all_sem, stan = T, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = ',
+        lavaan::nobs(ksrq_noadmrtn_sex_freq_all_sem)))
+
+knitr::kable(
+    dplyr::filter(parameterestimates(uppsp_ksrq_sex_freq_sem, stan = T, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = ',
+        lavaan::nobs(uppsp_ksrq_sex_freq_sem)))
+
+knitr::kable(
+    dplyr::filter(parameterestimates(uppsp_ksrq_nosr_sex_freq_sem, stan = T, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = ',
+        lavaan::nobs(uppsp_ksrq_nosr_sex_freq_sem)))
+
+knitr::kable(
+    dplyr::filter(parameterestimates(uppsp_ksrq_sex_freq_all__sem, stan = T, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = ',
+        lavaan::nobs(uppsp_ksrq_sex_freq_all__sem)))
+
+knitr::kable(
+    dplyr::filter(parameterestimates(uppsp_ksrq_nosr_sex_freq_all__sem, stan = T, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = ',
+        lavaan::nobs(uppsp_ksrq_nosr_sex_freq_all__sem)))
+```
+
+K-SRQ Sexual Relationships is associated with number of sexual partners when considering the full sample, and the sign and size of the coefficient is similar when considering only the unpartnered college sample.
+Again, Sociability and Sexual Relationships are too highly correlated to be disentangled.
+Controlling for the other highly correlated K-SRQ scale, Admiration, yields a standardized effect of Sexual Relationships that has the same sign, but that has bigger magnitude.
+As above, the coefficient for the Admiration scale is large and negative when controlling for K-SRQ Sexual Relationships.
+
+### SPLT parameters
+
+```{r fig.width=4, fig.height=4}
+    
+splt_sfreq_models <- lapply(
+    seq_along(rl_var_names_facts),
+    function(i){
+        splt_sex_freq_model <- paste(
+            rl_var_names_facts[[i]], 
+            paste0('ordered_sex_freq ~ ',
+                   names(rl_var_names_facts)[[i]],
+                   '_DtngLHngT_fac + gender_c'), sep = '\n')
+        splt_sex_freq_null_model <- paste(
+            rl_var_names_facts[[i]], 
+            paste0('ordered_sex_freq ~ 0*',
+                   names(rl_var_names_facts)[[i]],
+                   '_DtngLHngT_fac + gender_c'), sep = '\n')
+        splt_sex_freq_all_model <- paste(
+            rl_var_names_facts[[i]], 
+            paste0('ordered_sex_freq ~ ',
+                   names(rl_var_names_facts)[[i]],
+                   '_DtngLHngT_fac + gender_c + age_c'), sep = '\n')
+        splt_sex_freq_all_null_model <- paste(
+            rl_var_names_facts[[i]], 
+            paste0('ordered_sex_freq ~ 0*',
+                   names(rl_var_names_facts)[[i]],
+                   '_DtngLHngT_fac + gender_c + age_c'), sep = '\n')
+        return(list(splt_sex_freq_model = splt_sex_freq_model,
+                    splt_sex_freq_null_model = splt_sex_freq_null_model,
+                    splt_sex_freq_all_model = splt_sex_freq_all_model,
+                    splt_sex_freq_all_null_model = splt_sex_freq_all_null_model))
+    })
+names(splt_sfreq_models) <- names(rl_var_names_facts)
+
+splt_sex_freq_semsFN <-
+    file.path(data_dir, 'splt_sex_freq_semsFN.RDS')
+library(future)
+library(listenv)
+future::plan(sequential)
+splt_sex_freq_sems_le <- listenv()
+if(!file.exists(splt_sex_freq_semsFN)){
+    for(i in seq_along(splt_sfreq_models)){
+        splt_sex_freq_sems_le[[i]] <- future({
+            splt_sex_freq_sem <- lavaan::lavaan(
+                model = splt_sfreq_models[[i]]$splt_sex_freq_model, 
+                data = splt_fsmi_devdemog_betas[splt_fsmi_devdemog_betas$partnered == 0 &
+                                                    grepl('yads', splt_fsmi_devdemog_betas$sample),],
+                missing = 'listwise', estimator = 'WLSMV',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = T, std.lv = F, std.ov = F,
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE)
+            splt_sex_freq_null_sem <- lavaan::lavaan(
+                model = splt_sfreq_models[[i]]$splt_sex_freq_null_model, 
+                data = splt_fsmi_devdemog_betas[splt_fsmi_devdemog_betas$partnered == 0 &
+                                                    grepl('yads', splt_fsmi_devdemog_betas$sample),],
+                missing = 'listwise', estimator = 'WLSMV',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = T, std.lv = F, std.ov = F,
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE)
+            
+            splt_sex_freq_all_sem <- lavaan::lavaan(
+                model = splt_sfreq_models[[i]]$splt_sex_freq_all_model, 
+                data = splt_fsmi_devdemog_betas,
+                missing = 'listwise', estimator = 'WLSMV',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = T, std.lv = F, std.ov = F,
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE)
+            splt_sex_freq_all_null_sem <- lavaan::lavaan(
+                model = splt_sfreq_models[[i]]$splt_sex_freq_all_null_model,
+                data = splt_fsmi_devdemog_betas,
+                missing = 'listwise', estimator = 'WLSMV',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = T, std.lv = F, std.ov = F,
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE)
+            
+            splt_sex_freq_lrt <- lavaan::lavTestLRT(splt_sex_freq_sem,
+                                                        splt_sex_freq_null_sem)
+            splt_sex_freq_all_lrt <- lavaan::lavTestLRT(splt_sex_freq_all_sem,
+                                                            splt_sex_freq_all_null_sem)
+            
+            list(splt_sex_freq_sem = splt_sex_freq_sem,
+                 splt_sex_freq_null_sem = splt_sex_freq_null_sem,
+                 splt_sex_freq_all_sem = splt_sex_freq_all_sem,
+                 splt_sex_freq_all_null_sem = splt_sex_freq_all_null_sem,
+                 splt_sex_freq_lrt = splt_sex_freq_lrt,
+                 splt_sex_freq_all_lrt = splt_sex_freq_all_lrt)
+        })
+    }
+    splt_sex_freq_sems <- as.list(
+        lapply(splt_sex_freq_sems_le, future::value)
+    )
+    names(splt_sex_freq_sems) <- names(splt_sfreq_models)
+    saveRDS(splt_sex_freq_sems, splt_sex_freq_semsFN)
+} else {
+    splt_sex_freq_sems <- readRDS(splt_sex_freq_semsFN)
+}
+
+splt_sex_freq_chisqp <- lapply(splt_sex_freq_sems,
+       function(splt_sex_freq_sem){
+           print(splt_sex_freq_sem$splt_sex_freq_lrt)
+           print(splt_sex_freq_sem$splt_sex_freq_all_lrt)
+           p <- splt_sex_freq_sem$splt_sex_freq_lrt[2,'Pr(>Chisq)']
+           p_all <- splt_sex_freq_sem$splt_sex_freq_all_lrt[2,'Pr(>Chisq)']
+           return(c(p = p , p_all = p_all))
+       })
+
+nada <- lapply(seq_along(splt_sex_freq_sems),
+       function(i){
+           param_label <- splt_param_labels_plaintext[names(splt_sex_freq_sems)[[i]]]
+           print(knitr::kable(
+               dplyr::filter(parameterestimates(splt_sex_freq_sems[[i]]$splt_sex_freq_sem, 
+                                                stan = T), op == '~'),
+               digits = 2,
+               caption = paste0(
+                   param_label, 
+                   ' predicting number of partners among unpartnered college students; N obs. = ',
+                   lavaan::nobs(splt_sex_freq_sems[[i]]$splt_sex_freq_sem))))
+           
+           print(knitr::kable(
+               dplyr::filter(parameterestimates(splt_sex_freq_sems[[i]]$splt_sex_freq_all_sem, stan = T), op == '~'),
+               digits = 2,
+               caption = paste0(
+                   param_label, 
+                   ' predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
+                   lavaan::nobs(splt_sex_freq_sems[[i]]$splt_sex_freq_all_sem))))
+       })
+```
+Again, no $\chi^2$ tests satisfy the $\alpha = .005$ cutoff. The biggest association is with the $\epsilon$ contrast variable, but it has the wrong sign, with higher learning rates being associated with fewer sexual encounters.
+
+## Health-related behavior
 
 ### Using protection
 
 #### K-SRQ
 
-There are not enough adolescents who have had sex and reported frequency of use of protection to look at this group separately (N = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('TDS', splt_fsmi_devdemog$sample)]))`). However, we can look at all people who have complted the K-SRQ and who report on their use of protection (N collge students = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('yads', splt_fsmi_devdemog$sample)]))`). Becuase we don't have information on whether adolescents are in long-term relationships, this collapses across those who do and don't have long-term partners. All participants with data on the K-SRQ are used in the measurement portion of the model.
+There are not enough adolescents who have had sex and reported frequency of use of protection to look at this group separately (N = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('TDS', splt_fsmi_devdemog$sample)]))`). However, we can look at all people who have completed the K-SRQ and who report on their use of protection (N collge students = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('yads', splt_fsmi_devdemog$sample)]))`). Becuase we don't have information on whether adolescents are in long-term relationships, this collapses across those who do and don't have long-term partners. All participants with data on the K-SRQ are used in the measurement portion of the model.
 
 ```{r}
 splt_fsmi_devdemog$continuous_use_protection <- as.numeric(splt_fsmi_devdemog$ordered_use_protection)
