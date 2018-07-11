@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 ```
 
 ```{r setupoptions}
-
+data_dir <- '/data/jflournoy/split/probly'
 sample_labels <- c(
     'TDS1' = 'Foster-care involved adolescents',
     'TDS2' = 'Community adolescents',
@@ -237,20 +237,24 @@ splt_fsmi_devdemog$ordered_sex_freq <- ordered(
     ifelse(splt_fsmi_devdemog$SES_12 == 0 |
                (is.na(splt_fsmi_devdemog$SES_12) & !splt_fsmi_devdemog$sex_six_months), 
            0, 
-           ifelse(splt_fsmi_devdemog$SES_12 <40, 
-                  splt_fsmi_devdemog$SES_12 %/% 10 + 1, 
-                  5)),
-    labels = c('0', '1-9', '10-19', '20-29', '30-39', '40 or more'))
+           ifelse(splt_fsmi_devdemog$SES_12 <40,
+                  ifelse(splt_fsmi_devdemog$SES_12 <20,
+                         splt_fsmi_devdemog$SES_12 %/% 10 + 1,
+                         3),
+                  4)),
+    labels = c('0', '1-9', '10-19', '20-39', '40 or more'))
+
+
 
 splt_fsmi_devdemog$ordered_num_partner <- ordered(
     ifelse(splt_fsmi_devdemog$SES_13 == 0 | 
                (is.na(splt_fsmi_devdemog$SES_13) & !splt_fsmi_devdemog$sex_six_months), 
            0,
-           ifelse(splt_fsmi_devdemog$SES_13 < 4, 
+           ifelse(splt_fsmi_devdemog$SES_13 < 3, 
                   splt_fsmi_devdemog$SES_13, 
-                  4)),
-    levels = 0:4,
-    labels = c(0:3, '4 or more'))
+                  3)),
+    levels = 0:3,
+    labels = c(0:2, '3 or more'))
 
 splt_fsmi_devdemog$gender_c <- splt_fsmi_devdemog$gender - .5
 splt_fsmi_devdemog$age_c <- splt_fsmi_devdemog$age - 18
@@ -339,34 +343,45 @@ fsmi_cfa_model_method <- paste0(
     fsmi_cfa_model,
     create_bifactor(fsmi_key, scales_to_use, factor_name = 'fsmi_bifac'))
 
-fsmi_cfa <- lavaan::lavaan(model = fsmi_cfa_model, data = splt_fsmi,
-                                  missing = 'fiml', estimator = 'MLR',
-                                  int.ov.free = TRUE, int.lv.free = FALSE, 
-                                  auto.fix.first = FALSE, std.lv = TRUE, 
-                                  auto.fix.single = TRUE, auto.var = TRUE, 
-                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                  auto.delta = TRUE, auto.cov.y = TRUE)
-
-fsmi_cfa_method <- lavaan::lavaan(model = fsmi_cfa_model_method, data = splt_fsmi,
-                                  missing = 'fiml', estimator = 'MLR',
-                                  int.ov.free = TRUE, int.lv.free = FALSE, 
-                                  auto.fix.first = FALSE, std.lv = TRUE, 
-                                  auto.fix.single = TRUE, auto.var = TRUE, 
-                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                  auto.delta = TRUE, auto.cov.y = TRUE)
-
-knitr::kable(
-    cbind(
+fsmi_full_cfa_saveFN <- file.path(data_dir, 'fsmi_full_cfa_save.rda')
+if(!file.exists(fsmi_full_cfa_saveFN)){
+    fsmi_cfa <- lavaan::lavaan(model = fsmi_cfa_model, data = splt_fsmi,
+                               missing = 'fiml', estimator = 'MLR',
+                               int.ov.free = TRUE, int.lv.free = FALSE, 
+                               auto.fix.first = FALSE, std.lv = TRUE, 
+                               auto.fix.single = TRUE, auto.var = TRUE, 
+                               auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                               auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    fsmi_cfa_method <- lavaan::lavaan(model = fsmi_cfa_model_method, data = splt_fsmi,
+                                      missing = 'fiml', estimator = 'MLR',
+                                      int.ov.free = TRUE, int.lv.free = FALSE, 
+                                      auto.fix.first = FALSE, std.lv = TRUE, 
+                                      auto.fix.single = TRUE, auto.var = TRUE, 
+                                      auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                      auto.delta = TRUE, auto.cov.y = TRUE)
+    fsmi_cfa_model_comparison1 <- cbind(
         lavaan::anova(fsmi_cfa, fsmi_cfa_method),
         do.call(
             rbind,
             lapply(c(fsmi_cfa_method, fsmi_cfa), 
                    lavaan::fitmeasures,
-                   fit.measures = c('cfi', 'rmsea', 'mfi')))),
+                   fit.measures = c('cfi', 'rmsea', 'mfi'))))
+    
+    save(fsmi_cfa,
+         fsmi_cfa_method, 
+         fsmi_cfa_model_comparison1,
+         file = fsmi_full_cfa_saveFN)
+} else {
+    load(fsmi_full_cfa_saveFN)
+}
+
+knitr::kable(
+    fsmi_cfa_model_comparison1,
     digits = 3)
 
-summary(fsmi_cfa, stand = T)
-summary(fsmi_cfa_method, standardize = T)
+summary(fsmi_cfa, stan = T)
+summary(fsmi_cfa_method, stan = T)
 
 fsmi_cfa_lrt <- lavTestLRT(fsmi_cfa, fsmi_cfa_method)
 fsmi_cfa_fits <- list(
@@ -374,8 +389,7 @@ fsmi_cfa_fits <- list(
            lavaan::fitmeasures,
            fit.measures = c('RMSEA', 'mfi')),
     lapply(list('baseline'=fsmi_cfa, 'bifac'=fsmi_cfa_method),
-           semTools::moreFitIndices,
-           fit.measures = c('gammaHat', 'adjGammaHat')))
+           fasterMoreFitIndices))
 ```
 
 A model for the FSMI scale without a method bifactor fits substantially worse than that with the method factor.
@@ -383,7 +397,9 @@ A model for the FSMI scale without a method bifactor fits substantially worse th
 ```{r}
 options(knitr.kable.NA = '')
 knitr::kable(fsmi_cfa_lrt)
-knitr::kable(do.call(cbind, lapply(fsmi_cfa_fits, function(x) t(as.data.frame(x)))))
+knitr::kable(cbind(t(as.data.frame(fsmi_cfa_fits[[1]])),
+          rbind(baseline=as.data.frame(fsmi_cfa_fits[[2]]$baseline),
+                bifac=as.data.frame(fsmi_cfa_fits[[2]]$bifac))))
 ```
 
 ```{r eval = F}
@@ -993,10 +1009,17 @@ knitr::kable(
 ```{r fig.width=5.875, fig.height=4.2, fig.cap='(ref:ksqrmatestatcor)'}
 scale_labels <- c('fsmi_mate' = expression(paste('Mate-seeking')[F]),
                   'fsmi_stat' = expression(paste('Status')[F]),
+                  'dominance_score' = expression(paste('Dominance')[D]),
+                  'prestige_score' = expression(paste('Presitige')[D]),
+                  'neg_urgency' = expression(paste('-Urgency')[U]),
+                  'premeditation' = expression(paste('Premeditation')[U]),
+                  'perseverance' = expression(paste('Perseverance')[U]),
+                  'sensation_seeking' = expression(paste('Sensation S.')[U]),
+                  'pos_urgency' = expression(paste('+Urgency')[U]),
                   'k_srq_admiration' = expression(paste('Admiration')[K]),
                   'k_srq_passivity' = expression(paste('Passivity')[K]),
                   'k_srq_sexual_relationships' = expression(paste('Sexual Rel.')[K]),
-                  'k_srq_sociability' = expression(paste('Sociality')[K]))
+                  'k_srq_sociability' = expression(paste('Sociability')[K]))
 bordergray <- '#eeeeee'
 ggplot2::theme_set(ggplot2::theme_minimal())
 fsmi_ksrq_plot <- ggplot2::ggplot(
@@ -1510,51 +1533,62 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 uppsp_cfa_model <- milav::create_cfa_from_keylist(
     upps_key)
 
-uppsp_cfa_gender <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
-                           missing = 'fiml', estimator = 'ML',
-                           int.ov.free = TRUE, int.lv.free = FALSE, 
-                           auto.fix.first = TRUE, std.lv = FALSE, 
-                           auto.fix.single = TRUE, auto.var = TRUE, 
-                           auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                           auto.delta = TRUE, auto.cov.y = TRUE,
-                           group = 'gender')
-uppsp_cfa_gender_metric <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
-                                  missing = 'fiml', estimator = 'ML',
-                                  int.ov.free = TRUE, int.lv.free = FALSE, 
-                                  auto.fix.first = TRUE, std.lv = FALSE, 
-                                  auto.fix.single = TRUE, auto.var = TRUE, 
-                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                  auto.delta = TRUE, auto.cov.y = TRUE,
-                                  group = 'gender', group.equal = 'loadings')
-
-uppsp_cfa <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
-                           missing = 'fiml', estimator = 'ML',
-                           int.ov.free = TRUE, int.lv.free = FALSE, 
-                           auto.fix.first = TRUE, std.lv = FALSE, 
-                           auto.fix.single = TRUE, auto.var = TRUE, 
-                           auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                           auto.delta = TRUE, auto.cov.y = TRUE,
-                           group = 'samplegroup')
-uppsp_cfa_metric <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
-                                  missing = 'fiml', estimator = 'ML',
-                                  int.ov.free = TRUE, int.lv.free = FALSE, 
-                                  auto.fix.first = TRUE, std.lv = FALSE, 
-                                  auto.fix.single = TRUE, auto.var = TRUE, 
-                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                  auto.delta = TRUE, auto.cov.y = TRUE,
-                                  group = 'samplegroup', group.equal = 'loadings')
-
-uppsp_cfa_metric_cov <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
-                                  missing = 'fiml', estimator = 'ML',
-                                  int.ov.free = TRUE, int.lv.free = FALSE, 
-                                  auto.fix.first = TRUE, std.lv = FALSE, 
-                                  auto.fix.single = TRUE, auto.var = TRUE, 
-                                  auto.cov.lv.x = TRUE, auto.th = TRUE, 
-                                  auto.delta = TRUE, auto.cov.y = TRUE,
-                                  group = 'samplegroup', group.equal = c('loadings',
-                                                                    'lv.variances',
-                                                                    'lv.covariances'))
-
+uppsp_cfa_saveFN <- file.path(data_dir, 'uppsp_cfa_save.rda')
+if(!file.exists(uppsp_cfa_saveFN)){
+    uppsp_cfa_gender <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
+                                       missing = 'fiml', estimator = 'ML',
+                                       int.ov.free = TRUE, int.lv.free = FALSE, 
+                                       auto.fix.first = TRUE, std.lv = FALSE, 
+                                       auto.fix.single = TRUE, auto.var = TRUE, 
+                                       auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                       auto.delta = TRUE, auto.cov.y = TRUE,
+                                       group = 'gender')
+    uppsp_cfa_gender_metric <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
+                                              missing = 'fiml', estimator = 'ML',
+                                              int.ov.free = TRUE, int.lv.free = FALSE, 
+                                              auto.fix.first = TRUE, std.lv = FALSE, 
+                                              auto.fix.single = TRUE, auto.var = TRUE, 
+                                              auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                              auto.delta = TRUE, auto.cov.y = TRUE,
+                                              group = 'gender', group.equal = 'loadings')
+    
+    uppsp_cfa <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
+                                missing = 'fiml', estimator = 'ML',
+                                int.ov.free = TRUE, int.lv.free = FALSE, 
+                                auto.fix.first = TRUE, std.lv = FALSE, 
+                                auto.fix.single = TRUE, auto.var = TRUE, 
+                                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                auto.delta = TRUE, auto.cov.y = TRUE,
+                                group = 'samplegroup')
+    uppsp_cfa_metric <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
+                                       missing = 'fiml', estimator = 'ML',
+                                       int.ov.free = TRUE, int.lv.free = FALSE, 
+                                       auto.fix.first = TRUE, std.lv = FALSE, 
+                                       auto.fix.single = TRUE, auto.var = TRUE, 
+                                       auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                       auto.delta = TRUE, auto.cov.y = TRUE,
+                                       group = 'samplegroup', group.equal = 'loadings')
+    
+    uppsp_cfa_metric_cov <- lavaan::lavaan(model = uppsp_cfa_model, data = splt_fsmi_devdemog,
+                                           missing = 'fiml', estimator = 'ML',
+                                           int.ov.free = TRUE, int.lv.free = FALSE, 
+                                           auto.fix.first = TRUE, std.lv = FALSE, 
+                                           auto.fix.single = TRUE, auto.var = TRUE, 
+                                           auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                                           auto.delta = TRUE, auto.cov.y = TRUE,
+                                           group = 'samplegroup', 
+                                           group.equal = c('loadings',
+                                                           'lv.variances',
+                                                           'lv.covariances'))
+    save(uppsp_cfa_gender,
+         uppsp_cfa_gender_metric,
+         uppsp_cfa,
+         uppsp_cfa_metric,
+         uppsp_cfa_metric_cov,
+         file = uppsp_cfa_saveFN)
+} else {
+    load(uppsp_cfa_saveFN)
+}
 
 uppsp_cfa_fit <- list(
     uppsp_cfa = c(unlist(lavaan::fitmeasures(uppsp_cfa,
@@ -1618,54 +1652,61 @@ uppsp_age_cub_model <- paste(
     paste0(paste(names(upps_key), collapse = ' + '), ' ~ age_c + age_c2 + age_c3 + gender_c + age_c:gender_c + age_c2:gender_c + age_c3:gender_c'),
     sep = '\n')
 
-uppsp_cfa_metric_agesem <- lavaan::lavaan(
-    model = uppsp_age_model, data = splt_fsmi_devdemog,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'samplegroup', group.equal = c('loadings', 'lv.variances',
-                                           'lv.covariances'))
+uppsp_cfa_age_models_saveFN <- file.path(data_dir, 'uppsp_cfa_age_models_save.rda')
+if(!file.exists(uppsp_cfa_age_models_saveFN)){
+    uppsp_cfa_metric_agesem <- lavaan::lavaan(
+        model = uppsp_age_model, data = splt_fsmi_devdemog,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'samplegroup', group.equal = c('loadings', 'lv.variances',
+                                               'lv.covariances'))
+    
+    uppsp_cfa_metric_agesem_reginvar <- lavaan::lavaan(
+        model = uppsp_age_model, data = splt_fsmi_devdemog,
+        missing = 'fiml', estimator = 'MLR',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'samplegroup', group.equal = c('loadings', 
+                                               'lv.variances', 
+                                               'lv.covariances',
+                                               'regressions'))
+    # uppsp_cfa_metric_agecubsem <- lavaan::lavaan(
+    #     model = uppsp_age_cub_model, data = splt_fsmi_devdemog,
+    #     missing = 'fiml', estimator = 'ML',
+    #     int.ov.free = TRUE, int.lv.free = FALSE, 
+    #     auto.fix.first = TRUE, std.lv = FALSE, 
+    #     auto.fix.single = TRUE, auto.var = TRUE, 
+    #     auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    #     auto.delta = TRUE, auto.cov.y = TRUE,
+    #     group = 'samplegroup', group.equal = c('loadings', 'lv.variances',
+    #                                            'lv.covariances'))
+    # 
+    # uppsp_cfa_metric_agecubsem_reginvar <- lavaan::lavaan(
+    #     model = uppsp_age_cub_model, data = splt_fsmi_devdemog,
+    #     missing = 'fiml', estimator = 'MLR',
+    #     int.ov.free = TRUE, int.lv.free = FALSE, 
+    #     auto.fix.first = TRUE, std.lv = FALSE, 
+    #     auto.fix.single = TRUE, auto.var = TRUE, 
+    #     auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    #     auto.delta = TRUE, auto.cov.y = TRUE,
+    #     group = 'samplegroup', group.equal = c('loadings', 
+    #                                            'lv.variances', 
+    #                                            'lv.covariances',
+    #                                            'regressions'))
+    save(uppsp_cfa_metric_agesem,
+         uppsp_cfa_metric_agesem_reginvar,
+         file = uppsp_cfa_age_models_saveFN)
+} else {
+    load(uppsp_cfa_age_models_saveFN)
+}
 
-uppsp_cfa_metric_agesem_reginvar <- lavaan::lavaan(
-    model = uppsp_age_model, data = splt_fsmi_devdemog,
-    missing = 'fiml', estimator = 'MLR',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'samplegroup', group.equal = c('loadings', 
-                                           'lv.variances', 
-                                           'lv.covariances',
-                                           'regressions'))
-
-
-# uppsp_cfa_metric_agecubsem <- lavaan::lavaan(
-#     model = uppsp_age_cub_model, data = splt_fsmi_devdemog,
-#     missing = 'fiml', estimator = 'ML',
-#     int.ov.free = TRUE, int.lv.free = FALSE, 
-#     auto.fix.first = TRUE, std.lv = FALSE, 
-#     auto.fix.single = TRUE, auto.var = TRUE, 
-#     auto.cov.lv.x = TRUE, auto.th = TRUE, 
-#     auto.delta = TRUE, auto.cov.y = TRUE,
-#     group = 'samplegroup', group.equal = c('loadings', 'lv.variances',
-#                                            'lv.covariances'))
-# 
-# uppsp_cfa_metric_agecubsem_reginvar <- lavaan::lavaan(
-#     model = uppsp_age_cub_model, data = splt_fsmi_devdemog,
-#     missing = 'fiml', estimator = 'MLR',
-#     int.ov.free = TRUE, int.lv.free = FALSE, 
-#     auto.fix.first = TRUE, std.lv = FALSE, 
-#     auto.fix.single = TRUE, auto.var = TRUE, 
-#     auto.cov.lv.x = TRUE, auto.th = TRUE, 
-#     auto.delta = TRUE, auto.cov.y = TRUE,
-#     group = 'samplegroup', group.equal = c('loadings', 
-#                                            'lv.variances', 
-#                                            'lv.covariances',
-#                                            'regressions'))
 # 
 # AIC(uppsp_cfa_metric_agesem, 
 #     uppsp_cfa_metric_agesem_reginvar,
@@ -1802,41 +1843,51 @@ uppsp_pds_model_lin <- paste(
            ' ~ pds_c + gender_c + pds_c:gender_c'),
     sep = '\n')
 
-uppsp_cfa_metric_pdssem_sample <- lavaan::lavaan(
-    model = uppsp_pds_model, data = pds_mod_data,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'samplegroup', group.equal = c('loadings', 'lv.variances', 'lv.covariances'))
-
-uppsp_cfa_metric_pdssem_reginvar_sample <- lavaan::lavaan(
-    model = uppsp_pds_model, data = pds_mod_data,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'samplegroup', group.equal = c('loadings', 
-                                           'lv.variances', 
-                                           'lv.covariances',
-                                           'regressions'))
-
-uppsp_cfa_metric_pdssemlin_reginvar_sample <- lavaan::lavaan(
-    model = uppsp_pds_model_lin, data = pds_mod_data,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'samplegroup', group.equal = c('loadings', 
-                                           'lv.variances', 
-                                           'lv.covariances',
-                                           'regressions'))
+uppsp_cfa_puberty_models_saveFN <- file.path(data_dir, 'uppsp_cfa_puberty_models_save.rda')
+if(!file.exists(uppsp_cfa_puberty_models_saveFN)){
+    uppsp_cfa_metric_pdssem_sample <- lavaan::lavaan(
+        model = uppsp_pds_model, data = pds_mod_data,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'samplegroup', group.equal = c('loadings', 'lv.variances', 'lv.covariances'))
+    
+    uppsp_cfa_metric_pdssem_reginvar_sample <- lavaan::lavaan(
+        model = uppsp_pds_model, data = pds_mod_data,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'samplegroup', group.equal = c('loadings', 
+                                               'lv.variances', 
+                                               'lv.covariances',
+                                               'regressions'))
+    
+    uppsp_cfa_metric_pdssemlin_reginvar_sample <- lavaan::lavaan(
+        model = uppsp_pds_model_lin, data = pds_mod_data,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'samplegroup', group.equal = c('loadings', 
+                                               'lv.variances', 
+                                               'lv.covariances',
+                                               'regressions'))
+    
+    save(uppsp_cfa_metric_pdssem_sample,
+         uppsp_cfa_metric_pdssem_reginvar_sample,
+         uppsp_cfa_metric_pdssemlin_reginvar_sample,
+         file = uppsp_cfa_puberty_models_saveFN)
+} else {
+    load(uppsp_cfa_puberty_models_saveFN)
+}
 
 uppsp_cfa_metric_pdssem_fit <- AIC(uppsp_cfa_metric_pdssem_sample, 
                                    uppsp_cfa_metric_pdssem_reginvar_sample)
@@ -2013,200 +2064,106 @@ all_scale_latent_varnames <- unlist(c(scales_to_use_mate_stat,
                                       names(dnp_key),
                                       names(upps_key),
                                       scales_to_use_ksrq))
-
-all_scales_college <- lavaan::lavaan(
-    model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
-                  uppsp_cfa_model, ksrq_model, sep = '\n'),
-    data = splt_fsmi_devdemog_yads,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'gender', 
-    group.equal = c('loadings'),
-    group.partial = c('dominance_score =~ dominance_prestige_16',
-                      'k_srq_sociability =~ K_SRQ_10',
-                      'k_srq_admiration =~  K_SRQ_7',
-                      'k_srq_sexual_relationships =~ K_SRQ_13',
-                      'k_srq_sexual_relationships =~ K_SRQ_20'))
-all_scales_college_cor <- lavaan::update(all_scales_college, 
-                                         group.equal = c('loadings',
-                                                         'lv.variances',
-                                                         'lv.covariances'))
-all_scales_college_cor_load <- lavaan::lavaan(
-    model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
-                  uppsp_cfa_model, ksrq_model, sep = '\n'),
-    data = splt_fsmi_devdemog_yads,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'gender',
-    group.equal = c('loadings',
-                    'lv.variances',
-                    'lv.covariances'))
+latent_var_cor_collegeFN <-
+    file.path(data_dir, 'latent_var_cor-college.rda')
+if(!file.exists(latent_var_cor_collegeFN)){
+    all_scales_college <- lavaan::lavaan(
+        model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
+                      uppsp_cfa_model, ksrq_model, sep = '\n'),
+        data = splt_fsmi_devdemog_yads,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'gender', 
+        group.equal = c('loadings'),
+        group.partial = c('dominance_score =~ dominance_prestige_16',
+                          'k_srq_sociability =~ K_SRQ_10',
+                          'k_srq_admiration =~  K_SRQ_7',
+                          'k_srq_sexual_relationships =~ K_SRQ_13',
+                          'k_srq_sexual_relationships =~ K_SRQ_20'))
+    all_scales_college_cor <- lavaan::update(all_scales_college, 
+                                             group.equal = c('loadings',
+                                                             'lv.variances',
+                                                             'lv.covariances'))
+    all_scales_college_cor_load <- lavaan::lavaan(
+        model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
+                      uppsp_cfa_model, ksrq_model, sep = '\n'),
+        data = splt_fsmi_devdemog_yads,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'gender',
+        group.equal = c('loadings',
+                        'lv.variances',
+                        'lv.covariances'))
+    all_scales_college_partnered <- lavaan::lavaan(
+        model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
+                      uppsp_cfa_model, ksrq_model, sep = '\n'),
+        data = splt_fsmi_devdemog_yads,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'partnered', 
+        group.equal = c('loadings'),
+        group.partial = c('dominance_score =~ dominance_prestige_16',
+                          'k_srq_sociability =~ K_SRQ_10',
+                          'k_srq_admiration =~  K_SRQ_7',
+                          'k_srq_sexual_relationships =~ K_SRQ_13',
+                          'k_srq_sexual_relationships =~ K_SRQ_20'))
+    all_scales_college_partnered_cor <- lavaan::update(all_scales_college_partnered, 
+                                                       group.equal = c('loadings',
+                                                                       'lv.variances',
+                                                                       'lv.covariances'))
+    all_scales_college_partnered_cor_load <- lavaan::lavaan(
+        model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
+                      uppsp_cfa_model, ksrq_model, sep = '\n'),
+        data = splt_fsmi_devdemog_yads,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'partnered',
+        group.equal = c('loadings',
+                        'lv.variances',
+                        'lv.covariances'))
+    save(all_scales_college,
+         all_scales_college_cor,
+         all_scales_college_cor_load,
+         all_scales_college_partnered,
+         all_scales_college_partnered_cor,
+         all_scales_college_partnered_cor_load,
+         file = latent_var_cor_collegeFN)
+} else {
+    load(latent_var_cor_collegeFN)
+}
 
 AIC(all_scales_college, all_scales_college_cor, all_scales_college_cor_load)
 
 college_cor_sensitivity_gender_abs_max <- max(abs(inspect(all_scales_college_cor_load, 'cor.lv')[['0']] - 
     inspect(all_scales_college_cor, 'cor.lv')[['0']]))
 
-all_scales_college_partnered <- lavaan::lavaan(
-    model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
-                  uppsp_cfa_model, ksrq_model, sep = '\n'),
-    data = splt_fsmi_devdemog_yads,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'partnered', 
-    group.equal = c('loadings'),
-    group.partial = c('dominance_score =~ dominance_prestige_16',
-                      'k_srq_sociability =~ K_SRQ_10',
-                      'k_srq_admiration =~  K_SRQ_7',
-                      'k_srq_sexual_relationships =~ K_SRQ_13',
-                      'k_srq_sexual_relationships =~ K_SRQ_20'))
-all_scales_college_partnered_cor <- lavaan::update(all_scales_college_partnered, 
-                                         group.equal = c('loadings',
-                                                         'lv.variances',
-                                                         'lv.covariances'))
-all_scales_college_partnered_cor_load <- lavaan::lavaan(
-    model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
-                  uppsp_cfa_model, ksrq_model, sep = '\n'),
-    data = splt_fsmi_devdemog_yads,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'partnered',
-    group.equal = c('loadings',
-                    'lv.variances',
-                    'lv.covariances'))
-
 AIC(all_scales_college_partnered, all_scales_college_partnered_cor, all_scales_college_partnered_cor_load)
 
 college_cor_sensitivity_partnered_abs_max <- max(abs(inspect(all_scales_college_partnered_cor_load, 'cor.lv')[['0']] - 
     inspect(all_scales_college_partnered_cor, 'cor.lv')[['0']]))
-
-```
-
-```{r}
-data("splt_rl_betas")
-data("splt_lowfi_outcomes")
-splt_rl_betas <- dplyr::mutate(
-    splt_rl_betas,
-    mean = dplyr::case_when(
-        parameter %in% c('ep_prm', 'xi_prm') & !contrasted ~ qnorm(mean),
-        parameter %in% c('rho_prm') & !contrasted ~ log(mean),
-        TRUE ~ mean))
-
-splt_lowfi_outcomes <- dplyr::mutate(
-    splt_lowfi_outcomes,
-    value = dplyr::case_when(
-        !grepl(' - Hungry/Thirsty', condition) & grepl('bin', outcome) ~ qnorm(value),
-        TRUE ~ value))
-
-splt_rl_betas_w <- tidyr::spread(
-    tidyr::unite(
-        dplyr::mutate(
-            dplyr::filter(
-                dplyr::select(splt_rl_betas, mean, parameter, condition, id),
-                condition != 'Hungry/Thirsty - Hungry/Thirsty'),
-            condition = gsub('[- /]', '', abbreviate(condition, minlength = 12))),
-        parcond, parameter, condition),
-    parcond, mean)
-
-splt_lowfi_outcomes_w <- tidyr::spread(
-    tidyr::unite(
-        dplyr::mutate(
-            dplyr::filter(
-                dplyr::select(
-                    dplyr::ungroup(splt_lowfi_outcomes), 
-                    value, outcome, condition, id),
-                condition != 'Hungry/Thirsty - Hungry/Thirsty',
-                outcome %in% c('bin_start_to_4', 'bin_5_to_end')),
-            condition = gsub('[- /]', '', abbreviate(condition, minlength = 12))),
-        parcond, outcome, condition),
-    parcond, value)
-
-
-splt_fsmi_devdemog_yads_betas <- dplyr::left_join(
-    dplyr::left_join(splt_fsmi_devdemog_yads,
-                     splt_rl_betas_w, 
-                     by = c('SID' = 'id')),
-    splt_lowfi_outcomes_w,
-    by = c('SID' = 'id'))
-
-rl_var_names <- lapply(c('^ep_prm_', '^rho_prm_', '^xi_prm_', '^b_', 
-                         '^bin_start_to_4_', 'bin_5_to_end_'),
-                       function(betapattern){
-                           varnames <- grep(betapattern, 
-                                            names(splt_fsmi_devdemog_yads_betas),
-                                            value = T)
-                           return(varnames)
-                       })
-
-rl_var_names_facts <- lapply(rl_var_names, 
-                             function(varnames){
-                                 paste(paste0(paste0(varnames, '_fac'),
-                                              '=~', varnames),
-                                       collapse = '\n')
-                                 })
-
-all_scales_college_cor_load_splt <- lapply(
-    rl_var_names_facts,
-    function(rlfacts){
-        lavaan::lavaan(
-            model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
-                          uppsp_cfa_model, ksrq_model, 
-                          rlfacts, 
-                          sep = '\n'),
-            data = splt_fsmi_devdemog_yads_betas,
-            missing = 'fiml', estimator = 'ML',
-            int.ov.free = TRUE, int.lv.free = FALSE, 
-            auto.fix.first = TRUE, std.lv = FALSE, 
-            auto.fix.single = TRUE, auto.var = TRUE, 
-            auto.cov.lv.x = TRUE, auto.th = TRUE, 
-            auto.delta = TRUE, auto.cov.y = TRUE,
-            group = 'gender',
-            group.equal = c('loadings',
-                            'lv.variances',
-                            'lv.covariances'),
-            verbose = F)
-    })
-# control=list(init_nelder_mead=TRUE), verbose = TRUE)
-#optim.method = 'optim'
-# all_scales_college_cor_load_splt_std <- standardizedsolution(all_scales_college_cor_load_splt, ci = T)
-```
-
-```{r fig.width=3.25, fig.height=1, eval = F}
-ggplot2::theme_set(ggplot2::theme_minimal())
-ggplot2::ggplot(
-    data.frame(cors = as.numeric(inspect(all_scales_college_cor_load_splt, 
-                                         'cor.lv')[[1]][14:(14+1*4-1), 1:13])),
-    ggplot2::aes(x = cors)) + 
-    ggplot2::geom_vline(xintercept = 0) + 
-    ggplot2::geom_histogram(binwidth = .01, alpha = .8) +
-    ggplot2::scale_x_continuous(breaks = c(-1, -.1, .1, 1)) + 
-    ggplot2::coord_cartesian(xlim = c(-1, 1)) + 
-    ggplot2::theme(axis.text.y = ggplot2::element_blank(),
-                   axis.title.y = ggplot2::element_blank()) + 
-    ggplot2::labs(x = 'Correlation')
 ```
 
 ```{r}
 all_scales_college_par <- standardizedSolution(all_scales_college, ci = TRUE)
-all_scales_college_cor_par <- standardizedSolution(all_scales_college_partnered_cor_load, ci = TRUE)
+all_scales_college_cor_par <- standardizedSolution(all_scales_college_cor_load, ci = TRUE)
 
-all_scales_college_cor_fit <- fitmeasures(all_scales_college_partnered_cor_load, c('rmsea', 'mfi'))
+all_scales_college_cor_fit <- fitmeasures(all_scales_college_cor_load, c('rmsea', 'mfi'))
 
 
 
@@ -2305,7 +2262,214 @@ all_scales_college_plot <- ggplot2::ggplot(
 all_scales_college_plot
 ```
 
-## Adolescent sample
+### Correlations with SPLT outcomes
+
+```{r}
+data("splt_rl_betas")
+data("splt_lowfi_outcomes")
+splt_rl_betas <- dplyr::mutate(
+    splt_rl_betas,
+    mean = dplyr::case_when(
+        parameter %in% c('ep_prm', 'xi_prm') & !contrasted ~ qnorm(mean),
+        parameter %in% c('rho_prm') & !contrasted ~ log(mean),
+        TRUE ~ mean))
+
+splt_lowfi_outcomes <- dplyr::mutate(
+    splt_lowfi_outcomes,
+    value = dplyr::case_when(
+        !grepl(' - Hungry/Thirsty', condition) & grepl('bin', outcome) ~ qnorm(value-.001),
+        TRUE ~ value))
+
+splt_rl_betas_w <- tidyr::spread(
+    tidyr::unite(
+        dplyr::mutate(
+            dplyr::filter(
+                dplyr::select(splt_rl_betas, mean, parameter, condition, id),
+                condition != 'Hungry/Thirsty - Hungry/Thirsty'),
+            condition = gsub('[- /]', '', abbreviate(condition, minlength = 12))),
+        parcond, parameter, condition),
+    parcond, mean)
+
+splt_lowfi_outcomes_w <- tidyr::spread(
+    tidyr::unite(
+        dplyr::mutate(
+            dplyr::filter(
+                dplyr::select(
+                    dplyr::ungroup(splt_lowfi_outcomes), 
+                    value, outcome, condition, id),
+                condition != 'Hungry/Thirsty - Hungry/Thirsty',
+                outcome %in% c('bin_start_to_4', 'bin_5_to_end')),
+            condition = gsub('[- /]', '', abbreviate(condition, minlength = 12))),
+        parcond, outcome, condition),
+    parcond, value)
+
+
+splt_fsmi_devdemog_yads_betas <- dplyr::left_join(
+    dplyr::left_join(splt_fsmi_devdemog_yads,
+                     splt_rl_betas_w, 
+                     by = c('SID' = 'id')),
+    splt_lowfi_outcomes_w,
+    by = c('SID' = 'id'))
+
+rl_var_names <- lapply(c('^ep_prm_', '^rho_prm_', '^xi_prm_', '^b_', 
+                         '^bin_start_to_4_', 'bin_5_to_end_'),
+                       function(betapattern){
+                           varnames <- grep(betapattern, 
+                                            names(splt_fsmi_devdemog_yads_betas),
+                                            value = T)
+                           return(varnames)
+                       })
+
+rl_var_names_facts <- lapply(rl_var_names, 
+                             function(varnames){
+                                 paste(paste0(paste0(varnames, '_fac'),
+                                              '=~', varnames),
+                                       collapse = '\n')
+                                 })
+latent_var_splt_cor_collegeFN <-
+    file.path(data_dir, 'latent_var_splt_cor-college.RDS')
+library(future)
+library(listenv)
+future::plan(multiprocess)
+all_scales_college_cor_load_splt_le <- listenv()
+if(!file.exists(latent_var_splt_cor_collegeFN)){
+    for(i in seq_along(rl_var_names_facts)){
+        all_scales_college_cor_load_splt_le[[i]] <- 
+            future(lavaan::lavaan(
+                model = paste(fsmi_cfa_matestat_model, dnp_cfa_model,
+                              uppsp_cfa_model, ksrq_model, 
+                              rl_var_names_facts[[i]], 
+                              sep = '\n'),
+                data = splt_fsmi_devdemog_yads_betas,
+                missing = 'fiml', estimator = 'ML',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = TRUE, std.lv = FALSE, 
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE,
+                group = 'gender',
+                group.equal = c('loadings',
+                                'lv.variances',
+                                'lv.covariances'),
+                verbose = F))
+    }
+    all_scales_college_cor_load_splt <- as.list(
+        lapply(all_scales_college_cor_load_splt_le, future::value)
+    )
+    saveRDS(all_scales_college_cor_load_splt, latent_var_splt_cor_collegeFN)
+} else {
+    all_scales_college_cor_load_splt <- readRDS(latent_var_splt_cor_collegeFN)
+}
+
+#NOTE: the parameter 'b' models did not converge
+```
+
+```{r fig.width=3.25, fig.height=2}
+ggplot2::theme_set(ggplot2::theme_minimal())
+
+scale_splt_cor_df_collegeFN <- file.path(data_dir, 'scale_splt_cor_df_college.RDS')
+if(!file.exists(scale_splt_cor_df_collegeFN)){
+    scale_splt_cor_df_college_f <- lapply(
+        all_scales_college_cor_load_splt, 
+        function(amod){ 
+            return(future({
+                thing <- standardizedSolution(amod, ci = TRUE)
+                thing_l <- dplyr::mutate(
+                    dplyr::select(
+                        dplyr::filter(
+                            thing,
+                            group == 1,
+                            lhs %in% all_scale_latent_varnames,
+                            op == '~~',
+                            rhs %in% paste0(unlist(rl_var_names), '_fac')),
+                        lhs, op, rhs, group, est.std, ci.upper, ci.lower, z),
+                    group = 3)
+                thing_l
+            }))
+        })
+    scale_splt_cor_df_college <- do.call(rbind,
+                                         lapply(scale_splt_cor_df_college_f,
+                                                future::value))
+    saveRDS(scale_splt_cor_df_college, scale_splt_cor_df_collegeFN)
+} else {
+    scale_splt_cor_df_college <- readRDS(scale_splt_cor_df_collegeFN)
+}
+```
+
+```{r fig.width=5.875, fig.height=4}
+splt_param_labels <- c(
+    ep_prm_DtngLHngT_fac = expression(epsilon[dating]),
+    rho_prm_DtngLHngT_fac = expression(rho[dating]),
+    xi_prm_DtngLHngT_fac = expression(xi[dating]),
+    b_DtngLHngT_fac = expression(b[dating]),
+    bin_start_to_4_DtngLHngT_fac = expression(paste('First ',1/2)[dating]),
+    bin_5_to_end_DtngLHngT_fac = expression(paste('Last ',1/2)[dating]),
+    ep_prm_PplrUHngT_fac = expression(epsilon[popular]),
+    rho_prm_PplrUHngT_fac = expression(rho[popular]),
+    xi_prm_PplrUHngT_fac = expression(xi[popular]),
+    b_PplrUHngT_fac = expression(b[popular]),
+    bin_start_to_4_PplrUHngT_fac = expression(paste('First ',1/2)[popular]),
+    bin_5_to_end_PplrUHngT_fac = expression(paste('Last ',1/2)[popular]),
+    ep_prm_HngryThrsty_fac = expression(epsilon[baseline]),
+    rho_prm_HngryThrsty_fac = expression(rho[baseline]),
+    xi_prm_HngryThrsty_fac = expression(xi[baseline]),
+    b_HngryThrsty_fac = expression(b[baseline]),
+    bin_start_to_4_HngryThrsty_fac = expression(paste('First ',1/2)[baseline]),
+    bin_5_to_end_HngryThrsty_fac = expression(paste('Last ',1/2)[baseline])
+)
+scale_labels_ordered <- rev(scale_labels[c(1,12,13,2,10,3,4,8,5,9,6,7,11)])
+scale_splt_cor_df_college_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::filter(
+            scale_splt_cor_df_college,
+            grepl('HngT_fac$', rhs),
+            !grepl('^b_', rhs)),
+        lhs = factor(lhs, levels = names(scale_labels_ordered), 
+                     labels = names(scale_labels_ordered)),
+        rhs = factor(rhs, levels = names(splt_param_labels), 
+                     labels = splt_param_labels)),
+    ggplot2::aes(x = lhs, y = est.std)) + 
+    ggplot2::geom_hline(yintercept = 0, color = 'gray') + 
+    ggplot2::geom_errorbar(
+        ggplot2::aes(ymin = ci.lower, ymax = ci.upper),
+        width = 0) + 
+    ggplot2::geom_point(size = 1) + 
+    ggplot2::scale_x_discrete(labels = scale_labels, breaks = names(scale_labels)) + 
+    ggplot2::scale_y_continuous(breaks = c(-.5, -.2, .2, .5)) + 
+    ggplot2::facet_wrap(~rhs, nrow = 2, labeller = ggplot2::label_parsed) + 
+    ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
+                   panel.grid.minor = ggplot2::element_blank()) + 
+    ggplot2::coord_flip(ylim = c(-.55, .55))
+print(scale_splt_cor_df_college_plot)
+```
+
+```{r fig.width=5.875, fig.height=2}
+scale_splt_cor_df_baseline_college_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::filter(
+            scale_splt_cor_df_college,
+            grepl('HngryThrsty_fac$', rhs),
+            !grepl('^b_', rhs)),
+        lhs = factor(lhs, levels = names(scale_labels_ordered), 
+                     labels = names(scale_labels_ordered)),
+        rhs = factor(rhs, levels = names(splt_param_labels), 
+                     labels = splt_param_labels)),
+    ggplot2::aes(x = lhs, y = est.std)) + 
+    ggplot2::geom_hline(yintercept = 0, color = 'gray') + 
+    ggplot2::geom_errorbar(
+        ggplot2::aes(ymin = ci.lower, ymax = ci.upper),
+        width = 0) + 
+    ggplot2::geom_point(size = 1) + 
+    ggplot2::scale_x_discrete(labels = scale_labels, breaks = names(scale_labels)) + 
+    ggplot2::scale_y_continuous(breaks = c(-.5, -.2, .2, .5)) + 
+    ggplot2::facet_wrap(~rhs, nrow = 1, labeller = ggplot2::label_parsed) + 
+    ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
+                   panel.grid.minor = ggplot2::element_blank()) + 
+    ggplot2::coord_flip(ylim = c(-.55, .55))
+print(scale_splt_cor_df_baseline_college_plot)
+```
+
+## College and adolescent samples
 
 ```{r}
 # ksrq_cfa_metric_cov <- lavaan::lavaan(model = ksrq_model, data = splt_fsmi_devdemog,
@@ -2332,49 +2496,62 @@ all_scales_college_plot
 #                                        group = 'samplegroup', group.equal = c('loadings',
 #                                                                               'lv.variances',
 #                                                                               'lv.covariances'))
-all_scales_adol <- lavaan::lavaan(
-    model = paste(uppsp_cfa_model, ksrq_model, sep = '\n'),
-    data = splt_fsmi_devdemog,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'gender', 
-    group.equal = c('loadings'),
-    group.partial = c('k_srq_sociability =~ K_SRQ_10',
-                      'k_srq_admiration =~  K_SRQ_7',
-                      'k_srq_sexual_relationships =~ K_SRQ_13',
-                      'k_srq_sexual_relationships =~ K_SRQ_20'))
-all_scales_adol_cor <- lavaan::update(all_scales_adol, 
-                                         group.equal = c('loadings',
-                                                         'lv.variances',
-                                                         'lv.covariances'))
-all_scales_adol_cor_load <- lavaan::lavaan(
-    model = paste(uppsp_cfa_model, ksrq_model, sep = '\n'),
-    data = splt_fsmi_devdemog,
-    missing = 'fiml', estimator = 'ML',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = TRUE, std.lv = FALSE, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE,
-    group = 'gender',
-    group.equal = c('loadings',
-                    'lv.variances',
-                    'lv.covariances'))
+
+latent_var_cor_adolFN <-
+    file.path(data_dir, 'latent_var_cor-adol.rda')
+if(!file.exists(latent_var_cor_adolFN)){
+    all_scales_adol <- lavaan::lavaan(
+        model = paste(uppsp_cfa_model, ksrq_model, sep = '\n'),
+        data = splt_fsmi_devdemog,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'sample', 
+        group.equal = c('loadings'),
+        group.partial = c('k_srq_sociability =~ K_SRQ_10',
+                          'k_srq_admiration =~  K_SRQ_7',
+                          'k_srq_sexual_relationships =~ K_SRQ_13',
+                          'k_srq_sexual_relationships =~ K_SRQ_20'))
+    all_scales_adol_cor <- lavaan::update(all_scales_adol, 
+                                          group.equal = c('loadings',
+                                                          'lv.variances',
+                                                          'lv.covariances'))
+    all_scales_adol_cor_load <- lavaan::lavaan(
+        model = paste(uppsp_cfa_model, ksrq_model, sep = '\n'),
+        data = splt_fsmi_devdemog,
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = TRUE, std.lv = FALSE, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'sample',
+        group.equal = c('loadings',
+                        'lv.variances',
+                        'lv.covariances'))
+    save(all_scales_adol,
+         all_scales_adol_cor,
+         all_scales_adol_cor_load, file = latent_var_cor_adolFN)
+} else {
+    load(latent_var_cor_adolFN)
+}
 
 AIC(all_scales_adol, all_scales_adol_cor, all_scales_adol_cor_load)
+anova(all_scales_adol, all_scales_adol_cor, all_scales_adol_cor_load)
 
-adol_cor_sensitivity_abs_max <- max(abs(inspect(all_scales_adol_cor_load, 'cor.lv')[['0']] - 
-    inspect(all_scales_adol_cor, 'cor.lv')[['0']]))
+adol_cor_sensitivity_abs_max <- max(abs(inspect(all_scales_adol_cor_load, 'cor.lv')[[1]] - 
+    inspect(all_scales_adol_cor, 'cor.lv')[[1]]))
 ```
 
 ```{r}
 all_scales_adol_par <- standardizedSolution(all_scales_adol, ci = TRUE)
-all_scales_adol_cor_par <- standardizedSolution(all_scales_adol_cor, ci = TRUE)
+all_scales_adol_cor_par <- standardizedSolution(all_scales_adol_cor_load, ci = TRUE)
+```
 
+```{r}
 all_scale_latent_varnames <- unlist(c(names(upps_key),
                                       scales_to_use_ksrq))
 
@@ -2386,9 +2563,9 @@ all_scales_adol_cor_pardf_l <- dplyr::mutate(
             lhs %in% all_scale_latent_varnames,
             op == '~~',
             rhs %in% all_scale_latent_varnames,
-            lhs != rhs | (lhs == 'fsmi_mate' & rhs == 'fsmi_mate')),
+            lhs != rhs | (lhs == all_scale_latent_varnames[1] & rhs == all_scale_latent_varnames[1])),
         lhs, op, rhs, group, est.std, ci.upper, ci.lower, z),
-    group = 3)
+    group = 5)
 
 all_scales_adol_pardf_l <- dplyr::bind_rows(
     dplyr::select(
@@ -2406,15 +2583,15 @@ all_scales_adol_pardf <- dplyr::mutate(
         tidyr::unite(
             tidyr::gather(
                 dplyr::mutate_at(
-                    dplyr::filter(all_scales_adol_pardf_l, group == 3),
+                    dplyr::filter(all_scales_adol_pardf_l, group == 5),
                     dplyr::vars(lhs,rhs),
                     dplyr::funs(factor(., levels = all_scale_latent_varnames, 
                                        labels = all_scale_latent_varnames))),
                 par, value, est.std, ci.upper, ci.lower, z), 
             grouppar, par, group),
         grouppar, value),
-    est = sub('(-)*0\\.', '\\1.', sprintf('%.2f', est.std_3)),
-    cw = gsub('(-)*0\\.', '\\1.', sprintf('[% .2f,% .2f]', ci.lower_3, ci.upper_3)))
+    est = sub('(-)*0\\.', '\\1.', sprintf('%.2f', est.std_5)),
+    cw = gsub('(-)*0\\.', '\\1.', sprintf('[% .2f,% .2f]', ci.lower_5, ci.upper_5)))
 
 (latent_var_cor_table_adol <- dplyr::bind_rows(
     dplyr::select(all_scales_adol_pardf, lhs, rhs, est),
@@ -2423,7 +2600,7 @@ all_scales_adol_pardf <- dplyr::mutate(
             dplyr::filter(all_scales_adol_pardf, lhs != rhs),
             lhs_ = lhs, lhs = rhs, rhs = lhs_, est = cw), 
         lhs, rhs, est)) %>%
-        dplyr::mutate(est = ifelse(lhs == 'fsmi_mate' & rhs == 'fsmi_mate',
+        dplyr::mutate(est = ifelse(lhs == all_scale_latent_varnames[1] & rhs == all_scale_latent_varnames[1],
                                    '', est),
                       rhs = factor(sprintf('%02d. %s', as.numeric(rhs), rhs),
                                    levels = unique(sprintf('%02d. %s', as.numeric(rhs), rhs)),
@@ -2435,16 +2612,37 @@ all_scales_adol_pardf <- dplyr::mutate(
     knitr::kable(align = c('l', rep('r', 13)))
 ```
 
-```{r fig.width=10, fig.height=10}
+```{r fig.width=5.875, fig.height=7.75}
 bordergray <- '#eeeeee'
 ggplot2::theme_set(ggplot2::theme_minimal())
 
+group_labels <- c(
+    'yads_online' = 'CSYA-O',
+    'yads' = 'CSYA',
+    'TDS2' = 'CA',
+    'TDS1' = 'FCA'
+)[inspect(all_scales_adol_cor_load, 'group.label')]
+
+scale_labels_char <- as.character(scale_labels)[5:13]
+names(scale_labels_char) <- names(scale_labels)[5:13]
+
+scale_labels_char_lhs <- paste0('paste("', 1:length(scale_labels_char), '. ',
+                                sub('paste\\("', '', scale_labels_char))
+names(scale_labels_char_lhs) <- names(scale_labels)[5:13]
+
+scale_labels_char_rhs <- c(
+    paste0(1:(length(scale_labels_char)-1), '.'),
+    scale_labels_char[length(scale_labels_char)])
+names(scale_labels_char_rhs) <- names(scale_labels)[5:13]
+
 all_scales_adol_plot <- ggplot2::ggplot(
-    dplyr::mutate_at(all_scales_adol_pardf_l,
-                     dplyr::vars(lhs,rhs),
-                     funs(factor(., levels = all_scale_latent_varnames, 
-                                 labels = all_scale_latent_varnames))),
-    ggplot2::aes(x = factor(group, levels = 1:3, labels = c('F', 'M', '-')), 
+    dplyr::mutate_at(
+        dplyr::filter(all_scales_adol_pardf_l,
+                      rhs != 'neg_urgency'),
+        dplyr::vars(lhs,rhs),
+        funs(factor(., levels = all_scale_latent_varnames, 
+                    labels = all_scale_latent_varnames))),
+    ggplot2::aes(x = factor(group, levels = c(5, 1:4), labels = c('All', group_labels)), 
                  y = est.std)) + 
     ggplot2::geom_hline(yintercept = 0, color = '#666666') + 
     ggplot2::geom_hline(yintercept = c(-1,1), color = '#999999') + 
@@ -2452,12 +2650,17 @@ all_scales_adol_plot <- ggplot2::ggplot(
         ggplot2::aes(ymin = ci.lower, ymax = ci.upper),
         width = 0, alpha = .5) + 
     ggplot2::geom_point(size = 1.5) + 
-    ggplot2::facet_grid(lhs ~ rhs, labeller = ggplot2::label_parsed) + 
+    ggplot2::facet_grid(lhs ~ rhs, 
+                        labeller = ggplot2::labeller(
+                            lhs = ggplot2::as_labeller(scale_labels_char_lhs,
+                                                       default = ggplot2::label_parsed),
+                            rhs = ggplot2::as_labeller(scale_labels_char_rhs,
+                                                       default = ggplot2::label_parsed))) + 
     ggplot2::coord_cartesian(ylim = c(-1.1,1.1)) + 
     ggplot2::scale_y_continuous(position = 'left', breaks = c(-.5, 0, .5)) + 
     ggplot2::theme(
         # axis.text.x = ggplot2::element_blank(),
-        axis.text.x = ggplot2::element_text(angle = 360-0, hjust = .5),
+        axis.text.x = ggplot2::element_text(angle = 360-65, hjust = 0),
         panel.grid.major.x = ggplot2::element_blank(),
         panel.border = ggplot2::element_rect(fill = NA, color = bordergray, size = 1, linetype = 1),
         strip.background = ggplot2::element_rect(fill=bordergray, color = bordergray, size = 1, linetype = 1),
@@ -2473,12 +2676,271 @@ all_scales_adol_plot <- ggplot2::ggplot(
 all_scales_adol_plot
 ```
 
+### Correlations with SPLT outcomes
 
-# Associations with reported sexual behavior
+```{r}
+
+#Get correlations with samples combined
+
+splt_fsmi_devdemog_betas <- dplyr::left_join(
+    dplyr::left_join(splt_fsmi_devdemog,
+                     splt_rl_betas_w, 
+                     by = c('SID' = 'id')),
+    splt_lowfi_outcomes_w,
+    by = c('SID' = 'id'))
+
+latent_var_splt_cor_combinedFN <-
+    file.path(data_dir, 'latent_var_splt_cor-combined.RDS')
+library(future)
+library(listenv)
+future::plan(multiprocess)
+all_scales_combined_cor_load_splt_le <- listenv()
+if(!file.exists(latent_var_splt_cor_combinedFN)){
+    for(i in seq_along(rl_var_names_facts)){
+        all_scales_combined_cor_load_splt_le[[i]] <- 
+            future(lavaan::lavaan(
+                model = paste(uppsp_cfa_model, ksrq_model, 
+                              rl_var_names_facts[[i]], 
+                              sep = '\n'),
+                data = splt_fsmi_devdemog_betas,
+                missing = 'fiml', estimator = 'ML',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = TRUE, std.lv = FALSE, 
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE,
+                group = 'sample',
+                group.equal = c('loadings',
+                                'lv.variances',
+                                'lv.covariances'),
+                verbose = F))
+    }
+    all_scales_combined_cor_load_splt <- as.list(
+        lapply(all_scales_combined_cor_load_splt_le, future::value)
+    )
+    saveRDS(all_scales_combined_cor_load_splt, latent_var_splt_cor_combinedFN)
+} else {
+    all_scales_combined_cor_load_splt <- readRDS(latent_var_splt_cor_combinedFN)
+}
+```
+
+```{r}
+#Get correlations for each sample
+
+latent_var_splt_cor_combined_persampFN <-
+    file.path(data_dir, 'latent_var_splt_cor-combined_persamp.RDS')
+library(future)
+library(listenv)
+future::plan(multiprocess)
+all_scales_combined_persamp_cor_load_splt_le <- listenv()
+if(!file.exists(latent_var_splt_cor_combined_persampFN)){
+    for(i in seq_along(rl_var_names_facts)){
+        all_scales_combined_persamp_cor_load_splt_le[[i]] <- 
+            future(lavaan::lavaan(
+                model = paste(uppsp_cfa_model, ksrq_model, 
+                              rl_var_names_facts[[i]], 
+                              sep = '\n'),
+                data = splt_fsmi_devdemog_betas,
+                missing = 'fiml', estimator = 'ML',
+                int.ov.free = TRUE, int.lv.free = FALSE, 
+                auto.fix.first = TRUE, std.lv = FALSE, 
+                auto.fix.single = TRUE, auto.var = TRUE, 
+                auto.cov.lv.x = TRUE, auto.th = TRUE, 
+                auto.delta = TRUE, auto.cov.y = TRUE,
+                group = 'sample',
+                group.equal = c('loadings'),
+                verbose = F))
+    }
+    all_scales_combined_persamp_cor_load_splt <- as.list(
+        lapply(all_scales_combined_persamp_cor_load_splt_le, future::value)
+    )
+    saveRDS(all_scales_combined_persamp_cor_load_splt, latent_var_splt_cor_combined_persampFN)
+} else {
+    all_scales_combined_persamp_cor_load_splt <- readRDS(latent_var_splt_cor_combined_persampFN)
+}
+```
+
+```{r}
+#get the standardized estiamtes for the combined sample
+scale_splt_cor_df_combinedFN <- file.path(data_dir,
+                                                  'scale_splt_cor_df_combined.RDS')
+if(!file.exists(scale_splt_cor_df_combinedFN)){
+    scale_splt_cor_df_combined_f <- lapply(
+        all_scales_combined_cor_load_splt, 
+        function(amod){ 
+            return(future({
+                thing <- standardizedSolution(amod, ci = TRUE)
+                thing_l <- dplyr::select(
+                    dplyr::filter(
+                        thing,
+                        lhs %in% all_scale_latent_varnames,
+                        op == '~~',
+                        rhs %in% paste0(unlist(rl_var_names), '_fac')),
+                    lhs, op, rhs, group, est.std, ci.upper, ci.lower, z)
+                thing_l
+            }))
+        })
+    scale_splt_cor_df_combined <- do.call(rbind,
+                                         lapply(scale_splt_cor_df_combined_f,
+                                                future::value))
+    saveRDS(scale_splt_cor_df_combined, scale_splt_cor_df_combinedFN)
+} else {
+    scale_splt_cor_df_combined <- readRDS(scale_splt_cor_df_combinedFN)
+}
+```
+
+```{r}
+#get the standardized estiamtes for each sample
+scale_splt_cor_df_combined_persampFN <- file.path(data_dir,
+                                                  'scale_splt_cor_df_combined_persamp.RDS')
+if(!file.exists(scale_splt_cor_df_combined_persampFN)){
+    scale_splt_cor_df_combined_persamp_f <- lapply(
+        all_scales_combined_persamp_cor_load_splt, 
+        function(amod){ 
+            return(future({
+                thing <- standardizedSolution(amod, ci = TRUE)
+                thing_l <- dplyr::select(
+                    dplyr::filter(
+                        thing,
+                        lhs %in% all_scale_latent_varnames,
+                        op == '~~',
+                        rhs %in% paste0(unlist(rl_var_names), '_fac')),
+                    lhs, op, rhs, group, est.std, ci.upper, ci.lower, z)
+                thing_l
+            }))
+        })
+    scale_splt_cor_df_combined_persamp <- do.call(rbind,
+                                         lapply(scale_splt_cor_df_combined_persamp_f,
+                                                future::value))
+    saveRDS(scale_splt_cor_df_combined_persamp, scale_splt_cor_df_combined_persampFN)
+} else {
+    scale_splt_cor_df_combined_persamp <- readRDS(scale_splt_cor_df_combined_persampFN)
+}
+```
+
+```{r fig.width=5.875, fig.height=3.5}
+ggplot2::theme_set(ggplot2::theme_minimal())
+scale_labels_ordered_combined <- rev(scale_labels[c(12,13,10,8,5,9,6,7,11)])
+scale_splt_cor_df_combined_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::filter(
+            scale_splt_cor_df_combined,
+            grepl('HngT_fac$', rhs),
+            !grepl('^b_', rhs)),
+        lhs = factor(lhs, levels = names(scale_labels_ordered_combined), 
+                     labels = names(scale_labels_ordered_combined)),
+        rhs = factor(rhs, levels = names(splt_param_labels), 
+                     labels = splt_param_labels)),
+    ggplot2::aes(x = lhs, y = est.std)) + 
+    ggplot2::geom_hline(yintercept = 0, color = 'gray') + 
+    ggplot2::geom_errorbar(
+        ggplot2::aes(ymin = ci.lower, ymax = ci.upper),
+        width = 0) + 
+    ggplot2::geom_point(size = 1) + 
+    ggplot2::scale_x_discrete(labels = scale_labels, breaks = names(scale_labels)) + 
+    ggplot2::scale_y_continuous(breaks = c(-.5, -.2, .2, .5)) + 
+    ggplot2::facet_wrap(~rhs, nrow = 2, labeller = ggplot2::label_parsed) + 
+    ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
+                   panel.grid.minor = ggplot2::element_blank()) + 
+    ggplot2::coord_flip(ylim = c(-.55, .55))
+print(scale_splt_cor_df_combined_plot)
+```
+
+```{r fig.width=5.875, fig.height=2}
+scale_splt_cor_df_baseline_combined_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::filter(
+            scale_splt_cor_df_combined,
+            grepl('HngryThrsty_fac$', rhs),
+            !grepl('^b_', rhs)),
+        lhs = factor(lhs, levels = names(scale_labels_ordered_combined), 
+                     labels = names(scale_labels_ordered_combined)),
+        rhs = factor(rhs, levels = names(splt_param_labels), 
+                     labels = splt_param_labels)),
+    ggplot2::aes(x = lhs, y = est.std)) + 
+    ggplot2::geom_hline(yintercept = 0, color = 'gray') + 
+    ggplot2::geom_errorbar(
+        ggplot2::aes(ymin = ci.lower, ymax = ci.upper),
+        width = 0) + 
+    ggplot2::geom_point(size = 1) + 
+    ggplot2::scale_x_discrete(labels = scale_labels, breaks = names(scale_labels)) + 
+    ggplot2::scale_y_continuous(breaks = c(-.5, -.2, .2, .5)) + 
+    ggplot2::facet_wrap(~rhs, nrow = 1, labeller = ggplot2::label_parsed) + 
+    ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
+                   panel.grid.minor = ggplot2::element_blank()) + 
+    ggplot2::coord_flip(ylim = c(-.55, .55))
+print(scale_splt_cor_df_baseline_combined_plot)
+```
+
+```{r fig.width=5.875, fig.height=6}
+scale_splt_cor_position <- ggplot2::position_dodge(width = .75)
+scale_splt_cor_df_combined_persamp_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::filter(
+            scale_splt_cor_df_combined_persamp,
+            grepl('HngT_fac$', rhs),
+            !grepl('^b_', rhs)),
+        lhs = factor(lhs, levels = names(scale_labels_ordered_combined), 
+                     labels = names(scale_labels_ordered_combined)),
+        rhs = factor(rhs, levels = names(splt_param_labels), 
+                     labels = splt_param_labels)),
+    ggplot2::aes(x = lhs, y = est.std, 
+                 shape = factor(group, levels = 1:4, labels = group_labels))) + 
+    ggplot2::geom_hline(yintercept = 0, color = 'gray') + 
+    ggplot2::geom_errorbar(
+        position = scale_splt_cor_position, 
+        ggplot2::aes(ymin = ci.lower, ymax = ci.upper),
+        width = 0, alpha = .5) + 
+    ggplot2::geom_point(position = scale_splt_cor_position, size = 1.25) + 
+    ggplot2::scale_x_discrete(labels = scale_labels, breaks = names(scale_labels)) + 
+    ggplot2::scale_y_continuous(breaks = c(-.5, 0, .5)) + 
+    ggplot2::facet_wrap(~rhs, nrow = 2, labeller = ggplot2::label_parsed) + 
+    ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
+                   panel.grid.minor = ggplot2::element_blank(),
+                   legend.position = 'bottom') + 
+    ggplot2::labs(y = 'Correlation with 95% confidence interval', 
+                  shape = 'Sample') + 
+    ggplot2::coord_flip(ylim = c(-.75, .75))
+print(scale_splt_cor_df_combined_persamp_plot)
+```
+
+```{r fig.width=5.875, fig.height=4}
+scale_splt_cor_position <- ggplot2::position_dodge(width = .75)
+scale_splt_cor_df_baseline_combined_persamp_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::filter(
+            scale_splt_cor_df_combined_persamp,
+            grepl('HngryThrsty_fac$$', rhs),
+            !grepl('^b_', rhs)),
+        lhs = factor(lhs, levels = names(scale_labels_ordered_combined), 
+                     labels = names(scale_labels_ordered_combined)),
+        rhs = factor(rhs, levels = names(splt_param_labels), 
+                     labels = splt_param_labels)),
+    ggplot2::aes(x = lhs, y = est.std, 
+                 shape = factor(group, levels = 1:4, labels = group_labels))) + 
+    ggplot2::geom_hline(yintercept = 0, color = 'gray') + 
+    ggplot2::geom_errorbar(
+        position = scale_splt_cor_position, 
+        ggplot2::aes(ymin = ci.lower, ymax = ci.upper),
+        width = 0, alpha = .5) + 
+    ggplot2::geom_point(position = scale_splt_cor_position, size = 1.25) + 
+    ggplot2::scale_x_discrete(labels = scale_labels, breaks = names(scale_labels)) + 
+    ggplot2::scale_y_continuous(breaks = c(-.5, 0, .5)) + 
+    ggplot2::facet_wrap(~rhs, nrow = 1, labeller = ggplot2::label_parsed) + 
+    ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
+                   panel.grid.minor = ggplot2::element_blank(),
+                   legend.position = 'bottom') + 
+    ggplot2::labs(y = 'Correlation with 95% confidence interval', 
+                  shape = 'Sample') + 
+    ggplot2::coord_flip(ylim = c(-.75, .75))
+print(scale_splt_cor_df_baseline_combined_persamp_plot)
+```
+
+# Associations with motive-relevant behavior
 
 The number of partners and frequency of sex is expected to be different between those who are in or not in long-term relationships.
 
-```{r, eval = F}
+```{r}
 ggplot2::theme_set(ggplot2::theme_minimal())
 
 
@@ -2486,7 +2948,7 @@ table(splt_fsmi_devdemog$ordered_sex_freq, splt_fsmi_devdemog$sample, useNA = 'i
 table(splt_fsmi_devdemog$ordered_num_partner, splt_fsmi_devdemog$sample, useNA = 'ifany')
 ```
 
-```{r sesfsmiplot, fig.width=8, fig.height=4, eval = F}
+```{r sesfsmiplot, fig.width=8, fig.height=4}
 sex_freq_plot <- ggplot2::ggplot(
     data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$ordered_sex_freq) & 
                                   !is.na(splt_fsmi_devdemog$partnered) & 
@@ -2548,20 +3010,212 @@ save_out_list <- c(save_out_list, 'sex_freq_plot', 'num_partnr_plot')
 
 ### FSMI mate seeking
 
-```{r fig.width=4, fig.height=4, eval = F}
+```{r fig.width=4, fig.height=4}
 fsmi_num_partners_model <- paste(fsmi_cfa_matestat_model, 
                                  'ordered_num_partner ~ fsmi_mate + gender_c', sep = '\n')
 
-fsmi_num_partners_sem <- lavaan::lavaan(
-    model = fsmi_num_partners_model, 
-    data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
-                                  grepl('yads', splt_fsmi_devdemog$sample),],
-    missing = 'listwise', estimator = 'WLSMV',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
+sensseek_urgency_cfa <- milav::create_cfa_from_keylist(
+    upps_key[c('pos_urgency','sensation_seeking','neg_urgency')])
+
+uppsp_fsmi_partners_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_num_partner ~ neg_urgency + sensation_seeking + pos_urgency + fsmi_mate + gender_c',
+    sep = '\n')
+
+uppsp_fsmi_partners_null_model <- paste(
+    sensseek_urgency_cfa,
+     'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+     'ordered_num_partner ~ 0*neg_urgency + 0*sensation_seeking + 0*pos_urgency + fsmi_mate + gender_c',
+     sep = '\n')
+
+uppsp_fsmi_partners_nofsmi_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_num_partner ~ neg_urgency + sensation_seeking + pos_urgency + 0*fsmi_mate + gender_c',
+    sep = '\n')
+
+uppsp_fsmi_partners_nopurg_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_num_partner ~ neg_urgency + sensation_seeking + 0*pos_urgency + fsmi_mate + gender_c',
+    sep = '\n')
+
+uppsp_fsmi_partners_nonurg_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_num_partner ~ 0*neg_urgency + sensation_seeking + pos_urgency + fsmi_mate + gender_c',
+    sep = '\n')
+
+uppsp_fsmi_partners_noss_model <- paste(
+    sensseek_urgency_cfa,
+    'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+    'ordered_num_partner ~ neg_urgency + 0*sensation_seeking + pos_urgency + fsmi_mate + gender_c',
+    sep = '\n')
+
+uppsp_fsmi_partners_nullnull_model <- paste(
+    sensseek_urgency_cfa,
+     'fsmi_mate =~ fsmi_qs_55 + fsmi_qs_56 + fsmi_qs_57 + fsmi_qs_58 + fsmi_qs_59 + fsmi_qs_60
+',
+     'ordered_num_partner ~ 0*neg_urgency + 0*sensation_seeking + 0*pos_urgency + 0*fsmi_mate + gender_c',
+     sep = '\n')
+
+fsmi_num_partners_modelsFN <- file.path(data_dir, 'fsmi_num_partners_models.rda')
+if(!file.exists(fsmi_num_partners_modelsFN)){
+    fsmi_num_partners_sem <- lavaan::lavaan(
+        model = fsmi_num_partners_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    fsmi_num_partners_all_sem <- lavaan::lavaan(
+        model = fsmi_num_partners_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_partners_all_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_partners_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_partners_null_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_null_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_partners_nofsmi_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_nofsmi_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_partners_nopurg_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_nopurg_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_partners_nonurg_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_nonurg_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_partners_noss_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_noss_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_partners_nullnull_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_partners_nullnull_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_fsmi_partners_lrt <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
+                                                  uppsp_fsmi_partners_null_sem,
+                                                  uppsp_fsmi_partners_nullnull_sem)
+    
+    uppsp_fsmi_partners_lrt2 <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
+                                                   uppsp_fsmi_partners_nofsmi_sem,
+                                                   uppsp_fsmi_partners_nullnull_sem)
+    
+    uppsp_fsmi_partners_lrtpurg <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
+                                                   uppsp_fsmi_partners_nopurg_sem,
+                                                   uppsp_fsmi_partners_nullnull_sem)
+    
+    uppsp_fsmi_partners_lrtnurg <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
+                                                   uppsp_fsmi_partners_nonurg_sem,
+                                                   uppsp_fsmi_partners_nullnull_sem)
+    
+    uppsp_fsmi_partners_lrtss <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
+                                                   uppsp_fsmi_partners_noss_sem,
+                                                   uppsp_fsmi_partners_nullnull_sem)
+    
+    save(fsmi_num_partners_sem,
+         fsmi_num_partners_all_sem,
+         uppsp_fsmi_partners_sem,
+         uppsp_fsmi_partners_all_sem,
+         uppsp_fsmi_partners_null_sem,
+         uppsp_fsmi_partners_nofsmi_sem,
+         uppsp_fsmi_partners_nopurg_sem,
+         uppsp_fsmi_partners_nonurg_sem,
+         uppsp_fsmi_partners_noss_sem,
+         uppsp_fsmi_partners_nullnull_sem,
+         uppsp_fsmi_partners_lrt,
+         uppsp_fsmi_partners_lrt2,
+         uppsp_fsmi_partners_lrtpurg,
+         uppsp_fsmi_partners_lrtnurg,
+         uppsp_fsmi_partners_lrtss,
+         file = fsmi_num_partners_modelsFN)
+} else {
+    load(fsmi_num_partners_modelsFN)
+}
+
 
 fsmi_num_partners_sem_pred <- lavaan::lavPredict(fsmi_num_partners_sem)
 fsmi_num_partners_sem_partners_ <- splt_fsmi_devdemog$ordered_num_partner[
@@ -2569,20 +3223,12 @@ fsmi_num_partners_sem_partners_ <- splt_fsmi_devdemog$ordered_num_partner[
         grepl('yads', splt_fsmi_devdemog$sample)]
 fsmi_num_partners_sem_partners <- fsmi_num_partners_sem_partners_[fsmi_num_partners_sem@Data@case.idx[[1]]]
 
-fsmi_num_partners_all_sem <- lavaan::lavaan(
-    model = fsmi_num_partners_model, 
-    data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
-    missing = 'listwise', estimator = 'WLSMV',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
-
 fsmi_num_partners_all_sem_pred <- lavaan::lavPredict(fsmi_num_partners_all_sem)
 fsmi_num_partners_all_sem_partners_ <- splt_fsmi_devdemog$ordered_num_partner[grepl('yads', splt_fsmi_devdemog$sample)]
 fsmi_num_partners_all_sem_partners <- fsmi_num_partners_all_sem_partners_[fsmi_num_partners_all_sem@Data@case.idx[[1]]]
+```
 
+```{r fig.width=3.25, fig.height=2}
 plot_lav_factor_pred(lavfit = fsmi_num_partners_sem, 
                      factor_name = 'fsmi_mate', 
                      orig_data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
@@ -2591,7 +3237,7 @@ plot_lav_factor_pred(lavfit = fsmi_num_partners_sem,
                      geom = 'jitter')
 
 knitr::kable(
-    dplyr::filter(parameterestimates(fsmi_num_partners_sem, stan = T), op == '~'),
+    dplyr::filter(standardizedsolution(fsmi_num_partners_sem, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'FSMI Predicting number of partners among unpartnered college students; N obs. = ',
@@ -2604,25 +3250,296 @@ plot_lav_factor_pred(lavfit = fsmi_num_partners_all_sem,
                      geom = 'jitter')
 
 knitr::kable(
-    dplyr::filter(parameterestimates(fsmi_num_partners_all_sem, stan = T), op == '~'),
+    dplyr::filter(standardizedsolution(fsmi_num_partners_all_sem, ci = T), op == '~'),
     digits = 2,
     caption = paste0(
         'FSMI Predicting number of partners among all college participants with SES responses; N obs. = ',
         lavaan::nobs(fsmi_num_partners_all_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_fsmi_partners_nofsmi_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'FSMI Predicting number of partners among all college participants with SES responses; N obs. = ',
+        lavaan::nobs(uppsp_fsmi_partners_nofsmi_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_fsmi_partners_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'FSMI Predicting number of partners among unpartnered college students; N obs. = ',
+        lavaan::nobs(uppsp_fsmi_partners_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_fsmi_partners_all_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'FSMI Predicting number of partners among unpartnered college students; N obs. = ',
+        lavaan::nobs(uppsp_fsmi_partners_all_sem)))
 ```
+
+The basic takeaway from the above is that a lot of these are associated but remove any one of them and model fit doesn't drop much. 
+Remove a couple (both urgency scales, or all upps-p scales) and there's a big model fit drop. Include only one, and then remove it, and there's a big model fit drop.
+For now, I'm going to stick with just describing the relations with the motive scales.
+When looking at the size of standardized coefficients, positive urgency is the largest, and is not greatly diminished by the addition of the FSMI Mate-seeking scale.
 
 ### K-SRQ sexual relationship
 
-```{r fig.width=4, fig.height=4, eval = F}
+```{r fig.width=4, fig.height=4}
 ksrq_num_partners_model <- paste(ksrq_model, 
-                                 'ordered_num_partner ~ k_srq_sexual_relationships + gender_c', sep = '\n')
+                                 'ordered_num_partner ~ k_srq_sexual_relationships + k_srq_admiration + gender_c', sep = '\n')
 ksrq_num_partners_all_model <- paste(ksrq_model, 
-                                 'ordered_num_partner ~ k_srq_sexual_relationships + gender_c + age_c', sep = '\n')
+                                 'ordered_num_partner ~ k_srq_sexual_relationships + k_srq_admiration + gender_c + age_c', sep = '\n')
 
-ksrq_num_partners_sem <- lavaan::lavaan(
-    model = ksrq_num_partners_model, 
-    data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
-                                  grepl('yads', splt_fsmi_devdemog$sample),],
+ksrq_noadmrtn_num_partners_model <- paste(ksrq_model, 
+                                 'ordered_num_partner ~ k_srq_sexual_relationships + 0*k_srq_admiration + gender_c', sep = '\n')
+ksrq_noadmrtn_num_partners_all_model <- paste(ksrq_model, 
+                                 'ordered_num_partner ~ k_srq_sexual_relationships + 0*k_srq_admiration + gender_c + age_c', sep = '\n')
+
+uppsp_ksrq_num_partners_model <- paste(
+    ksrq_model,
+    sensseek_urgency_cfa,
+    'ordered_num_partner ~ neg_urgency + sensation_seeking + pos_urgency + k_srq_sexual_relationships + gender_c',
+    sep = '\n')
+
+uppsp_ksrq_nosr_num_partners_model <- paste(
+    ksrq_model,
+    sensseek_urgency_cfa,
+    'ordered_num_partner ~ neg_urgency + sensation_seeking + pos_urgency + 0*k_srq_sexual_relationships + gender_c',
+    sep = '\n')
+
+uppsp_ksrq_num_partners_all_model <- paste(
+    ksrq_model,
+    sensseek_urgency_cfa,
+    'ordered_num_partner ~ neg_urgency + sensation_seeking + pos_urgency + k_srq_sexual_relationships + gender_c + age_c',
+    sep = '\n')
+
+uppsp_ksrq_nosr_num_partners_all_model <- paste(
+    ksrq_model,
+    sensseek_urgency_cfa,
+    'ordered_num_partner ~ neg_urgency + sensation_seeking + pos_urgency + 0*k_srq_sexual_relationships + gender_c + age_c',
+    sep = '\n')
+
+ksrq_num_partners_modelsFN <- file.path(data_dir, 'ksrq_num_partners_models.rda')
+if(!file.exists(fsmi_num_partners_modelsFN)){
+    ksrq_num_partners_sem <- lavaan::lavaan(
+        model = ksrq_num_partners_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_num_partners_all_sem <- lavaan::lavaan(
+        model = ksrq_num_partners_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_noadmrtn_num_partners_sem <- lavaan::lavaan(
+        model = ksrq_noadmrtn_num_partners_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_noadmrtn_num_partners_all_sem <- lavaan::lavaan(
+        model = ksrq_noadmrtn_num_partners_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_num_partners_sem <- lavaan::lavaan(
+        model = uppsp_ksrq_num_partners_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_nosr_num_partners_sem <- lavaan::lavaan(
+        model = uppsp_ksrq_nosr_num_partners_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_num_partners_all__sem <- lavaan::lavaan(
+        model = uppsp_ksrq_num_partners_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_nosr_num_partners_all__sem <- lavaan::lavaan(
+        model = uppsp_ksrq_nosr_num_partners_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_num_partners_admrtn_lrt <- lavaan::lavTestLRT(ksrq_num_partners_sem,
+                                                       ksrq_noadmrtn_num_partners_sem)
+    uppsp_ksrq_num_partners_lrt <- lavaan::lavTestLRT(uppsp_ksrq_num_partners_sem,
+                                                      uppsp_ksrq_nosr_num_partners_sem)
+    uppsp_ksrq_num_partners_all_lrt <- lavaan::lavTestLRT(uppsp_ksrq_num_partners_all__sem,
+                                                          uppsp_ksrq_nosr_num_partners_all__sem)
+    
+    save(ksrq_num_partners_sem,
+         ksrq_num_partners_all_sem,
+         ksrq_noadmrtn_num_partners_sem,
+         ksrq_noadmrtn_num_partners_all_sem,
+         uppsp_ksrq_num_partners_sem,
+         uppsp_ksrq_nosr_num_partners_sem,
+         uppsp_ksrq_num_partners_all__sem,
+         uppsp_ksrq_nosr_num_partners_all__sem,
+         ksrq_num_partners_admrtn_lrt,
+         uppsp_ksrq_num_partners_lrt,
+         uppsp_ksrq_num_partners_all_lrt,
+         file = ksrq_num_partners_modelsFN)
+} else {
+    load(ksrq_num_partners_modelsFN)
+}
+
+anewdata <- 
+lavaan::lavPredict(ksrq_num_partners_sem,)
+
+ksrq_num_partners_sem_pred <- lavaan::lavPredict(ksrq_num_partners_sem)
+ksrq_num_partners_sem_partners_ <- splt_fsmi_devdemog$ordered_num_partner[splt_fsmi_devdemog$partnered == 0 &
+                                  grepl('yads', splt_fsmi_devdemog$sample)]
+ksrq_num_partners_sem_partners <- ksrq_num_partners_sem_partners_[ksrq_num_partners_sem@Data@case.idx[[1]]]
+
+ksrq_num_partners_all_sem_pred <- lavaan::lavPredict(ksrq_num_partners_all_sem)
+ksrq_num_partners_all_sem_partners_ <- splt_fsmi_devdemog$ordered_num_partner
+ksrq_num_partners_all_sem_partners <- ksrq_num_partners_all_sem_partners_[ksrq_num_partners_all_sem@Data@case.idx[[1]]]
+```
+
+```{r fig.width=3.25, fig.height=2}
+ggplot2::qplot(ksrq_num_partners_sem_pred[,'k_srq_sexual_relationships'],
+               ksrq_num_partners_sem_partners,
+               xlab = 'K-SRQ Sexual relationship factor',
+               ylab = 'Number of partners',
+               geom = 'jitter')
+
+ggplot2::qplot(ksrq_num_partners_all_sem_pred[,'k_srq_sexual_relationships'],
+               ksrq_num_partners_all_sem_partners,
+               xlab = 'K-SRQ Sexual relationship factor',
+               ylab = 'Number of partners',
+               geom = 'jitter')
+```
+
+```{r}
+knitr::kable(
+    dplyr::filter(standardizedsolution(ksrq_num_partners_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of partners among unpartnered college students; N obs. = ',
+        lavaan::nobs(ksrq_num_partners_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(ksrq_noadmrtn_num_partners_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of partners among unpartnered college students; N obs. = ',
+        lavaan::nobs(ksrq_num_partners_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(ksrq_num_partners_all_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
+        lavaan::nobs(ksrq_num_partners_all_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(ksrq_noadmrtn_num_partners_all_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
+        lavaan::nobs(ksrq_num_partners_all_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_ksrq_num_partners_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of partners among unpartnered college students; N obs. = ',
+        lavaan::nobs(uppsp_ksrq_num_partners_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_ksrq_nosr_num_partners_sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of partners among unpartnered college students; N obs. = ',
+        lavaan::nobs(uppsp_ksrq_nosr_num_partners_sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_ksrq_num_partners_all__sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
+        lavaan::nobs(uppsp_ksrq_num_partners_all__sem)))
+
+knitr::kable(
+    dplyr::filter(standardizedsolution(uppsp_ksrq_nosr_num_partners_all__sem, ci = T), op == '~'),
+    digits = 2,
+    caption = paste0(
+        'K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = ',
+        lavaan::nobs(uppsp_ksrq_nosr_num_partners_all__sem)))
+```
+
+K-SRQ Sexual Relationships is associated with number of sexual partners in both the unpartnered college sample, and the combined adolescent and college sample.
+There are too few participants in the adolescent sample with one or more sexual partners so while some of the analyses do use data from all participants with responses on the SES, this primarily serves to integrate both partnered and upartnered college students.
+Notably, the standardized coefficient for the association between number of sexual partners and K-SRQ Sexual Relationships does not change much between either the full, or unpartnered college students subgroups.
+Sociability and Sexual Relationships are too highly correlated to be disentangled.
+Controlling for the other highly correlated K-SRQ scale, Admiration, yields a standardized effect of Sexual Relationships that has the same sign, but that has bigger magnitude.
+The coefficient for the Admiration scale is large and negative, which evokes extremely speculative narratives having to do with reputational concerns and promiscuity.
+The magnitude of the Sexual Relationships association (the standard deviation is close to one, so the standardized and unstandardized coefficients are very similar) is about the same size as the effect of reported gender. 
+In other words, the expected difference in number of sexual partners a one point increase on K-SRQ Sexual Relationshi
+
+### SPLT sexual relationship
+
+```{r fig.width=4, fig.height=4}
+splt_ep_num_partners_model <- paste(rl_var_names_facts[[1]], 
+                                 'ordered_num_partner ~ ep_prm_DtngLHngT_fac + gender_c', sep = '\n')
+splt_ep_num_partners_all_model <- paste(rl_var_names_facts[[1]], 
+                                 'ordered_num_partner ~ ep_prm_DtngLHngT_fac + gender_c + age_c', sep = '\n')
+
+splt_ep_bl_num_partners_model <- paste(rl_var_names_facts[[1]], 
+                                 'ordered_num_partner ~ ep_prm_HngryThrsty_fac + gender_c', sep = '\n')
+splt_ep_bl_num_partners_all_model <- paste(rl_var_names_facts[[1]], 
+                                 'ordered_num_partner ~ ep_prm_HngryThrsty_fac + gender_c + age_c', sep = '\n')
+
+splt_ep_num_partners_sem <- lavaan::lavaan(
+    model = splt_ep_num_partners_model, 
+    data = splt_fsmi_devdemog_betas[splt_fsmi_devdemog_betas$partnered == 0 &
+                                  grepl('yads', splt_fsmi_devdemog_betas$sample),],
     missing = 'listwise', estimator = 'WLSMV',
     int.ov.free = TRUE, int.lv.free = FALSE, 
     auto.fix.first = T, std.lv = F, std.ov = F,
@@ -2630,9 +3547,30 @@ ksrq_num_partners_sem <- lavaan::lavaan(
     auto.cov.lv.x = TRUE, auto.th = TRUE, 
     auto.delta = TRUE, auto.cov.y = TRUE)
 
-ksrq_num_partners_all_sem <- lavaan::lavaan(
-    model = ksrq_num_partners_all_model, 
-    data = splt_fsmi_devdemog,
+splt_ep_num_partners_all_sem <- lavaan::lavaan(
+    model = splt_ep_num_partners_all_model, 
+    data = splt_fsmi_devdemog_betas,
+    missing = 'listwise', estimator = 'WLSMV',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = T, std.lv = F, std.ov = F,
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE)
+
+splt_ep_bl_num_partners_sem <- lavaan::lavaan(
+    model = splt_ep_bl_num_partners_model, 
+    data = splt_fsmi_devdemog_betas[splt_fsmi_devdemog_betas$partnered == 0 &
+                                  grepl('yads', splt_fsmi_devdemog_betas$sample),],
+    missing = 'listwise', estimator = 'WLSMV',
+    int.ov.free = TRUE, int.lv.free = FALSE, 
+    auto.fix.first = T, std.lv = F, std.ov = F,
+    auto.fix.single = TRUE, auto.var = TRUE, 
+    auto.cov.lv.x = TRUE, auto.th = TRUE, 
+    auto.delta = TRUE, auto.cov.y = TRUE)
+
+splt_ep_bl_num_partners_all_sem <- lavaan::lavaan(
+    model = splt_ep_bl_num_partners_all_model, 
+    data = splt_fsmi_devdemog_betas,
     missing = 'listwise', estimator = 'WLSMV',
     int.ov.free = TRUE, int.lv.free = FALSE, 
     auto.fix.first = T, std.lv = F, std.ov = F,
@@ -2680,7 +3618,7 @@ knitr::kable(
 
 ### FSMI mate seeking
 
-```{r fig.width=6, fig.height=4, eval = F}
+```{r fig.width=5.875, fig.height=3}
 fsmi_sex_feq_null_model <- paste(fsmi_cfa_matestat_model, 
                             'ordered_sex_freq ~ 0*fsmi_mate + gender_c', sep = '\n')
 fsmi_sex_feq_model <- paste(fsmi_cfa_matestat_model, 
@@ -2714,7 +3652,10 @@ plot_lav_factor_pred(lavfit = fsmi_sex_feq_sem,
                      geom = 'jitter') + 
     ggplot2::labs(color = 'Partnered', 
                   x = 'FSMI mate seeking factor',
-                  y = 'Number of sexual encounters, past 6 mo.')
+                  y = 'Number of sexual encounters,\npast 6 mo.') + 
+    ggplot2::geom_smooth(method = 'lm', 
+                         formula = y ~ x,
+                         ggplot2::aes(y = as.numeric(dv_dat)), alpha = .2)
 
 knitr::kable(
     dplyr::filter(parameterestimates(fsmi_sex_feq_sem, stan = T), op == '~'),
@@ -2726,7 +3667,7 @@ knitr::kable(
 
 ### K-SRQ sexual relationship
 
-```{r fig.width=6, fig.height=4, eval = F}
+```{r fig.width=6, fig.height=4}
 ksrq_sex_freq_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
                              'ordered_sex_freq ~ k_srq_sexual_relationships + gender_c', sep = '\n')
 ksrq_sex_freq_null_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
@@ -2769,7 +3710,7 @@ knitr::kable(
         lavaan::nobs(fsmi_sex_feq_sem)))
 ```
 
-```{r fig.width=6, fig.height=4, eval = F}
+```{r fig.width=6, fig.height=4}
 ksrq_sex_freq_all_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
                              'ordered_sex_freq ~ k_srq_sexual_relationships + gender_c + age_c', sep = '\n')
 ksrq_sex_freq_all_null_model <- paste('k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20', 
@@ -2812,7 +3753,7 @@ knitr::kable(
 
 ## Using both K-SRQ sexual relationship and FSMI mate-seeking scales
 
-```{r, eval = F}
+```{r}
 fsmi_ksrq_num_partners_model <- paste(
     ksrq_model,
     fsmi_cfa_matestat_model, 
@@ -2859,16 +3800,16 @@ knitr::kable(
         lavaan::nobs(fsmi_ksrq_num_partners_sem)))
 ```
 
-## other stuff
+## Health-related behavior
 
 
 ### Using protection
 
 #### K-SRQ
 
-Not enough adolescents who have had sex and reported frequency of use of protection to look at this group separately (N = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('TDS', splt_fsmi_devdemog$sample)]))`). However, we can look at all people who have complted the K-SRQ and who report on their use of protection (N collge students = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('yads', splt_fsmi_devdemog$sample)]))`). Becuase we don't have information on whether adolescents are in long-term relationships, this collapses across those who do and don't have long-term partners. All participants with data on the K-SRQ are used in the measurement portion of the model.
+There are not enough adolescents who have had sex and reported frequency of use of protection to look at this group separately (N = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('TDS', splt_fsmi_devdemog$sample)]))`). However, we can look at all people who have complted the K-SRQ and who report on their use of protection (N collge students = `r sum(!is.na(splt_fsmi_devdemog$continuous_use_protection[grepl('yads', splt_fsmi_devdemog$sample)]))`). Becuase we don't have information on whether adolescents are in long-term relationships, this collapses across those who do and don't have long-term partners. All participants with data on the K-SRQ are used in the measurement portion of the model.
 
-```{r, eval = F}
+```{r}
 splt_fsmi_devdemog$continuous_use_protection <- as.numeric(splt_fsmi_devdemog$ordered_use_protection)
 
 ksrq_protection_model <- paste(
@@ -2881,27 +3822,90 @@ ksrq_protection_null_model <- paste(
      'continuous_use_protection ~ 0*k_srq_sexual_relationships + gender_c + age_c',
      sep = '\n')
 
-ksrq_protection_adol_sem <- lavaan::lavaan(
-    model = ksrq_protection_model, 
-    data = splt_fsmi_devdemog,
-    missing = 'fiml', estimator = 'MLR',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
+uppsp_ksrq_protection_model <- paste(
+    upps_cfa_model,
+    'k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20',
+    'continuous_use_protection ~ neg_urgency + premeditation + perseverance + sensation_seeking + pos_urgency + k_srq_sexual_relationships + gender_c + age_c',
+    sep = '\n')
 
-ksrq_protection_adol_null_sem <- lavaan::lavaan(
-    model = ksrq_protection_null_model, 
-    data = splt_fsmi_devdemog,
-    missing = 'fiml', estimator = 'MLR',
-    int.ov.free = TRUE, int.lv.free = FALSE, 
-    auto.fix.first = T, std.lv = F, 
-    auto.fix.single = TRUE, auto.var = TRUE, 
-    auto.cov.lv.x = TRUE, auto.th = TRUE, 
-    auto.delta = TRUE, auto.cov.y = TRUE)
+uppsp_ksrq_protection_null_model <- paste(
+    upps_cfa_model,
+     'k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20',
+     'continuous_use_protection ~ neg_urgency + premeditation + perseverance + sensation_seeking + pos_urgency + 0*k_srq_sexual_relationships + gender_c + age_c',
+     sep = '\n')
 
-lavaan::lavTestLRT(ksrq_protection_adol_null_sem,ksrq_protection_adol_sem)
+uppsp_ksrq_protection_nullnull_model <- paste(
+    upps_cfa_model,
+     'k_srq_sexual_relationships =~ K_SRQ_9 + K_SRQ_13 + K_SRQ_20',
+     'continuous_use_protection ~ 0*neg_urgency + 0*premeditation + 0*perseverance + 0*sensation_seeking + 0*pos_urgency + 0*k_srq_sexual_relationships + gender_c + age_c',
+     sep = '\n')
+
+ksrq_protection_adol_modelsFN <- file.path(data_dir, 'ksrq_protection_adol_models.rda')
+if(!file.exists(ksrq_protection_adol_modelsFN)){
+    ksrq_protection_adol_sem <- lavaan::lavaan(
+        model = ksrq_protection_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'fiml', estimator = 'MLR',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    ksrq_protection_adol_null_sem <- lavaan::lavaan(
+        model = ksrq_protection_null_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'fiml', estimator = 'MLR',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_protection_adol_sem <- lavaan::lavaan(
+        model = uppsp_ksrq_protection_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'fiml', estimator = 'MLR',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_protection_adol_null_sem <- lavaan::lavaan(
+        model = uppsp_ksrq_protection_null_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'fiml', estimator = 'MLR',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    uppsp_ksrq_protection_adol_nullnull_sem <- lavaan::lavaan(
+        model = uppsp_ksrq_protection_nullnull_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'fiml', estimator = 'MLR',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    save(ksrq_protection_adol_sem,
+         ksrq_protection_adol_null_sem,
+         uppsp_ksrq_protection_adol_sem,
+         uppsp_ksrq_protection_adol_null_sem,
+         uppsp_ksrq_protection_adol_nullnull_sem,
+         file = ksrq_protection_adol_modelsFN)
+} else {
+    load(ksrq_protection_adol_modelsFN)
+}
+lavaan::lavTestLRT(uppsp_ksrq_protection_adol_sem,
+                   uppsp_ksrq_protection_adol_null_sem,
+                   uppsp_ksrq_protection_adol_nullnull_sem)
+lavaan::lavTestLRT(ksrq_protection_adol_null_sem,
+                   ksrq_protection_adol_sem)
 
 knitr::kable(
     dplyr::filter(parameterestimates(ksrq_protection_adol_sem, stan = T), op == '~'),
@@ -2912,7 +3916,7 @@ knitr::kable(
 
 #### FSMI and K-SRQ (college)
 
-```{r, eval = F}
+```{r}
 splt_fsmi_devdemog$continuous_use_protection <- as.numeric(splt_fsmi_devdemog$ordered_use_protection)
 
 fsmi_ksrq_protection_model <- paste(
@@ -2961,6 +3965,12 @@ knitr::kable(
 FSMI mate-seeking and KSRQ sexual relationships modified factor show interesting relations to sexual behavior. FSMI mate-seeking relates positively to number of sexual partners (for people not in long-term relationships). KSRQ sexual relationships relates to number of sexual experiences for people not in long-term relationships. 
 
 This helps establish some validity for these two scales. First, it seems likely that on the whole, participants are responding truthfully to the questionnaire. People who report being in a long term relationship overwhelmingly also report having one sexual partner, and having sex regularly. People not in a long term relationship report more partners, but less frequent sex (almost certainly due to opportunity).
+
+## alcohol_days_of_lst30
+
+## alcohol_5drnks_lst30
+
+## substance_pre_sex
 
 # References
 

@@ -99,7 +99,7 @@
       <h1>Fundamental Social Motives Confirmatory Factor Analysis</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-07-06</h4>
+            <h4 class="date">2018-07-10</h4>
       
       
       <div class="hidden name"><code>fsmi-cfa.Rmd</code></div>
@@ -759,6 +759,8 @@
 <th align="right">mfi</th>
 <th align="right">gammaHat</th>
 <th align="right">adjGammaHat</th>
+<th align="right">gammaHat.scaled</th>
+<th align="right">adjGammaHat.scaled</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
@@ -767,6 +769,8 @@
 <td align="right">0.1138707</td>
 <td align="right">0.8461170</td>
 <td align="right">0.8279788</td>
+<td align="right">0.9167631</td>
+<td align="right">0.9069519</td>
 </tr>
 <tr class="even">
 <td>bifac</td>
@@ -774,6 +778,8 @@
 <td align="right">0.2218066</td>
 <td align="right">0.8880533</td>
 <td align="right">0.8688752</td>
+<td align="right">1.1275425</td>
+<td align="right">1.1493924</td>
 </tr>
 </tbody>
 </table>
@@ -3738,12 +3744,14 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <div id="college-sample" class="section level2">
 <h2 class="hasAnchor">
 <a href="#college-sample" class="anchor"></a>College sample</h2>
-<pre><code>#&gt;                         df      AIC
-#&gt; all_scales_college     679 54620.65
-#&gt; all_scales_college_cor 588 54564.95
-#&gt;                                   df      AIC
-#&gt; all_scales_college_partnered     679 54533.51
-#&gt; all_scales_college_partnered_cor 588 54487.67</code></pre>
+<pre><code>#&gt;                              df      AIC
+#&gt; all_scales_college          679 54620.65
+#&gt; all_scales_college_cor      588 54564.95
+#&gt; all_scales_college_cor_load 583 54568.07
+#&gt;                                        df      AIC
+#&gt; all_scales_college_partnered          679 54533.51
+#&gt; all_scales_college_partnered_cor      588 54487.67
+#&gt; all_scales_college_partnered_cor_load 583 54486.70</code></pre>
 <table class="table">
 <thead><tr class="header">
 <th align="left">rhs</th>
@@ -3766,17 +3774,17 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="left">1. fsmi_mate</td>
 <td align="right"></td>
 <td align="right">[-.09, .23]</td>
-<td align="right">[-.14, .16]</td>
+<td align="right">[-.14, .15]</td>
 <td align="right">[-.17, .13]</td>
-<td align="right">[ .15, .43]</td>
+<td align="right">[ .14, .43]</td>
 <td align="right">[-.25, .05]</td>
 <td align="right">[-.32,-.02]</td>
 <td align="right">[-.00, .30]</td>
 <td align="right">[ .14, .42]</td>
 <td align="right">[-.02, .27]</td>
 <td align="right">[ .08, .37]</td>
+<td align="right">[ .07, .38]</td>
 <td align="right">[ .06, .38]</td>
-<td align="right">[ .05, .36]</td>
 </tr>
 <tr class="even">
 <td align="left">2. fsmi_stat</td>
@@ -3787,34 +3795,34 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">[ .01, .35]</td>
 <td align="right">[ .12, .45]</td>
 <td align="right">[ .26, .57]</td>
-<td align="right">[ .15, .48]</td>
+<td align="right">[ .14, .48]</td>
 <td align="right">[-.03, .31]</td>
 <td align="right">[ .53, .77]</td>
 <td align="right">[-.27, .07]</td>
 <td align="right">[ .27, .59]</td>
-<td align="right">[ .36, .67]</td>
+<td align="right">[ .35, .66]</td>
 </tr>
 <tr class="odd">
 <td align="left">3. dominance_score</td>
 <td align="right">.01</td>
 <td align="right">.49</td>
 <td align="right"></td>
-<td align="right">[ .08, .38]</td>
-<td align="right">[ .37, .62]</td>
-<td align="right">[-.30, .01]</td>
-<td align="right">[-.11, .21]</td>
+<td align="right">[ .07, .37]</td>
+<td align="right">[ .36, .62]</td>
+<td align="right">[-.31, .01]</td>
+<td align="right">[-.11, .22]</td>
 <td align="right">[ .20, .50]</td>
 <td align="right">[ .25, .52]</td>
 <td align="right">[ .02, .32]</td>
-<td align="right">[-.30, .01]</td>
-<td align="right">[-.02, .31]</td>
-<td align="right">[-.23, .11]</td>
+<td align="right">[-.31, .01]</td>
+<td align="right">[-.01, .32]</td>
+<td align="right">[-.23, .12]</td>
 </tr>
 <tr class="even">
 <td align="left">4. prestige_score</td>
 <td align="right">-.02</td>
 <td align="right">.72</td>
-<td align="right">.23</td>
+<td align="right">.22</td>
 <td align="right"></td>
 <td align="right">[-.25, .07]</td>
 <td align="right">[ .23, .52]</td>
@@ -3823,8 +3831,8 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">[-.26, .05]</td>
 <td align="right">[ .36, .61]</td>
 <td align="right">[-.32,-.01]</td>
-<td align="right">[ .27, .57]</td>
-<td align="right">[ .27, .57]</td>
+<td align="right">[ .26, .56]</td>
+<td align="right">[ .26, .56]</td>
 </tr>
 <tr class="odd">
 <td align="left">5. neg_urgency</td>
@@ -3837,10 +3845,10 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">[-.49,-.20]</td>
 <td align="right">[ .08, .39]</td>
 <td align="right">[ .70, .84]</td>
-<td align="right">[-.10, .22]</td>
+<td align="right">[-.09, .22]</td>
 <td align="right">[ .04, .36]</td>
 <td align="right">[ .02, .35]</td>
-<td align="right">[-.09, .25]</td>
+<td align="right">[-.08, .26]</td>
 </tr>
 <tr class="even">
 <td align="left">6. premeditation</td>
@@ -3852,7 +3860,7 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right"></td>
 <td align="right">[ .38, .64]</td>
 <td align="right">[-.38,-.08]</td>
-<td align="right">[-.53,-.27]</td>
+<td align="right">[-.53,-.26]</td>
 <td align="right">[ .00, .32]</td>
 <td align="right">[-.16, .17]</td>
 <td align="right">[-.20, .15]</td>
@@ -3871,7 +3879,7 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">[-.43,-.14]</td>
 <td align="right">[ .14, .44]</td>
 <td align="right">[-.48,-.18]</td>
-<td align="right">[ .03, .38]</td>
+<td align="right">[ .03, .37]</td>
 <td align="right">[-.00, .34]</td>
 </tr>
 <tr class="even">
@@ -3879,23 +3887,23 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">.15</td>
 <td align="right">.31</td>
 <td align="right">.35</td>
-<td align="right">.25</td>
+<td align="right">.24</td>
 <td align="right">.24</td>
 <td align="right">-.23</td>
 <td align="right">.23</td>
 <td align="right"></td>
-<td align="right">[ .12, .42]</td>
+<td align="right">[ .12, .41]</td>
 <td align="right">[-.05, .28]</td>
 <td align="right">[-.26, .07]</td>
 <td align="right">[ .15, .48]</td>
-<td align="right">[ .08, .42]</td>
+<td align="right">[ .08, .43]</td>
 </tr>
 <tr class="odd">
 <td align="left">9. pos_urgency</td>
 <td align="right">.28</td>
 <td align="right">.14</td>
 <td align="right">.39</td>
-<td align="right">-.10</td>
+<td align="right">-.11</td>
 <td align="right">.77</td>
 <td align="right">-.40</td>
 <td align="right">-.29</td>
@@ -3904,7 +3912,7 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">[-.23, .08]</td>
 <td align="right">[ .02, .33]</td>
 <td align="right">[-.19, .15]</td>
-<td align="right">[-.29, .04]</td>
+<td align="right">[-.29, .05]</td>
 </tr>
 <tr class="even">
 <td align="left">10. k_srq_admiration</td>
@@ -3919,60 +3927,219 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <td align="right">-.07</td>
 <td align="right"></td>
 <td align="right">[ .01, .31]</td>
-<td align="right">[ .59, .81]</td>
-<td align="right">[ .71, .89]</td>
+<td align="right">[ .59, .80]</td>
+<td align="right">[ .70, .88]</td>
 </tr>
 <tr class="odd">
 <td align="left">11. k_srq_passivity</td>
 <td align="right">.22</td>
 <td align="right">-.10</td>
-<td align="right">-.14</td>
+<td align="right">-.15</td>
 <td align="right">-.17</td>
 <td align="right">.20</td>
 <td align="right">.00</td>
 <td align="right">-.33</td>
-<td align="right">-.09</td>
+<td align="right">-.10</td>
 <td align="right">.18</td>
 <td align="right">.16</td>
 <td align="right"></td>
 <td align="right">[-.06, .28]</td>
-<td align="right">[ .06, .39]</td>
+<td align="right">[ .06, .40]</td>
 </tr>
 <tr class="even">
 <td align="left">12. k_srq_sexual_relationships</td>
 <td align="right">.22</td>
 <td align="right">.43</td>
 <td align="right">.15</td>
-<td align="right">.42</td>
-<td align="right">.18</td>
-<td align="right">-.02</td>
+<td align="right">.41</td>
+<td align="right">.19</td>
+<td align="right">-.03</td>
 <td align="right">.20</td>
-<td align="right">.31</td>
+<td align="right">.32</td>
 <td align="right">-.02</td>
 <td align="right">.70</td>
 <td align="right">.11</td>
 <td align="right"></td>
-<td align="right">[ .69, .95]</td>
+<td align="right">[ .72, .94]</td>
 </tr>
 <tr class="odd">
 <td align="left">13. k_srq_sociability</td>
-<td align="right">.20</td>
-<td align="right">.51</td>
+<td align="right">.22</td>
+<td align="right">.50</td>
 <td align="right">-.06</td>
-<td align="right">.42</td>
-<td align="right">.08</td>
+<td align="right">.41</td>
+<td align="right">.09</td>
 <td align="right">-.03</td>
 <td align="right">.17</td>
 <td align="right">.25</td>
-<td align="right">-.13</td>
-<td align="right">.80</td>
-<td align="right">.22</td>
-<td align="right">.82</td>
+<td align="right">-.12</td>
+<td align="right">.79</td>
+<td align="right">.23</td>
+<td align="right">.83</td>
 <td align="right"></td>
 </tr>
 </tbody>
 </table>
 <p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-25-1.png" width="960"></p>
+<div id="correlations-with-splt-outcomes" class="section level3">
+<h3 class="hasAnchor">
+<a href="#correlations-with-splt-outcomes" class="anchor"></a>Correlations with SPLT outcomes</h3>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-28-1.png" width="564"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-29-1.png" width="564"></p>
+</div>
+</div>
+<div id="college-and-adolescent-samples" class="section level2">
+<h2 class="hasAnchor">
+<a href="#college-and-adolescent-samples" class="anchor"></a>College and adolescent samples</h2>
+<pre><code>#&gt;                           df      AIC
+#&gt; all_scales_adol          831 51473.43
+#&gt; all_scales_adol_cor      696 51403.16
+#&gt; all_scales_adol_cor_load 684 51421.53
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                             Df   AIC   BIC Chisq Chisq diff Df diff
+#&gt; all_scales_adol           9969 51473 54625 54270                   
+#&gt; all_scales_adol_cor      10104 51403 54043 54470    199.730     135
+#&gt; all_scales_adol_cor_load 10116 51422 54016 54512     42.373      12
+#&gt;                          Pr(&gt;Chisq)    
+#&gt; all_scales_adol                        
+#&gt; all_scales_adol_cor        0.000249 ***
+#&gt; all_scales_adol_cor_load  2.882e-05 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+<table class="table">
+<thead><tr class="header">
+<th align="left">rhs</th>
+<th align="right">01.</th>
+<th align="right">02.</th>
+<th align="right">03.</th>
+<th align="right">04.</th>
+<th align="right">05.</th>
+<th align="right">06.</th>
+<th align="right">07.</th>
+<th align="right">08.</th>
+<th align="right">09.</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">1. neg_urgency</td>
+<td align="right"></td>
+<td align="right">[-.55,-.34]</td>
+<td align="right">[-.50,-.27]</td>
+<td align="right">[ .23, .47]</td>
+<td align="right">[ .71, .83]</td>
+<td align="right">[ .00, .27]</td>
+<td align="right">[-.05, .22]</td>
+<td align="right">[ .14, .39]</td>
+<td align="right">[-.02, .28]</td>
+</tr>
+<tr class="even">
+<td align="left">2. premeditation</td>
+<td align="right">-.45</td>
+<td align="right"></td>
+<td align="right">[ .38, .59]</td>
+<td align="right">[-.43,-.19]</td>
+<td align="right">[-.54,-.33]</td>
+<td align="right">[-.04, .23]</td>
+<td align="right">[-.14, .13]</td>
+<td align="right">[-.22, .05]</td>
+<td align="right">[-.20, .11]</td>
+</tr>
+<tr class="odd">
+<td align="left">3. perseverance</td>
+<td align="right">-.38</td>
+<td align="right">.49</td>
+<td align="right"></td>
+<td align="right">[-.02, .24]</td>
+<td align="right">[-.43,-.20]</td>
+<td align="right">[ .16, .41]</td>
+<td align="right">[-.39,-.13]</td>
+<td align="right">[-.03, .25]</td>
+<td align="right">[ .04, .34]</td>
+</tr>
+<tr class="even">
+<td align="left">4. sensation_seeking</td>
+<td align="right">.35</td>
+<td align="right">-.31</td>
+<td align="right">.11</td>
+<td align="right"></td>
+<td align="right">[ .25, .47]</td>
+<td align="right">[ .09, .35]</td>
+<td align="right">[-.26, .02]</td>
+<td align="right">[ .27, .51]</td>
+<td align="right">[ .15, .44]</td>
+</tr>
+<tr class="odd">
+<td align="left">5. pos_urgency</td>
+<td align="right">.77</td>
+<td align="right">-.43</td>
+<td align="right">-.32</td>
+<td align="right">.36</td>
+<td align="right"></td>
+<td align="right">[-.11, .15]</td>
+<td align="right">[-.01, .25]</td>
+<td align="right">[-.01, .26]</td>
+<td align="right">[-.18, .12]</td>
+</tr>
+<tr class="even">
+<td align="left">6. k_srq_admiration</td>
+<td align="right">.14</td>
+<td align="right">.09</td>
+<td align="right">.29</td>
+<td align="right">.22</td>
+<td align="right">.02</td>
+<td align="right"></td>
+<td align="right">[-.07, .20]</td>
+<td align="right">[ .60, .77]</td>
+<td align="right">[ .64, .86]</td>
+</tr>
+<tr class="odd">
+<td align="left">7. k_srq_passivity</td>
+<td align="right">.08</td>
+<td align="right">-.00</td>
+<td align="right">-.26</td>
+<td align="right">-.12</td>
+<td align="right">.12</td>
+<td align="right">.06</td>
+<td align="right"></td>
+<td align="right">[-.01, .26]</td>
+<td align="right">[ .05, .35]</td>
+</tr>
+<tr class="even">
+<td align="left">8. k_srq_sexual_relationships</td>
+<td align="right">.27</td>
+<td align="right">-.08</td>
+<td align="right">.11</td>
+<td align="right">.39</td>
+<td align="right">.13</td>
+<td align="right">.69</td>
+<td align="right">.13</td>
+<td align="right"></td>
+<td align="right">[ .75, .94]</td>
+</tr>
+<tr class="odd">
+<td align="left">9. k_srq_sociability</td>
+<td align="right">.13</td>
+<td align="right">-.04</td>
+<td align="right">.19</td>
+<td align="right">.30</td>
+<td align="right">-.03</td>
+<td align="right">.75</td>
+<td align="right">.20</td>
+<td align="right">.84</td>
+<td align="right"></td>
+</tr>
+</tbody>
+</table>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-33-1.png" width="564"></p>
+<div id="correlations-with-splt-outcomes-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#correlations-with-splt-outcomes-1" class="anchor"></a>Correlations with SPLT outcomes</h3>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-38-1.png" width="564"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-39-1.png" width="564"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-40-1.png" width="564"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-41-1.png" width="564"></p>
+</div>
 </div>
 </div>
 <div id="associations-with-reported-sexual-behavior" class="section level1">
@@ -4089,7 +4256,16 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 </li>
       <li>
 <a href="#all-latent-var-correlations">All latent var correlations</a><ul class="nav nav-pills nav-stacked">
-<li><a href="#college-sample">College sample</a></li>
+<li>
+<a href="#college-sample">College sample</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#correlations-with-splt-outcomes">Correlations with SPLT outcomes</a></li>
+      </ul>
+</li>
+      <li>
+<a href="#college-and-adolescent-samples">College and adolescent samples</a><ul class="nav nav-pills nav-stacked">
+<li><a href="#correlations-with-splt-outcomes-1">Correlations with SPLT outcomes</a></li>
+      </ul>
+</li>
       </ul>
 </li>
       <li>
