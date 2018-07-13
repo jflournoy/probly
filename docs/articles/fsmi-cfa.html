@@ -99,7 +99,7 @@
       <h1>Fundamental Social Motives Confirmatory Factor Analysis</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-07-11</h4>
+            <h4 class="date">2018-07-12</h4>
       
       
       <div class="hidden name"><code>fsmi-cfa.Rmd</code></div>
@@ -4176,7 +4176,10 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 #&gt;   2            0    4   17          19    0
 #&gt;   3 or more    1    3   18          29    0
 #&gt;   &lt;NA&gt;        33    0    3           8    1</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/sesfsmiplot-1.png" width="768"></p>
+<p><img src="fsmi-cfa_files/figure-html/sesfsmiplot-1.png" width="564"></p>
+<p><img src="fsmi-cfa_files/figure-html/drinky-1.png" width="564"></p>
+<p><img src="fsmi-cfa_files/figure-html/useprot-1.png" width="564"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-43-1.png" width="312"></p>
 <div id="number-of-partners" class="section level2">
 <h2 class="hasAnchor">
 <a href="#number-of-partners" class="anchor"></a>Number of partners</h2>
@@ -4184,6 +4187,26 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 <h3 class="hasAnchor">
 <a href="#fsmi-mate-seeking" class="anchor"></a>FSMI mate seeking</h3>
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; fsmi_num_partners_sem      76         52.488                              
+#&gt; fsmi_num_partners_null_sem 77         66.939     4.7062       1    0.03005
+#&gt;                             
+#&gt; fsmi_num_partners_sem       
+#&gt; fsmi_num_partners_null_sem *
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                                Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; fsmi_num_partners_all_sem      76         68.846                   
+#&gt; fsmi_num_partners_null_all_sem 77         94.038     7.1694       1
+#&gt;                                Pr(&gt;Chisq)   
+#&gt; fsmi_num_partners_all_sem                   
+#&gt; fsmi_num_partners_null_all_sem   0.007416 **
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
 #&gt;                                 Df AIC BIC  Chisq Chisq diff Df diff
 #&gt; uppsp_fsmi_partners_sem        980         1210.6                   
@@ -4242,11 +4265,15 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 #&gt; uppsp_fsmi_partners_noss_sem     0.3714    
 #&gt; uppsp_fsmi_partners_null_sem  2.621e-05 ***
 #&gt; ---
-#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-44-1.png" width="312"></p>
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt;         est     pvalue
+#&gt; 1 0.1721959 0.02456491
+#&gt;        est      pvalue
+#&gt; 1 0.143696 0.006428484</code></pre>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-45-1.png" width="312"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-44">Table 3: </span>FSMI Predicting number of partners among unpartnered college students; N obs. = 153</caption>
+<span id="tab:unnamed-chunk-45">Table 3: </span>FSMI Predicting number of partners among unpartnered college students; N obs. = 153</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4283,10 +4310,10 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 </tr>
 </tbody>
 </table>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-44-2.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-45-2.png" width="312"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-44">Table 3: </span>FSMI Predicting number of partners among all college participants with SES responses; N obs. = 207</caption>
+<span id="tab:unnamed-chunk-45">Table 3: </span>FSMI Predicting number of partners among all college participants with SES responses; N obs. = 207</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4325,7 +4352,7 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-44">Table 3: </span>FSMI Predicting number of partners among all college participants with SES responses; N obs. = 122</caption>
+<span id="tab:unnamed-chunk-45">Table 3: </span>FSMI Predicting number of partners among all college participants with SES responses; N obs. = 122</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4397,7 +4424,7 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-44">Table 3: </span>FSMI Predicting number of partners among unpartnered college students; N obs. = 122</caption>
+<span id="tab:unnamed-chunk-45">Table 3: </span>FSMI Predicting number of partners among unpartnered college students; N obs. = 122</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4469,7 +4496,7 @@ Past work has shown that sexual activity (age at first sex, specifically), if it
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-44">Table 3: </span>FSMI Predicting number of partners among unpartnered college students; N obs. = 167</caption>
+<span id="tab:unnamed-chunk-45">Table 3: </span>FSMI Predicting number of partners among unpartnered college students; N obs. = 167</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4547,7 +4574,7 @@ When looking at the size of standardized coefficients, positive urgency is the l
 <div id="k-srq-sexual-relationship" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-sexual-relationship" class="anchor"></a>K-SRQ sexual relationship</h3>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-46-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-46-2.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-47-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-47-2.png" width="312"></p>
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
 #&gt;                                Df AIC BIC   Chisq Chisq diff Df diff
@@ -4598,7 +4625,7 @@ When looking at the size of standardized coefficients, positive urgency is the l
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-47">Table 4: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 136</caption>
+<span id="tab:unnamed-chunk-48">Table 4: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 136</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4660,7 +4687,7 @@ When looking at the size of standardized coefficients, positive urgency is the l
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-47">Table 4: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 136</caption>
+<span id="tab:unnamed-chunk-48">Table 4: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 136</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4722,7 +4749,7 @@ When looking at the size of standardized coefficients, positive urgency is the l
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-47">Table 4: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 253</caption>
+<span id="tab:unnamed-chunk-48">Table 4: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 253</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4798,7 +4825,7 @@ When looking at the size of standardized coefficients, positive urgency is the l
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-47">Table 4: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 253</caption>
+<span id="tab:unnamed-chunk-48">Table 4: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 253</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4874,7 +4901,7 @@ When looking at the size of standardized coefficients, positive urgency is the l
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-47">Table 4: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 119</caption>
+<span id="tab:unnamed-chunk-48">Table 4: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 119</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -4964,7 +4991,7 @@ When looking at the size of standardized coefficients, positive urgency is the l
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-47">Table 4: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 119</caption>
+<span id="tab:unnamed-chunk-48">Table 4: </span>K-SRQ Predicting number of partners among unpartnered college students; N obs. = 119</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -5054,7 +5081,7 @@ When looking at the size of standardized coefficients, positive urgency is the l
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-47">Table 4: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 225</caption>
+<span id="tab:unnamed-chunk-48">Table 4: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 225</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -5158,7 +5185,7 @@ When looking at the size of standardized coefficients, positive urgency is the l
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-47">Table 4: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 225</caption>
+<span id="tab:unnamed-chunk-48">Table 4: </span>K-SRQ Predicting number of partners among all adolescent and college participants with SES responses; N obs. = 225</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -5367,7 +5394,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)$\epsilon$ predicting number of partners among unpartnered college students; N obs. = 159
+#&gt; Table: (\#tab:unnamed-chunk-49)$\epsilon$ predicting number of partners among unpartnered college students; N obs. = 159
 #&gt; 
 #&gt; lhs                   op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5375,7 +5402,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    gender_c                -0.57   0.18   -3.15     0.00      -0.93      -0.22    -0.57     -0.26     -0.55
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)$\epsilon$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
+#&gt; Table: (\#tab:unnamed-chunk-49)$\epsilon$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
 #&gt; 
 #&gt; lhs                   op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5384,7 +5411,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    age_c                    0.20   0.03    5.78     0.00       0.13       0.27     0.20      0.40      0.18
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)$\rho$ predicting number of partners among unpartnered college students; N obs. = 159
+#&gt; Table: (\#tab:unnamed-chunk-49)$\rho$ predicting number of partners among unpartnered college students; N obs. = 159
 #&gt; 
 #&gt; lhs                   op   rhs                        est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ----------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5392,7 +5419,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    gender_c                 -0.57   0.18   -3.15     0.00      -0.93      -0.22    -0.57     -0.26     -0.55
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)$\rho$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
+#&gt; Table: (\#tab:unnamed-chunk-49)$\rho$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
 #&gt; 
 #&gt; lhs                   op   rhs                        est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ----------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5401,7 +5428,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    age_c                     0.20   0.03    5.78     0.00       0.13       0.27     0.20      0.40      0.18
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)$\xi$ predicting number of partners among unpartnered college students; N obs. = 159
+#&gt; Table: (\#tab:unnamed-chunk-49)$\xi$ predicting number of partners among unpartnered college students; N obs. = 159
 #&gt; 
 #&gt; lhs                   op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5409,7 +5436,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    gender_c                -0.57   0.18   -3.15     0.00      -0.93      -0.22    -0.57     -0.26     -0.55
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)$\xi$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
+#&gt; Table: (\#tab:unnamed-chunk-49)$\xi$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
 #&gt; 
 #&gt; lhs                   op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5418,7 +5445,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    age_c                    0.20   0.03    5.78     0.00       0.13       0.27     0.20      0.40      0.18
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)$b$ predicting number of partners among unpartnered college students; N obs. = 159
+#&gt; Table: (\#tab:unnamed-chunk-49)$b$ predicting number of partners among unpartnered college students; N obs. = 159
 #&gt; 
 #&gt; lhs                   op   rhs                  est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ----------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5426,7 +5453,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    gender_c           -0.57   0.18   -3.15     0.00      -0.93      -0.22    -0.57     -0.26     -0.55
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)$b$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
+#&gt; Table: (\#tab:unnamed-chunk-49)$b$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
 #&gt; 
 #&gt; lhs                   op   rhs                  est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ----------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5435,7 +5462,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    age_c               0.20   0.03    5.78     0.00       0.13       0.27     0.20      0.40      0.18
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)First-half optimal responses predicting number of partners among unpartnered college students; N obs. = 159
+#&gt; Table: (\#tab:unnamed-chunk-49)First-half optimal responses predicting number of partners among unpartnered college students; N obs. = 159
 #&gt; 
 #&gt; lhs                   op   rhs                               est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  -----------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5443,7 +5470,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    gender_c                        -0.57   0.18   -3.15     0.00      -0.93      -0.22    -0.57     -0.26     -0.55
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)First-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
+#&gt; Table: (\#tab:unnamed-chunk-49)First-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
 #&gt; 
 #&gt; lhs                   op   rhs                               est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  -----------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5452,7 +5479,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    age_c                            0.20   0.03    5.78     0.00       0.13       0.27     0.20      0.40      0.18
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)Last-half optimal responses predicting number of partners among unpartnered college students; N obs. = 159
+#&gt; Table: (\#tab:unnamed-chunk-49)Last-half optimal responses predicting number of partners among unpartnered college students; N obs. = 159
 #&gt; 
 #&gt; lhs                   op   rhs                             est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ---------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5460,7 +5487,7 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; ordered_num_partner   ~    gender_c                      -0.57   0.18   -3.15     0.00      -0.93      -0.22    -0.57     -0.26     -0.55
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-48)Last-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
+#&gt; Table: (\#tab:unnamed-chunk-49)Last-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 276
 #&gt; 
 #&gt; lhs                   op   rhs                             est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; --------------------  ---  ---------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -5536,10 +5563,10 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; uppsp_fsmi_sfreq_null_sem *
 #&gt; ---
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-50-1.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-51-1.png" width="312"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-50">Table 5: </span>FSMI Predicting number of sexual encounters among unpartnered college students; N obs. = 145</caption>
+<span id="tab:unnamed-chunk-51">Table 5: </span>FSMI Predicting number of sexual encounters among unpartnered college students; N obs. = 145</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -5576,10 +5603,10 @@ In other words, the expected difference in number of sexual partners a one point
 </tr>
 </tbody>
 </table>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-50-2.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-51-2.png" width="312"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-50">Table 5: </span>FSMI Predicting number of sexual encounters among all college participants with SES responses; N obs. = 196</caption>
+<span id="tab:unnamed-chunk-51">Table 5: </span>FSMI Predicting number of sexual encounters among all college participants with SES responses; N obs. = 196</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -5618,7 +5645,7 @@ In other words, the expected difference in number of sexual partners a one point
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-50">Table 5: </span>FSMI Predicting number of sexual encounters among all college participants with SES responses; N obs. = 116</caption>
+<span id="tab:unnamed-chunk-51">Table 5: </span>FSMI Predicting number of sexual encounters among all college participants with SES responses; N obs. = 116</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -5690,7 +5717,7 @@ In other words, the expected difference in number of sexual partners a one point
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-50">Table 5: </span>FSMI Predicting number of sexual encounters among unpartnered college students; N obs. = 116</caption>
+<span id="tab:unnamed-chunk-51">Table 5: </span>FSMI Predicting number of sexual encounters among unpartnered college students; N obs. = 116</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -5762,7 +5789,7 @@ In other words, the expected difference in number of sexual partners a one point
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-50">Table 5: </span>FSMI Predicting number of sexual encounters among unpartnered college students; N obs. = 159</caption>
+<span id="tab:unnamed-chunk-51">Table 5: </span>FSMI Predicting number of sexual encounters among unpartnered college students; N obs. = 159</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -5838,7 +5865,7 @@ The association was not examined in partnered college students because the Mate-
 <div id="k-srq-sexual-relationships" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-sexual-relationships" class="anchor"></a>K-SRQ sexual relationships</h3>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-52-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-52-2.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-53-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-53-2.png" width="312"></p>
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
 #&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
@@ -5884,7 +5911,7 @@ The association was not examined in partnered college students because the Mate-
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-53">Table 6: </span>K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = 130</caption>
+<span id="tab:unnamed-chunk-54">Table 6: </span>K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = 130</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -5946,7 +5973,7 @@ The association was not examined in partnered college students because the Mate-
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-53">Table 6: </span>K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = 130</caption>
+<span id="tab:unnamed-chunk-54">Table 6: </span>K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = 130</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6008,7 +6035,7 @@ The association was not examined in partnered college students because the Mate-
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-53">Table 6: </span>K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = 239</caption>
+<span id="tab:unnamed-chunk-54">Table 6: </span>K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = 239</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6084,7 +6111,7 @@ The association was not examined in partnered college students because the Mate-
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-53">Table 6: </span>K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = 239</caption>
+<span id="tab:unnamed-chunk-54">Table 6: </span>K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = 239</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6160,7 +6187,7 @@ The association was not examined in partnered college students because the Mate-
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-53">Table 6: </span>K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = 113</caption>
+<span id="tab:unnamed-chunk-54">Table 6: </span>K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = 113</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6250,7 +6277,7 @@ The association was not examined in partnered college students because the Mate-
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-53">Table 6: </span>K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = 113</caption>
+<span id="tab:unnamed-chunk-54">Table 6: </span>K-SRQ Predicting number of sexual encounters among unpartnered college students; N obs. = 113</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6340,7 +6367,7 @@ The association was not examined in partnered college students because the Mate-
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-53">Table 6: </span>K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = 212</caption>
+<span id="tab:unnamed-chunk-54">Table 6: </span>K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = 212</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6444,7 +6471,7 @@ The association was not examined in partnered college students because the Mate-
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-53">Table 6: </span>K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = 212</caption>
+<span id="tab:unnamed-chunk-54">Table 6: </span>K-SRQ Predicting number of sexual encounters among all adolescent and college participants with SES responses; N obs. = 212</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6624,7 +6651,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; splt_sex_freq_all_null_sem     0.3328
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)$\epsilon$ predicting number of partners among unpartnered college students; N obs. = 151
+#&gt; Table: (\#tab:unnamed-chunk-55)$\epsilon$ predicting number of partners among unpartnered college students; N obs. = 151
 #&gt; 
 #&gt; lhs                op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -6632,7 +6659,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    gender_c                -0.40   0.19   -2.12     0.03      -0.77      -0.03    -0.40     -0.18     -0.39
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)$\epsilon$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
+#&gt; Table: (\#tab:unnamed-chunk-55)$\epsilon$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
 #&gt; 
 #&gt; lhs                op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -6641,7 +6668,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    age_c                    0.24   0.04    6.37     0.00       0.17       0.32     0.24      0.46      0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)$\rho$ predicting number of partners among unpartnered college students; N obs. = 151
+#&gt; Table: (\#tab:unnamed-chunk-55)$\rho$ predicting number of partners among unpartnered college students; N obs. = 151
 #&gt; 
 #&gt; lhs                op   rhs                        est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ----------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -6649,7 +6676,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    gender_c                 -0.40   0.19   -2.12     0.03      -0.77      -0.03    -0.40     -0.18     -0.39
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)$\rho$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
+#&gt; Table: (\#tab:unnamed-chunk-55)$\rho$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
 #&gt; 
 #&gt; lhs                op   rhs                       est     se      z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ----------------------  -----  -----  -----  -------  ---------  ---------  -------  --------  --------
@@ -6658,7 +6685,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    age_c                    0.24   0.04   6.37     0.00       0.17       0.32     0.24      0.46      0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)$\xi$ predicting number of partners among unpartnered college students; N obs. = 151
+#&gt; Table: (\#tab:unnamed-chunk-55)$\xi$ predicting number of partners among unpartnered college students; N obs. = 151
 #&gt; 
 #&gt; lhs                op   rhs                      est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ---------------------  -----  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -6666,7 +6693,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    gender_c                -0.4   0.19   -2.12     0.03      -0.77      -0.03    -0.40     -0.18     -0.39
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)$\xi$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
+#&gt; Table: (\#tab:unnamed-chunk-55)$\xi$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
 #&gt; 
 #&gt; lhs                op   rhs                      est     se      z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ---------------------  -----  -----  -----  -------  ---------  ---------  -------  --------  --------
@@ -6675,7 +6702,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    age_c                   0.24   0.04   6.37     0.00       0.17       0.32     0.24      0.46      0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)$b$ predicting number of partners among unpartnered college students; N obs. = 151
+#&gt; Table: (\#tab:unnamed-chunk-55)$b$ predicting number of partners among unpartnered college students; N obs. = 151
 #&gt; 
 #&gt; lhs                op   rhs                  est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ----------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -6683,7 +6710,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    gender_c           -0.40   0.19   -2.12     0.03      -0.77      -0.03    -0.40     -0.18     -0.39
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)$b$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
+#&gt; Table: (\#tab:unnamed-chunk-55)$b$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
 #&gt; 
 #&gt; lhs                op   rhs                 est     se      z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ----------------  -----  -----  -----  -------  ---------  ---------  -------  --------  --------
@@ -6692,7 +6719,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    age_c              0.24   0.04   6.37     0.00       0.17       0.32     0.24      0.46      0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)First-half optimal responses predicting number of partners among unpartnered college students; N obs. = 151
+#&gt; Table: (\#tab:unnamed-chunk-55)First-half optimal responses predicting number of partners among unpartnered college students; N obs. = 151
 #&gt; 
 #&gt; lhs                op   rhs                               est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  -----------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -6700,7 +6727,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    gender_c                        -0.40   0.19   -2.12     0.03      -0.77      -0.03    -0.40     -0.18     -0.39
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)First-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
+#&gt; Table: (\#tab:unnamed-chunk-55)First-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
 #&gt; 
 #&gt; lhs                op   rhs                              est     se      z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  -----------------------------  -----  -----  -----  -------  ---------  ---------  -------  --------  --------
@@ -6709,7 +6736,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    age_c                           0.24   0.04   6.37     0.00       0.17       0.32     0.24      0.46      0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)Last-half optimal responses predicting number of partners among unpartnered college students; N obs. = 151
+#&gt; Table: (\#tab:unnamed-chunk-55)Last-half optimal responses predicting number of partners among unpartnered college students; N obs. = 151
 #&gt; 
 #&gt; lhs                op   rhs                             est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ---------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -6717,7 +6744,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; ordered_sex_freq   ~    gender_c                      -0.40   0.19   -2.12     0.03      -0.77      -0.03    -0.40     -0.18     -0.39
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-54)Last-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
+#&gt; Table: (\#tab:unnamed-chunk-55)Last-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 260
 #&gt; 
 #&gt; lhs                op   rhs                             est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; -----------------  ---  ---------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -6787,10 +6814,10 @@ As above, the coefficient for the Admiration scale is large and negative when co
 #&gt; uppsp_fsmi_uprot_sem                
 #&gt; uppsp_fsmi_uprot_noss_sem     0.2181
 #&gt; uppsp_fsmi_uprot_null_sem     0.2671</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-56-1.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-57-1.png" width="312"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-56">Table 7: </span>FSMI Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
+<span id="tab:unnamed-chunk-57">Table 7: </span>FSMI Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6827,10 +6854,10 @@ As above, the coefficient for the Admiration scale is large and negative when co
 </tr>
 </tbody>
 </table>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-56-2.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-57-2.png" width="312"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-56">Table 7: </span>FSMI Predicting safe sex practices among all college participants with SES responses; N obs. = 225</caption>
+<span id="tab:unnamed-chunk-57">Table 7: </span>FSMI Predicting safe sex practices among all college participants with SES responses; N obs. = 225</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6869,7 +6896,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-56">Table 7: </span>FSMI Predicting safe sex practices among all college participants with SES responses; N obs. = 164</caption>
+<span id="tab:unnamed-chunk-57">Table 7: </span>FSMI Predicting safe sex practices among all college participants with SES responses; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -6941,7 +6968,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-56">Table 7: </span>FSMI Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
+<span id="tab:unnamed-chunk-57">Table 7: </span>FSMI Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7013,7 +7040,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-56">Table 7: </span>FSMI Predicting safe sex practices among unpartnered college students; N obs. = 225</caption>
+<span id="tab:unnamed-chunk-57">Table 7: </span>FSMI Predicting safe sex practices among unpartnered college students; N obs. = 225</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7089,7 +7116,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 <div id="k-srq-sexual-relationships-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-sexual-relationships-1" class="anchor"></a>K-SRQ sexual relationships</h3>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-58-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-58-2.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-59-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-59-2.png" width="312"></p>
 <pre><code>#&gt; Chi Square Difference Test
 #&gt; 
 #&gt;                                  Df    AIC    BIC  Chisq Chisq diff
@@ -7132,7 +7159,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; uppsp_ksrq_nosr_use_protection_all__sem       1     0.4269</code></pre>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-59">Table 8: </span>K-SRQ Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
+<span id="tab:unnamed-chunk-60">Table 8: </span>K-SRQ Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7182,7 +7209,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-59">Table 8: </span>K-SRQ Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
+<span id="tab:unnamed-chunk-60">Table 8: </span>K-SRQ Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7232,7 +7259,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-59">Table 8: </span>K-SRQ Predicting safe sex practices among all adolescent and college participants with SES responses; N obs. = 333</caption>
+<span id="tab:unnamed-chunk-60">Table 8: </span>K-SRQ Predicting safe sex practices among all adolescent and college participants with SES responses; N obs. = 333</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7293,7 +7320,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-59">Table 8: </span>K-SRQ Predicting safe sex practices among all adolescent and college participants with SES responses; N obs. = 333</caption>
+<span id="tab:unnamed-chunk-60">Table 8: </span>K-SRQ Predicting safe sex practices among all adolescent and college participants with SES responses; N obs. = 333</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7354,7 +7381,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-59">Table 8: </span>K-SRQ Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
+<span id="tab:unnamed-chunk-60">Table 8: </span>K-SRQ Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7426,7 +7453,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-59">Table 8: </span>K-SRQ Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
+<span id="tab:unnamed-chunk-60">Table 8: </span>K-SRQ Predicting safe sex practices among unpartnered college students; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7498,7 +7525,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-59">Table 8: </span>K-SRQ Predicting safe sex practices among all adolescent and college participants with SES responses; N obs. = 333</caption>
+<span id="tab:unnamed-chunk-60">Table 8: </span>K-SRQ Predicting safe sex practices among all adolescent and college participants with SES responses; N obs. = 333</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7581,7 +7608,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-59">Table 8: </span>K-SRQ Predicting safe sex practices among all adolescent and college participants with SES responses; N obs. = 333</caption>
+<span id="tab:unnamed-chunk-60">Table 8: </span>K-SRQ Predicting safe sex practices among all adolescent and college participants with SES responses; N obs. = 333</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7754,7 +7781,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)$\epsilon$ predicting number of partners among unpartnered college students; N obs. = 164
+#&gt; Table: (\#tab:unnamed-chunk-61)$\epsilon$ predicting number of partners among unpartnered college students; N obs. = 164
 #&gt; 
 #&gt; lhs                         op   rhs                     est.std     se      z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  ---------------------  --------  -----  -----  -------  ---------  ---------
@@ -7762,7 +7789,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; continuous_use_protection   ~    gender_c                   0.16   0.09   1.81     0.07      -0.01       0.33
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)$\epsilon$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
+#&gt; Table: (\#tab:unnamed-chunk-61)$\epsilon$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
 #&gt; 
 #&gt; lhs                         op   rhs                     est.std     se       z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  ---------------------  --------  -----  ------  -------  ---------  ---------
@@ -7771,7 +7798,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; continuous_use_protection   ~    age_c                     -0.13   0.10   -1.26     0.21      -0.33       0.07
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)$\rho$ predicting number of partners among unpartnered college students; N obs. = 164
+#&gt; Table: (\#tab:unnamed-chunk-61)$\rho$ predicting number of partners among unpartnered college students; N obs. = 164
 #&gt; 
 #&gt; lhs                         op   rhs                      est.std     se      z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  ----------------------  --------  -----  -----  -------  ---------  ---------
@@ -7779,7 +7806,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; continuous_use_protection   ~    gender_c                    0.16   0.09   1.82     0.07      -0.01       0.33
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)$\rho$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
+#&gt; Table: (\#tab:unnamed-chunk-61)$\rho$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
 #&gt; 
 #&gt; lhs                         op   rhs                      est.std     se       z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  ----------------------  --------  -----  ------  -------  ---------  ---------
@@ -7788,7 +7815,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; continuous_use_protection   ~    age_c                      -0.11   0.10   -1.06     0.29      -0.32       0.09
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)$\xi$ predicting number of partners among unpartnered college students; N obs. = 164
+#&gt; Table: (\#tab:unnamed-chunk-61)$\xi$ predicting number of partners among unpartnered college students; N obs. = 164
 #&gt; 
 #&gt; lhs                         op   rhs                     est.std     se       z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  ---------------------  --------  -----  ------  -------  ---------  ---------
@@ -7796,7 +7823,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; continuous_use_protection   ~    gender_c                   0.16   0.09    1.87     0.06      -0.01       0.34
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)$\xi$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
+#&gt; Table: (\#tab:unnamed-chunk-61)$\xi$ predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
 #&gt; 
 #&gt; lhs                         op   rhs                     est.std     se       z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  ---------------------  --------  -----  ------  -------  ---------  ---------
@@ -7805,7 +7832,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; continuous_use_protection   ~    age_c                     -0.11   0.10   -1.09     0.27      -0.32       0.09
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)First-half optimal responses predicting number of partners among unpartnered college students; N obs. = 164
+#&gt; Table: (\#tab:unnamed-chunk-61)First-half optimal responses predicting number of partners among unpartnered college students; N obs. = 164
 #&gt; 
 #&gt; lhs                         op   rhs                             est.std     se      z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  -----------------------------  --------  -----  -----  -------  ---------  ---------
@@ -7813,7 +7840,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; continuous_use_protection   ~    gender_c                           0.16   0.09   1.87     0.06      -0.01       0.34
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)First-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
+#&gt; Table: (\#tab:unnamed-chunk-61)First-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
 #&gt; 
 #&gt; lhs                         op   rhs                             est.std     se       z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  -----------------------------  --------  -----  ------  -------  ---------  ---------
@@ -7822,7 +7849,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; continuous_use_protection   ~    age_c                             -0.12   0.10   -1.12     0.26      -0.32       0.09
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)Last-half optimal responses predicting number of partners among unpartnered college students; N obs. = 164
+#&gt; Table: (\#tab:unnamed-chunk-61)Last-half optimal responses predicting number of partners among unpartnered college students; N obs. = 164
 #&gt; 
 #&gt; lhs                         op   rhs                           est.std     se      z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  ---------------------------  --------  -----  -----  -------  ---------  ---------
@@ -7830,7 +7857,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; continuous_use_protection   ~    gender_c                         0.16   0.09   1.87     0.06      -0.01       0.34
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-60)Last-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
+#&gt; Table: (\#tab:unnamed-chunk-61)Last-half optimal responses predicting number of partners among all adolescent and college participants with SES responses; N obs. = 333
 #&gt; 
 #&gt; lhs                         op   rhs                           est.std     se       z   pvalue   ci.lower   ci.upper
 #&gt; --------------------------  ---  ---------------------------  --------  -----  ------  -------  ---------  ---------
@@ -7906,10 +7933,10 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt; uppsp_fsmi_alcdays_null_sem    0.07657 .  
 #&gt; ---
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-62-1.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-63-1.png" width="312"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-62">Table 9: </span>FSMI Predicting number of drinking days among college students; N obs. = 207</caption>
+<span id="tab:unnamed-chunk-63">Table 9: </span>FSMI Predicting number of drinking days among college students; N obs. = 207</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -7957,7 +7984,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-62">Table 9: </span>FSMI Predicting number of drinking days among all college participants with SES responses; N obs. = 169</caption>
+<span id="tab:unnamed-chunk-63">Table 9: </span>FSMI Predicting number of drinking days among all college participants with SES responses; N obs. = 169</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8047,7 +8074,7 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-62">Table 9: </span>FSMI Predicting number of drinking days among college students; N obs. = 169</caption>
+<span id="tab:unnamed-chunk-63">Table 9: </span>FSMI Predicting number of drinking days among college students; N obs. = 169</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8141,7 +8168,7 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 <div id="k-srq-admiration" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-admiration" class="anchor"></a>K-SRQ Admiration</h3>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-64-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-64-2.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-65-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-65-2.png" width="312"></p>
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
 #&gt;                         Df AIC BIC   Chisq Chisq diff Df diff Pr(&gt;Chisq)
@@ -8190,7 +8217,7 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 #&gt; uppsp_ksrq_nosr_alc_days_all__sem      0.195</code></pre>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-65">Table 10: </span>K-SRQ Predicting number of drinking days among college students; N obs. = 185</caption>
+<span id="tab:unnamed-chunk-66">Table 10: </span>K-SRQ Predicting number of drinking days among college students; N obs. = 185</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8252,7 +8279,7 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-65">Table 10: </span>K-SRQ Predicting number of drinking days among college students; N obs. = 185</caption>
+<span id="tab:unnamed-chunk-66">Table 10: </span>K-SRQ Predicting number of drinking days among college students; N obs. = 185</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8314,7 +8341,7 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-65">Table 10: </span>K-SRQ Predicting number of drinking days among all adolescent and college participants with SES responses; N obs. = 279</caption>
+<span id="tab:unnamed-chunk-66">Table 10: </span>K-SRQ Predicting number of drinking days among all adolescent and college participants with SES responses; N obs. = 279</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8390,7 +8417,7 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-65">Table 10: </span>K-SRQ Predicting number of drinking days among all adolescent and college participants with SES responses; N obs. = 279</caption>
+<span id="tab:unnamed-chunk-66">Table 10: </span>K-SRQ Predicting number of drinking days among all adolescent and college participants with SES responses; N obs. = 279</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8466,7 +8493,7 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-65">Table 10: </span>K-SRQ Predicting number of drinking days among college students; N obs. = 164</caption>
+<span id="tab:unnamed-chunk-66">Table 10: </span>K-SRQ Predicting number of drinking days among college students; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8556,7 +8583,7 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-65">Table 10: </span>K-SRQ Predicting number of drinking days among college students; N obs. = 164</caption>
+<span id="tab:unnamed-chunk-66">Table 10: </span>K-SRQ Predicting number of drinking days among college students; N obs. = 164</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8646,7 +8673,7 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-65">Table 10: </span>K-SRQ Predicting number of drinking days among all adolescent and college participants with SES responses; N obs. = 247</caption>
+<span id="tab:unnamed-chunk-66">Table 10: </span>K-SRQ Predicting number of drinking days among all adolescent and college participants with SES responses; N obs. = 247</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8750,7 +8777,7 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-65">Table 10: </span>K-SRQ Predicting number of drinking days among all adolescent and college participants with SES responses; N obs. = 247</caption>
+<span id="tab:unnamed-chunk-66">Table 10: </span>K-SRQ Predicting number of drinking days among all adolescent and college participants with SES responses; N obs. = 247</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -8930,7 +8957,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; splt_alc_days_all_null_sem 15         14.695    0.16241       1     0.6869
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)$\epsilon$ predicting number of drinking dats among college students; N obs. = 212
+#&gt; Table: (\#tab:unnamed-chunk-67)$\epsilon$ predicting number of drinking dats among college students; N obs. = 212
 #&gt; 
 #&gt; lhs                     op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -8938,7 +8965,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    gender_c                -0.22   0.16   -1.39     0.16      -0.53       0.09    -0.22     -0.10     -0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)$\epsilon$ predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
+#&gt; Table: (\#tab:unnamed-chunk-67)$\epsilon$ predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
 #&gt; 
 #&gt; lhs                     op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -8947,7 +8974,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    age_c                    0.32   0.04    8.62     0.00       0.25       0.39     0.32      0.58      0.26
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)$\rho$ predicting number of drinking dats among college students; N obs. = 212
+#&gt; Table: (\#tab:unnamed-chunk-67)$\rho$ predicting number of drinking dats among college students; N obs. = 212
 #&gt; 
 #&gt; lhs                     op   rhs                        est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ----------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -8955,7 +8982,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    gender_c                 -0.22   0.16   -1.39     0.16      -0.53       0.09    -0.22     -0.10     -0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)$\rho$ predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
+#&gt; Table: (\#tab:unnamed-chunk-67)$\rho$ predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
 #&gt; 
 #&gt; lhs                     op   rhs                        est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ----------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -8964,7 +8991,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    age_c                     0.32   0.04    8.62     0.00       0.25       0.39     0.32      0.58      0.26
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)$\xi$ predicting number of drinking dats among college students; N obs. = 212
+#&gt; Table: (\#tab:unnamed-chunk-67)$\xi$ predicting number of drinking dats among college students; N obs. = 212
 #&gt; 
 #&gt; lhs                     op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -8972,7 +8999,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    gender_c                -0.22   0.16   -1.39     0.16      -0.53       0.09    -0.22     -0.10     -0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)$\xi$ predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
+#&gt; Table: (\#tab:unnamed-chunk-67)$\xi$ predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
 #&gt; 
 #&gt; lhs                     op   rhs                      est     se      z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ---------------------  -----  -----  -----  -------  ---------  ---------  -------  --------  --------
@@ -8981,7 +9008,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    age_c                   0.32   0.04   8.62     0.00       0.25       0.39     0.32      0.58      0.26
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)$b$ predicting number of drinking dats among college students; N obs. = 212
+#&gt; Table: (\#tab:unnamed-chunk-67)$b$ predicting number of drinking dats among college students; N obs. = 212
 #&gt; 
 #&gt; lhs                     op   rhs                  est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ----------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -8989,7 +9016,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    gender_c           -0.22   0.16   -1.39     0.16      -0.53       0.09    -0.22     -0.10     -0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)$b$ predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
+#&gt; Table: (\#tab:unnamed-chunk-67)$b$ predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
 #&gt; 
 #&gt; lhs                     op   rhs                 est     se      z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ----------------  -----  -----  -----  -------  ---------  ---------  -------  --------  --------
@@ -8998,7 +9025,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    age_c              0.32   0.04   8.62     0.00       0.25       0.39     0.32      0.58      0.26
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)First-half optimal responses predicting number of drinking dats among college students; N obs. = 212
+#&gt; Table: (\#tab:unnamed-chunk-67)First-half optimal responses predicting number of drinking dats among college students; N obs. = 212
 #&gt; 
 #&gt; lhs                     op   rhs                               est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  -----------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -9006,7 +9033,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    gender_c                        -0.22   0.16   -1.39     0.16      -0.53       0.09    -0.22     -0.10     -0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)First-half optimal responses predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
+#&gt; Table: (\#tab:unnamed-chunk-67)First-half optimal responses predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
 #&gt; 
 #&gt; lhs                     op   rhs                               est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  -----------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -9015,7 +9042,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    age_c                            0.32   0.04    8.62     0.00       0.25       0.39     0.32      0.58      0.26
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)Last-half optimal responses predicting number of drinking dats among college students; N obs. = 212
+#&gt; Table: (\#tab:unnamed-chunk-67)Last-half optimal responses predicting number of drinking dats among college students; N obs. = 212
 #&gt; 
 #&gt; lhs                     op   rhs                             est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ---------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -9023,7 +9050,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; alcohol_days_of_lst30   ~    gender_c                      -0.22   0.16   -1.39     0.16      -0.53       0.09    -0.22     -0.10     -0.22
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-66)Last-half optimal responses predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
+#&gt; Table: (\#tab:unnamed-chunk-67)Last-half optimal responses predicting number of drinking dats among all adolescent and college participants with SES responses; N obs. = 298
 #&gt; 
 #&gt; lhs                     op   rhs                             est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ----------------------  ---  ---------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -9104,10 +9131,10 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 #&gt; uppsp_fsmi_alc5drk_null_sem  0.0007216 ***
 #&gt; ---
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-68-1.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-69-1.png" width="312"></p>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-68">Table 11: </span>FSMI Predicting number of heavy drinking days among college students; N obs. = 205</caption>
+<span id="tab:unnamed-chunk-69">Table 11: </span>FSMI Predicting number of heavy drinking days among college students; N obs. = 205</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9146,7 +9173,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-68">Table 11: </span>FSMI Predicting number of heavy drinking days among all college participants with SES responses; N obs. = 167</caption>
+<span id="tab:unnamed-chunk-69">Table 11: </span>FSMI Predicting number of heavy drinking days among all college participants with SES responses; N obs. = 167</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9218,7 +9245,7 @@ The coefficients for both Sensation Seeking and Admiration in the combine model 
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-68">Table 11: </span>FSMI Predicting number of heavy drinking days among college students; N obs. = 167</caption>
+<span id="tab:unnamed-chunk-69">Table 11: </span>FSMI Predicting number of heavy drinking days among college students; N obs. = 167</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9294,7 +9321,7 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 <div id="k-srq-admiration-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-admiration-1" class="anchor"></a>K-SRQ Admiration</h3>
-<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-70-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-70-2.png" width="312"></p>
+<p><img src="fsmi-cfa_files/figure-html/unnamed-chunk-71-1.png" width="312"><img src="fsmi-cfa_files/figure-html/unnamed-chunk-71-2.png" width="312"></p>
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
 #&gt;                          Df AIC BIC   Chisq Chisq diff Df diff Pr(&gt;Chisq)
@@ -9343,7 +9370,7 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 #&gt; uppsp_ksrq_nosr_alc_5drnk_all__sem     0.1856</code></pre>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-71">Table 12: </span>K-SRQ Predicting number of heavy drinking days among college students; N obs. = 182</caption>
+<span id="tab:unnamed-chunk-72">Table 12: </span>K-SRQ Predicting number of heavy drinking days among college students; N obs. = 182</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9405,7 +9432,7 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-71">Table 12: </span>K-SRQ Predicting number of heavy drinking days among college students; N obs. = 182</caption>
+<span id="tab:unnamed-chunk-72">Table 12: </span>K-SRQ Predicting number of heavy drinking days among college students; N obs. = 182</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9467,7 +9494,7 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-71">Table 12: </span>K-SRQ Predicting number of heavy drinking days among all adolescent and college participants with SES responses; N obs. = 277</caption>
+<span id="tab:unnamed-chunk-72">Table 12: </span>K-SRQ Predicting number of heavy drinking days among all adolescent and college participants with SES responses; N obs. = 277</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9543,7 +9570,7 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-71">Table 12: </span>K-SRQ Predicting number of heavy drinking days among all adolescent and college participants with SES responses; N obs. = 277</caption>
+<span id="tab:unnamed-chunk-72">Table 12: </span>K-SRQ Predicting number of heavy drinking days among all adolescent and college participants with SES responses; N obs. = 277</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9619,7 +9646,7 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-71">Table 12: </span>K-SRQ Predicting number of heavy drinking days among college students; N obs. = 162</caption>
+<span id="tab:unnamed-chunk-72">Table 12: </span>K-SRQ Predicting number of heavy drinking days among college students; N obs. = 162</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9709,7 +9736,7 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-71">Table 12: </span>K-SRQ Predicting number of heavy drinking days among college students; N obs. = 162</caption>
+<span id="tab:unnamed-chunk-72">Table 12: </span>K-SRQ Predicting number of heavy drinking days among college students; N obs. = 162</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9799,7 +9826,7 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-71">Table 12: </span>K-SRQ Predicting number of heavy drinking days among all adolescent and college participants with SES responses; N obs. = 245</caption>
+<span id="tab:unnamed-chunk-72">Table 12: </span>K-SRQ Predicting number of heavy drinking days among all adolescent and college participants with SES responses; N obs. = 245</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -9903,7 +9930,7 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 </table>
 <table class="table">
 <caption>
-<span id="tab:unnamed-chunk-71">Table 12: </span>K-SRQ Predicting number of heavy drinking days among all adolescent and college participants with SES responses; N obs. = 245</caption>
+<span id="tab:unnamed-chunk-72">Table 12: </span>K-SRQ Predicting number of heavy drinking days among all adolescent and college participants with SES responses; N obs. = 245</caption>
 <thead><tr class="header">
 <th align="left">lhs</th>
 <th align="left">op</th>
@@ -10102,7 +10129,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; splt_alc_5drnk_all_null_sem     0.1583
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)$\epsilon$ predicting number of heavy drinking dats among college students; N obs. = 210
+#&gt; Table: (\#tab:unnamed-chunk-73)$\epsilon$ predicting number of heavy drinking dats among college students; N obs. = 210
 #&gt; 
 #&gt; lhs                    op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10110,7 +10137,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    gender_c                -0.29   0.17   -1.78     0.08      -0.62       0.03    -0.29     -0.14     -0.29
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)$\epsilon$ predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
+#&gt; Table: (\#tab:unnamed-chunk-73)$\epsilon$ predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
 #&gt; 
 #&gt; lhs                    op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10119,7 +10146,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    age_c                    0.21   0.04    5.06     0.00       0.13       0.30     0.21      0.43      0.19
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)$\rho$ predicting number of heavy drinking dats among college students; N obs. = 210
+#&gt; Table: (\#tab:unnamed-chunk-73)$\rho$ predicting number of heavy drinking dats among college students; N obs. = 210
 #&gt; 
 #&gt; lhs                    op   rhs                        est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ----------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10127,7 +10154,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    gender_c                 -0.29   0.17   -1.78     0.08      -0.62       0.03    -0.29     -0.14     -0.29
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)$\rho$ predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
+#&gt; Table: (\#tab:unnamed-chunk-73)$\rho$ predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
 #&gt; 
 #&gt; lhs                    op   rhs                        est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ----------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10136,7 +10163,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    age_c                     0.21   0.04    5.06     0.00       0.13        0.3     0.21      0.43      0.19
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)$\xi$ predicting number of heavy drinking dats among college students; N obs. = 210
+#&gt; Table: (\#tab:unnamed-chunk-73)$\xi$ predicting number of heavy drinking dats among college students; N obs. = 210
 #&gt; 
 #&gt; lhs                    op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10144,7 +10171,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    gender_c                -0.29   0.17   -1.78     0.08      -0.62       0.03    -0.29     -0.14     -0.29
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)$\xi$ predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
+#&gt; Table: (\#tab:unnamed-chunk-73)$\xi$ predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
 #&gt; 
 #&gt; lhs                    op   rhs                       est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ---------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10153,7 +10180,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    age_c                    0.21   0.04    5.06     0.00       0.13       0.30     0.21      0.43      0.19
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)$b$ predicting number of heavy drinking dats among college students; N obs. = 210
+#&gt; Table: (\#tab:unnamed-chunk-73)$b$ predicting number of heavy drinking dats among college students; N obs. = 210
 #&gt; 
 #&gt; lhs                    op   rhs                  est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ----------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10161,7 +10188,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    gender_c           -0.29   0.17   -1.78     0.08      -0.62       0.03    -0.29     -0.14     -0.29
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)$b$ predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
+#&gt; Table: (\#tab:unnamed-chunk-73)$b$ predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
 #&gt; 
 #&gt; lhs                    op   rhs                  est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ----------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10170,7 +10197,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    age_c               0.21   0.04    5.06     0.00       0.13       0.30     0.21      0.43      0.19
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)First-half optimal responses predicting number of heavy drinking dats among college students; N obs. = 210
+#&gt; Table: (\#tab:unnamed-chunk-73)First-half optimal responses predicting number of heavy drinking dats among college students; N obs. = 210
 #&gt; 
 #&gt; lhs                    op   rhs                               est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  -----------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10178,7 +10205,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    gender_c                        -0.29   0.17   -1.78     0.08      -0.62       0.03    -0.29     -0.14     -0.29
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)First-half optimal responses predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
+#&gt; Table: (\#tab:unnamed-chunk-73)First-half optimal responses predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
 #&gt; 
 #&gt; lhs                    op   rhs                               est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  -----------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10187,7 +10214,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    age_c                            0.21   0.04    5.06     0.00       0.13       0.30     0.21      0.43      0.19
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)Last-half optimal responses predicting number of heavy drinking dats among college students; N obs. = 210
+#&gt; Table: (\#tab:unnamed-chunk-73)Last-half optimal responses predicting number of heavy drinking dats among college students; N obs. = 210
 #&gt; 
 #&gt; lhs                    op   rhs                             est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ---------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------
@@ -10195,7 +10222,7 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    gender_c                      -0.29   0.17   -1.78     0.08      -0.62       0.03    -0.29     -0.14     -0.29
 #&gt; 
 #&gt; 
-#&gt; Table: (\#tab:unnamed-chunk-72)Last-half optimal responses predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
+#&gt; Table: (\#tab:unnamed-chunk-73)Last-half optimal responses predicting number of heavy drinking dats among all adolescent and college participants with SES responses; N obs. = 297
 #&gt; 
 #&gt; lhs                    op   rhs                             est     se       z   pvalue   ci.lower   ci.upper   std.lv   std.all   std.nox
 #&gt; ---------------------  ---  ---------------------------  ------  -----  ------  -------  ---------  ---------  -------  --------  --------

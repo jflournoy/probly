@@ -243,8 +243,8 @@ splt_fsmi_devdemog$ordered_use_protection <- ordered(ifelse( #if
     NA, #assign NA to use protection (we want to know whether they _do_, not _would_
     splt_fsmi_devdemog$SES_15), #otherwise, keep their original answer
     levels = 1:7,
-    labels = c('Never', 'Rarely', 'Occasionally', 'About half the time', 
-               'Usually', 'Most of the time', 'Every single time'))
+    labels = c('Never 0%', 'Rarely 1-15%', 'Occasionally 15-40%', 'About half the time 40-60%', 
+               'Usually 60-85%', 'Most of the time 85-99%', 'Every single time 100%'))
     
 splt_fsmi_devdemog$ordered_sex_freq <- ordered(
     ifelse(splt_fsmi_devdemog$SES_12 == 0 |
@@ -2452,6 +2452,7 @@ scale_splt_cor_df_college_plot <- ggplot2::ggplot(
     ggplot2::facet_wrap(~rhs, nrow = 2, labeller = ggplot2::label_parsed) + 
     ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
                    panel.grid.minor = ggplot2::element_blank()) + 
+    ggplot2::labs(y = 'Correlation with latent variable') + 
     ggplot2::coord_flip(ylim = c(-.55, .55))
 print(scale_splt_cor_df_college_plot)
 ```
@@ -2478,6 +2479,7 @@ scale_splt_cor_df_baseline_college_plot <- ggplot2::ggplot(
     ggplot2::facet_wrap(~rhs, nrow = 1, labeller = ggplot2::label_parsed) + 
     ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
                    panel.grid.minor = ggplot2::element_blank()) + 
+    ggplot2::labs(y = 'Correlation with latent variable') + 
     ggplot2::coord_flip(ylim = c(-.55, .55))
 print(scale_splt_cor_df_baseline_college_plot)
 ```
@@ -2855,6 +2857,7 @@ scale_splt_cor_df_combined_plot <- ggplot2::ggplot(
     ggplot2::facet_wrap(~rhs, nrow = 2, labeller = ggplot2::label_parsed) + 
     ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
                    panel.grid.minor = ggplot2::element_blank()) + 
+    ggplot2::labs(y = 'Correlation with latent variable') + 
     ggplot2::coord_flip(ylim = c(-.55, .55))
 print(scale_splt_cor_df_combined_plot)
 ```
@@ -2881,6 +2884,7 @@ scale_splt_cor_df_baseline_combined_plot <- ggplot2::ggplot(
     ggplot2::facet_wrap(~rhs, nrow = 1, labeller = ggplot2::label_parsed) + 
     ggplot2::theme(axis.title.y = ggplot2::element_blank(), 
                    panel.grid.minor = ggplot2::element_blank()) + 
+    ggplot2::labs(y = 'Correlation with latent variable') + 
     ggplot2::coord_flip(ylim = c(-.55, .55))
 print(scale_splt_cor_df_baseline_combined_plot)
 ```
@@ -2961,7 +2965,8 @@ table(splt_fsmi_devdemog$ordered_sex_freq, splt_fsmi_devdemog$sample, useNA = 'i
 table(splt_fsmi_devdemog$ordered_num_partner, splt_fsmi_devdemog$sample, useNA = 'ifany')
 ```
 
-```{r sesfsmiplot, fig.width=8, fig.height=4}
+```{r sesfsmiplot, fig.width=5.875, fig.height=3}
+sesdescplot_hjust <- 0
 sex_freq_plot <- ggplot2::ggplot(
     data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$ordered_sex_freq) & 
                                   !is.na(splt_fsmi_devdemog$partnered) & 
@@ -2973,7 +2978,8 @@ sex_freq_plot <- ggplot2::ggplot(
                             position = ggplot2::position_dodge(), alpha = 1) +
     ggplot2::theme(legend.position = 'none') + 
     ggplot2::labs(title = 'College students', y = 'Count', x = '') +
-    ggplot2::coord_cartesian(ylim = c(0,60))
+    ggplot2::coord_cartesian(ylim = c(0,60)) + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(hjust = sesdescplot_hjust))
 
 num_partnr_plot <- ggplot2::ggplot(
     data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$ordered_num_partner) & 
@@ -2985,7 +2991,8 @@ num_partnr_plot <- ggplot2::ggplot(
     ggplot2::geom_histogram(stat = 'count',
                             position = ggplot2::position_dodge(), alpha = 1) + 
     ggplot2::labs(title = '', y = '', x = '') + 
-    ggplot2::theme(axis.text.y = ggplot2::element_blank()) +
+    ggplot2::theme(axis.text.y = ggplot2::element_blank(),
+                   axis.text.x = ggplot2::element_text(hjust = sesdescplot_hjust)) +
     ggplot2::coord_cartesian(ylim = c(0,60))
 
 sex_freq_plot_tds <- ggplot2::ggplot(
@@ -2997,8 +3004,10 @@ sex_freq_plot_tds <- ggplot2::ggplot(
                             alpha = 1,
                             fill = ggsci::pal_rickandmorty()(8)[2], 
                             width = .5) +
-    ggplot2::labs(title = 'Adolescents', y = 'Count', x = 'Number of sexual encounters, last 6 months') +
-    ggplot2::coord_cartesian(ylim = c(0,60), xlim = c(1,6))
+    # ggplot2::scale_x_discrete(breaks = c('0', '1-9', '10-19', '20-39', '40 or more')) + 
+    ggplot2::labs(title = 'Adolescents', y = 'Count', x = 'Number of sexual encounters') +
+    ggplot2::coord_cartesian(ylim = c(0,60), xlim = c(1,5)) + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(hjust = sesdescplot_hjust))
 
 num_partnr_plot_tds <- ggplot2::ggplot(
     data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$ordered_num_partner) & 
@@ -3009,14 +3018,144 @@ num_partnr_plot_tds <- ggplot2::ggplot(
                             alpha = 1,
                             fill = ggsci::pal_rickandmorty()(8)[2], 
                             width = .5) + 
-    ggplot2::labs(title = '', y = '', x = 'Number of partners, last 6 months') + 
-    ggplot2::theme(axis.text.y = ggplot2::element_blank(), 
-                   plot.margin = ggplot2::margin(0,2.25,0,0, unit = 'cm'),
+    ggplot2::labs(title = '', y = '', x = 'Number of partners') + 
+    ggplot2::theme(axis.text.y = ggplot2::element_blank(),
+                   axis.text.x = ggplot2::element_text(hjust = 0),
+                   plot.margin = ggplot2::margin(.2,2.25,.1,.2, unit = 'cm'),
                    legend.position = 'right') +
-    ggplot2::coord_cartesian(ylim = c(0,60), xlim = c(1,5))
+    ggplot2::coord_cartesian(ylim = c(0,60), xlim = c(1,4)) + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(hjust = sesdescplot_hjust))
+# c('0', '1-9', '10-19', '20-39', '40 or more')
+# c(0:2, '3 or more')
+gridExtra::grid.arrange(sex_freq_plot, num_partnr_plot, sex_freq_plot_tds, 
+                        num_partnr_plot_tds, nrow = 2, widths = c(4,3))
+```
 
-gridExtra::grid.arrange(sex_freq_plot, num_partnr_plot, sex_freq_plot_tds, num_partnr_plot_tds, nrow = 2)
+```{r drinky, fig.width=5.875, fig.height=3}
+sesdescplot_hjust <- 0
+alc_freq_plot <- ggplot2::ggplot(
+    data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$alcohol_days_of_lst30) & 
+                                  grepl('yads', splt_fsmi_devdemog$sample),],
+    ggplot2::aes(x = alcohol_days_of_lst30)) + 
+    ggplot2::scale_fill_manual(values = ggsci::pal_rickandmorty()(8)[c(7,8)], name = 'LTR?') + 
+    ggplot2::geom_histogram(stat = 'count',
+                            position = ggplot2::position_dodge(), 
+                            fill = ggsci::pal_rickandmorty()(8)[2], alpha = 1) +
+    ggplot2::theme(legend.position = 'none') + 
+    ggplot2::labs(title = 'College students', y = 'Count', x = '') +
+    ggplot2::coord_cartesian(ylim = c(0,100)) + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(hjust = sesdescplot_hjust))
+
+alc5_partnr_plot <- ggplot2::ggplot(
+    data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$alcohol_5drnks_lst30) & 
+                                  grepl('yads', splt_fsmi_devdemog$sample),],
+    ggplot2::aes(x = alcohol_5drnks_lst30)) + 
+    ggplot2::scale_fill_manual(values = ggsci::pal_rickandmorty()(8)[c(7,8)], name = 'LTR?') + 
+    ggplot2::geom_histogram(stat = 'count',
+                            position = ggplot2::position_dodge(), 
+                            fill = ggsci::pal_rickandmorty()(8)[2], alpha = 1) + 
+    ggplot2::labs(title = '', y = '', x = '') + 
+    ggplot2::theme(axis.text.y = ggplot2::element_blank(),
+                   axis.text.x = ggplot2::element_text(hjust = sesdescplot_hjust),
+                   plot.margin = ggplot2::margin(.2,1,.2,.2, unit = 'cm')) +
+    ggplot2::coord_cartesian(ylim = c(0,100))
+alc_freq_plot_tds <- ggplot2::ggplot(
+    data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$alcohol_days_of_lst30) & 
+                                  grepl('TDS', splt_fsmi_devdemog$sample),],
+    ggplot2::aes(x = alcohol_days_of_lst30)) + 
+    ggplot2::geom_histogram(stat = 'count',
+                            position = ggplot2::position_dodge(), 
+                            alpha = 1,
+                            fill = ggsci::pal_rickandmorty()(8)[2], 
+                            width = .5) +
+    ggplot2::scale_x_discrete(drop=FALSE) + 
+    ggplot2::labs(title = 'Adolescents', y = 'Count', x = 'Number of days with at least one drink') +
+    ggplot2::coord_cartesian(ylim = c(0,100), xlim = c(1,5)) + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(hjust = sesdescplot_hjust))
+
+alc5_partnr_plot_tds <- ggplot2::ggplot(
+    data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$alcohol_5drnks_lst30) & 
+                                  grepl('TDS', splt_fsmi_devdemog$sample),],
+    ggplot2::aes(x = alcohol_5drnks_lst30)) + 
+    ggplot2::geom_histogram(stat = 'count',
+                            position = ggplot2::position_dodge(), 
+                            alpha = 1,
+                            fill = ggsci::pal_rickandmorty()(8)[2], 
+                            width = .5) + 
+    ggplot2::labs(title = '', y = '', x = 'Number of days with 5+ drinks') + 
+    ggplot2::theme(axis.text.y = ggplot2::element_blank(),
+                   axis.text.x = ggplot2::element_text(hjust = 0),
+                   plot.margin = ggplot2::margin(.2,1,.2,.2, unit = 'cm'),
+                   legend.position = 'right') +
+    ggplot2::scale_x_discrete(drop=FALSE) + 
+    ggplot2::coord_cartesian(ylim = c(0,100), xlim = c(1,4)) + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(hjust = sesdescplot_hjust))
+# c('0', '1-9', '10-19', '20-39', '40 or more')
+# c(0:2, '3 or more')
+gridExtra::grid.arrange(alc_freq_plot, alc5_partnr_plot, alc_freq_plot_tds, 
+                        alc5_partnr_plot_tds, nrow = 2, widths = c(4,3))
 save_out_list <- c(save_out_list, 'sex_freq_plot', 'num_partnr_plot')
+```
+
+```{r useprot, fig.width=5.875, fig.height=2.5}
+useprot_hjust <- .5
+useprot_freq_plot <- ggplot2::ggplot(
+    data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$ordered_use_protection) & 
+                                  !is.na(splt_fsmi_devdemog$partnered) & 
+                                  grepl('yads', splt_fsmi_devdemog$sample),],
+    ggplot2::aes(x = ordered_use_protection,
+                 fill = factor(partnered, levels = c(0,1), labels = c('No', 'Yes')))) + 
+    ggplot2::scale_fill_manual(values = ggsci::pal_rickandmorty()(8)[c(7,8)], name = 'LTR?') + 
+    ggplot2::geom_histogram(stat = 'count',
+                            position = ggplot2::position_dodge(), alpha = 1) +
+    ggplot2::theme(legend.position = 'right') + 
+    ggplot2::labs(title = 'College students', y = 'Count', x = 'Frequency of safe sex practice') +
+    ggplot2::coord_flip(ylim = c(0,35)) +
+    ggplot2::scale_x_discrete(drop = FALSE) + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(hjust = useprot_hjust))
+
+useprot_plot_tds <- ggplot2::ggplot(
+    data = splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$ordered_use_protection) & 
+                                  grepl('TDS', splt_fsmi_devdemog$sample),],
+    ggplot2::aes(x = ordered_use_protection)) + 
+    ggplot2::geom_histogram(stat = 'count',
+                            position = ggplot2::position_dodge(), 
+                            alpha = 1,
+                            fill = ggsci::pal_rickandmorty()(8)[2], 
+                            width = .5) +
+    # ggplot2::scale_x_discrete(breaks = c('0', '1-9', '10-19', '20-39', '40 or more')) + 
+    ggplot2::labs(title = 'Adolescents', y = 'Count', x = '') +
+    ggplot2::coord_flip(ylim = c(0,35), xlim = c(1,7)) + 
+    ggplot2::scale_x_discrete(drop = FALSE) + 
+    ggplot2::theme(axis.text.x = ggplot2::element_text(hjust = useprot_hjust),
+                   # plot.margin = ggplot2::margin(.2,.2,1.65,.2, unit = 'cm'),
+                   axis.text.y = ggplot2::element_blank())
+
+gridExtra::grid.arrange(useprot_freq_plot, useprot_plot_tds, nrow = 1, widths = c(2.4,1))
+```
+
+```{r fig.width=3.25, fig.height=2}
+ltr_fsmi_data <- splt_fsmi_devdemog[!is.na(splt_fsmi_devdemog$partnered) & 
+                                        grepl('yads', splt_fsmi_devdemog$sample),] %>%
+    dplyr::select(partnered, SID,
+                  unlist(milav::get_items_from_keys(fsmi_key$fsmi_mate)))
+ltr_fsmi_data_scored <- dplyr::bind_cols(
+    fsmi_mate = psych::scoreItems(fsmi_key['fsmi_mate'], items = ltr_fsmi_data, 
+                      missing = T, impute = 'none')$scores,
+    ltr_fsmi_data)
+
+ltr_fsmi <- ggplot2::ggplot(
+    data = ltr_fsmi_data_scored,
+    ggplot2::aes(x = fsmi_mate,
+                 fill = factor(partnered, levels = c(0,1), labels = c('No', 'Yes')))) + 
+    ggplot2::scale_fill_manual(values = ggsci::pal_rickandmorty()(8)[c(7,8)], name = 'LTR?') + 
+    ggplot2::geom_histogram(binwidth = 1, alpha = .7, 
+                            color = 'black', position = ggplot2::position_identity()) +
+    ggplot2::theme(legend.position = 'right') + 
+    ggplot2::scale_x_continuous(breaks = c(1,4,7)) + 
+    ggplot2::labs(y = 'Count', x = 'FSMI Mate-seeking item mean') +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(hjust = useprot_hjust))
+print(ltr_fsmi)
 ```
 
 ## Number of partners
@@ -3026,6 +3165,9 @@ save_out_list <- c(save_out_list, 'sex_freq_plot', 'num_partnr_plot')
 ```{r fig.width=4, fig.height=4}
 fsmi_num_partners_model <- paste(fsmi_cfa_matestat_model, 
                                  'ordered_num_partner ~ fsmi_mate + gender_c', sep = '\n')
+
+fsmi_num_partners_null_model <- paste(fsmi_cfa_matestat_model, 
+                                      'ordered_num_partner ~ 0*fsmi_mate + gender_c', sep = '\n')
 
 sensseek_urgency_cfa <- milav::create_cfa_from_keylist(
     upps_key[c('pos_urgency','sensation_seeking','neg_urgency')])
@@ -3081,6 +3223,7 @@ uppsp_fsmi_partners_null_model <- paste(
 
 fsmi_num_partners_modelsFN <- file.path(data_dir, 'fsmi_num_partners_models.rda')
 if(!file.exists(fsmi_num_partners_modelsFN)){
+    
     fsmi_num_partners_sem <- lavaan::lavaan(
         model = fsmi_num_partners_model, 
         data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
@@ -3092,8 +3235,29 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
+    fsmi_num_partners_null_sem <- lavaan::lavaan(
+        model = fsmi_num_partners_null_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
     fsmi_num_partners_all_sem <- lavaan::lavaan(
         model = fsmi_num_partners_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    fsmi_num_partners_null_all_sem <- lavaan::lavaan(
+        model = fsmi_num_partners_null_model, 
         data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
         missing = 'listwise', estimator = 'WLSMV',
         int.ov.free = TRUE, int.lv.free = FALSE, 
@@ -3189,6 +3353,11 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
+    fsmi_num_partners_lrt <- lavaan::lavTestLRT(fsmi_num_partners_sem,
+                                                fsmi_num_partners_null_sem)
+    fsmi_num_partners_all_lrt <- lavaan::lavTestLRT(fsmi_num_partners_all_sem,
+                                                    fsmi_num_partners_null_all_sem)
+    
     uppsp_fsmi_partners_lrt <- lavaan::lavTestLRT(uppsp_fsmi_partners_sem,
                                                   uppsp_fsmi_partners_noupps_sem,
                                                   uppsp_fsmi_partners_null_sem)
@@ -3211,6 +3380,12 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
     
     save(fsmi_num_partners_sem,
          fsmi_num_partners_all_sem,
+         fsmi_num_partners_lrt,
+         fsmi_num_partners_sem,
+         fsmi_num_partners_null_sem,
+         fsmi_num_partners_all_lrt,
+         fsmi_num_partners_all_sem,
+         fsmi_num_partners_null_all_sem,
          uppsp_fsmi_partners_sem,
          uppsp_fsmi_partners_all_sem,
          uppsp_fsmi_partners_noupps_sem,
@@ -3242,11 +3417,24 @@ fsmi_num_partners_all_sem_partners <- fsmi_num_partners_all_sem_partners_[fsmi_n
 ```
 
 ```{r fig.width=3.25, fig.height=2}
+print_lrt_test_stats <- function(anlrt, result_row = 2, p_sigdig = 3){
+    N <- eval(parse(text = paste0('lavaan::nobs(',dimnames(anlrt)[[1]][1], ')')))
+    sprintf(paste0('N = %d, \\Delta\\chi^2(%0.2f) = %0.1f, p = %0.', p_sigdig, 'f'),
+            N, anlrt[result_row,'Df diff'], 
+            anlrt[result_row,'Chisq'], 
+            anlrt[result_row,'Pr(>Chisq)'])
+}
+
+fsmi_num_partners_lrt
+fsmi_num_partners_all_lrt
 uppsp_fsmi_partners_lrt
 uppsp_fsmi_partners_lrt2
 uppsp_fsmi_partners_lrtpurg
 uppsp_fsmi_partners_lrtnurg
 uppsp_fsmi_partners_lrtss
+
+dplyr::filter(parameterestimates(fsmi_num_partners_sem), lhs == 'ordered_num_partner', rhs == 'fsmi_mate')[c('est', 'pvalue')]
+dplyr::filter(parameterestimates(fsmi_num_partners_all_sem), lhs == 'ordered_num_partner', rhs == 'fsmi_mate')[c('est', 'pvalue')]
 
 plot_lav_factor_pred(lavfit = fsmi_num_partners_sem, 
                      factor_name = 'fsmi_mate', 
