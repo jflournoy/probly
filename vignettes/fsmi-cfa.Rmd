@@ -43,6 +43,33 @@ sample_labels_short <- c(
     'yads_online' = 'CSYA-O'
 )
 
+print_lrt_test_stats <- function(anlrt, result_row = 2, p_sigdig = 3){
+    N <- eval(parse(text = paste0('lavaan::nobs(',dimnames(anlrt)[[1]][1], ')')))
+    sprintf(paste0('N = %d, \\Delta\\chi^2[%0.2f] = %0.1f, p = %0.', p_sigdig, 'f'),
+            N, anlrt[result_row,'Df diff'], 
+            anlrt[result_row,'Chisq diff'], 
+            anlrt[result_row,'Pr(>Chisq)'])
+}
+
+get_chisq_tests <- function(an_sem, verbose = T, lrt_idxs = c(5,6)){
+    if(verbose){
+        print(an_sem[[lrt_idxs[1]]])
+        print(an_sem[[lrt_idxs[2]]])
+    }
+    chisq <- an_sem[[lrt_idxs[1]]][2,'Chisq diff']
+    df <- an_sem[[lrt_idxs[1]]][2,'Df diff']
+    p <- an_sem[[lrt_idxs[1]]][2,'Pr(>Chisq)']
+    chisq_all <- an_sem[[lrt_idxs[2]]][2,'Chisq diff']
+    df_all <- an_sem[[lrt_idxs[2]]][2,'Df diff']
+    p_all <- an_sem[[lrt_idxs[2]]][2,'Pr(>Chisq)']
+    return(c(chisq = chisq,
+             df = df,
+             p = p, 
+             chisq_all = chisq_all,
+             df_all = df_all,
+             p_all = p_all))
+}
+
 college_rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
 adolescent_rubric_dir <- system.file('scoring_rubrics', 'adolescent', package = 'probly')
 
@@ -3417,14 +3444,6 @@ fsmi_num_partners_all_sem_partners <- fsmi_num_partners_all_sem_partners_[fsmi_n
 ```
 
 ```{r fig.width=3.25, fig.height=2}
-print_lrt_test_stats <- function(anlrt, result_row = 2, p_sigdig = 3){
-    N <- eval(parse(text = paste0('lavaan::nobs(',dimnames(anlrt)[[1]][1], ')')))
-    sprintf(paste0('N = %d, \\Delta\\chi^2(%0.2f) = %0.1f, p = %0.', p_sigdig, 'f'),
-            N, anlrt[result_row,'Df diff'], 
-            anlrt[result_row,'Chisq'], 
-            anlrt[result_row,'Pr(>Chisq)'])
-}
-
 fsmi_num_partners_lrt
 fsmi_num_partners_all_lrt
 uppsp_fsmi_partners_lrt
@@ -3645,6 +3664,8 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
                                                        ksrq_num_partners_null_all_sem)
     ksrq_num_partners_admrtn_lrt <- lavaan::lavTestLRT(ksrq_num_partners_sem,
                                                        ksrq_noadmrtn_num_partners_sem)
+    ksrq_num_partners_admrtn_all_lrt <- lavaan::lavTestLRT(ksrq_num_partners_all_sem,
+                                                       ksrq_noadmrtn_num_partners_all_sem)
     uppsp_ksrq_num_partners_lrt <- lavaan::lavTestLRT(uppsp_ksrq_num_partners_sem,
                                                       uppsp_ksrq_nosr_num_partners_sem)
     uppsp_ksrq_num_partners_all_lrt <- lavaan::lavTestLRT(uppsp_ksrq_num_partners_all__sem,
@@ -3663,6 +3684,7 @@ if(!file.exists(fsmi_num_partners_modelsFN)){
          ksrq_num_partners_null_lrt,
          ksrq_num_partners_null_all_lrt,
          ksrq_num_partners_admrtn_lrt,
+         ksrq_num_partners_admrtn_all_lrt,
          uppsp_ksrq_num_partners_lrt,
          uppsp_ksrq_num_partners_all_lrt,
          file = ksrq_num_partners_modelsFN)
@@ -3920,8 +3942,24 @@ No $\chi^2$ tests satisfy the $\alpha = .005$ cutoff. The biggest association is
 fsmi_sex_freq_model <- paste(fsmi_cfa_matestat_model, 
                              'ordered_sex_freq ~ fsmi_mate + gender_c', sep = '\n')
 
+fsmi_sex_freq_null_model <- paste(fsmi_cfa_matestat_model, 
+                                  'ordered_sex_freq ~ 0*fsmi_mate + gender_c', sep = '\n')
+
 sensseek_urgency_cfa <- milav::create_cfa_from_keylist(
     upps_key[c('pos_urgency','sensation_seeking','neg_urgency')])
+
+test_data <- splt_fsmi_devdemog[
+    splt_fsmi_devdemog$partnered == 0 &
+        grepl('yads', splt_fsmi_devdemog$sample),
+    c('ordered_sex_freq',
+      unlist(milav::get_items_from_keys(
+          upps_key[c('pos_urgency','sensation_seeking','neg_urgency')])),
+      unlist(milav::get_items_from_keys(fsmi_key$fsmi_mate)),
+      'gender_c')]
+test_data$ordered_sex_freq <- as.numeric(test_data$ordered_sex_freq)
+readr::write_tsv(test_data, path = '/data/jflournoy/split/probly/test.tsv', 
+                 col_names = F, na = '-9999')
+readr::write_lines(names(test_data), path = '/data/jflournoy/split/probly/test_names.txt')
 
 uppsp_fsmi_sfreq_model <- paste(
     sensseek_urgency_cfa,
@@ -3984,7 +4022,6 @@ if(!file.exists(fsmi_sex_freq_modelsFN)){
         auto.fix.single = TRUE, auto.var = TRUE, 
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
-    
     fsmi_sex_freq_all_sem <- lavaan::lavaan(
         model = fsmi_sex_freq_model, 
         data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
@@ -3993,7 +4030,29 @@ if(!file.exists(fsmi_sex_freq_modelsFN)){
         auto.fix.first = T, std.lv = F, 
         auto.fix.single = TRUE, auto.var = TRUE, 
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'partnered', group.equal = 'loadings')
+    
+    fsmi_sex_freq_null_sem <- lavaan::lavaan(
+        model = fsmi_sex_freq_null_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
+    fsmi_sex_freq_null_all_sem <- lavaan::lavaan(
+        model = fsmi_sex_freq_null_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'partnered', group.equal = 'loadings')
     
     uppsp_fsmi_sfreq_all_sem <- lavaan::lavaan(
         model = uppsp_fsmi_sfreq_model, 
@@ -4092,6 +4151,11 @@ if(!file.exists(fsmi_sex_freq_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
+    fsmi_sfreq_lrt <- lavaan::lavTestLRT(fsmi_sex_freq_sem,
+                                         fsmi_sex_freq_null_sem)
+    # fsmi_sfreq_all_lrt <- lavaan::lavTestLRT(fsmi_sex_freq_all_sem,
+    #                                      fsmi_sex_freq_null_all_sem)
+    # 
     uppsp_fsmi_sfreq_all_lrt <- lavaan::lavTestLRT(uppsp_fsmi_sfreq_all_sem,
                                                    uppsp_fsmi_sfreq_all_noupps_sem)
     
@@ -4117,6 +4181,9 @@ if(!file.exists(fsmi_sex_freq_modelsFN)){
     
     save(fsmi_sex_freq_sem,
          fsmi_sex_freq_all_sem,
+         fsmi_sex_freq_null_sem,
+         fsmi_sex_freq_null_all_sem,
+         fsmi_sfreq_lrt,
          uppsp_fsmi_sfreq_sem,
          uppsp_fsmi_sfreq_all_sem,
          uppsp_fsmi_sfreq_noupps_sem,
@@ -4150,6 +4217,7 @@ fsmi_sex_freq_all_sem_sfreq <- fsmi_sex_freq_all_sem_sfreq_[fsmi_sex_freq_all_se
 ```
 
 ```{r fig.width=3.25, fig.height=2}
+fsmi_sfreq_lrt
 uppsp_fsmi_sfreq_lrt
 uppsp_fsmi_sfreq_lrt2
 uppsp_fsmi_sfreq_lrtpurg
@@ -4305,6 +4373,17 @@ if(!file.exists(fsmi_sex_freq_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
+    ksrq_noadmrtn_sex_grp_partnered_freq_sem <- lavaan::lavaan(
+        model = ksrq_noadmrtn_sex_freq_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE,
+        group = 'partnered', group.equal = 'loadings')
+    
     ksrq_noadmrtn_sex_freq_all_sem <- lavaan::lavaan(
         model = ksrq_noadmrtn_sex_freq_all_model, 
         data = splt_fsmi_devdemog,
@@ -4362,7 +4441,9 @@ if(!file.exists(fsmi_sex_freq_modelsFN)){
     ksrq_sex_freq_null_all_lrt <- lavaan::lavTestLRT(ksrq_noadmrtn_sex_freq_all_sem,
                                                        ksrq_sex_freq_null_all_sem)
     ksrq_sex_freq_admrtn_lrt <- lavaan::lavTestLRT(ksrq_sex_freq_sem,
-                                                       ksrq_noadmrtn_sex_freq_sem)
+                                                   ksrq_noadmrtn_sex_freq_sem)
+    ksrq_sex_freq_admrtn_all_lrt <- lavaan::lavTestLRT(ksrq_sex_freq_all_sem,
+                                                       ksrq_noadmrtn_sex_freq_all_sem)
     uppsp_ksrq_sex_freq_lrt <- lavaan::lavTestLRT(uppsp_ksrq_sex_freq_sem,
                                                       uppsp_ksrq_nosr_sex_freq_sem)
     uppsp_ksrq_sex_freq_all_lrt <- lavaan::lavTestLRT(uppsp_ksrq_sex_freq_all__sem,
@@ -4374,6 +4455,7 @@ if(!file.exists(fsmi_sex_freq_modelsFN)){
          ksrq_sex_freq_null_all_sem,
          ksrq_noadmrtn_sex_freq_sem,
          ksrq_noadmrtn_sex_freq_all_sem,
+         ksrq_noadmrtn_sex_grp_partnered_freq_sem,
          uppsp_ksrq_sex_freq_sem,
          uppsp_ksrq_nosr_sex_freq_sem,
          uppsp_ksrq_sex_freq_all__sem,
@@ -4381,6 +4463,7 @@ if(!file.exists(fsmi_sex_freq_modelsFN)){
          ksrq_sex_freq_null_lrt,
          ksrq_sex_freq_null_all_lrt,
          ksrq_sex_freq_admrtn_lrt,
+         ksrq_sex_freq_admrtn_all_lrt,
          uppsp_ksrq_sex_freq_lrt,
          uppsp_ksrq_sex_freq_all_lrt,
          file = ksrq_sex_freq_modelsFN)
@@ -4416,6 +4499,7 @@ ggplot2::qplot(ksrq_sex_freq_all_sem_pred[,'k_srq_sexual_relationships'],
 ksrq_sex_freq_null_lrt
 ksrq_sex_freq_null_all_lrt
 ksrq_sex_freq_admrtn_lrt
+ksrq_sex_freq_admrtn_all_lrt
 uppsp_ksrq_sex_freq_lrt
 uppsp_ksrq_sex_freq_all_lrt
 
@@ -4622,13 +4706,16 @@ Again, no $\chi^2$ tests satisfy the $\alpha = .005$ cutoff. The biggest associa
 
 ### Using protection
 
-### FSMI mate seeking
+#### FSMI mate seeking
 
 ```{r fig.width=4, fig.height=4}
 splt_fsmi_devdemog$continuous_use_protection <- as.numeric(splt_fsmi_devdemog$ordered_use_protection)
 
 fsmi_use_protection_model <- paste(fsmi_cfa_matestat_model, 
                              'continuous_use_protection ~ fsmi_mate + gender_c', sep = '\n')
+
+fsmi_use_protection_null_model <- paste(fsmi_cfa_matestat_model, 
+                             'continuous_use_protection ~ 0*fsmi_mate + gender_c', sep = '\n')
 
 sensseek_urgency_cfa <- milav::create_cfa_from_keylist(
     upps_key[c('pos_urgency','sensation_seeking','neg_urgency')])
@@ -4705,6 +4792,29 @@ if(!file.exists(fsmi_use_protection_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
+    fsmi_use_protection_null_sem <- lavaan::lavaan(
+        model = fsmi_use_protection_null_model, 
+        data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
+                                      grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    fsmi_use_protection_all_null_sem <- lavaan::lavaan(
+        model = fsmi_use_protection_null_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
+    
+    
     uppsp_fsmi_uprot_all_sem <- lavaan::lavaan(
         model = uppsp_fsmi_uprot_model, 
         data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
@@ -4758,6 +4868,16 @@ if(!file.exists(fsmi_use_protection_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
+    uppsp_fsmi_uprot_all_nofsmi_sem <- lavaan::lavaan(
+        model = uppsp_fsmi_uprot_nofsmi_model, 
+        data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
+        missing = 'fiml', estimator = 'ML',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, 
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
     uppsp_fsmi_uprot_nopurg_sem <- lavaan::lavaan(
         model = uppsp_fsmi_uprot_nopurg_model, 
         data = splt_fsmi_devdemog[splt_fsmi_devdemog$partnered == 0 &
@@ -4802,8 +4922,16 @@ if(!file.exists(fsmi_use_protection_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
+    fsmi_uprot_lrt <- lavaan::lavTestLRT(fsmi_use_protection_sem,
+                                             fsmi_use_protection_null_sem)
+    fsmi_uprot_all_lrt <- lavaan::lavTestLRT(fsmi_use_protection_all_sem,
+                                             fsmi_use_protection_all_null_sem)
+    
     uppsp_fsmi_uprot_all_lrt <- lavaan::lavTestLRT(uppsp_fsmi_uprot_all_sem,
                                                    uppsp_fsmi_uprot_all_noupps_sem)
+    
+    uppsp_fsmi_uprot_all_lrt2 <- lavaan::lavTestLRT(uppsp_fsmi_uprot_all_sem,
+                                                   uppsp_fsmi_uprot_all_nofsmi_sem)
     
     uppsp_fsmi_uprot_lrt <- lavaan::lavTestLRT(uppsp_fsmi_uprot_sem,
                                                uppsp_fsmi_uprot_noupps_sem,
@@ -4827,6 +4955,10 @@ if(!file.exists(fsmi_use_protection_modelsFN)){
     
     save(fsmi_use_protection_sem,
          fsmi_use_protection_all_sem,
+         fsmi_use_protection_null_sem,
+         fsmi_use_protection_all_null_sem,
+         fsmi_uprot_lrt,
+         fsmi_uprot_all_lrt,
          uppsp_fsmi_uprot_sem,
          uppsp_fsmi_uprot_all_sem,
          uppsp_fsmi_uprot_noupps_sem,
@@ -4835,9 +4967,10 @@ if(!file.exists(fsmi_use_protection_modelsFN)){
          uppsp_fsmi_uprot_nonurg_sem,
          uppsp_fsmi_uprot_noss_sem,
          uppsp_fsmi_uprot_null_sem,
-         uppsp_fsmi_uprot_all_sem,
          uppsp_fsmi_uprot_all_noupps_sem,
+         uppsp_fsmi_uprot_all_nofsmi_sem,
          uppsp_fsmi_uprot_all_lrt,
+         uppsp_fsmi_uprot_all_lrt2,
          uppsp_fsmi_uprot_lrt,
          uppsp_fsmi_uprot_lrt2,
          uppsp_fsmi_uprot_lrtpurg,
@@ -4860,6 +4993,8 @@ fsmi_use_protection_all_sem_uprot <- fsmi_use_protection_all_sem_uprot_[fsmi_use
 ```
 
 ```{r fig.width=3.25, fig.height=2}
+fsmi_uprot_lrt
+fsmi_uprot_all_lrt
 uppsp_fsmi_uprot_lrt
 uppsp_fsmi_uprot_lrt2
 uppsp_fsmi_uprot_lrtpurg
@@ -5075,6 +5210,8 @@ if(!file.exists(fsmi_use_protection_modelsFN)){
                                                        ksrq_use_protection_null_all_sem)
     ksrq_use_protection_admrtn_lrt <- lavaan::lavTestLRT(ksrq_use_protection_sem,
                                                        ksrq_noadmrtn_use_protection_sem)
+    ksrq_use_protection_admrtn_all_lrt <- lavaan::lavTestLRT(ksrq_use_protection_all_sem,
+                                                             ksrq_noadmrtn_use_protection_all_sem)
     uppsp_ksrq_use_protection_lrt <- lavaan::lavTestLRT(uppsp_ksrq_use_protection_sem,
                                                       uppsp_ksrq_nosr_use_protection_sem)
     uppsp_ksrq_use_protection_all_lrt <- lavaan::lavTestLRT(uppsp_ksrq_use_protection_all__sem,
@@ -5093,6 +5230,7 @@ if(!file.exists(fsmi_use_protection_modelsFN)){
          ksrq_use_protection_null_lrt,
          ksrq_use_protection_null_all_lrt,
          ksrq_use_protection_admrtn_lrt,
+         ksrq_use_protection_admrtn_all_lrt,
          uppsp_ksrq_use_protection_lrt,
          uppsp_ksrq_use_protection_all_lrt,
          file = ksrq_use_protection_modelsFN)
@@ -5128,6 +5266,7 @@ ggplot2::qplot(ksrq_use_protection_all_sem_pred[,'k_srq_sexual_relationships'],
 ksrq_use_protection_null_lrt
 ksrq_use_protection_null_all_lrt
 ksrq_use_protection_admrtn_lrt
+ksrq_use_protection_admrtn_all_lrt
 uppsp_ksrq_use_protection_lrt
 uppsp_ksrq_use_protection_all_lrt
 
@@ -5539,6 +5678,7 @@ fsmi_alc_days_sem_alcdays <- fsmi_alc_days_sem_alcdays_[fsmi_alc_days_sem@Data@c
 ```
 
 ```{r fig.width=3.25, fig.height=2}
+fsmi_alcdays_lrt
 uppsp_fsmi_alcdays_lrt
 uppsp_fsmi_alcdays_lrt2
 uppsp_fsmi_alcdays_lrtpurg
@@ -5573,8 +5713,16 @@ knitr::kable(
         lavaan::nobs(uppsp_fsmi_alcdays_sem)))
 ```
 
-In the college student sample, model fit does not decrease significantly when the association between number of drinking days and FSMI Status is fixed to 0 for any model.
-However, comparing the model that includes FSMI Status along with UPPS-P Sensation Seeking, and Negative and Positive Urgency to the same model with the coefficient for Sensation Seeking fixed to 0 shows significant fit decrease.
+The following models test whether drinking behavior is associated with FSMI Status, or K-SRQ Admiration variables.
+As above, initial models include both the focal motive variable and gender, which are compared to models in which the coefficient for the motive variable is fixed to zero.
+Significant decrease in fit is taken as evidence for an association between the motive variable and the behavioral outcome.
+
+In the next step, the initial model is augmented by adding UPPS-P Sensation Seeking, Positive Urgency, and Negative Urgency, with the same constraint of the focal motive variable tested.
+Significant difference in fit here indicates that the focal motive is associated with the outcome even when conditioning on (or perhaps because of this conditioning) the UPPS-P impulsivity and sensation-seeking variables.
+
+For the K-SRQ, an additional test is made by including the Sociability variable in the regression.
+Significant decrease in fit when the coefficient for this variable is fixed to zero indicates that it has an association with the behavioral outcome over and above the variance it shares with the Admiration variable.
+The coefficients between the unconstrained and constrained model will also be examined.
 
 ### K-SRQ Admiration
 
@@ -5593,6 +5741,9 @@ ksrq_nosoc_alc_days_model <- paste(ksrq_model,
                                  'alcohol_days_of_lst30 ~ k_srq_admiration + 0*k_srq_sociability + gender_c', sep = '\n')
 ksrq_nosoc_alc_days_all_model <- paste(ksrq_model, 
                                  'alcohol_days_of_lst30 ~ k_srq_admiration + 0*k_srq_sociability + gender_c + age_c', sep = '\n')
+
+ksrq_justsoc_alc_days_all_model <- paste(ksrq_model, 
+                                 'alcohol_days_of_lst30 ~ 0*k_srq_admiration + k_srq_sociability + gender_c + age_c', sep = '\n')
 
 uppsp_ksrq_alc_days_model <- paste(
     ksrq_model,
@@ -5680,6 +5831,16 @@ if(!file.exists(fsmi_alc_days_modelsFN)){
         auto.cov.lv.x = TRUE, auto.th = TRUE, 
         auto.delta = TRUE, auto.cov.y = TRUE)
     
+    ksrq_justsoc_alc_days_all_sem <- lavaan::lavaan(
+        model = ksrq_justsoc_alc_days_all_model, 
+        data = splt_fsmi_devdemog,
+        missing = 'listwise', estimator = 'WLSMV',
+        int.ov.free = TRUE, int.lv.free = FALSE, 
+        auto.fix.first = T, std.lv = F, std.ov = F,
+        auto.fix.single = TRUE, auto.var = TRUE, 
+        auto.cov.lv.x = TRUE, auto.th = TRUE, 
+        auto.delta = TRUE, auto.cov.y = TRUE)
+    
     uppsp_ksrq_alc_days_sem <- lavaan::lavaan(
         model = uppsp_ksrq_alc_days_model, 
         data = splt_fsmi_devdemog[grepl('yads', splt_fsmi_devdemog$sample),],
@@ -5724,8 +5885,12 @@ if(!file.exists(fsmi_alc_days_modelsFN)){
                                                        ksrq_alc_days_null_sem)
     ksrq_alc_days_null_all_lrt <- lavaan::lavTestLRT(ksrq_nosoc_alc_days_all_sem,
                                                        ksrq_alc_days_null_all_sem)
+    ksrq_alc_days_socadm_all_lrt <- lavaan::lavTestLRT(ksrq_justsoc_alc_days_all_sem,
+                                                       ksrq_alc_days_all_sem)
     ksrq_alc_days_admrtn_lrt <- lavaan::lavTestLRT(ksrq_alc_days_sem,
                                                        ksrq_nosoc_alc_days_sem)
+    ksrq_alc_days_admrtn_all_lrt <- lavaan::lavTestLRT(ksrq_alc_days_all_sem,
+                                                       ksrq_nosoc_alc_days_all_sem)
     uppsp_ksrq_alc_days_lrt <- lavaan::lavTestLRT(uppsp_ksrq_alc_days_sem,
                                                       uppsp_ksrq_nosr_alc_days_sem)
     uppsp_ksrq_alc_days_all_lrt <- lavaan::lavTestLRT(uppsp_ksrq_alc_days_all__sem,
@@ -5737,6 +5902,8 @@ if(!file.exists(fsmi_alc_days_modelsFN)){
          ksrq_alc_days_null_all_sem,
          ksrq_nosoc_alc_days_sem,
          ksrq_nosoc_alc_days_all_sem,
+         ksrq_justsoc_alc_days_all_sem,
+         ksrq_alc_days_socadm_all_lrt,
          uppsp_ksrq_alc_days_sem,
          uppsp_ksrq_nosr_alc_days_sem,
          uppsp_ksrq_alc_days_all__sem,
@@ -5744,6 +5911,7 @@ if(!file.exists(fsmi_alc_days_modelsFN)){
          ksrq_alc_days_null_lrt,
          ksrq_alc_days_null_all_lrt,
          ksrq_alc_days_admrtn_lrt,
+         ksrq_alc_days_admrtn_all_lrt,
          uppsp_ksrq_alc_days_lrt,
          uppsp_ksrq_alc_days_all_lrt,
          file = ksrq_alc_days_modelsFN)
@@ -5778,6 +5946,7 @@ ggplot2::qplot(ksrq_alc_days_all_sem_pred[,'k_srq_admiration'],
 ksrq_alc_days_null_lrt
 ksrq_alc_days_null_all_lrt
 ksrq_alc_days_admrtn_lrt
+ksrq_alc_days_admrtn_all_lrt
 uppsp_ksrq_alc_days_lrt
 uppsp_ksrq_alc_days_all_lrt
 
@@ -6375,6 +6544,8 @@ if(!file.exists(fsmi_alc_5drnk_modelsFN)){
                                                        ksrq_alc_5drnk_null_all_sem)
     ksrq_alc_5drnk_admrtn_lrt <- lavaan::lavTestLRT(ksrq_alc_5drnk_sem,
                                                        ksrq_nosoc_alc_5drnk_sem)
+    ksrq_alc_5drnk_admrtn_all_lrt <- lavaan::lavTestLRT(ksrq_alc_5drnk_all_sem,
+                                                    ksrq_nosoc_alc_5drnk_all_sem)
     uppsp_ksrq_alc_5drnk_lrt <- lavaan::lavTestLRT(uppsp_ksrq_alc_5drnk_sem,
                                                       uppsp_ksrq_nosr_alc_5drnk_sem)
     uppsp_ksrq_alc_5drnk_all_lrt <- lavaan::lavTestLRT(uppsp_ksrq_alc_5drnk_all__sem,
@@ -6393,6 +6564,7 @@ if(!file.exists(fsmi_alc_5drnk_modelsFN)){
          ksrq_alc_5drnk_null_lrt,
          ksrq_alc_5drnk_null_all_lrt,
          ksrq_alc_5drnk_admrtn_lrt,
+         ksrq_alc_5drnk_admrtn_all_lrt,
          uppsp_ksrq_alc_5drnk_lrt,
          uppsp_ksrq_alc_5drnk_all_lrt,
          file = ksrq_alc_5drnk_modelsFN)
@@ -6427,6 +6599,7 @@ ggplot2::qplot(ksrq_alc_5drnk_all_sem_pred[,'k_srq_admiration'],
 ksrq_alc_5drnk_null_lrt
 ksrq_alc_5drnk_null_all_lrt
 ksrq_alc_5drnk_admrtn_lrt
+ksrq_alc_5drnk_admrtn_all_lrt
 uppsp_ksrq_alc_5drnk_lrt
 uppsp_ksrq_alc_5drnk_all_lrt
 
@@ -6602,9 +6775,18 @@ splt_alc_5drnk_chisqp <- lapply(splt_alc_5drnk_sems,
        function(splt_alc_5drnk_sem){
            print(splt_alc_5drnk_sem$splt_alc_5drnk_lrt)
            print(splt_alc_5drnk_sem$splt_alc_5drnk_all_lrt)
+           chisq <- splt_alc_5drnk_sem$splt_alc_5drnk_lrt[2,'Chisq diff']
+           df <- splt_alc_5drnk_sem$splt_alc_5drnk_lrt[2,'Df diff']
            p <- splt_alc_5drnk_sem$splt_alc_5drnk_lrt[2,'Pr(>Chisq)']
+           chisq_all <- splt_alc_5drnk_sem$splt_alc_5drnk_all_lrt[2,'Chisq diff']
+           df_all <- splt_alc_5drnk_sem$splt_alc_5drnk_all_lrt[2,'Df diff']
            p_all <- splt_alc_5drnk_sem$splt_alc_5drnk_all_lrt[2,'Pr(>Chisq)']
-           return(c(p = p , p_all = p_all))
+           return(c(chisq = chisq,
+                    df = df,
+                    p = p, 
+                    chisq_all = chisq_all,
+                    df_all = df_all,
+                    p_all = p_all))
        })
 
 nada <- lapply(seq_along(splt_alc_5drnk_sems),
@@ -6629,6 +6811,78 @@ nada <- lapply(seq_along(splt_alc_5drnk_sems),
        })
 ```
 Again, no $\chi^2$ tests satisfy the $\alpha = .005$ cutoff. The largest effect size is with the $\epsilon$ contrast variable, but it has the wrong sign, with higher learning rates in the Popular/Unpopular condition (relative to baseline) being associated with fewer numbers of heavy drinking days.
+
+
+```{r}
+splt_sems <- lapply(ls(pattern = 'splt_.*_sems$'), function(a) {
+    sems <- eval(parse(text = a))
+    chisqs <- lapply(seq_along(sems), function(i){
+        if(!'try-error' %in% class(sems[[i]])){
+            return(c(splt_var = names(sems)[[i]],
+                     get_chisq_tests(sems[[i]], verbose = F)))
+        }
+    })
+    chisqs_df <- as.data.frame(do.call(rbind, chisqs))
+    return(chisqs_df)
+})
+names(splt_sems) <- ls(pattern = 'splt_.*_sems$')
+splt_sems_df <- dplyr::bind_rows(splt_sems, .id = 'outcome_var')
+
+outcomevar_labels <- c(
+    'splt_num_partners_sems' = 'Number of partners',
+    'splt_sex_freq_sems' = 'Number sexual encounters',
+    'splt_use_protection_sems' = 'Safe sex practice',
+    'splt_alc_days_sems' = 'Days with 1+ drinks',
+    'splt_alc_5drnk_sems' = 'Days with 5+ drinks'
+)
+
+outcomevar_con_labels <- c(
+    'splt_num_partners_sems' = 'Dating/Looking',
+    'splt_sex_freq_sems' = 'Dating/Looking',
+    'splt_use_protection_sems' = 'Dating/Looking',
+    'splt_alc_5drnk_sems' = 'Popular/Unpopular',
+    'splt_alc_days_sems' = 'Popular/Unpopular'
+)
+
+splt_param_labels_plaintext_sems <- sub('(First|Last)-half optimal responses', 
+                                        '\\1 1/2 $p_{\\\\text{opt}}$', 
+                                        splt_param_labels_plaintext)
+
+splt_sems_df_4table <- dplyr::select(
+    dplyr::arrange(
+        dplyr::mutate(
+            splt_sems_df,
+            chisq = sprintf('%0.1f', as.numeric(chisq)),
+            p = sub('^0\\.', '.', sprintf('%0.2f', as.numeric(p))),
+            chisq_all = sprintf('%0.1f', as.numeric(chisq_all)),
+            p_all = sub('^0\\.', '.', sprintf('%0.2f', as.numeric(p_all))),
+            splt_var = splt_param_labels_plaintext_sems[splt_var],
+            contrast = outcomevar_con_labels[outcome_var],
+            ordernum = as.numeric(factor(outcomevar_labels[outcome_var], 
+                                         levels = outcomevar_labels)),
+            outcome_var = outcomevar_labels[outcome_var],
+            togroup = outcome_var),
+        ordernum),
+    togroup, contrast, outcome_var, splt_var, chisq, p, chisq_all, p_all)
+
+splt_sems_df_4table <- dplyr::mutate(
+    dplyr::group_by(splt_sems_df_4table, togroup),
+    outcome_var = c(outcome_var[[1]], 
+                    'SPLT contrast: ',
+                    contrast[[1]],
+                    rep('', n()-3)))
+
+knitr::kable(splt_sems_df_4table[,-(1:2)],
+             col.names = c('Behavior variable',
+                           'SPLT variable',
+                           '$\\Delta\\chi_{\\text{ltd}}^{2}$',
+                           '$p_{\\text{ltd}}$',
+                           '$\\Delta\\chi_{\\text{full}}^{2}$',
+                           '$p_{\\text{full}}$'),
+             align = c('l', 'l', 'r', 'r', 'r', 'r'))
+```
+
+$\Delta\chi^2$
 
 # References
 
