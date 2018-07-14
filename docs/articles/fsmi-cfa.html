@@ -5510,16 +5510,6 @@ In other words, the expected difference in number of sexual partners a one point
 #&gt; fsmi_sex_freq_null_sem 77         62.718     1.7438       1     0.1867
 #&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
-#&gt;                            Df AIC BIC   Chisq Chisq diff Df diff
-#&gt; fsmi_sex_freq_all_sem      76          68.946                   
-#&gt; fsmi_sex_freq_null_all_sem 77         122.563     16.057       1
-#&gt;                            Pr(&gt;Chisq)    
-#&gt; fsmi_sex_freq_all_sem                    
-#&gt; fsmi_sex_freq_null_all_sem  6.147e-05 ***
-#&gt; ---
-#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
-#&gt; 
 #&gt;                              Df AIC BIC  Chisq Chisq diff Df diff
 #&gt; uppsp_fsmi_sfreq_sem        980         1220.0                   
 #&gt; uppsp_fsmi_sfreq_noupps_sem 983         1286.9    13.1532  2.2516
@@ -5626,6 +5616,7 @@ In other words, the expected difference in number of sexual partners a one point
 <th align="left">lhs</th>
 <th align="left">op</th>
 <th align="left">rhs</th>
+<th align="right">group</th>
 <th align="right">est.std</th>
 <th align="right">se</th>
 <th align="right">z</th>
@@ -5638,23 +5629,49 @@ In other words, the expected difference in number of sexual partners a one point
 <td align="left">ordered_sex_freq</td>
 <td align="left">~</td>
 <td align="left">fsmi_mate</td>
-<td align="right">-0.32</td>
-<td align="right">0.07</td>
-<td align="right">-4.81</td>
-<td align="right">0.00</td>
-<td align="right">-0.45</td>
-<td align="right">-0.19</td>
+<td align="right">1</td>
+<td align="right">-0.11</td>
+<td align="right">0.08</td>
+<td align="right">-1.30</td>
+<td align="right">0.19</td>
+<td align="right">-0.26</td>
+<td align="right">0.05</td>
 </tr>
 <tr class="even">
 <td align="left">ordered_sex_freq</td>
 <td align="left">~</td>
 <td align="left">gender_c</td>
-<td align="right">-0.15</td>
+<td align="right">1</td>
+<td align="right">-0.22</td>
 <td align="right">0.08</td>
-<td align="right">-1.98</td>
-<td align="right">0.05</td>
-<td align="right">-0.30</td>
-<td align="right">0.00</td>
+<td align="right">-2.64</td>
+<td align="right">0.01</td>
+<td align="right">-0.38</td>
+<td align="right">-0.06</td>
+</tr>
+<tr class="odd">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">fsmi_mate</td>
+<td align="right">2</td>
+<td align="right">-0.06</td>
+<td align="right">0.15</td>
+<td align="right">-0.39</td>
+<td align="right">0.69</td>
+<td align="right">-0.36</td>
+<td align="right">0.24</td>
+</tr>
+<tr class="even">
+<td align="left">ordered_sex_freq</td>
+<td align="left">~</td>
+<td align="left">gender_c</td>
+<td align="right">2</td>
+<td align="right">-0.03</td>
+<td align="right">0.16</td>
+<td align="right">-0.16</td>
+<td align="right">0.88</td>
+<td align="right">-0.34</td>
+<td align="right">0.29</td>
 </tr>
 </tbody>
 </table>
@@ -5906,6 +5923,16 @@ The association was not examined in partnered college students because the Mate-
 #&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
 #&gt; ksrq_sex_freq_sem          83         46.868                              
 #&gt; ksrq_noadmrtn_sex_freq_sem 84         48.602      1.385       1     0.2392
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                                Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; ksrq_sex_freq_all_sem          96         138.44                   
+#&gt; ksrq_noadmrtn_sex_freq_all_sem 97         146.04     6.8893       1
+#&gt;                                Pr(&gt;Chisq)   
+#&gt; ksrq_sex_freq_all_sem                       
+#&gt; ksrq_noadmrtn_sex_freq_all_sem   0.008671 **
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
 #&gt;                                Df AIC BIC  Chisq Chisq diff Df diff
@@ -6775,11 +6802,26 @@ As above, the coefficient for the Admiration scale is large and negative when co
 <div id="using-protection" class="section level3">
 <h3 class="hasAnchor">
 <a href="#using-protection" class="anchor"></a>Using protection</h3>
-</div>
-<div id="fsmi-mate-seeking-2" class="section level3">
-<h3 class="hasAnchor">
-<a href="#fsmi-mate-seeking-2" class="anchor"></a>FSMI mate seeking</h3>
+<div id="fsmi-mate-seeking-2" class="section level4">
+<h4 class="hasAnchor">
+<a href="#fsmi-mate-seeking-2" class="anchor"></a>FSMI mate seeking</h4>
 <pre><code>#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                              Df    AIC    BIC  Chisq Chisq diff Df diff
+#&gt; fsmi_use_protection_sem      76 7414.4 7541.5 106.51                   
+#&gt; fsmi_use_protection_null_sem 77 7412.4 7536.4 106.51   0.001217       1
+#&gt;                              Pr(&gt;Chisq)
+#&gt; fsmi_use_protection_sem                
+#&gt; fsmi_use_protection_null_sem     0.9722
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                                  Df   AIC   BIC  Chisq Chisq diff Df diff
+#&gt; fsmi_use_protection_all_sem      76 10375 10515 111.75                   
+#&gt; fsmi_use_protection_all_null_sem 77 10373 10510 111.77     0.0152       1
+#&gt;                                  Pr(&gt;Chisq)
+#&gt; fsmi_use_protection_all_sem                
+#&gt; fsmi_use_protection_all_null_sem     0.9019
+#&gt; Chi Square Difference Test
 #&gt; 
 #&gt;                              Df   AIC   BIC  Chisq Chisq diff Df diff
 #&gt; uppsp_fsmi_uprot_sem        980 16217 16666 1830.9                   
@@ -7128,6 +7170,7 @@ As above, the coefficient for the Admiration scale is large and negative when co
 <p>There estimate of the association between FSMI Mate-seeking and safe sex practices for unpartnered college students is very close to 0 (<span class="math inline">\(\beta = -0.003\)</span>, 95% CI = [-0.20,0.19]).
 Fixing the coefficient for this association to 0 did not result in significant reduction in fit in any model specification</p>
 </div>
+</div>
 <div id="k-srq-sexual-relationships-1" class="section level3">
 <h3 class="hasAnchor">
 <a href="#k-srq-sexual-relationships-1" class="anchor"></a>K-SRQ sexual relationships</h3>
@@ -7156,6 +7199,14 @@ Fixing the coefficient for this association to 0 did not result in significant r
 #&gt;                                  Df diff Pr(&gt;Chisq)
 #&gt; ksrq_use_protection_sem                            
 #&gt; ksrq_noadmrtn_use_protection_sem       1     0.6346
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                                      Df   AIC   BIC Chisq Chisq diff
+#&gt; ksrq_use_protection_all_sem          96 16004 16198 250.7           
+#&gt; ksrq_noadmrtn_use_protection_all_sem 97 16002 16192 250.9    0.19844
+#&gt;                                      Df diff Pr(&gt;Chisq)
+#&gt; ksrq_use_protection_all_sem                            
+#&gt; ksrq_noadmrtn_use_protection_all_sem       1      0.656
 #&gt; Chi Square Difference Test
 #&gt; 
 #&gt;                                      Df   AIC   BIC  Chisq Chisq diff
@@ -7890,6 +7941,11 @@ Fixing the coefficient for this association to 0 did not result in significant r
 <a href="#fsmi-status" class="anchor"></a>FSMI Status</h3>
 <pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; fsmi_alc_days_sem      76         77.952                              
+#&gt; fsmi_alc_days_null_sem 77         78.719    0.33328       1     0.5637
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
 #&gt;                                Df AIC BIC  Chisq Chisq diff Df diff
 #&gt; uppsp_fsmi_alcdays_sem        980         1552.2                   
 #&gt; uppsp_fsmi_alcdays_noupps_sem 983         1597.1     7.2994  1.8631
@@ -8177,8 +8233,14 @@ Fixing the coefficient for this association to 0 did not result in significant r
 </tr>
 </tbody>
 </table>
-<p>In the college student sample, model fit does not decrease significantly when the association between number of drinking days and FSMI Status is fixed to 0 for any model.
-However, comparing the model that includes FSMI Status along with UPPS-P Sensation Seeking, and Negative and Positive Urgency to the same model with the coefficient for Sensation Seeking fixed to 0 shows significant fit decrease.</p>
+<p>The following models test whether drinking behavior is associated with FSMI Status, or K-SRQ Admiration variables.
+As above, initial models include both the focal motive variable and gender, which are compared to models in which the coefficient for the motive variable is fixed to zero.
+Significant decrease in fit is taken as evidence for an association between the motive variable and the behavioral outcome.</p>
+<p>In the next step, the initial model is augmented by adding UPPS-P Sensation Seeking, Positive Urgency, and Negative Urgency, with the same constraint of the focal motive variable tested.
+Significant difference in fit here indicates that the focal motive is associated with the outcome even when conditioning on (or perhaps because of this conditioning) the UPPS-P impulsivity and sensation-seeking variables.</p>
+<p>For the K-SRQ, an additional test is made by including the Sociability variable in the regression.
+Significant decrease in fit when the coefficient for this variable is fixed to zero indicates that it has an association with the behavioral outcome over and above the variance it shares with the Admiration variable.
+The coefficients between the unconstrained and constrained model will also be examined.</p>
 </div>
 <div id="k-srq-admiration" class="section level3">
 <h3 class="hasAnchor">
@@ -8212,6 +8274,16 @@ However, comparing the model that includes FSMI Status along with UPPS-P Sensati
 #&gt;                            
 #&gt; ksrq_alc_days_sem          
 #&gt; ksrq_nosoc_alc_days_sem ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                             Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; ksrq_alc_days_all_sem       96         166.65                   
+#&gt; ksrq_nosoc_alc_days_all_sem 97         193.25       21.1       1
+#&gt;                             Pr(&gt;Chisq)    
+#&gt; ksrq_alc_days_all_sem                     
+#&gt; ksrq_nosoc_alc_days_all_sem  4.358e-06 ***
 #&gt; ---
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
@@ -9369,6 +9441,16 @@ However, as above, comparing the model that includes FSMI Status along with UPPS
 #&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
 #&gt; 
+#&gt;                              Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; ksrq_alc_5drnk_all_sem       96         164.31                   
+#&gt; ksrq_nosoc_alc_5drnk_all_sem 97         193.52     20.601       1
+#&gt;                              Pr(&gt;Chisq)    
+#&gt; ksrq_alc_5drnk_all_sem                     
+#&gt; ksrq_nosoc_alc_5drnk_all_sem  5.657e-06 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
 #&gt;                                 Df AIC BIC  Chisq Chisq diff Df diff
 #&gt; uppsp_ksrq_alc_5drnk_sem      1301         1774.4                   
 #&gt; uppsp_ksrq_nosr_alc_5drnk_sem 1302         1781.1     2.4432       1
@@ -10245,6 +10327,717 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
 #&gt; alcohol_5drnks_lst30   ~    gender_c                      -0.09   0.15   -0.59     0.55      -0.38       0.20    -0.09     -0.04     -0.08
 #&gt; alcohol_5drnks_lst30   ~    age_c                          0.21   0.04    5.06     0.00       0.13       0.30     0.21      0.43      0.19</code></pre>
 <p>Again, no <span class="math inline">\(\chi^2\)</span> tests satisfy the <span class="math inline">\(\alpha = .005\)</span> cutoff. The largest effect size is with the <span class="math inline">\(\epsilon\)</span> contrast variable, but it has the wrong sign, with higher learning rates in the Popular/Unpopular condition (relative to baseline) being associated with fewer numbers of heavy drinking days.</p>
+<pre><code>#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                         Df AIC BIC   Chisq Chisq diff Df diff Pr(&gt;Chisq)  
+#&gt; splt_alc_5drnk_sem       9          6.0765                                
+#&gt; splt_alc_5drnk_null_sem 10         24.7818     6.3568       1    0.01169 *
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                             Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_alc_5drnk_all_sem      14         21.587                   
+#&gt; splt_alc_5drnk_all_null_sem 15         29.790     2.7767       1
+#&gt;                             Pr(&gt;Chisq)  
+#&gt; splt_alc_5drnk_all_sem                  
+#&gt; splt_alc_5drnk_all_null_sem    0.09564 .
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                         Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_5drnk_sem       9         10.945                              
+#&gt; splt_alc_5drnk_null_sem 10         10.991   0.011121       1      0.916
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                             Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_alc_5drnk_all_sem      14         9.7799                   
+#&gt; splt_alc_5drnk_all_null_sem 15         9.8276   0.011381       1
+#&gt;                             Pr(&gt;Chisq)
+#&gt; splt_alc_5drnk_all_sem                
+#&gt; splt_alc_5drnk_all_null_sem      0.915
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                         Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_5drnk_sem       9         21.470                              
+#&gt; splt_alc_5drnk_null_sem 10         24.708     2.1787       1     0.1399
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                             Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_alc_5drnk_all_sem      14         21.756                   
+#&gt; splt_alc_5drnk_all_null_sem 15         27.614     4.0446       1
+#&gt;                             Pr(&gt;Chisq)  
+#&gt; splt_alc_5drnk_all_sem                  
+#&gt; splt_alc_5drnk_all_null_sem    0.04431 *
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                         Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_5drnk_sem       9         0.3209                              
+#&gt; splt_alc_5drnk_null_sem 10         1.0661    0.36297       1     0.5469
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                             Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_alc_5drnk_all_sem      14         7.7641                   
+#&gt; splt_alc_5drnk_all_null_sem 15         7.8062   0.019226       1
+#&gt;                             Pr(&gt;Chisq)
+#&gt; splt_alc_5drnk_all_sem                
+#&gt; splt_alc_5drnk_all_null_sem     0.8897
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                         Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_5drnk_sem       9         11.165                              
+#&gt; splt_alc_5drnk_null_sem 10         11.884    0.35624       1     0.5506
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                             Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_alc_5drnk_all_sem      14         22.223                   
+#&gt; splt_alc_5drnk_all_null_sem 15         24.051     0.9344       1
+#&gt;                             Pr(&gt;Chisq)
+#&gt; splt_alc_5drnk_all_sem                
+#&gt; splt_alc_5drnk_all_null_sem     0.3337
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                         Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_5drnk_sem       9         10.861                              
+#&gt; splt_alc_5drnk_null_sem 10         11.805    0.58661       1     0.4437
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                             Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_alc_5drnk_all_sem      14         17.555                   
+#&gt; splt_alc_5drnk_all_null_sem 15         20.653     1.9904       1
+#&gt;                             Pr(&gt;Chisq)
+#&gt; splt_alc_5drnk_all_sem                
+#&gt; splt_alc_5drnk_all_null_sem     0.1583
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_sem       9         3.9743                              
+#&gt; splt_alc_days_null_sem 10         7.4320     1.1939       1     0.2745
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_all_sem      14         19.799                              
+#&gt; splt_alc_days_all_null_sem 15         20.018   0.074902       1     0.7843
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_sem       9         10.349                              
+#&gt; splt_alc_days_null_sem 10         13.174    0.67597       1      0.411
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_all_sem      14         6.6693                              
+#&gt; splt_alc_days_all_null_sem 15         8.2557    0.37472       1     0.5404
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_sem       9         34.923                              
+#&gt; splt_alc_days_null_sem 10         35.214    0.17799       1     0.6731
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_all_sem      14         23.706                              
+#&gt; splt_alc_days_all_null_sem 15         27.948     2.8026       1    0.09411
+#&gt;                             
+#&gt; splt_alc_days_all_sem       
+#&gt; splt_alc_days_all_null_sem .
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_sem       9         0.3764                              
+#&gt; splt_alc_days_null_sem 10         1.3005    0.45962       1     0.4978
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_all_sem      14         7.0302                              
+#&gt; splt_alc_days_all_null_sem 15         8.6065    0.74398       1     0.3884
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_sem       9         7.3702                              
+#&gt; splt_alc_days_null_sem 10         7.9343     0.2748       1     0.6001
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_all_sem      14         19.521                              
+#&gt; splt_alc_days_all_null_sem 15         21.836     1.1588       1     0.2817
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_sem       9         12.403                              
+#&gt; splt_alc_days_null_sem 10         13.501    0.66094       1     0.4162
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_alc_days_all_sem      14         14.421                              
+#&gt; splt_alc_days_all_null_sem 15         14.695    0.16241       1     0.6869
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC   Chisq Chisq diff Df diff
+#&gt; splt_num_partners_sem       9          3.9468                   
+#&gt; splt_num_partners_null_sem 10         19.1986     4.9983       1
+#&gt;                            Pr(&gt;Chisq)  
+#&gt; splt_num_partners_sem                  
+#&gt; splt_num_partners_null_sem    0.02537 *
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                                Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_num_partners_all_sem      14         22.252                   
+#&gt; splt_num_partners_all_null_sem 15         32.547     3.6398       1
+#&gt;                                Pr(&gt;Chisq)  
+#&gt; splt_num_partners_all_sem                  
+#&gt; splt_num_partners_all_null_sem    0.05641 .
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_num_partners_sem       9         5.5471                              
+#&gt; splt_num_partners_null_sem 10         6.2243    0.16057       1     0.6886
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                                Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_num_partners_all_sem      14         10.312                   
+#&gt; splt_num_partners_all_null_sem 15         14.200    0.94236       1
+#&gt;                                Pr(&gt;Chisq)
+#&gt; splt_num_partners_all_sem                
+#&gt; splt_num_partners_all_null_sem     0.3317
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC   Chisq Chisq diff Df diff
+#&gt; splt_num_partners_sem       9          9.1953                   
+#&gt; splt_num_partners_null_sem 10         10.4587    0.80258       1
+#&gt;                            Pr(&gt;Chisq)
+#&gt; splt_num_partners_sem                
+#&gt; splt_num_partners_null_sem     0.3703
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                                Df AIC BIC   Chisq Chisq diff Df diff
+#&gt; splt_num_partners_all_sem      14          8.3193                   
+#&gt; splt_num_partners_all_null_sem 15         10.6411     1.5034       1
+#&gt;                                Pr(&gt;Chisq)
+#&gt; splt_num_partners_all_sem                
+#&gt; splt_num_partners_all_null_sem     0.2202
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_num_partners_sem       9         2.2235                              
+#&gt; splt_num_partners_null_sem 10         2.5325    0.15418       1     0.6946
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                                Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_num_partners_all_sem      14         7.9255                   
+#&gt; splt_num_partners_all_null_sem 15         8.0706   0.065488       1
+#&gt;                                Pr(&gt;Chisq)
+#&gt; splt_num_partners_all_sem                
+#&gt; splt_num_partners_all_null_sem      0.798
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_num_partners_sem       9          8.759                              
+#&gt; splt_num_partners_null_sem 10         13.489     2.5065       1     0.1134
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                                Df AIC BIC  Chisq Chisq diff Df diff
+#&gt; splt_num_partners_all_sem      14         24.501                   
+#&gt; splt_num_partners_all_null_sem 15         25.956    0.76758       1
+#&gt;                                Pr(&gt;Chisq)
+#&gt; splt_num_partners_all_sem                
+#&gt; splt_num_partners_all_null_sem      0.381
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC   Chisq Chisq diff Df diff
+#&gt; splt_num_partners_sem       9          6.8394                   
+#&gt; splt_num_partners_null_sem 10         10.1926     1.9798       1
+#&gt;                            Pr(&gt;Chisq)
+#&gt; splt_num_partners_sem                
+#&gt; splt_num_partners_null_sem     0.1594
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                                Df AIC BIC   Chisq Chisq diff Df diff
+#&gt; splt_num_partners_all_sem      14          9.2835                   
+#&gt; splt_num_partners_all_null_sem 15         17.1682     4.9204       1
+#&gt;                                Pr(&gt;Chisq)  
+#&gt; splt_num_partners_all_sem                  
+#&gt; splt_num_partners_all_null_sem    0.02654 *
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC   Chisq Chisq diff Df diff Pr(&gt;Chisq)  
+#&gt; splt_sex_freq_sem       9          3.3479                                
+#&gt; splt_sex_freq_null_sem 10         12.7942     3.2935       1    0.06956 .
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_sex_freq_all_sem      14         21.087                              
+#&gt; splt_sex_freq_all_null_sem 15         22.643    0.58162       1     0.4457
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC   Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_sex_freq_sem       9          5.9599                              
+#&gt; splt_sex_freq_null_sem 10         11.3797     1.2813       1     0.2577
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC   Chisq Chisq diff Df diff
+#&gt; splt_sex_freq_all_sem      14          9.4307                   
+#&gt; splt_sex_freq_all_null_sem 15         10.7133    0.31229       1
+#&gt;                            Pr(&gt;Chisq)
+#&gt; splt_sex_freq_all_sem                
+#&gt; splt_sex_freq_all_null_sem     0.5763
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_sex_freq_sem       9         16.387                              
+#&gt; splt_sex_freq_null_sem 10         16.612     0.1305       1     0.7179
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_sex_freq_all_sem      14         10.952                              
+#&gt; splt_sex_freq_all_null_sem 15         10.981   0.017396       1     0.8951
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_sex_freq_sem       9         2.4562                              
+#&gt; splt_sex_freq_null_sem 10         3.1952     0.3417       1     0.5588
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_sex_freq_all_sem      14         5.4056                              
+#&gt; splt_sex_freq_all_null_sem 15         5.9869     0.2494       1     0.6175
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_sex_freq_sem       9         7.1147                              
+#&gt; splt_sex_freq_null_sem 10         7.4313     0.1671       1     0.6827
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_sex_freq_all_sem      14         19.096                              
+#&gt; splt_sex_freq_all_null_sem 15         22.973     1.9504       1     0.1625
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                        Df AIC BIC  Chisq Chisq diff Df diff Pr(&gt;Chisq)
+#&gt; splt_sex_freq_sem       9         5.9843                              
+#&gt; splt_sex_freq_null_sem 10         7.6761    0.87526       1     0.3495
+#&gt; Scaled Chi Square Difference Test (method = "satorra.2000")
+#&gt; 
+#&gt;                            Df AIC BIC   Chisq Chisq diff Df diff
+#&gt; splt_sex_freq_all_sem      14          9.3549                   
+#&gt; splt_sex_freq_all_null_sem 15         11.0476     0.9379       1
+#&gt;                            Pr(&gt;Chisq)
+#&gt; splt_sex_freq_all_sem                
+#&gt; splt_sex_freq_all_null_sem     0.3328
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                              Df     AIC     BIC  Chisq Chisq diff Df diff
+#&gt; splt_use_protection_sem       9 -678.04 -603.64 5.6837                   
+#&gt; splt_use_protection_null_sem 10 -679.19 -607.90 6.5300    0.84628       1
+#&gt;                              Pr(&gt;Chisq)
+#&gt; splt_use_protection_sem                
+#&gt; splt_use_protection_null_sem     0.3576
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                                  Df     AIC     BIC  Chisq Chisq diff
+#&gt; splt_use_protection_all_sem      14 -111.96 -16.760 22.135           
+#&gt; splt_use_protection_all_null_sem 15 -112.75 -21.353 23.351     1.2158
+#&gt;                                  Df diff Pr(&gt;Chisq)
+#&gt; splt_use_protection_all_sem                        
+#&gt; splt_use_protection_all_null_sem       1     0.2702
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                              Df    AIC    BIC  Chisq Chisq diff Df diff
+#&gt; splt_use_protection_sem       9 559.25 633.64 8.1230                   
+#&gt; splt_use_protection_null_sem 10 558.73 630.03 9.6089      1.486       1
+#&gt;                              Pr(&gt;Chisq)
+#&gt; splt_use_protection_sem                
+#&gt; splt_use_protection_null_sem     0.2228
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                                  Df    AIC    BIC  Chisq Chisq diff
+#&gt; splt_use_protection_all_sem      14 2243.2 2338.4 11.354           
+#&gt; splt_use_protection_all_null_sem 15 2241.9 2333.3 12.056    0.70218
+#&gt;                                  Df diff Pr(&gt;Chisq)
+#&gt; splt_use_protection_all_sem                        
+#&gt; splt_use_protection_all_null_sem       1     0.4021
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                              Df     AIC     BIC  Chisq Chisq diff Df diff
+#&gt; splt_use_protection_sem       9 -166.61 -92.213 15.229                   
+#&gt; splt_use_protection_null_sem 10 -168.38 -97.083 15.459    0.22974       1
+#&gt;                              Pr(&gt;Chisq)
+#&gt; splt_use_protection_sem                
+#&gt; splt_use_protection_null_sem     0.6317
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                                  Df    AIC    BIC  Chisq Chisq diff
+#&gt; splt_use_protection_all_sem      14 950.34 1045.5 17.150           
+#&gt; splt_use_protection_all_null_sem 15 949.20 1040.6 18.011    0.86142
+#&gt;                                  Df diff Pr(&gt;Chisq)
+#&gt; splt_use_protection_all_sem                        
+#&gt; splt_use_protection_all_null_sem       1     0.3533
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                              Df     AIC     BIC  Chisq Chisq diff Df diff
+#&gt; splt_use_protection_sem       9 -289.20 -214.80 9.2001                   
+#&gt; splt_use_protection_null_sem 10 -290.85 -219.55 9.5535    0.35343       1
+#&gt;                              Pr(&gt;Chisq)
+#&gt; splt_use_protection_sem                
+#&gt; splt_use_protection_null_sem     0.5522
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                                  Df    AIC    BIC  Chisq Chisq diff
+#&gt; splt_use_protection_all_sem      14 634.31 729.51 19.596           
+#&gt; splt_use_protection_all_null_sem 15 636.22 727.62 23.505     3.9096
+#&gt;                                  Df diff Pr(&gt;Chisq)  
+#&gt; splt_use_protection_all_sem                          
+#&gt; splt_use_protection_all_null_sem       1    0.04801 *
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                              Df    AIC    BIC  Chisq Chisq diff Df diff
+#&gt; splt_use_protection_sem       9 665.63 740.02 7.5656                   
+#&gt; splt_use_protection_null_sem 10 663.82 735.11 7.7534    0.18783       1
+#&gt;                              Pr(&gt;Chisq)
+#&gt; splt_use_protection_sem                
+#&gt; splt_use_protection_null_sem     0.6647
+#&gt; Chi Square Difference Test
+#&gt; 
+#&gt;                                  Df    AIC    BIC  Chisq Chisq diff
+#&gt; splt_use_protection_all_sem      14 2468.7 2563.9 11.214           
+#&gt; splt_use_protection_all_null_sem 15 2470.1 2561.5 14.615     3.4009
+#&gt;                                  Df diff Pr(&gt;Chisq)  
+#&gt; splt_use_protection_all_sem                          
+#&gt; splt_use_protection_all_null_sem       1    0.06516 .
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+<table class="table">
+<thead><tr class="header">
+<th align="left">Behavior variable</th>
+<th align="left">SPLT variable</th>
+<th align="right">Coef sign<span class="math inline">\(_{\text{ltd}}\)</span>
+</th>
+<th align="right"><span class="math inline">\(\Delta\chi_{\text{ltd}}^{2}\)</span></th>
+<th align="right"><span class="math inline">\(p_{\text{ltd}}\)</span></th>
+<th align="right">Coef sign<span class="math inline">\(_{\text{full}}\)</span>
+</th>
+<th align="right"><span class="math inline">\(\Delta\chi_{\text{full}}^{2}\)</span></th>
+<th align="right"><span class="math inline">\(p_{\text{full}}\)</span></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Number of partners</td>
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">5.0</td>
+<td align="right">.03</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">3.6</td>
+<td align="right">.06</td>
+</tr>
+<tr class="even">
+<td align="left">SPLT contrast:</td>
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.2</td>
+<td align="right">.69</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.9</td>
+<td align="right">.33</td>
+</tr>
+<tr class="odd">
+<td align="left">Dating/Looking</td>
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.8</td>
+<td align="right">.37</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">1.5</td>
+<td align="right">.22</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.2</td>
+<td align="right">.69</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.1</td>
+<td align="right">.80</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">First 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">2.5</td>
+<td align="right">.11</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.8</td>
+<td align="right">.38</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Last 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">2.0</td>
+<td align="right">.16</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">4.9</td>
+<td align="right">.03</td>
+</tr>
+<tr class="odd">
+<td align="left">Number sexual encounters</td>
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">3.3</td>
+<td align="right">.07</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.6</td>
+<td align="right">.45</td>
+</tr>
+<tr class="even">
+<td align="left">SPLT contrast:</td>
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">1.3</td>
+<td align="right">.26</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.3</td>
+<td align="right">.58</td>
+</tr>
+<tr class="odd">
+<td align="left">Dating/Looking</td>
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.1</td>
+<td align="right">.72</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.0</td>
+<td align="right">.90</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.3</td>
+<td align="right">.56</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.2</td>
+<td align="right">.62</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">First 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.2</td>
+<td align="right">.68</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">2.0</td>
+<td align="right">.16</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Last 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.9</td>
+<td align="right">.35</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.9</td>
+<td align="right">.33</td>
+</tr>
+<tr class="odd">
+<td align="left">Safe sex practice</td>
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.8</td>
+<td align="right">.36</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">1.2</td>
+<td align="right">.27</td>
+</tr>
+<tr class="even">
+<td align="left">SPLT contrast:</td>
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">1.5</td>
+<td align="right">.22</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.7</td>
+<td align="right">.40</td>
+</tr>
+<tr class="odd">
+<td align="left">Dating/Looking</td>
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.2</td>
+<td align="right">.63</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.9</td>
+<td align="right">.35</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">First 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.4</td>
+<td align="right">.55</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">3.9</td>
+<td align="right">.05</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">Last 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.2</td>
+<td align="right">.66</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">3.4</td>
+<td align="right">.07</td>
+</tr>
+<tr class="even">
+<td align="left">Days with 1+ drinks</td>
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">1.2</td>
+<td align="right">.27</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.1</td>
+<td align="right">.78</td>
+</tr>
+<tr class="odd">
+<td align="left">SPLT contrast:</td>
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.7</td>
+<td align="right">.41</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.4</td>
+<td align="right">.54</td>
+</tr>
+<tr class="even">
+<td align="left">Popular/Unpopular</td>
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.2</td>
+<td align="right">.67</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">2.8</td>
+<td align="right">.09</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.5</td>
+<td align="right">.50</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.7</td>
+<td align="right">.39</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">First 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.3</td>
+<td align="right">.60</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">1.2</td>
+<td align="right">.28</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">Last 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">0.7</td>
+<td align="right">.42</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.2</td>
+<td align="right">.69</td>
+</tr>
+<tr class="even">
+<td align="left">Days with 5+ drinks</td>
+<td align="left"><span class="math inline">\(\epsilon\)</span></td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">6.4</td>
+<td align="right">.01</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">2.8</td>
+<td align="right">.10</td>
+</tr>
+<tr class="odd">
+<td align="left">SPLT contrast:</td>
+<td align="left"><span class="math inline">\(\rho\)</span></td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.0</td>
+<td align="right">.92</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.0</td>
+<td align="right">.92</td>
+</tr>
+<tr class="even">
+<td align="left">Popular/Unpopular</td>
+<td align="left"><span class="math inline">\(\xi\)</span></td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">2.2</td>
+<td align="right">.14</td>
+<td align="right"><span class="math inline">\(+\)</span></td>
+<td align="right">4.0</td>
+<td align="right">.04</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left"><span class="math inline">\(b\)</span></td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.4</td>
+<td align="right">.55</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.0</td>
+<td align="right">.89</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">First 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.4</td>
+<td align="right">.55</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.9</td>
+<td align="right">.33</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">Last 1/2 <span class="math inline">\(p_{\text{opt}}\)</span>
+</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">0.6</td>
+<td align="right">.44</td>
+<td align="right"><span class="math inline">\(-\)</span></td>
+<td align="right">2.0</td>
+<td align="right">.16</td>
+</tr>
+</tbody>
+</table>
+<p><span class="math inline">\(\Delta\chi^2\)</span></p>
 </div>
 </div>
 </div>
@@ -10341,7 +11134,6 @@ The coefficients for both Sensation Seeking and Admiration in the combined model
       <li>
 <a href="#health-related-behavior">Health-related behavior</a><ul class="nav nav-pills nav-stacked">
 <li><a href="#using-protection">Using protection</a></li>
-      <li><a href="#fsmi-mate-seeking-2">FSMI mate seeking</a></li>
       <li><a href="#k-srq-sexual-relationships-1">K-SRQ sexual relationships</a></li>
       <li><a href="#splt-parameters-2">SPLT parameters</a></li>
       </ul>

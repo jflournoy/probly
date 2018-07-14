@@ -59,15 +59,29 @@ get_chisq_tests <- function(an_sem, verbose = T, lrt_idxs = c(5,6)){
     chisq <- an_sem[[lrt_idxs[1]]][2,'Chisq diff']
     df <- an_sem[[lrt_idxs[1]]][2,'Df diff']
     p <- an_sem[[lrt_idxs[1]]][2,'Pr(>Chisq)']
+    thesign <- ifelse(
+        sign(dplyr::filter(
+            parameterestimates(an_sem[[dimnames(an_sem[[lrt_idxs[1]]])[[1]][[1]]]]), 
+            op == '~', 
+            !rhs %in% c('gender_c', 'age_c'))[['est']]) == -1, 
+        '-', '+')
     chisq_all <- an_sem[[lrt_idxs[2]]][2,'Chisq diff']
     df_all <- an_sem[[lrt_idxs[2]]][2,'Df diff']
     p_all <- an_sem[[lrt_idxs[2]]][2,'Pr(>Chisq)']
+    thesign_all <- ifelse(
+        sign(dplyr::filter(
+            parameterestimates(an_sem[[dimnames(an_sem[[lrt_idxs[2]]])[[1]][[1]]]]), 
+            op == '~', 
+            !rhs %in% c('gender_c', 'age_c'))[['est']]) == -1, 
+        '-', '+')
     return(c(chisq = chisq,
              df = df,
-             p = p, 
+             p = p,
+             thesign = thesign,
              chisq_all = chisq_all,
              df_all = df_all,
-             p_all = p_all))
+             p_all = p_all,
+             thesign_all = thesign_all))
 }
 
 college_rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
@@ -6814,18 +6828,24 @@ Again, no $\chi^2$ tests satisfy the $\alpha = .005$ cutoff. The largest effect 
 
 
 ```{r}
-splt_sems <- lapply(ls(pattern = 'splt_.*_sems$'), function(a) {
+splt_beh_model_lists <- c('splt_alc_5drnk_sems',
+                          'splt_alc_days_sems',
+                          'splt_num_partners_sems',
+                          'splt_sex_freq_sems',
+                          'splt_use_protection_sems')
+
+splt_sems <- lapply(splt_beh_model_lists, function(a) {
     sems <- eval(parse(text = a))
     chisqs <- lapply(seq_along(sems), function(i){
         if(!'try-error' %in% class(sems[[i]])){
             return(c(splt_var = names(sems)[[i]],
-                     get_chisq_tests(sems[[i]], verbose = F)))
+                     get_chisq_tests(sems[[i]], verbose = T)))
         }
     })
     chisqs_df <- as.data.frame(do.call(rbind, chisqs))
     return(chisqs_df)
 })
-names(splt_sems) <- ls(pattern = 'splt_.*_sems$')
+names(splt_sems) <- splt_beh_model_lists
 splt_sems_df <- dplyr::bind_rows(splt_sems, .id = 'outcome_var')
 
 outcomevar_labels <- c(
@@ -6852,8 +6872,10 @@ splt_sems_df_4table <- dplyr::select(
     dplyr::arrange(
         dplyr::mutate(
             splt_sems_df,
+            thesign = paste0('$', thesign, '$'),
             chisq = sprintf('%0.1f', as.numeric(chisq)),
             p = sub('^0\\.', '.', sprintf('%0.2f', as.numeric(p))),
+            thesign_all = paste0('$', thesign_all, '$'),
             chisq_all = sprintf('%0.1f', as.numeric(chisq_all)),
             p_all = sub('^0\\.', '.', sprintf('%0.2f', as.numeric(p_all))),
             splt_var = splt_param_labels_plaintext_sems[splt_var],
@@ -6863,7 +6885,7 @@ splt_sems_df_4table <- dplyr::select(
             outcome_var = outcomevar_labels[outcome_var],
             togroup = outcome_var),
         ordernum),
-    togroup, contrast, outcome_var, splt_var, chisq, p, chisq_all, p_all)
+    togroup, contrast, outcome_var, splt_var, thesign, chisq, p, thesign_all, chisq_all, p_all)
 
 splt_sems_df_4table <- dplyr::mutate(
     dplyr::group_by(splt_sems_df_4table, togroup),
@@ -6875,11 +6897,13 @@ splt_sems_df_4table <- dplyr::mutate(
 knitr::kable(splt_sems_df_4table[,-(1:2)],
              col.names = c('Behavior variable',
                            'SPLT variable',
+                           'Coef sign$_{\\text{ltd}}$',
                            '$\\Delta\\chi_{\\text{ltd}}^{2}$',
                            '$p_{\\text{ltd}}$',
+                           'Coef sign$_{\\text{full}}$',
                            '$\\Delta\\chi_{\\text{full}}^{2}$',
                            '$p_{\\text{full}}$'),
-             align = c('l', 'l', 'r', 'r', 'r', 'r'))
+             align = c('l', 'l', 'r', 'r', 'r', 'r', 'r', 'r'))
 ```
 
 $\Delta\chi^2$
