@@ -355,6 +355,79 @@ saq_cfa_model <- milav::create_cfa_from_keylist(saq_key)
 upps_cfa_model <- milav::create_cfa_from_keylist(upps_key)
 ```
 
+```{r}
+do_alpha_df <- rbind(expand.grid(sample = c('yads', 'yads_online'), 
+                           key = c(fsmi_key[c('fsmi_mate', 'fsmi_stat')], dnp_key)),
+                         expand.grid(sample = c('yads', 'yads_online', 'TDS1', 'TDS2'), 
+                           key = c(ksqr_key[c(1,3,5,6)], upps_key)))
+alpha_thing <- bind_rows(lapply(1:nrow(do_alpha_df),
+      function(i){
+          thing <- psych::alpha(
+              x = splt_fsmi_devdemog[splt_fsmi_devdemog$sample == do_alpha_df$sample[i],], 
+              keys = do_alpha_df[i,2])
+          thing_df <- as.data.frame(thing$total)
+          thing_df$sample <- do_alpha_df$sample[i]
+          thing_df$keyname <- names(do_alpha_df[i,2])
+          return(thing_df)
+      }))
+
+scale_labels <- c('fsmi_mate' = '(F) Mate-seeking',
+                  'fsmi_stat' = '(F) Status',
+                  'k_srq_admiration' = '(K) Admiration',
+                  'k_srq_passivity' = '(K) Passivity',
+                  'k_srq_sexual_relationships' = '(K) Sexual Rel.',
+                  'k_srq_sociability' = '(K) Sociability',
+                  'dominance_score' = '(D) Dominance',
+                  'prestige_score' = '(D) Presitige',
+                  'neg_urgency' = '(U) -Urgency',
+                  'premeditation' = '(U) Premeditation',
+                  'perseverance' = '(U) Perseverance',
+                  'sensation_seeking' = '(U) Sensation S.',
+                  'pos_urgency' = '(U) +Urgency')
+
+scale_descriptives_table <- ungroup(
+        mutate(group_by(
+            arrange(
+                mutate(
+                    select(alpha_thing,keyname, sample, raw_alpha, `G6(smc)`, mean, sd), 
+                    sample = factor(as.character(sample),
+                                    levels = names(sample_labels_short),
+                                    labels = sample_labels_short),
+                    keyname = factor(as.character(keyname),
+                                     levels = names(scale_labels),
+                                     labels = scale_labels),
+                    keynamegrp = keyname),
+                keynamegrp, sample),
+            keynamegrp), keyname = c(as.character(keyname)[1], rep('',n()-1))))
+
+scale_descriptives_table_col <- select(
+    filter(scale_descriptives_table, 
+           grepl('\\((F|D)\\)', keynamegrp)),
+    -keynamegrp)
+scale_descriptives_table_comb_ksrq <- select(
+    filter(scale_descriptives_table, 
+           grepl('\\((K)\\)', keynamegrp)),
+    -keynamegrp)
+
+scale_descriptives_table_comb_uppsp <- select(
+    filter(scale_descriptives_table, 
+           grepl('\\((U)\\)', keynamegrp)),
+    -keynamegrp)
+
+knitr::kable(
+    scale_descriptives_table_col,
+    col.names = c('Scale name', 'Sample', '$\\alpha$', '$\\lambda\\text{-6}$', 'Mean', 'SD'),
+    digits = 2)
+
+knitr::kable(
+    scale_descriptives_table_comb_ksrq,
+    digits = 2)
+
+knitr::kable(
+    scale_descriptives_table_comb_uppsp,
+    digits = 2)
+```
+
 ## FSMI
 
 ```{r fig.width=8, fig.height=10}
