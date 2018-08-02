@@ -72,20 +72,31 @@ sample_betas <- function(deltas, group_index, Sigma){
 #' @param beta_eps an N by K matrix of coefficients governing the learning rate
 #' @param beta_rho an N by K matrix of coefficients adjusting the relative
 #'   amount of reward
+#' @param press_right an N by max(Tsubj) matrix of press-right responses (either
+#'   0 or 1). If supplied, this is used in place of draws from the binomial
+#'   distribution. Useful if one wants to retrieve expected probabilities of
+#'   pressing right for a given set of model paramters and response patterns.
+#'   Defaults to NULL.
 #'
 #' @return a list with two N by max(Tsubj) matrices (with NA in unused trial
 #'   cells). The first matrix, \code{press_right} contains 0 if the decision was
 #'   to press left, and 1 if the decision was to press right. The second matrix,
 #'   \code{outcome_realized} contains the amount of the feedback received after
-#'   the press.
+#'   the press. The third matrix, p_press_right, contains the trial-by-trial
+#'   probability of a right-key press.
 #' @export
 #'
-generate_responses <- function(N, M, K, mm, Tsubj, cue, n_cues, condition, outcome, beta_xi, beta_b, beta_eps, beta_rho){
+generate_responses <- function(N, M, K, mm, Tsubj, cue, n_cues, condition, outcome, beta_xi, beta_b, beta_eps, beta_rho, press_right = NULL){
     beta_xi_prime <- pnorm(beta_xi)
     beta_eps_prime <- pnorm(beta_eps)
     beta_rho_prime <- exp(beta_rho)
 
-    press_right <- matrix(nrow = N, ncol = max(Tsubj)) #the matrices to return
+    if(is.null(press_right)){
+        press_right <- matrix(nrow = N, ncol = max(Tsubj)) #the matrices to return
+        responses_not_provided <- TRUE
+    } else {
+        responses_not_provided <- FALSE
+    }
     outcome_realized <- matrix(nrow = N, ncol = max(Tsubj))
     pR <- matrix(nrow = N, ncol = max(Tsubj))
 
@@ -107,7 +118,9 @@ generate_responses <- function(N, M, K, mm, Tsubj, cue, n_cues, condition, outco
 
             pR[i, t] <- p_right[ cue[i, t] ]
 
-            press_right[i, t]    <- rbinom(n = 1, size = 1, prob = p_right[ cue[i, t] ])
+            if(responses_not_provided){
+                press_right[i, t]    <- rbinom(n = 1, size = 1, prob = p_right[ cue[i, t] ])
+            }
 
             # message('i = ', i, ', t = ', t, ', press_right = ', press_right[i, t], '.')
             if(press_right[i, t]){ # press_right[i, t] == 1

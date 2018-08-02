@@ -5,7 +5,7 @@
 \title{Generate task responses}
 \usage{
 generate_responses(N, M, K, mm, Tsubj, cue, n_cues, condition, outcome, beta_xi,
-  beta_b, beta_eps, beta_rho)
+  beta_b, beta_eps, beta_rho, press_right = NULL)
 }
 \arguments{
 \item{N}{number of individuals}
@@ -40,13 +40,20 @@ press-right bias}
 
 \item{beta_rho}{an N by K matrix of coefficients adjusting the relative
 amount of reward}
+
+\item{press_right}{an N by max(Tsubj) matrix of press-right responses (either
+0 or 1). If supplied, this is used in place of draws from the binomial
+distribution. Useful if one wants to retrieve expected probabilities of
+pressing right for a given set of model paramters and response patterns.
+Defaults to NULL.}
 }
 \value{
 a list with two N by max(Tsubj) matrices (with NA in unused trial
   cells). The first matrix, \code{press_right} contains 0 if the decision was
   to press left, and 1 if the decision was to press right. The second matrix,
   \code{outcome_realized} contains the amount of the feedback received after
-  the press.
+  the press. The third matrix, p_press_right, contains the trial-by-trial
+  probability of a right-key press.
 }
 \description{
 Creates an N-individuals by T-trials matrix of press-right decisions and
