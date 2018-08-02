@@ -99,7 +99,7 @@
       <h1>Fit model to participant data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-06-26</h4>
+            <h4 class="date">2018-08-02</h4>
       
       
       <div class="hidden name"><code>fit-model-to-participant-data.Rmd</code></div>
@@ -1153,7 +1153,7 @@ Sensation seeking
 </tr>
 </tbody>
 </table>
-<p>In addition to confirmatory factor analyses, scale reliability and general-factor validity were assessed via the <span class="math inline">\(\omega_{h}\)</span> and <span class="math inline">\(\omega_t\)</span> statistics. These statistics account for the possibility that variance on items is due to both a general latent factor common to all items, and several group fators that account for variance in subsets of items <span class="citation">(<span class="citeproc-not-found" data-reference-id="zinbarg2006"><strong>???</strong></span>)</span>. The <span class="math inline">\(\omega_{h}\)</span> statistic captures the proportion of variance due to a general factor, and so is proportional to the degree of expected correspondence between the scale and another measure of the construct (on a different scale, or at retest), and also indexes the validity of the scale as a measure of the ostensible latent construct. The reliability of the whole scale is indexed by <span class="math inline">\(\omega_t\)</span>, which includes variance due to both group and general factors. Cronebach’s <span class="math inline">\(\alpha\)</span> is also reported because it is the default practice, and it may be helpful to demonstrate the differences between the two approaches. All three statistics were calculated using the <code>omega</code> function in the <code>psych</code> package for R <span class="citation">(<span class="citeproc-not-found" data-reference-id="revelle2017"><strong>???</strong></span>)</span>.</p>
+<p>In addition to confirmatory factor analyses, scale reliability and general-factor validity were assessed via the <span class="math inline">\(\omega_{h}\)</span> and <span class="math inline">\(\omega_t\)</span> statistics. These statistics account for the possibility that variance on items is due to both a general latent factor common to all items, and several group fators that account for variance in subsets of items <span class="citation">(Zinbarg, Yovel, Revelle, &amp; McDonald, 2006)</span>. The <span class="math inline">\(\omega_{h}\)</span> statistic captures the proportion of variance due to a general factor, and so is proportional to the degree of expected correspondence between the scale and another measure of the construct (on a different scale, or at retest), and also indexes the validity of the scale as a measure of the ostensible latent construct. The reliability of the whole scale is indexed by <span class="math inline">\(\omega_t\)</span>, which includes variance due to both group and general factors. Cronebach’s <span class="math inline">\(\alpha\)</span> is also reported because it is the default practice, and it may be helpful to demonstrate the differences between the two approaches. All three statistics were calculated using the <code>omega</code> function in the <code>psych</code> package for R <span class="citation">(Revelle, 2017)</span>.</p>
 <p>The mate-seeking and status motive scales from the FSMI showed adequate reliability, with <span class="math inline">\(\alpha\)</span> and <span class="math inline">\(\omega_t\)</span> in the acceptable to excellent range according to some rules of thumb (Table ref(tab:fsmi_reliability). However, <span class="math inline">\(\omega_h\)</span> indicates that only about 68% of the variance in FSMI Status and 80% of the variance in FSMI mate-seeking are due to the general factor. In light of this, any correlations of scale responses with other constructs of interest should be interpretted in light of the possibility that they are due, in part, to associations between variance <em>not</em> due to the general factor (and thus <em>note</em> due to the construct of interest). Of course, the variance due to other latent causes may also be a reason true relations are attentuated.</p>
 <p><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/fsmiregression-4.png" width="700"></p>
 </div>
@@ -1746,10 +1746,32 @@ Sensation seeking
 <a href="#model-predicted-behavior" class="anchor"></a>Model predicted behavior</h2>
 <p>Below is a plot of 313 model predicted runs, all using the exact same task structure (arbitrarily, the first run of the task). Behavior is guided by the mean parameter estimates, so any variabilility in behavior is due to the probabilistic nature of selecting either the right or left option based on the model’s current knowledge at some point during the task. Another way of framing this is that it is the behavior of the averge actor, in 313 identical, hypothetical runs.</p>
 <p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-36-1.png" width="564"></p>
+</div>
+<div id="individual-probability-trajectories" class="section level2">
+<h2 class="hasAnchor">
+<a href="#individual-probability-trajectories" class="anchor"></a>Individual probability trajectories</h2>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-37-1.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-37-2.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-37-3.png" width="700"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-37-4.png" width="700"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-38-1.png" width="564"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-39-1.png" width="384"></p>
+<pre><code>#&gt; [[1]]</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-40-1.png" width="564"></p>
+<pre><code>#&gt; 
+#&gt; [[2]]</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-40-2.png" width="564"></p>
+<pre><code>#&gt; 
+#&gt; [[3]]</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-40-3.png" width="564"></p>
+<pre><code>#&gt; 
+#&gt; [[4]]</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-40-4.png" width="564"></p>
+<pre><code>#&gt; 
+#&gt; [[5]]</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-40-5.png" width="564"></p>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-41-1.png" width="564"></p>
 <p>Given these model parameters, and the very strong assumption that nothing would purturb them from session to session, what would be the expected test-retest correlation for the differences between the H/T baseline and D/L or P/U conditions? The outcome of interest I’ll use is the average difference in the probability of choosing the optimal label in the last half of the run. This will over-estimate the true test-reliability because we’re using what is in practice an unknown latent parameter. Measurement error in any real situation will attenuate this true reliability. One way to assess this reliability is to draw random IDs (which in this case corresponds to simulated runs through the task), and then correlate the mean number of optimal presses in each condition across two sets of random draws. After all, since these simulations are all generating using the model parameters from the same participant, the rank-order of the mean probability of optimal press across the three conditions should be similar across simulations to the extent that the generated behavior is stable. A less ad hoc approach may be to use an interclass-correlation estimate to partition the variance into that systematically related to condition versus residual variance. In both cases, the estimate is middling, around .4 and .5 respectively. We can compare this to the observed reliability of the parameter estimates we obtain from the Bayesian models.</p>
 <pre><code>#&gt;      2.5%       50%     97.5% 
-#&gt; 0.3249964 0.3821612 0.4369912</code></pre>
-<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-37-1.png" width="700"></p>
+#&gt; 0.3317423 0.3812127 0.4348343</code></pre>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-42-1.png" width="700"></p>
 <pre><code>#&gt; Linear mixed model fit by REML ['lmerMod']
 #&gt; Formula: mean_mean_p_opt ~ 1 + (1 | condition)
 #&gt;    Data: mean_modpred_ppressopt
@@ -1771,9 +1793,29 @@ Sensation seeking
 #&gt; (Intercept)   0.7775     0.0191    40.7
 #&gt; [1] 0.4792777</code></pre>
 </div>
-<div id="diagnostics" class="section level2">
+<div id="extra-figs" class="section level2">
+<h2 class="hasAnchor">
+<a href="#extra-figs" class="anchor"></a>Extra figs</h2>
+<ul>
+<li>individual-level betas + contrast betas for each sample
+<ul>
+<li>for each individual, sorted</li>
+</ul>
+</li>
+</ul>
+<p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-43-1.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-43-2.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-43-3.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-43-4.png" width="564"></p>
+</div>
+<div id="diagnostics" class="section level2 unnumbered">
 <h2 class="hasAnchor">
 <a href="#diagnostics" class="anchor"></a>Diagnostics</h2>
+<div id="refs" class="references">
+<div id="ref-revelle2017">
+<p>Revelle, W. (2017). <em>Psych: Procedures for Psychological, Psychometric, and Personality Research</em>. Evanston, Illinois: Northwestern University. Retrieved from <a href="https://CRAN.R-project.org/package=psych" class="uri">https://CRAN.R-project.org/package=psych</a></p>
+</div>
+<div id="ref-zinbarg2006">
+<p>Zinbarg, R. E., Yovel, I., Revelle, W., &amp; McDonald, R. P. (2006). Estimating Generalizability to a Latent Variable Common to All of a Scale’s Indicators: A Comparison of Estimators for ωh. <em>Applied Psychological Measurement</em>, <em>30</em>(2), 121–144. doi:<a href="https://doi.org/10.1177/0146621605278814">10.1177/0146621605278814</a></p>
+</div>
+</div>
 </div>
 </div>
   </div>
@@ -1807,6 +1849,8 @@ Sensation seeking
       <li><a href="#mean-parameter-estimates">Mean parameter estimates</a></li>
       <li><a href="#variance">Variance</a></li>
       <li><a href="#model-predicted-behavior">Model predicted behavior</a></li>
+      <li><a href="#individual-probability-trajectories">Individual probability trajectories</a></li>
+      <li><a href="#extra-figs">Extra figs</a></li>
       <li><a href="#diagnostics">Diagnostics</a></li>
       </ul>
 </li>

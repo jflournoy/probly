@@ -463,6 +463,26 @@ p_opt_diff_age_plot <- ggplot2::ggplot(
     ggplot2::guides(linetype = guide_legend(override.aes = list(color = 'black'))) + 
     ggplot2::theme(legend.key.width = unit(legend_width, units = 'cm'))
 
+p_opt_early_diff_age_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty'),
+        agegroup = ifelse(grepl('yads', sample), 'College students', 'Adolescents')),
+    ggplot2::aes(x = age, y = bin_start_to_4, 
+                 linetype = condition,
+                 color = agegroup,
+                 group = condition)) + 
+    ggplot2::geom_point(alpha = .5, position = position_jitter(width = .15, height = 0)) + 
+    ggplot2::geom_smooth(color = 'black',
+                         method = 'gam', formula = y ~ s(x, fx = T, k = 3),
+                         size = .5, alpha =  .2) + 
+    ggplot2::labs(x = 'Age', y = 'Probability of making optimal choice\nversus Hungry/Thirsty baseline',
+                  linetype = 'Condition') +
+    ggplot2::scale_color_manual(name = 'Age group', 
+                                values = sample_colors) +
+    linetype_scale_diffs + 
+    ggplot2::guides(linetype = guide_legend(override.aes = list(color = 'black'))) + 
+    ggplot2::theme(legend.key.width = unit(legend_width, units = 'cm'))
+
 p_opt_diff_pds_plot <- ggplot2::ggplot(
     dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty'),
     ggplot2::aes(x = PDS_mean_score, y = bin_5_to_end, 
@@ -487,6 +507,28 @@ p_opt_age_plot <- ggplot2::ggplot(
         lowfi_df_dev,
         agegroup = ifelse(grepl('yads', sample), 'College students', 'Adolescents')),
     ggplot2::aes(x = age, y = bin_5_to_end,
+                 color = agegroup)) + 
+    ggplot2::geom_smooth(color = '#999999',
+                         method = 'gam', formula = y ~ s(x, fx = T, k = 5),
+                         size = 2, alpha = .2) + 
+    ggplot2::geom_point(alpha = .5, position = position_jitter(width = .15, height = 0)) + 
+    ggplot2::geom_smooth(ggplot2::aes(linetype = condition,
+                                      group = condition),
+                         color = '#333333',
+                         method = 'gam', formula = y ~ s(x, fx = T, k = 5),
+                         size = .5, se = F, alpha = .2) + 
+    ggplot2::labs(x = 'Age', y = 'Probability of making optimal choice') +
+    ggplot2::scale_color_manual(name = 'Age group', 
+                                values = sample_colors) +
+    linetype_scale +  
+    ggplot2::guides(linetype = guide_legend(override.aes = list(color = 'black'))) + 
+    ggplot2::theme(legend.key.width = unit(legend_width, units = 'cm'))
+
+p_opt_early_age_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        lowfi_df_dev,
+        agegroup = ifelse(grepl('yads', sample), 'College students', 'Adolescents')),
+    ggplot2::aes(x = age, y = bin_start_to_4,
                  color = agegroup)) + 
     ggplot2::geom_smooth(color = '#999999',
                          method = 'gam', formula = y ~ s(x, fx = T, k = 5),
@@ -1679,6 +1721,16 @@ epsilon_difference_plot <- bayesplot::mcmc_areas(dplyr::data_frame(`e_2 - e_1` =
                               labels = c(expression(epsilon[3]-epsilon[2]),
                                          expression(epsilon[3]-epsilon[1]),
                                          expression(epsilon[2]-epsilon[1])))
+
+epsilon_mean_plot <- bayesplot::mcmc_areas(dplyr::data_frame(`e_3` = pnorm(mu_ep_3),
+                                                                   `e_2` = pnorm(mu_ep_2),
+                                                                   `e_1` = pnorm(mu_ep_1)), 
+                                                  prob_outer = 1-.005, prob = .95) + 
+    ggplot2::scale_y_discrete(breaks = c('e_3', 'e_2', 'e_1'),
+                              labels = c(expression(epsilon[3]),
+                                         expression(epsilon[2]),
+                                         expression(epsilon[1])))
+
 epsilon_difference_plot
 
 save_out_list <- c(save_out_list, 'epsilon_difference_plot')
@@ -1945,8 +1997,9 @@ model_predicted_behavior <- probly::generate_responses(N = N, M = M, K = K, mm =
                                                        outcome = outcome_arr_unif, 
                                                        beta_xi = beta_xi_mat, beta_b = beta_b_mat, 
                                                        beta_eps = beta_ep_mat, beta_rho = beta_rho_mat)
-
 ```
+
+
 
 ```{r, fig.width=5.875, fig.height=4}
 set.seed(4277925)
@@ -1983,6 +2036,217 @@ model_mean_predicted_behavior_plot <- ggplot2::ggplot(
     ggplot2::theme(panel.grid.minor.y = element_blank())
 
 model_mean_predicted_behavior_plot
+```
+
+## Individual probability trajectories
+
+```{r}
+make_idxd_df_from_mat <- function(a_splt_mat, value_name){
+    a_splt_df <- as.data.frame(a_splt_mat)
+    a_splt_df$idx <- 1:dim(a_splt_mat)[1]
+    a_splt_df_l <- tidyr::gather(a_splt_df, trial, !!value_name, -idx)
+    a_splt_df_l$trial <- as.numeric(gsub('\\w*?(\\d+)\\w*?', '\\1', a_splt_df_l$trial))
+    return(a_splt_df_l)
+}
+
+extract_beta_matrix_from_beta_df <- function(betas_df, parname, par_transform = 'I', central_tendency = 'mean'){
+    if(is.character(par_transform)){
+        par_transform <- eval(parse(text = par_transform))
+    }
+    par_df <- betas_df[betas_df$parameter == parname & betas_df$contrasted == FALSE,]
+    par_df <- par_df[, c(central_tendency, 'idx', 'condnum')]
+    par_df[,central_tendency] <- par_transform(par_df[,central_tendency])
+    par_df$idx <- as.numeric(par_df$idx)
+    par_df_w <- tidyr::spread(par_df, condnum, !!central_tendency)
+    par_mat <- as.matrix(par_df_w[,grep('idx', names(par_df_w), invert = T)])
+    return(par_mat)
+}
+
+splt_data_used <- readRDS('/data/jflournoy/split/probly/splt-looser-data--1527693.RDS')
+
+task_structure_used <- probly::make_task_structure_from_data(splt_data_used)
+observed_press_r <- probly::get_col_as_trial_matrix(splt_data_used, col = 'pressed_r')
+
+beta_xi_postmean_mat <- extract_beta_matrix_from_beta_df(splt_rl_betas,
+                                                         parname = 'xi_prm',
+                                                         par_transform = 'qnorm',
+                                                         central_tendency = 'mean')
+beta_b_postmean_mat <- extract_beta_matrix_from_beta_df(splt_rl_betas,
+                                                         parname = 'b',
+                                                         par_transform = 'I',
+                                                         central_tendency = 'mean')
+beta_ep_postmean_mat <- extract_beta_matrix_from_beta_df(splt_rl_betas,
+                                                         parname = 'ep_prm',
+                                                         par_transform = 'qnorm',
+                                                         central_tendency = 'mean')
+beta_rho_postmean_mat <- extract_beta_matrix_from_beta_df(splt_rl_betas,
+                                                         parname = 'rho_prm',
+                                                         par_transform = 'log',
+                                                         central_tendency = 'mean')
+
+model_predicted_behavior_individuals_pR <- generate_responses(
+    N = task_structure_used$N, 
+    M = task_structure_used$M, 
+    K = task_structure_used$K, 
+    mm = task_structure_used$mm,
+    Tsubj = task_structure_used$Tsubj, 
+    cue = task_structure_used$cue,
+    n_cues = max(task_structure_used$cue, na.rm = T), 
+    condition = task_structure_used$condition, 
+    outcome = task_structure_used$outcome, 
+    beta_xi = beta_xi_postmean_mat, 
+    beta_b = beta_b_postmean_mat, 
+    beta_eps = beta_ep_postmean_mat, 
+    beta_rho = beta_rho_postmean_mat,
+    press_right = observed_press_r)
+
+pr_df_l <- left_join(
+    make_idxd_df_from_mat(model_predicted_behavior_individuals_pR$p_press_right, 
+                          value_name = 'pR'),
+    mutate(distinct(splt_data_used, id), idx = 1:n()),
+    by = 'idx')
+
+splt_data_used_pR <- left_join(
+    mutate(
+        group_by(
+            arrange(splt_data_used, id, trial_index),
+            id),
+        trial = 1:n()),
+    pr_df_l, by = c('id', 'trial')) %>%
+    mutate(pOpt = case_when(
+        proportion == '80_20' ~ 1-pR,
+        proportion == '20_80' ~ pR,
+        TRUE ~ NA_real_))
+
+ggplot2::theme_set(ggplot2::theme_minimal())
+ggplot2::ggplot(splt_data_used_pR, 
+                ggplot2::aes(x = trial, y = pOpt)) + 
+    ggplot2::geom_point(alpha = .04, size = .5) + 
+    ggplot2::facet_wrap(~condition)
+
+ggplot2::ggplot(splt_data_used_pR, 
+                ggplot2::aes(x = trial, y = pOpt, group = id)) + 
+    ggplot2::geom_line(alpha = .02, size = .5) + 
+    ggplot2::facet_wrap(~condition)
+
+ggplot2::ggplot(splt_data_used_pR, 
+                ggplot2::aes(x = trial, y = pOpt)) + 
+    ggplot2::geom_point(alpha = .01, size = .5) + 
+    ggplot2::geom_line(
+        ggplot2::aes(linetype = condition),
+        stat = 'smooth', method = 'gam', formula = y ~ s(x, k = 5)) + 
+    ggplot2::coord_cartesian(y = c(.5, 1.01))
+
+ggplot2::ggplot(splt_data_used_pR, 
+                ggplot2::aes(x = trial, y = pOpt, group = id)) + 
+    ggplot2::geom_line(alpha = .03, size = .5) + 
+    ggplot2::facet_grid(sex~condition) +
+    ggplot2::coord_cartesian(y = c(.3, 1.1))
+
+splt_data_used_pR_block_id_sum <- dplyr::summarize(
+    dplyr::mutate(
+        dplyr::group_by(splt_data_used_pR, block, condition, id),
+        pressed_opt = case_when(
+            proportion == '80_20' ~ 1-pressed_r,
+            proportion == '20_80' ~ pressed_r,
+            TRUE ~ NA_real_)),
+    pressed_opt = mean(pressed_opt),
+    pOpt = mean(pOpt),
+    n_rt_300 = sum(rt<300))
+
+if(!file.exists(file.path(data_dir, 'splt_data_used_pR_block_sum.RDS'))){
+    splt_data_used_pR_block_sum <- dplyr::do(
+        # dplyr::mutate(
+        #     dplyr::group_by(splt_data_used_pR, block, condition),
+        #     pressed_opt = case_when(
+        #         proportion == '80_20' ~ 1-pressed_r,
+        #         proportion == '20_80' ~ pressed_r,
+        #         TRUE ~ NA_real_)),
+        dplyr::group_by(splt_data_used_pR_block_id_sum, block, condition),
+        {
+            adf <- .
+            bootstrapped <- boot::boot(adf[,c('pressed_opt', 'pOpt')], 
+                                       statistic = function(data, i){c(pressed_opt=mean(unlist(data[i,1])),
+                                                                       pOpt=mean(unlist(data[i,2])))}, 
+                                       R = 10000,
+                                       stype = 'i',
+                                       parallel = 'multicore', ncpus = 8)
+            bootstrapped_means <- apply(bootstrapped$t, 2, mean)
+            
+            pressed_opt_ci <- boot::boot.ci(bootstrapped, 
+                                            index = 1, 
+                                            type = c('perc'))$perc[1,4:5]
+            pOpt_ci <- boot::boot.ci(bootstrapped, 
+                                     index = 2, 
+                                     type = c('perc'))$perc[1,4:5]
+            
+            data.frame(
+                block = adf$block[[1]],
+                condition = adf$condition[[1]],
+                parameter = c('pressed_opt', 'pOpt'),
+                mean = bootstrapped_means,
+                lower.ci = c(pressed_opt_ci[1], pOpt_ci[1]),
+                upper.ci = c(pressed_opt_ci[2], pOpt_ci[2]))
+        })
+    saveRDS(splt_data_used_pR_block_sum, file.path(data_dir, 'splt_data_used_pR_block_sum.RDS'))
+} else {
+    splt_data_used_pR_block_sum <- readRDS(file.path(data_dir, 'splt_data_used_pR_block_sum.RDS'))
+}
+```
+
+```{r fig.width=5.875, fig.height=3}
+splt_data_used_pR_block_sum_plot <- ggplot2::ggplot(splt_data_used_pR_block_sum,
+                ggplot2::aes(x = block, y = mean)) +
+    ggplot2::geom_ribbon(ggplot2::aes(ymin = lower.ci, 
+                                      ymax = upper.ci, 
+                                      group = interaction(condition,parameter)),
+                         alpha = .125) + 
+    ggplot2::geom_line(ggplot2::aes(group = interaction(condition,parameter),
+                                    linetype = condition),
+                       alpha = 1, size = .5) + 
+    ggplot2::facet_grid(~parameter)+
+    ggplot2::coord_cartesian(y=c(.55,.8))
+splt_data_used_pR_block_sum_plot
+```
+
+```{r fig.height=120, fig.width=4}
+individual_model_predicted_versus_expected_optchoice_plot <- ggplot2::ggplot(gather(splt_data_used_pR_block_id_sum, parameter, value, pressed_opt, pOpt),
+                ggplot2::aes(x = block, y = value)) +
+    ggplot2::geom_line(ggplot2::aes(color = parameter, group = parameter),
+                       alpha = 1, size = .5) + 
+    ggplot2::facet_grid(id~condition)
+individual_model_predicted_versus_expected_optchoice_plot
+```
+
+```{r fig.width=5.875, fig.height=3}
+set.seed(87987611/9740451)
+sampled_ids <- sample(unique(splt_data_used_pR_block_id_sum$id), 50)
+
+individual_model_predicted_versus_expected_optchoice_plot_samples <- 
+    lapply(1:5, function(i) {
+        ggplot2::ggplot(gather(
+            filter(splt_data_used_pR_block_id_sum, id %in% sampled_ids[(10*(i-1)+1):(10*i)]), 
+            parameter, value, pressed_opt, pOpt),
+            ggplot2::aes(x = block, y = value)) +
+            ggplot2::geom_line(ggplot2::aes(color = parameter, group = parameter),
+                               alpha = 1, size = .5) + 
+            ggplot2::facet_grid(condition~id) + 
+            ggplot2::theme(legend.position = 'none')})
+individual_model_predicted_versus_expected_optchoice_plot_samples
+```
+
+
+```{r fig.width=5.875, fig.height=3}
+#model bias
+splt_data_used_pR_block_id_sum$bias <- splt_data_used_pR_block_id_sum$pOpt -
+    splt_data_used_pR_block_id_sum$pressed_opt
+ggplot2::ggplot(splt_data_used_pR_block_id_sum,
+                ggplot2::aes(x = block, y = bias)) +
+    ggplot2::geom_hline(yintercept = 0, color = '#444444') + 
+    ggplot2::geom_point(alpha = .1, size = .5,
+                        position = position_jitter()) + 
+    ggplot2::geom_line(stat = 'smooth', method = 'loess', size = 1) + 
+    ggplot2::facet_grid(~condition)
 ```
 
 Given these model parameters, and the very strong assumption that nothing would purturb them from session to session, what would be the expected test-retest correlation for the differences between the H/T baseline and D/L or P/U conditions? 
@@ -2025,6 +2289,66 @@ resvar <- sigma(icc_mod)^2
 #     dplyr::filter(condition != 'Hungry/Thirsty') 
 
 ```
+
+## Extra figs
+
+- individual-level betas + contrast betas for each sample
+    - for each individual, sorted
+
+```{r fig.width=5.875, fig.height=5}
+ggplot2::theme_set(ggplot2::theme_minimal())
+plot_beta_estimates_by_sample <- function(splt_rl_betas, parameter, condition_labels, sort_condition = 'Hungry/Thirsty',
+                                          transformation = 'I', inverstrans = 'I', breaks = NULL) {
+    id_levels <- unlist(dplyr::distinct(dplyr::arrange(
+        splt_rl_betas[splt_rl_betas$parameter == parameter & 
+                          splt_rl_betas$condition == sort_condition &
+                          !splt_rl_betas$contrasted,],
+        mean), id))
+    
+    tmp_df <- splt_rl_betas[splt_rl_betas$parameter == parameter & !splt_rl_betas$contrasted,]
+    tmp_grp_df <- dplyr::summarize(group_by(tmp_df, sample, condition),
+                                          mean = mean(mean))
+    aplot <- ggplot2::ggplot(tmp_df,
+                    ggplot2::aes(x = factor(id, levels = id_levels), 
+                                 y = mean)) + 
+        ggplot2::geom_errorbar(ggplot2::aes(ymin = lower, ymax = upper), width = 0, alpha = .1) + 
+        ggplot2::geom_hline(aes(yintercept = mean), data = tmp_grp_df, color = "#666666") +
+        ggplot2::geom_point(size = .5) + 
+        ggplot2::facet_grid(sample~factor(condition, levels = condition_labels)) +
+        ggplot2::theme(axis.text.x = ggplot2::element_blank(), panel.grid.major.x = ggplot2::element_blank(),
+                       panel.grid.minor.y = element_blank()) + 
+        ggplot2::labs(x = 'Participant', y = 'Posterior mean and 95% credible interval')
+    if(!is.null(breaks)){
+        aplot <- aplot + ggplot2::scale_y_continuous(breaks = breaks)
+    }
+    if(transformation != 'I'){
+        aplot <- aplot + ggplot2::coord_trans(y = scales::trans_new('mytrans', transformation, inverstrans))
+    }
+    return(aplot)
+}
+
+beta_estimates_by_sample_ep_prm_plot <- plot_beta_estimates_by_sample(splt_rl_betas, parameter = 'ep_prm', 
+                              condition_labels = condition_labels, transformation = 'qnorm',
+                              inverstrans = 'pnorm', breaks = c(.001, .01, .05, .2, .5))
+
+beta_estimates_by_sample_rho_prm_plot <- plot_beta_estimates_by_sample(splt_rl_betas, parameter = 'rho_prm', 
+                              condition_labels = condition_labels, transformation = 'log',
+                              inverstrans = 'exp',
+                              breaks = c(.1, .33, 1, 3, 10))
+
+beta_estimates_by_sample_xi_prm_plot <- plot_beta_estimates_by_sample(splt_rl_betas, parameter = 'xi_prm', 
+                              condition_labels = condition_labels, transformation = 'qnorm',
+                              inverstrans = 'pnorm', breaks = c(.01, .1, .5, .9))
+
+beta_estimates_by_sample_b_plot <- plot_beta_estimates_by_sample(splt_rl_betas, parameter = 'b', 
+                              condition_labels = condition_labels)
+
+beta_estimates_by_sample_ep_prm_plot
+beta_estimates_by_sample_rho_prm_plot
+beta_estimates_by_sample_xi_prm_plot
+beta_estimates_by_sample_b_plot
+```
+
 
 ## Diagnostics
 
@@ -2106,4 +2430,12 @@ bayesplot::mcmc_pairs(
 
 ```{r echo = F, eval = T}
 save.image(file = file.path(save_out_dir, 'fit-model-to-participant-data.rda'))
+save(beta_estimates_by_sample_ep_prm_plot,
+           beta_estimates_by_sample_rho_prm_plot,
+           beta_estimates_by_sample_xi_prm_plot,
+           beta_estimates_by_sample_b_plot,
+           splt_data_used_pR_block_sum_plot,
+           individual_model_predicted_versus_expected_optchoice_plot,
+           individual_model_predicted_versus_expected_optchoice_plot_samples,
+           file = file.path(save_out_dir, 'extra-model-plots.rda'))
 ```
