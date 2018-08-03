@@ -99,7 +99,7 @@
       <h1>Fit model to participant data</h1>
                         <h4 class="author">John Flournoy</h4>
             
-            <h4 class="date">2018-08-02</h4>
+            <h4 class="date">2018-08-03</h4>
       
       
       <div class="hidden name"><code>fit-model-to-participant-data.Rmd</code></div>
@@ -148,6 +148,7 @@
 <p>Here are a few plots of these parameters against age.</p>
 <p><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-1.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-2.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-3.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-4.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-5.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-6.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-7.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-8.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-9.png" width="564"><img src="fit-model-to-participant-data_files/figure-html/unnamed-chunk-7-10.png" width="564"></p>
 <table class="table">
+<caption>Optimal choices during last half of the run</caption>
 <thead><tr class="header">
 <th align="left">Variables</th>
 <th align="left">Age-group</th>
@@ -171,18 +172,32 @@
 <td align="right">0.02</td>
 </tr>
 <tr class="odd">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">All</td>
+<td align="right">0.07</td>
+<td align="right">0.05</td>
+<td align="right">1.48</td>
+</tr>
+<tr class="even">
 <td align="left">Optimal choices <span class="math inline">\(\sim\)</span> PDS</td>
 <td align="left">Adolescent</td>
 <td align="right">0.17</td>
 <td align="right">0.09</td>
 <td align="right">1.85</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Optimal choices <span class="math inline">\(\sim\)</span> PDS</td>
 <td align="left">College</td>
 <td align="right">0.09</td>
 <td align="right">0.06</td>
 <td align="right">1.45</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">All</td>
+<td align="right">0.12</td>
+<td align="right">0.05</td>
+<td align="right">2.49</td>
 </tr>
 <tr class="odd">
 <td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> Age</td>
@@ -199,18 +214,128 @@
 <td align="right">0.15</td>
 </tr>
 <tr class="odd">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">All</td>
+<td align="right">-0.03</td>
+<td align="right">0.05</td>
+<td align="right">-0.67</td>
+</tr>
+<tr class="even">
 <td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> PDS</td>
 <td align="left">Adolescent</td>
 <td align="right">0.03</td>
 <td align="right">0.10</td>
 <td align="right">0.29</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> PDS</td>
 <td align="left">College</td>
 <td align="right">0.02</td>
 <td align="right">0.06</td>
 <td align="right">0.27</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">All</td>
+<td align="right">-0.01</td>
+<td align="right">0.05</td>
+<td align="right">-0.22</td>
+</tr>
+</tbody>
+</table>
+<table class="table">
+<caption>Optimal choices during first half of the run</caption>
+<thead><tr class="header">
+<th align="left">Variables</th>
+<th align="left">Age-group</th>
+<th align="right"><span class="math inline">\(\beta\)</span></th>
+<th align="right"><span class="math inline">\(\text{SE}_{\beta}\)</span></th>
+<th align="right"><span class="math inline">\(t\)</span></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">Adolescent</td>
+<td align="right">0.11</td>
+<td align="right">0.08</td>
+<td align="right">1.37</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">College</td>
+<td align="right">0.03</td>
+<td align="right">0.05</td>
+<td align="right">0.66</td>
+</tr>
+<tr class="odd">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">All</td>
+<td align="right">0.09</td>
+<td align="right">0.04</td>
+<td align="right">2.11</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">Adolescent</td>
+<td align="right">0.16</td>
+<td align="right">0.08</td>
+<td align="right">1.95</td>
+</tr>
+<tr class="odd">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">College</td>
+<td align="right">0.09</td>
+<td align="right">0.05</td>
+<td align="right">1.81</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">All</td>
+<td align="right">0.13</td>
+<td align="right">0.04</td>
+<td align="right">2.99</td>
+</tr>
+<tr class="odd">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">Adolescent</td>
+<td align="right">-0.01</td>
+<td align="right">0.09</td>
+<td align="right">-0.07</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">College</td>
+<td align="right">-0.03</td>
+<td align="right">0.06</td>
+<td align="right">-0.54</td>
+</tr>
+<tr class="odd">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> Age</td>
+<td align="left">All</td>
+<td align="right">0.00</td>
+<td align="right">0.05</td>
+<td align="right">0.07</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">Adolescent</td>
+<td align="right">0.03</td>
+<td align="right">0.09</td>
+<td align="right">0.31</td>
+</tr>
+<tr class="odd">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">College</td>
+<td align="right">0.00</td>
+<td align="right">0.06</td>
+<td align="right">-0.06</td>
+</tr>
+<tr class="even">
+<td align="left">Optimal choices contrasts <span class="math inline">\(\sim\)</span> PDS</td>
+<td align="left">All</td>
+<td align="right">0.02</td>
+<td align="right">0.05</td>
+<td align="right">0.38</td>
 </tr>
 </tbody>
 </table>

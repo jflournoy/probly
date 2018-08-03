@@ -705,6 +705,8 @@ adf_col_con <- dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty',
                               grepl('yads', sample))
 adf_col <- dplyr::filter(lowfi_df_dev, 
                          grepl('yads', sample))
+adf_all <- lowfi_df_dev
+adf_all_con <- dplyr::filter(lowfi_df_dev_v_bl, condition != 'Hungry/Thirsty')
 
 stdCoef.merMod <- function(object) {
   sdy <- sd(lme4::getME(object,"y"))
@@ -715,15 +717,18 @@ stdCoef.merMod <- function(object) {
   return(data.frame(stdcoef=sc, stdse=se, stdt = sc / se))
 }
 
-mlm_std_beta_table <- function(outcomelist, xstring, adf_adol, adf_col, latex_par = T){
+mlm_std_beta_table <- function(outcomelist, xstring, adf_adol, adf_col, adf_all, latex_par = T){
     table_rows <- lapply(outcomelist, function(ystring){
         aform <- as.formula(paste0(ystring, ' ~ ', xstring, ' + (1 | id)'))
         adolmod <- lme4::lmer(aform, data = adf_adol, REML = F)
         colmod <- lme4::lmer(aform, data = adf_col, REML = F)
+        allmod <- lme4::lmer(aform, data = adf_all, REML = F)
         std_adol_xvar <- stdCoef.merMod(adolmod)[xstring,]
         std_col_xvar <- stdCoef.merMod(colmod)[xstring,]
+        std_all_xvar <- stdCoef.merMod(allmod)[xstring,]
         std_df <- dplyr::bind_rows('Adolescent' = std_adol_xvar, 
                                    'College' = std_col_xvar,
+                                   'All' = std_all_xvar,
                                    .id = 'Sample')
         return(std_df)
     })
@@ -732,13 +737,13 @@ mlm_std_beta_table <- function(outcomelist, xstring, adf_adol, adf_col, latex_pa
     return(table_full)
 }
 
-outcomelist <- list('bin_5_to_end')
-age_table <- mlm_std_beta_table(outcomelist, xstring = 'age', adf_adol = adf_adol, adf_col = adf_col)
-pds_table <- mlm_std_beta_table(outcomelist, xstring = 'PDS_mean_score', adf_adol = adf_adol, adf_col = adf_col)
+outcomelist <- list('bin_5_to_end', 'bin_start_to_4')
+age_table <- mlm_std_beta_table(outcomelist, xstring = 'age', adf_adol = adf_adol, adf_col = adf_col, adf_all = adf_all)
+pds_table <- mlm_std_beta_table(outcomelist, xstring = 'PDS_mean_score', adf_adol = adf_adol, adf_col = adf_col, adf_all = adf_all)
 age_con_table <- mlm_std_beta_table(outcomelist, xstring = 'age', 
-                                adf_adol = adf_adol_con, adf_col = adf_col_con)
+                                adf_adol = adf_adol_con, adf_col = adf_col_con, adf_all = adf_all_con)
 pds_con_table <- mlm_std_beta_table(outcomelist, xstring = 'PDS_mean_score', 
-                                adf_adol = adf_adol_con, adf_col = adf_col_con)
+                                adf_adol = adf_adol_con, adf_col = adf_col_con, adf_all = adf_all_con)
 
 lowfi_regression_table <- dplyr::bind_rows(
     'Optimal choices $\\sim$ Age' = age_table,
@@ -752,9 +757,16 @@ lowfi_regression_table <- dplyr::bind_rows(
 
 ```{r}
 knitr::kable(
-    dplyr::select(lowfi_regression_table, -Parameter),
+    dplyr::select(dplyr::filter(lowfi_regression_table, Parameter == 'bin_5_to_end'), -Parameter),
     col.names = c('Variables', 'Age-group', '$\\beta$', '$\\text{SE}_{\\beta}$', '$t$'),
-    digits = 2)
+    digits = 2,
+    caption = 'Optimal choices during last half of the run')
+
+knitr::kable(
+    dplyr::select(dplyr::filter(lowfi_regression_table, Parameter == 'bin_start_to_4'), -Parameter),
+    col.names = c('Variables', 'Age-group', '$\\beta$', '$\\text{SE}_{\\beta}$', '$t$'),
+    digits = 2,
+    caption = 'Optimal choices during first half of the run')
 ```
 
 
