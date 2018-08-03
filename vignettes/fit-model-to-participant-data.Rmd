@@ -1147,6 +1147,20 @@ summary(timeXcondition_age_vrysmp_lm)
 
 timeXcondition_dev_vrysmp_lm <- readRDS(file.path(logistic_saves_dir, 'timeXcondition_dev_vrysmp_lm.rds'))
 summary(timeXcondition_dev_vrysmp_lm)
+
+summary(value(cond_time_simpl_m_f))
+
+c(1.6930,
+0.9194,
+0.9884,
+0.1688,
+0.1123,
+0.1311)/(sum(c(1.6930,
+0.9194,
+0.9884,
+0.1688,
+0.1123,
+0.1311)) + (15/16)*(pi^2)/3)
 ```
 
 ## Relation to FSMI subscales
