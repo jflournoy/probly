@@ -571,6 +571,31 @@ p_opt_pds_plot <- ggplot2::ggplot(
     linetype_scale + 
     ggplot2::theme(legend.key.width = unit(legend_width, units = 'cm'))
 
+p_opt_early_pds_plot <- ggplot2::ggplot(
+    dplyr::mutate(
+        lowfi_df_dev,
+        agegroup = ifelse(grepl('yads', sample), 'College students', 'Adolescents')),
+    ggplot2::aes(x = PDS_mean_score, y = bin_start_to_4,
+                 color = factor(gender, levels = c(0,1), labels = c('male', 'female')))) + 
+    ggplot2::geom_smooth(color = '#999999',
+                         method = 'gam', formula = y ~ s(x, fx = T, k = 3),
+                         size = 2, alpha = .2) + 
+    ggplot2::geom_point(position = position_jitter(), alpha = .5) + 
+    ggplot2::geom_smooth(ggplot2::aes(linetype = condition,
+                                      group = condition),
+                         color = '#333333',
+                         method = 'gam', formula = y ~ s(x, fx = T, k = 3),
+                         size = .5, se = F, alpha = .2) + 
+    ggplot2::labs(x = 'PDS mean score', 
+                  y = 'Probability of making optimal choice',
+                  linetype = 'Condition') + 
+    ggplot2::facet_grid(~factor(gender, levels = c(0,1), labels = c('Male', 'Female')),
+                        scales = 'free_x') +
+    ggplot2::scale_color_manual(name = 'Gender', breaks = c(0, 1), values = gender_colors,
+                                labels = c('Male', 'Female')) + 
+    linetype_scale + 
+    ggplot2::theme(legend.key.width = unit(legend_width, units = 'cm'))
+
 p_opt_fsmi_scales <- ggplot2::ggplot(
     dplyr::filter(lowfi_df_dev_qstnr_l, grepl('yads', sample), 
                   grepl('fsmi', scalename), !(partnered == 1 & scalename == 'fsmi_mate')),
@@ -685,7 +710,9 @@ p_opt_diff_upps_scales <- ggplot2::ggplot(
 
 ```{r fig.width=5.875, fig.height=4}
 p_opt_age_plot
+p_opt_early_age_plot
 p_opt_pds_plot
+p_opt_early_pds_plot
 p_opt_diff_age_plot
 p_opt_diff_pds_plot
 p_opt_fsmi_scales
