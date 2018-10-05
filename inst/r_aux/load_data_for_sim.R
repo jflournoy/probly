@@ -141,5 +141,5 @@ gender_c <- get_col_as_trial_matrix(splt, 'gender_c', id_col = 'id', sample_col 
 age_std <- get_col_as_trial_matrix(splt, 'age_std', id_col = 'id', sample_col = 'sample', trial_col = 'trial_index')[,1]
 age_x_gender <- age_std * gender_c
 
-Xj <- cbind(age_std, gender_c, age_x_gender)
+Xj <- model.matrix(~1+age_std+gender_c+age_x_gender)
 J_pred <- dim(Xj)[2]
