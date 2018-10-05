@@ -5559,6 +5559,34 @@ nada <- lapply(seq_along(splt_use_protection_sems),
 ```
 Again, no $\chi^2$ tests satisfy the $\alpha = .005$ cutoff.
 
+### LTR and Dating/Looking params
+
+```{r}
+PairedData::yuen.t.test(ep_prm_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+PairedData::yuen.t.test(rho_prm_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+PairedData::yuen.t.test(xi_prm_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+PairedData::yuen.t.test(b_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+PairedData::yuen.t.test(bin_5_to_end_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+PairedData::yuen.t.test(bin_start_to_4_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+stats::t.test(ep_prm_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+stats::t.test(rho_prm_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+stats::t.test(xi_prm_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+stats::t.test(b_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+stats::t.test(bin_5_to_end_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+
+stats::t.test(bin_start_to_4_DtngLHngT ~ factor(partnered), data = splt_fsmi_devdemog_betas[!is.na(splt_fsmi_devdemog_betas$partnered) & grepl('yads',splt_fsmi_devdemog$sample) & !is.na(splt_fsmi_devdemog_betas$ep_prm_DtngLHngT),])
+```
+
 ## Number of days during which alcohol was consumed
 
 ### FSMI Status
