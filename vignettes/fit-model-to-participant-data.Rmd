@@ -1160,7 +1160,7 @@ c(1.6930,
 0.9884,
 0.1688,
 0.1123,
-0.1311)) + (15/16)*(pi^2)/3)
+0.1311)) + (15/16)^2*(pi^2)/3)
 ```
 
 ## Relation to FSMI subscales
@@ -1910,6 +1910,8 @@ One might also examine the variance of posterior means versus the total variance
 ```{r}
 par_regex_list <- unlist(lapply(c('ep_prm', 'xi_prm', 'rho_prm', 'b'), paste0, '\\[\\d+,', 1:3, '\\]'))
 
+param_names <- c('ep_prm', 'xi_prm', 'rho_prm', 'b')
+
 apply(covsamps_ep$Sigma, c(1,2), mean)
 apply(covsamps_xi$Sigma, c(1,2), mean)
 apply(covsamps_rho$Sigma, c(1,2), mean)
@@ -1942,7 +1944,32 @@ var_stuff <- lapply(par_regex_list, function(par_regex){
     names(alist) <- sub('(ep|xi|rho|b).*([1-3]).*', '\\1_\\2', par_regex)
     alist
 })
+
+contrast_var_prop <- lapply(param_names, function(apar){
+    beta_names_3 <- grep(paste0(apar, '\\[\\d+,3\\]'), names(stanfit_2_level_betas), value = T)
+    beta_names_2 <- grep(paste0(apar, '\\[\\d+,2\\]'), names(stanfit_2_level_betas), value = T)
+    beta_names_1 <- grep(paste0(apar, '\\[\\d+,1\\]'), names(stanfit_2_level_betas), value = T)
+    
+    betas_31 <- lapply(seq_along(beta_names_3), function(i){
+        somesamples <- stanfit_2_level_betas[[beta_names_3[i]]] - 
+            stanfit_2_level_betas[[beta_names_1[i]]]
+    })
+    betas_21 <- lapply(seq_along(beta_names_3), function(i){
+        somesamples <- stanfit_2_level_betas[[beta_names_2[i]]] - 
+            stanfit_2_level_betas[[beta_names_1[i]]]
+    })
+    
+    prmmeanvar31 <- var(unlist(lapply(betas_31, mean)))
+    allvar31 <- var(unlist(betas_31))
+    
+    prmmeanvar21 <- var(unlist(lapply(betas_21, mean)))
+    allvar21 <- var(unlist(betas_21))
+    
+    data.frame(par = apar, `31` = prmmeanvar31/allvar31, `21` = prmmeanvar21/allvar21)
+})
+
 knitr::kable(t(as.data.frame(var_stuff)), row.names = TRUE, digits = 2)
+knitr::kable(t(as.data.frame(contrast_var_prop)), row.names = TRUE, digits = 2)
 ```
 
 So the proportion of variance due to the means of individual-level parameter posteriors tends to be highest for $\xi$ and lowest for $\rho$.
@@ -2402,6 +2429,32 @@ beta_estimates_by_sample_xi_prm_plot
 beta_estimates_by_sample_b_plot
 ```
 
+### Lo-fi
+
+```{r fig.width = 5.875, fig.height=4}
+ggplot2::ggplot(lowfi_df_dev,
+                ggplot2::aes(x = factor(condition, levels = condition_labels), y = bin_5_to_end)) + 
+    ggplot2::geom_boxplot(width = .5) + 
+    ggplot2::facet_grid(~sample) + 
+    ggplot2::theme(axis.text.x = element_text(angle = 360 - 45)) + 
+    ggplot2::labs(title = 'Late-run proportion of optimal responses',
+                  x='')
+
+ggplot2::ggplot(lowfi_df_dev,
+                ggplot2::aes(x = factor(condition, levels = condition_labels), y = bin_start_to_4)) + 
+    ggplot2::geom_boxplot(width = .5) + 
+    ggplot2::facet_grid(~sample) + 
+    ggplot2::theme(axis.text.x = element_text(angle = 360 - 45)) + 
+    ggplot2::labs(title = 'Early-run proportion of optimal responses',
+                  x = '')
+```
+
+
+## Acquiescence Bias Check
+
+```{r}
+psych::corr.test(cbind(splt_fsmi$fsmi_qs_67, splt_fsmi$dominance_prestige_18, splt_fsmi_ksrq_scored[,-5]), use = 'pairwise.complete.obs', method = 'spearman', adjust = 'none')
+```
 
 ## Diagnostics
 
