@@ -69,9 +69,9 @@ if(AWS){
     append_to_data_fn <- ''
 }
 
-data(splt)
-data(splt_dev_and_demog)
-data(splt_fsmi)
+load(file.path(data_dir, 'data/splt.rda'))
+load(file.path(data_dir, 'data/splt_dev_and_demog.rda'))
+load(file.path(data_dir, 'data/splt_fsmi.rda'))
 
 college_rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
 ksrq_rubric <- scorequaltrics::get_rubrics(
