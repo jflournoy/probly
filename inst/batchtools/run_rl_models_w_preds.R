@@ -1,4 +1,4 @@
-## ---- run_baseline_models
+## ---- run_rl_models_w_preds
 
 library(future)
 library(future.batchtools)
@@ -13,7 +13,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
     plan(batchtools_slurm,
          template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
-         resources = list(ncpus = 6, walltime = 60*24*8, memory = '4G',
+         resources = list(ncpus = 6, walltime = 60*24*12, memory = '4G',
                           partitions = 'long,longfat'))
     AWS = F
 } else if(grepl('^ip-', system('hostname', intern = T))) { #AWS
