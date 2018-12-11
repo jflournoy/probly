@@ -57,6 +57,8 @@ transformed parameters {
 }
 
 model {
+    real p_press_right[N, T];
+
     // gng_m2: RW + noise + bias model in Guitart-Masip et al 2012
     // hyper parameters
     to_vector(mu_delta_xi)  ~ normal(0, 1);
@@ -80,8 +82,8 @@ model {
 
     if(run_estimation == 1){
         for (i in 1:N) {
-            vector[ncue] wv_r;  // action wegith for go
-            vector[ncue] wv_l; // action wegith for nogo
+            vector[ncue] wv_r;  // action weight for r
+            vector[ncue] wv_l; // action weight for l
             vector[ncue] qv_r;  // Q value for go
             vector[ncue] qv_l; // Q value for nogo
             vector[ncue] pR;   // prob of go (press)
@@ -106,7 +108,7 @@ model {
                 pR[cue[i, t]]   = inv_logit(wv_r[cue[i, t]] - wv_l[cue[i, t]]);
                 pR[cue[i, t]]   = pR[cue[i, t]] * (1 - beta_xi_it) + beta_xi_it/2;  // noise
 
-                press_right[i, t] ~ bernoulli(pR[cue[i, t]]);
+                p_press_right[i, t] = pR[cue[i, t]];
 
                 // update action values
                 if (press_right[i, t]) { // update go value
@@ -116,6 +118,7 @@ model {
                 }
             } // end of t loop
         } // end of i loop
+        to_array_1d(press_right) ~ bernoulli(to_array_1d(p_press_right));
     } // end estimate check
 }
 
