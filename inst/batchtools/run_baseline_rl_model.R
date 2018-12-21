@@ -46,6 +46,7 @@ if(!file.exists(data_dir)){
 model_filename_list <- list(
     # intercept_only = system.file('stan', 'splt_intercept_only.stan', package = 'probly'),
     rl_2_level = system.file('stan', 'splt_rl_2_level.stan', package = 'probly')#,
+    # rl_2_level = '~/code_new/probly/inst/stan/splt_rl_2_level.stan'#,
     # rl_2_level_no_b = system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly'),
     # rl_2_level_no_b_no_rho = system.file('stan', 'splt_rl_2_level_no_b_no_rho.stan', package = 'probly'),
     # rl_repar_exp = system.file('stan', 'splt_rl_reparam_exp.stan', package = 'probly'),
