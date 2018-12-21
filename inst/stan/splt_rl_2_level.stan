@@ -18,8 +18,11 @@ data {
 transformed data {
     vector[ncue] initV;
     matrix[N,1] u; //just the intercept for each parameter
+    int n_total_trials;
+
     initV  = rep_vector(0.0, ncue);
     u[,1] = rep_vector(1.0, N);
+    n_total_trials = sum(Tsubj);
 }
 
 parameters {
@@ -57,8 +60,6 @@ transformed parameters {
 }
 
 model {
-    real p_press_right[N, T];
-
     // gng_m2: RW + noise + bias model in Guitart-Masip et al 2012
     // hyper parameters
     to_vector(mu_delta_xi)  ~ normal(0, 1);
@@ -81,6 +82,12 @@ model {
     L_Omega_rho ~ lkj_corr_cholesky(2);
 
     if(run_estimation == 1){
+        vector[n_total_trials] p_press_right;
+        int did_press_right[n_total_trials];
+        int tot_trials_i;
+
+        tot_trials_i = 0;
+
         for (i in 1:N) {
             vector[ncue] wv_r;  // action weight for r
             vector[ncue] wv_l; // action weight for l
@@ -98,6 +105,8 @@ model {
             qv_l = initV;
 
             for (t in 1:Tsubj[i]) {
+                tot_trials_i += 1;
+
                 beta_xi_it = beta_xi_prm[i, condition[i, t]];
                 beta_ep_it = beta_ep_prm[i, condition[i, t]];
                 beta_rho_it = beta_rho_prm[i, condition[i, t]];
@@ -108,7 +117,8 @@ model {
                 pR[cue[i, t]]   = inv_logit(wv_r[cue[i, t]] - wv_l[cue[i, t]]);
                 pR[cue[i, t]]   = pR[cue[i, t]] * (1 - beta_xi_it) + beta_xi_it/2;  // noise
 
-                p_press_right[i, t] = pR[cue[i, t]];
+                p_press_right[tot_trials_i] = pR[cue[i, t]];
+                did_press_right[tot_trials_i] = press_right[i, t];
 
                 // update action values
                 if (press_right[i, t]) { // update go value
@@ -118,7 +128,7 @@ model {
                 }
             } // end of t loop
         } // end of i loop
-        to_array_1d(press_right) ~ bernoulli(to_array_1d(p_press_right));
+        did_press_right ~ bernoulli(p_press_right);
     } // end estimate check
 }
 
