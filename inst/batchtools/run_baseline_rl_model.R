@@ -10,6 +10,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     nchains <- 6
     niterperchain <- ceiling(niter/nchains)
     warmup <- 1200
+    raw_data <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly/data'
     data_dir <- '/gpfs/projects/dsnlab/flournoy/data/splt/probly'
     plan(batchtools_slurm,
          template = system.file('batchtools', 'batchtools.slurm.tmpl', package = 'probly'),
@@ -26,6 +27,7 @@ if(grepl('(^n\\d|talapas-ln1)', system('hostname', intern = T))){
     AWS = T
     devtools::install_github('jflournoy/probly')
 } else {
+    raw_data <- '/data/jflournoy/split/probly/data/'
     data_dir <- '/data/jflournoy/split/probly'
     niter <- 20
     nchains <- 2
@@ -45,8 +47,8 @@ if(!file.exists(data_dir)){
 
 model_filename_list <- list(
     # intercept_only = system.file('stan', 'splt_intercept_only.stan', package = 'probly'),
-    rl_2_level = system.file('stan', 'splt_rl_2_level.stan', package = 'probly')#,
-    # rl_2_level = '~/code_new/probly/inst/stan/splt_rl_2_level.stan'#,
+    # rl_2_level = system.file('stan', 'splt_rl_2_level.stan', package = 'probly')#,
+    rl_2_level_rho5 = '~/code_new/probly/inst/stan/splt_rl_2_level_2rho.stan'#,
     # rl_2_level_no_b = system.file('stan', 'splt_rl_2_level_no_b.stan', package = 'probly'),
     # rl_2_level_no_b_no_rho = system.file('stan', 'splt_rl_2_level_no_b_no_rho.stan', package = 'probly'),
     # rl_repar_exp = system.file('stan', 'splt_rl_reparam_exp.stan', package = 'probly'),
@@ -62,6 +64,9 @@ indiv_parlist <- c('beta_ep_prm', 'beta_xi_prm', 'pR_final', 'log_lik')
 pop_parlist_rho <- c('mu_delta_rho', 'tau_rho', 'L_Omega_rho')
 indiv_parlist_rho <- c('beta_rho_prm')
 
+pop_parlist_rho5 <- c('mu_delta_rho5', 'tau_rho5', 'L_Omega_rho5')
+indiv_parlist_rho5 <- c('beta_rho_prm5')
+
 pop_parlist_b <- c('mu_delta_b', 'tau_b', 'L_Omega_b')
 indiv_parlist_b <- c('beta_b')
 
@@ -72,6 +77,10 @@ pop_parlist_3l_b <- c('delta_b', 'sigma_delta_b')
 
 save_pars_list <- list(
     rl_2_level = c(pop_parlist, indiv_parlist, pop_parlist_rho, indiv_parlist_rho, pop_parlist_b, indiv_parlist_b),
+    rl_2_level_rho5 = c(pop_parlist, indiv_parlist,
+                        pop_parlist_rho, indiv_parlist_rho,
+                        pop_parlist_rho5, indiv_parlist_rho5,
+                        pop_parlist_b, indiv_parlist_b),
     rl_2_level_no_b = c(pop_parlist, indiv_parlist, pop_parlist_rho, indiv_parlist_rho),
     rl_2_level_no_b_no_rho = c(pop_parlist, indiv_parlist),
     rl_repar_exp = c(pop_parlist, indiv_parlist,
@@ -91,9 +100,9 @@ if(AWS){
     append_to_data_fn <- ''
 }
 
-data(splt)
-data(splt_dev_and_demog)
-data(splt_fsmi)
+load(file.path(raw_data, 'splt.rda'))
+load(file.path(raw_data, 'splt_dev_and_demog.rda'))
+load(file.path(raw_data, 'splt_fsmi.rda'))
 
 college_rubric_dir <- system.file('scoring_rubrics', 'college', package = 'probly')
 ksrq_rubric <- scorequaltrics::get_rubrics(
@@ -194,10 +203,10 @@ for(mod in 1:length(model_filename_list)){
             stan_data$press_opt <- press_opt
         }
 
-        save_pars <- save_pars_list[[mod]]
+        save_pars <- save_pars_list[[names(model_filename_list)[mod]]]
 
         message('Model: ', names(model_filename_list)[[mod]])
-        message('Save pars: ', save_pars)
+        message('Save pars: ', paste(save_pars, collapse = ' '))
 
         stanFit <- rstan::stan(file = model_filename_list[[mod]],
                                data = stan_data,

@@ -107,8 +107,10 @@ model {
             real beta_xi_it;
             real beta_ep_it;
             real beta_rho_it;
-            real beta_rho5_it;
+            real beta_rho_it5;
             real beta_b_it;
+            int outcome_dummy;
+            int outcome5_dummy;
 
             wv_r  = initV;
             wv_l = initV;
@@ -124,7 +126,7 @@ model {
                 beta_xi_it = beta_xi_prm[i, condition[i, t]];
                 beta_ep_it = beta_ep_prm[i, condition[i, t]];
                 beta_rho_it = beta_rho_prm[i, condition[i, t]];
-                beta_rho5_it = beta_rho_prm5[i, condition[i, t]];
+                beta_rho_it5 = beta_rho_prm5[i, condition[i, t]];
                 beta_b_it = beta_b[i, condition[i, t]];
 
                 wv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_b_it;
@@ -174,8 +176,10 @@ generated quantities {
         real beta_xi_it;
         real beta_ep_it;
         real beta_rho_it;
-        real beta_rho5_it;
+        real beta_rho_it5;
         real beta_b_it;
+        int outcome_dummy;
+        int outcome5_dummy;
         vector[T] log_lik_iters;
 
         wv_r  = initV;
@@ -194,7 +198,7 @@ generated quantities {
             beta_xi_it = beta_xi_prm[i, condition[i, t]];
             beta_ep_it = beta_ep_prm[i, condition[i, t]];
             beta_rho_it = beta_rho_prm[i, condition[i, t]];
-            beta_rho5_it = beta_rho_prm5[i, condition[i, t]];
+            beta_rho_it5 = beta_rho_prm5[i, condition[i, t]];
             beta_b_it = beta_b[i, condition[i, t]];
 
             wv_r[cue[i, t]]  = qv_r[cue[i, t]] + beta_b_it;
