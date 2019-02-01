@@ -1249,14 +1249,14 @@ p_opt_diff_ksrq_scales
 ```{r}
 stanfit_2_level <- readRDS(file.path(data_dir,'splt-looser-rl_2_level-1528266.RDS'))
 stanfit_list <- lapply(
-    dir('/data/jflournoy/split/probly/', pattern = '*looser-rl*', full.names = T),
+    dir('/data/jflournoy/split/probly/', pattern = 'splt-looser-rl_*', full.names = T),
     function(fname){
         stanfit <- readRDS(fname)
         pars <- extract_splt_model_pars(stanfit)
         return(pars)
     }
 )
-names(stanfit_list) <- dir('/data/jflournoy/split/probly/', pattern = '*looser-rl*')
+names(stanfit_list) <- dir('/data/jflournoy/split/probly/', pattern = 'splt-looser-rl_*')
 
 stan_loos <- lapply(
     stanfit_list,
@@ -1288,7 +1288,7 @@ beta_names_list <- lapply(
     beta_pars,
     function(par){
         grep(paste0('^', par, '\\[\\d+,\\d+\\]'),
-             names(mean_pars$`splt-looser-rl_2_level-1528266.RDS`),
+             names(mean_pars$`splt-looser-rl_2_level-1545567.RDS`),
              value = T)
     })
 
@@ -1298,7 +1298,7 @@ two_three_level_comparison_plots <- lapply(
     beta_pars,
     function(par){
         adf <- dplyr::data_frame(
-            'two level' = unlist(mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[[par]]]),
+            'two level' = unlist(mean_pars$`splt-looser-rl_2_level-1545567.RDS`[beta_names_list[[par]]]),
             'three level' = unlist(mean_pars$`splt-looser-rl_repar_exp-1528144.RDS`[beta_names_list[[par]]]))
         ggplot2::ggplot(
             adf,
@@ -1332,23 +1332,23 @@ pR_final <- dplyr::data_frame(
 par_means_for_corplot <- 
     dplyr::data_frame(
         'epsilon["max"]' = qnorm(unlist(
-            mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[['beta_ep_prm']]])),
+            mean_pars$`splt-looser-rl_2_level-1545567.RDS`[beta_names_list[['beta_ep_prm']]])),
         'epsilon["no b"]' = qnorm(unlist(
             mean_pars$`splt-looser-rl_2_level_no_b-1527784.RDS`[beta_names_list[['beta_ep_prm']]])),
         'epsilon["no b,"~rho]' = qnorm(unlist(
             mean_pars$`splt-looser-rl_2_level_no_b_no_rho-1527729.RDS`[beta_names_list[['beta_ep_prm']]])),
         'xi["max"]' = qnorm(unlist(
-            mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[['beta_xi_prm']]])),
+            mean_pars$`splt-looser-rl_2_level-1545567.RDS`[beta_names_list[['beta_xi_prm']]])),
         'xi["no b"]' = qnorm(unlist(
             mean_pars$`splt-looser-rl_2_level_no_b-1527784.RDS`[beta_names_list[['beta_xi_prm']]])),
         'xi["no b,"~rho]' = qnorm(unlist(
             mean_pars$`splt-looser-rl_2_level_no_b_no_rho-1527729.RDS`[beta_names_list[['beta_xi_prm']]])),
         'rho["max"]' = log(unlist(
-            mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[['beta_rho_prm']]])),
+            mean_pars$`splt-looser-rl_2_level-1545567.RDS`[beta_names_list[['beta_rho_prm']]])),
         'rho["no b"]' = log(unlist(
             mean_pars$`splt-looser-rl_2_level_no_b-1527784.RDS`[beta_names_list[['beta_rho_prm']]])),
         'b["max"]' = unlist(
-            mean_pars$`splt-looser-rl_2_level-1528266.RDS`[beta_names_list[['beta_b']]])
+            mean_pars$`splt-looser-rl_2_level-1545567.RDS`[beta_names_list[['beta_b']]])
     )
 
 par_mean_cor_plot <- GGally::ggpairs(par_means_for_corplot, 
@@ -1396,7 +1396,7 @@ print(par_mean_cor_plot_nobnorho2l)
 
 ```{r}
 #get just betas 
-stanfit_2_level_betas <- stanfit_list$`splt-looser-rl_2_level-1528266.RDS`$parameters[unlist(beta_names_list[1:4])]
+stanfit_2_level_betas <- stanfit_list$`splt-looser-rl_2_level-1545567.RDS`$parameters[unlist(beta_names_list[1:4])]
 
 #get only those for the 1st condition, hungry/thirsty -- we repeat the hungry/thirsty draws 3 times
 ht_cond_for_contrast <- 
@@ -1491,7 +1491,7 @@ devtools::use_data(splt_rl_betas)
 ## Relation of learning model to low-fi
 
 ```{r}
-mean_pars_model <- mean_pars$`splt-looser-rl_2_level-1528266.RDS`
+mean_pars_model <- mean_pars$`splt-looser-rl_2_level-1545567.RDS`
 splt_learning_betas <- data.frame(par = beta_names_list$beta_ep_prm,
                                   ep_mean = unlist(mean_pars_model[beta_names_list$beta_ep_prm]),
                                   rho_mean = unlist(mean_pars_model[beta_names_list$beta_rho_prm]),
