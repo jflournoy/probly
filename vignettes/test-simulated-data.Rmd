@@ -38,7 +38,9 @@ This vignette is not evaluated, but is included to provide
 ------    
 "
 }
+```
 
+```{r}
 knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
 knitr::read_chunk(system.file('r_aux', 'test_simulation_2l_nob.R', package = 'probly'))
 knitr::read_chunk(system.file('batchtools', 'run_many_simulations.R', package = 'probly'))

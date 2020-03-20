@@ -280,7 +280,7 @@ knitr::kable(pds_param_con_betas_table, digits = 2, escape = F, col.names = coln
 
 
 ```{r eval=F}
-learning_model <- readRDS('/data/jflournoy/split/probly/splt-looser-rl_2_level-1528266.RDS')
+learning_model <- readRDS('/data/jflournoy/split/probly/splt-looser-rl_2_level-1545567.RDS')
 
 #num [1:4500, 1:313, 1:3]
 beta_ep_mat <- rstan::extract(learning_model, 'beta_ep_prm')[[1]]
