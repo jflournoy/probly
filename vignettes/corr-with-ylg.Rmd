@@ -1,0 +1,124 @@
+---
+title: "Correspondence with YLG task behavior"
+author: "John Flournoy"
+date: "`r Sys.Date()`"
+output: 
+  bookdown::html_document2:
+    toc: yes
+    toc_depth: 3
+    number_sections: FALSE
+pkgdown:
+  as_is: true
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+bibliography: "/home/jflournoy/Rlibs/probly/bib/dissertation.bib"
+csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+ggcorplot <- function(adf, use = 'pairwise.complete.obs', method = 'pearson', min=.2, mid=.5, lowcolor='#998ec3', highcolor='#f1a340'){
+    adf_cor <- cor(adf, use = use, method = method)
+    adf_cor[lower.tri(adf_cor)] <- NA
+    diag(adf_cor) <- NA
+    adf_cor_df <- as.data.frame(adf_cor)
+    adf_cor_df$row <- factor(
+        dimnames(adf_cor)[[1]],
+        levels = dimnames(adf_cor)[[1]])
+    adf_cor_df_l <- dplyr::filter(
+        dplyr::mutate(
+            tidyr::gather(adf_cor_df, 
+                          col, value, -row),
+            col = factor(col, levels = unique(col)[n():1])),
+        row != 'bin_1_to_end',
+        col != 'bin_1_to_end')
+    
+    values <- sort(c(0,.5,1, .5 - c(min, mid)/2, .5 + c(min, mid)/2))
+    breaks <- values*2-1
+    ggplot2::ggplot(adf_cor_df_l,
+                    ggplot2::aes(x = row, y = col, fill = value)) + 
+        ggplot2::geom_bin2d(stat = 'identity') + 
+        ggplot2::scale_fill_gradientn(na.value = 'white',
+                                      limits = c(-1,1),
+                                      values = values, 
+                                      colors = c(lowcolor, lowcolor, 'white', 'white', 'white', highcolor, highcolor),
+                                      breaks = breaks) + 
+        ggplot2::geom_text(ggplot2::aes(label = row),
+                           data = dplyr::filter(adf_cor_df_l,
+                                                row == col),
+                           size = 3, 
+                           hjust = 'left') + 
+        ggplot2::coord_cartesian(xlim = c(1, dim(adf_cor)[[2]] + 4)) + 
+        ggplot2::theme(axis.text = ggplot2::element_blank(),
+                       axis.line = ggplot2::element_blank(),
+                       axis.ticks = ggplot2::element_blank(),
+                       panel.grid = ggplot2::element_blank()) + 
+        ggplot2::labs(x='',y='',fill = 'Correlation')
+}
+```
+
+```{r}
+library(dplyr)
+library(ylglearning)
+library(probly)
+data(ylgData)
+data(splt_rl_betas)
+data(splt_lowfi_outcomes)
+ylgData$subject_name <- as.numeric(ylgData$subject_name)
+ylgData$sample <- ifelse(ylgData$subject_name > 99 & ylgData$subject_name < 300,
+                         'TDS2',
+                         ifelse(ylgData$subject_name > 299 & ylgData$subject_name < 400,
+                                'TDS1',
+                                ifelse(ylgData$subject_name > 399,
+                                       'TDS3', NA)))
+id_correspondence <- readr::read_csv('/data/jflournoy/split/probly/splt_anon_id.csv')
+ylgData$subject_name <- as.character(ylgData$subject_name)
+ylgData_deid <- dplyr::left_join(ylgData, id_correspondence,
+                                 by = c('subject_name' = 'id',
+                                        'sample' = 'sample')) %>%
+    dplyr::filter(is.na(exclude), !is.na(anon_id)) %>%
+    dplyr::select(-subject_name, -sample) %>%
+    dplyr::rename(id = anon_id, sample = anon_sample)
+```
+
+```{r}
+ylgData_deid_sum <- ylgData_deid %>%
+    dplyr::filter(run_index %in% 3:8) %>%
+    dplyr::group_by(id, type) %>%
+    dplyr::summarize(pGo = mean(goDec, na.rm = T)) %>%
+    tidyr::spread(type, pGo) %>%
+    dplyr::mutate(`M-E` = M - E,
+                  `L-M` = L - M)
+
+parlevels <- unlist(lapply(c('ep_prm', 'rho_prm', 'xi_prm', 'b'), function(x) paste(x, unique(splt_rl_betas$condition), sep = '_')))
+lowfiparlevels <- unlist(paste('lowfi', unique(splt_rl_betas$condition), sep = '_'))
+
+splt_rl_betas_w <- splt_rl_betas %>%
+    dplyr::filter(condition != 'Hungry/Thirsty - Hungry/Thirsty') %>%
+    tidyr::unite(par, parameter, condition) %>%
+    dplyr::mutate(par = factor(par, levels = parlevels)) %>%
+    dplyr::select(median, par, id, sample) %>%
+    tidyr::spread(par, median)
+
+splt_lowfi_outcomes_w <- splt_lowfi_outcomes %>%
+    ungroup() %>%
+    dplyr::filter(outcome == 'bin_5_to_end', condition != 'Hungry/Thirsty - Hungry/Thirsty') %>%
+    dplyr::select(-outcome) %>%
+    dplyr::mutate(condition = factor(paste0('lowfi_', condition), levels = lowfiparlevels)) %>%
+    tidyr::spread(condition, value)
+
+splt_rl_ylg <- dplyr::left_join(
+    dplyr::left_join(
+        dplyr::filter(splt_rl_betas_w, grepl('adolescents', sample)),
+        splt_lowfi_outcomes_w),
+    ylgData_deid_sum,
+    by = c('id' = 'id'))
+```
+
+```{r}
+ggcorplot(dplyr::select(splt_rl_ylg, -id, -sample), method = 'spearman', min = 0.05, mid = .8)
+psych::corr.test(dplyr::select(splt_rl_ylg, -id, -sample), method = 'spearman')
+```
