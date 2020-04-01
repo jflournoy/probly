@@ -41,9 +41,9 @@ This vignette is not evaluated, but is included to provide
 ```
 
 ```{r}
-knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
-knitr::read_chunk(system.file('r_aux', 'test_simulation_2l_nob.R', package = 'probly'))
-knitr::read_chunk(system.file('batchtools', 'run_many_simulations.R', package = 'probly'))
+do.call(knitr::read_chunk, list(path = system.file('r_aux', 'load_data_for_sim.R', package = 'probly')))
+do.call(knitr::read_chunk, list(path = system.file('r_aux', 'test_simulation_2l_nob.R', package = 'probly')))
+do.call(knitr::read_chunk, list(path = system.file('batchtools', 'run_many_simulations.R', package = 'probly')))
 data_dir <- '/data/jflournoy/split/probly'
 save_out_dir <- '~/code_new/social-motives-rl-writeup/rda/'
 if(!dir.exists(save_out_dir)){
@@ -151,7 +151,7 @@ The simulated data do generally cover the range of the actual data when we look 
 
 (ref:simdata) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial. The best-fit line is a generalized additive model smooth and is only intended to give a rough sense of trends over trials. Each panel is one from 400 simulated data sets. The red line indicates random responding.
 
-```{r simdata, fig.width=8, fig.height=5, fig.cap='(ref:simdatcoverage)'}
+```{r simdata, fig.width=8, fig.height=5, fig.cap='(ref:simdata)'}
 multi_plot <- probly::plot_splt_sim_behavior(
     splt_df = splt,
     press_right = list_of_pright_pred_mats)
@@ -162,7 +162,7 @@ nosmooth_multi_plot
 
 (ref:simdatcoverage) Simulated task data. This shows the the proportion of optimal presses across all participants for each trial, collapsed over simulations. It's possible to see that trial-by-trial probability of choosing the optimal resonses, averaged across all participants, spans the full range of possible behavior (with the extreme exception that no simulation evinces all participants performing perfectly).
 
-```{r simdatcoverage, fig.width=15, fig.height=12, fig.cap='(ref:simdat)'}
+```{r simdatcoverage, fig.width=15, fig.height=12, fig.cap='(ref:simdatcoverage)'}
 multiplot_by_sim <- multi_plot + 
     ggplot2::facet_wrap(~sim) + 
     ggplot2::theme(strip.background = element_blank(),
@@ -238,7 +238,7 @@ bayesplot::mcmc_pairs(data.frame(true_beta_rho_1 = as.numeric(log(true_beta_rho[
 
 The model as described above was fit to simulated data using RStan [version `r packageVersion('rstan')`; @standevelopmentteam2018], sampling from 4 chains with 1000 warmup iterations and 500 sampling iterations per chain. 
 The posterior means for each parameter are compared to those that generated the simulated task behavior.
-The plots in Figure \@ref(fig:musimfitplot) allow visual comparison of the fitted model posteriors for each parameter to the data-generating population means, as well as to the means of the data-generating parameters for each sample, and for each individual.
+The plots below allow visual comparison of the fitted model posteriors for each parameter to the data-generating population means, as well as to the means of the data-generating parameters for each sample, and for each individual.
 It is clear from these plots that the parameter estimates from this particular run capture the generating parameters, with two exceptions. 
 First, the estimate of the population mean of the irrudicble noise parameter, $\xi$, for one condition did not capture the generating parameter. 
 This may be because this parameter was intentionally set very low so that $\xi^\prime \approx 0$. 

@@ -24,7 +24,7 @@ collapse = TRUE,
 comment = "#>",
 echo=F,message=F,warning=F,error=F)
 
-knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
+do.call(knitr::read_chunk, list(path = system.file('r_aux', 'load_data_for_sim.R', package = 'probly')))
 ```
 
 
