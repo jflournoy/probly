@@ -48,7 +48,7 @@ task_with_age <- dplyr::mutate(
         dplyr::distinct(splt_dev_and_demog, 
                         SID, PDS_mean_score, gender, age, sample), 
         by = c('id' = 'SID')),
-    id_idx = as.character(1:n()),
+    id_idx = as.character(1:dplyr::n()),
     age_c = age - mean(age, na.rm = T),
     PDS_mean_score = as.numeric(PDS_mean_score),
     PDS_mean_score_c = PDS_mean_score - 
@@ -290,7 +290,7 @@ beta_ep_mat_df <- tidyr::spread(
         tidyr::gather(
             dplyr::mutate(
                 as.data.frame(beta_ep_mat),
-                iter = 1:n()),
+                iter = 1:dplyr::n()),
             key, value, -iter),
         key, c('id', 'condition'), '(\\d+)\\.(\\d)'),
     condition, value)

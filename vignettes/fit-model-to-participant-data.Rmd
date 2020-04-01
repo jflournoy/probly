@@ -22,11 +22,11 @@ csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
 knitr::opts_chunk$set(
 collapse = TRUE,
 comment = "#>",
-echo=F,message=F,warning=F,error=F
-)
+echo=F,message=F,warning=F,error=F)
 
 knitr::read_chunk(system.file('r_aux', 'load_data_for_sim.R', package = 'probly'))
 ```
+
 
 ```{r}
 library(probly)
@@ -2467,10 +2467,11 @@ ggplot2::ggplot(lowfi_df_dev,
 psych::corr.test(cbind(splt_fsmi$fsmi_qs_67, splt_fsmi$dominance_prestige_18, splt_fsmi_ksrq_scored[,-5]), use = 'pairwise.complete.obs', method = 'spearman', adjust = 'none')
 ```
 
-## Diagnostics
 
 
 ```{r eval=F}
+## Diagnostics
+
 stanfit_orig <- readRDS('/data/jflournoy/split/probly/splt-looser-rl_2_level-1545567.RDS')
 stanfit <- stanfit_orig
 rstan::stan_rhat(stanfit_orig)

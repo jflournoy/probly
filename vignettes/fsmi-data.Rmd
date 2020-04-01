@@ -19,6 +19,8 @@ csl: "/home/jflournoy/Rlibs/probly/bib/apa-old-doi-prefix.csl"
 
 Just the code... (unevaluated)
 
+This code is no longer consistent with Qualtrics' column specifications and needs to be checked.
+
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -42,16 +44,16 @@ library(scorequaltrics)
 library(dplyr)
 library(tidyr)
 
-credentials <- scorequaltrics::creds_from_file(qualtrics_api_token_file)
+loaded <- scorequaltrics::creds_from_file(qualtrics_api_token_file)
 
-survey_names_all <- scorequaltrics::get_surveys(credentials)
+survey_names_all <- scorequaltrics::get_surveys()
 survey_names_splt <- dplyr::filter(survey_names_all, grepl('.*(TDS1|TDS2|TDS3|YADS).*', SurveyName))
 ```
 
 
 # Retrieve FSMI Data
 
-Anonymize it, and make it part of the package while we'er at it.
+Anonymize it, and make it part of the package while we're at it.
 
 ```{r fsmiyadsv1}
 SES_questions <- paste0('SES_', 
@@ -69,17 +71,17 @@ yadsv_v1_surveys <- survey_names_splt %>%
 yadsv_v1_qid_sid <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
                                                    credentials, 
                                                    pid_col = 'SID') %>%
-    dplyr::filter(grepl('qid', item)) %>% 
+    dplyr::filter(grepl('ResponseId', item)) %>% 
     dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
     tidyr::spread(item, value) %>%
     dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
     dplyr::select(-survey_name)
 yadsv_v1_fmsi_long <- scorequaltrics::get_survey_data(yadsv_v1_surveys, 
                                                    credentials, 
-                                                   pid_col = 'qid') %>%
+                                                   pid_col = 'ResponseId') %>%
     dplyr::filter(grepl(item_name_regex, item)) %>% 
-    dplyr::left_join(yadsv_v1_qid_sid, by = 'qid') %>%
-    dplyr::select(-qid, -id)
+    dplyr::left_join(yadsv_v1_qid_sid, by = 'ResponseId') %>%
+    dplyr::select(-ResponseId, -id)
 
 #version 2
 yadsv_v2_surveys <- survey_names_splt %>%
@@ -87,17 +89,17 @@ yadsv_v2_surveys <- survey_names_splt %>%
 yads_v2_qid_sid <- scorequaltrics::get_survey_data(yadsv_v2_surveys, 
                                                    credentials, 
                                                    pid_col = 'SID') %>%
-    dplyr::filter(grepl('qid', item), SID != 999) %>% 
+    dplyr::filter(grepl('ResponseId', item), SID != 999) %>% 
     dplyr::left_join(readr::read_csv(id_recode_filename), by = c('value' = 'response_id')) %>%
     tidyr::spread(item, value) %>%
     dplyr::mutate(SID = ifelse(!is.na(id), id, SID)) %>%
     dplyr::select(-survey_name)
 yadsv_v2_fmsi_long <- scorequaltrics::get_survey_data(yadsv_v2_surveys, 
                                                    credentials, 
-                                                   pid_col = 'qid') %>%
+                                                   pid_col = 'ResponseId') %>%
     dplyr::filter(grepl(item_name_regex, item)) %>% 
-    dplyr::left_join(yads_v2_qid_sid, by = 'qid') %>%
-    dplyr::select(-qid, -id)
+    dplyr::left_join(yads_v2_qid_sid, by = 'ResponseId') %>%
+    dplyr::select(-ResponseId, -id)
 
 #version 2, online
 yadsv_v2o_surveys <- survey_names_splt %>%
