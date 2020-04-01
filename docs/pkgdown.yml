@@ -1,10 +1,11 @@
-pandoc: 1.17.2
-pkgdown: 0.1.0.9000
-pkgdown_sha: bfbf38c443ef2dafc17b9255d7b5db9d05dfb537
+pandoc: 2.3.1
+pkgdown: 1.4.1
+pkgdown_sha: ~
 articles:
   age-and-puberty-data: age-and-puberty-data.html
   age-learning-association: age-learning-association.html
   collect-data: collect-data.html
+  corr-with-ylg: corr-with-ylg.html
   descriptive-statistics: descriptive-statistics.html
   fit-model-to-participant-data: fit-model-to-participant-data.html
   fsmi-cfa: fsmi-cfa.html
