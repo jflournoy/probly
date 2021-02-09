@@ -163,5 +163,5 @@ splt_clean <- splt_crunched %>%
 #Write the data
 splt <- splt_clean
 splt_confidence <- metacog_clean
-devtools::use_data(splt, splt_confidence)
+usethis::use_data(splt, splt_confidence, overwrite = TRUE)
 ```

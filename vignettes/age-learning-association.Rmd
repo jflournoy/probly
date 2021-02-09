@@ -35,7 +35,7 @@ data('splt_dev_and_demog', package = 'probly')
 data('splt', package = 'probly')
 data('splt_rl_betas', package = 'probly')
 splt <- splt[!is.na(splt$pressed_r),]
-splt_dev_and_demog <- dplyr::filter(splt_dev_and_demog,
+splt_dev_and_demog <- dplyr::filter(dplyr::ungroup(splt_dev_and_demog),
                                     age < 30)
 save_out_dir <- '~/code_new/social-motives-rl-writeup/rda/'
 if(!dir.exists(save_out_dir)){

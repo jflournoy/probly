@@ -2286,7 +2286,7 @@ if(!file.exists(file.path(data_dir, 'splt_data_used_pR_block_sum.RDS'))){
 ```
 
 ```{r fig.width=5.875, fig.height=3}
-splt_data_used_pR_block_sum_plot <- ggplot2::ggplot(splt_data_used_pR_block_sum,
+splt_data_used_pR_block_sum_plot <- ggplot2::ggplot(dplyr::ungroup(splt_data_used_pR_block_sum),
                 ggplot2::aes(x = block, y = mean)) +
     ggplot2::geom_ribbon(ggplot2::aes(ymin = lower.ci, 
                                       ymax = upper.ci, 
